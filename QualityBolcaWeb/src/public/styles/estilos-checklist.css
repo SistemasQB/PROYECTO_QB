@@ -1,0 +1,27 @@
+.cuadricula{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px,1fr)); 
+    gap: 16px;
+    padding: 1%;
+    outline: solid 1px black;
+    margin: 1%;
+    padding: 1%;
+    
+}
+.titulo{
+    font-weight: bold;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+.cajas{
+    text-transform: uppercase;
+}
+
+@media (max-width: 700px){
+    .cuadricula{
+    display: flex;    
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding: 5%;
+    }
+
+}

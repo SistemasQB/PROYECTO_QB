@@ -1,0 +1,29 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Nombre</th>
+      <th scope="col">Planta</th>
+      <th scope="col">Asistio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for (const [key, datos] of Object.entries(resultadoGch)) { %>
+      <% let nameInp1 = 'inpN' + datos.NSS %>
+      <% let nameInp2 = 'inpP' + datos.NSS %>
+      <% let nameBtn = 'abtn' + datos.NSS %>
+      <tr>
+        <th scope="row">
+          <input type="text" id="<%=nameInp1%>" style="width: 100%;" disabled value="<%= datos.NOMBRE %>">
+        </th>
+        <td>
+          <input type="text" id="<%=nameInp2%>" style="width: 100%;" disabled value="<%= datos.PLANTA %>">
+        </td>
+        <td>
+          <button type="button" onclick="enviarAsistencia(datos.NOMBRE, datos.PLANTA, 'Asistio')" class="btn btn-success">Asistio</button>
+          <button type="button" class="btn btn-danger">No asistio</button>
+          <button type="button" class="btn btn-warning">Cambio de planta</button>
+        </td>
+      </tr>
+      <% } %>
+  </tbody>
+</table>

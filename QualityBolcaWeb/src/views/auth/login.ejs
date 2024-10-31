@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesion</title>
+    <!-- <link rel="stylesheet" href="./../styles/general.css"> -->
+    <link rel="stylesheet" href="./../styles/login.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- <link rel="stylesheet" href= "./../bootstrap/css/bootstrap.min.css"> -->
+</head>
+
+<nav class="navbar">
+
+</nav>
+
+    <% if (errores !='' ) { %>
+        <script>
+            Swal.fire({
+                title: 'Error',
+                icon: 'error',
+                html: `<% for (const [key, error] of Object.entries(errores)) { %>
+                        <p><%= error.msg %> </p>
+                        <% } %>`
+            })
+        </script>
+        <% } %>
+
+            <body>
+                <div class="container">
+                    <%- //include('partials/_alerta'); %>
+                        <div class="form-box">
+                            <form id="login-form" method="post" action="/login" novalidate>
+                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                                <h1>Quality Bolca</h1>
+                                <h2>Iniciar sesión</h2>
+                                <div class="input-box">
+                                    <input name="email" id="inputEmail" type="email">
+                                    <label for="inputEmail">Email</label>
+                                    <i class='bx bxs-user'></i>
+                                </div>
+                                <div class="input-box">
+                                    <input name="password" type="password" id="inputContrseña">
+                                    <label for="inputContrseña">Contraseña</label>
+                                    <i class='bx bxs-lock-alt'></i>
+                                </div>
+                                <div class="forget-section">
+                                    <label for="checkRemember">
+                                        <input type="checkbox" name="remember" id="checkRemember">
+                                        Recordarme
+                                    </label>
+                                    <a href="/olvide-password">¿Olvidaste tu contrseña?</a>
+                                </div>
+                                <button class="btn">Iniciar sesión</button>
+                                <div class="account-creation">
+                                    <span>¿No tienes cuenta? </span><a href="/registro">Registrate</a>
+                                </div>
+                            </form>
+                        </div>
+                        <% //if (errores !='' ) { %>
+                            <%- //include('partials/_alertaError'); %>
+                                <% //} %>
+                </div>
+            </body>
+
+</html>

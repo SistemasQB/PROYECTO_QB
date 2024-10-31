@@ -1,0 +1,153 @@
+<container>
+    <div class="container mt-2">
+        <!-- Encabezado con logotipo, información y datos adicionales -->
+        <div class="row mb-4 bordered-box">
+            <!-- Información de la Empresa -->
+            <div class="col-md-9 text-center">
+                <p style="text-align: left;">Solicitud de Empleo</p>
+                <p style="text-align: left;">Quality Bolca</p>
+                <p style="text-align: left;">Completa el siguiente formulario</p>
+                <p style="text-align: left;">Nota: La información aquí proporcionada será tratada de manera confidencial
+                    de acuerdo con nuestro aviso de privacidad, el cual puede solicitar en el depto. de R.H.
+                </p>
+            </div>
+            <!-- Logotipo -->
+            <div class="col-md-2 d-flex align-items-center ">
+                <img src="../img/Quality-BOLCA.png" alt="Logotipo de la Empresa" class="img-fluid">
+            </div>
+            <!-- Información Adicional -->
+
+
+            <div class=" show mt-3" id="datosPersonales">
+                <div class="bordered-box p-4">
+                    <form id="solicitudForm">
+                        <div class="form-group">
+                            <label for="puesto">Puesto Solicitado</label>
+                            <input type="text" class="form-control" name="puesto" id="puesto"
+                                placeholder="Ingresa el puesto solicitado" required style="text-transform:uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="sueldo">Sueldo Mensual Esperado</label>
+                            <input type="text" class="form-control" name="sueldo" id="sueldo"
+                                placeholder="Ingresa el sueldo esperado" required onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <label for="nombre">Nombre(s)</label>
+                                <input type="text" name="nombre" class="form-control" id="nombre"
+                                    placeholder="Ingresa tu nombre" required style="text-transform:uppercase" >
+                            </div>
+                            <div class="col">
+                                <label for="nombre">Apellido Paterno</label>
+                                <input type="text" name="apellidoP" class="form-control" id="apellidoP"
+                                    placeholder="Ingresa tu apellido paterno" required style="text-transform:uppercase">
+                            </div>
+                            <div class="col">
+                                <label for="nombre">Apellido Materno</label>
+                                <input type="text" name="apellidoM" class="form-control" id="apellidoM"
+                                    placeholder="Ingresa tu apellido materno" required style="text-transform:uppercase">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico</label>
+                            <input type="email" name="correo" class="form-control" id="email"
+                                placeholder="Ingresa tu correo electrónico" style="text-transform:lowercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Número de Teléfono</label>
+                            <input type="tel" name="telefono" maxlength="10" class="form-control" id="telefono"
+                                placeholder="Ingresa tu número de teléfono" required onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                        </div>
+                        <div class="form-group">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" name="direccion" class="form-control" id="direccion"
+                                placeholder="Calle Numero Colonia" required style="text-transform:uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="experiencia">Experiencia Laboral</label>
+                            <textarea class="form-control" name="experiencia" id="experiencia" rows="4"
+                                placeholder="Describe tu experiencia laboral" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Actualmente tiene adeudos con Banorte: </label>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="adeudoSi" name="adeudos" value="si"
+                                    required>
+                                <label class="form-check-label" name="radio" for="adeudoSi">Sí</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="adeudoNo" name="adeudos" value="no"
+                                    required>
+                                <label class="form-check-label" name="radio" for="adeudoNo">No</label>
+                            </div>
+                        </div>
+                        <input type="button" id="enviar-cv" class="btn btn-primary btn-block" value="Adjuntar CV">
+                        <div class="form-group">
+                            <button type="button" id="enviar-solicitud" class="btn btn-primary btn-block">Enviar Solicitud</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <dialog id="curriculum">
+                <form action="/uploader" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="cv">Adjuntar CV</label>
+                        <input type="file" name="avatar" class="form-control-file" id="cv">
+                    </div>
+                    <button type="" id="enviar-cv" class="btn btn-primary btn-block">
+                        Enviar Curriculum</button>
+                    <input type="button" id="cancelar-cv" class="btn btn-danger btn-block" value="Cancelar">
+                </form>
+            </dialog>
+        </div>
+    </div>
+
+    <!-- jQuery, Popper.js, Bootstrap JS -->
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+    <script src="./../scripts/solicitud.js"></script> 
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('solicitudForm');
+
+            // Cargar datos del localStorage si existen
+            if (localStorage.getItem('formData')) {
+                const data = JSON.parse(localStorage.getItem('formData'));
+                for (const [key, value] of Object.entries(data)) {
+                    if (form.querySelector(`#${key}`)) {
+                        form.querySelector(`#${key}`).value = value;
+                    }
+                }
+            }
+
+            // Guardar datos en localStorage al enviar el formulario
+            form.addEventListener('submit', function (event) {
+                // Verifica la validez del formulario antes de guardar en localStorage
+                if (form.checkValidity()) {
+                    const formData = new FormData(form);
+                    const data = {};
+                    formData.forEach((value, key) => {
+                        data[key] = value;
+                    });
+                    localStorage.setItem('formData', JSON.stringify(data));
+                } else {
+                    event.preventDefault(); // Previene el envío del formulario si no es válido
+                    event.stopPropagation(); // Detiene la propagación del evento
+                    form.classList.add('was-validated'); // Añade la clase de validación
+                }
+            });
+
+            // Cambiar icono según el estado del colapso
+            const toggleButton = document.querySelector('[data-toggle="collapse"]');
+            const toggleIcon = document.getElementById('toggle-icon');
+            toggleButton.addEventListener('click', function () {
+                if (toggleButton.getAttribute('aria-expanded') === 'true') {
+                    toggleIcon.innerHTML = '&#9650;'; // Flecha hacia arriba
+                } else {
+                    toggleIcon.innerHTML = '&#9660;'; // Flecha hacia abajo
+                }
+            });
+        });
+    </script> -->
+</container>

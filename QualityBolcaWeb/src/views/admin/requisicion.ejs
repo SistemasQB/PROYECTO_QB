@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Formulario con Divs</title>
+    <style>
+        body {
+            background-color: whitesmoke;
+            padding: 20px;
+        }
+
+        .section {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .left-div,
+        .right-div,
+        .center-div {
+            width: 30%;
+        }
+
+        .center-div {
+            margin: 0 10px;
+        }
+
+        .horizontal-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .total-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="section">
+            <h3 style="text-align: center;">REQUISICION DE COMPRA</h3>
+            <br>
+            <br>
+            <div class="form-row">
+                <div class="left-div">
+                    <label>Rentabilidad:</label>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="rentabilidad" id="radioRentabilidad1">
+                        <label class="form-check-label" for="radioRentabilidad1">Gastos Directos</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="rentabilidad" id="radioRentabilidad2">
+                        <label class="form-check-label" for="radioRentabilidad2">Gastos Indirectos Operativos</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="rentabilidad" id="radioRentabilidad3"
+                            checked>
+                        <label class="form-check-label" for="radioRentabilidad3">Gastos Indirectos Administrativos</label>
+                    </div>
+                </div>
+                <div class="center-div">
+                    <div class="form-group">
+                        <label for="dropdown3" >Responsable que Autoriza</label>
+                        <select class="form-control" name="responsable" id="dropdown3">
+                            <option value="" disabled selected>Seleccione una opción</option>
+                            <option value="ATRACCION DE CAPITAL HUMANO">CALIDAD</option>
+                            <option value="CALIDAD">ATRACCION DE CAPITAL HUMANO</option>
+                            <option value="CAPITAL HUMANO">CAPITAL HUMANO</option>
+                            <option value="CAPTURACION">CAPTURACION</option>
+                            <option value="COMPRAS">COMPRAS</option>
+                            <option value="FACTURACION Y COBRANZA">FACTURACION Y COBRANZA</option>
+                            <option value="GASTOS">GASTOS</option>
+                            <option value="LOGISTICA VEHICULAR">LOGISTICA VEHICULAR</option>
+                            <option value="LUJAN DAVALOS OMAR ALEJANDRO">LUJAN DAVALOS OMAR ALEJANDRO</option>
+                            <option value="OPERACIONES">OPERACIONES</option>
+                            <option value="OSUNA RODRIGUEZ ELIAS">OSUNA RODRIGUEZ ELIAS</option>
+                            <option value="SERVICIO AL CLIENTE">SERVICIO AL CLIENTE</option>
+                            <option value="TECNOLOGIAS DE LA INFORMACION">TECNOLOGIAS DE LA INFORMACION</option>
+                            <option value="VENTAS">VENTAS</option>
+                            <option value="VIEYRA GONZALEZ LAURA SUSANA">VIEYRA GONZALEZ LAURA SUSANA</option>
+                            <option value="WONG CASTAÑEDA JOSE ARTURO">WONG CASTAÑEDA JOSE ARTURO</option>
+                            <option value="WONG LOPEZ MIRNA IVETTE">WONG LOPEZ MIRNA IVETTE</option>
+                        </select>
+                    </div>
+                    <div class="horizontal-group">
+                        <div class="form-group">
+                            <label for="dropdown1">Proceso</label>
+                            <select class="form-control" id="dropdown1">
+                                <option value="" disabled selected>Seleccione una opción</option>
+                                <option value="ADMINISTRACION Y FINANZAS">ADMINISTRACION Y FINANZAS</option>
+                                <option value="COMERCIALIZACION Y VENTA">COMERCIALIZACION Y VENTAs</option>
+                                <option value="CONTROL Y MEJORA DEL SERVICIO">CONTROL Y MEJORA DEL SERVICIO</option>
+                                <option value="EJECUCION DEL SERVICIO">EJECUCION DEL SERVICIO</option>
+                                <option value="GESTION DE CAPITAL HUMANO">GESTION DE CAPITAL HUMANO</option>
+                                <option value="GESTION DE INFRAESTRUCTURA">GESTION DE INFRAESTRUCTURA</option>
+                                <option value="PLANEACION DEL SERVICIO">PLANEACION DEL SERVICIO</option>
+                                <option value="PLANEACION Y DIRECCION ESTRATEGICA">PLANEACION Y DIRECCION ESTRATEGICA
+                                </option>
+                                <option value="SISTEMA DE GESTION DE CALIDAD">SISTEMA DE GESTION DE CALIDAD</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dropdown2">Departamento</label>
+                            <select class="form-control"  name="proceso" id="dropdown2">
+                                <option value="" disabled selected>Seleccione una opción</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="campoTexto">Asunto</label>
+                        <input type="text" name="asunto" class="form-control" id="campoTexto" placeholder="Escribe aquí..." required>
+                    </div>
+                </div>
+                <div class="right-div">
+                    <div class="form-group">
+                        <label for="campoTexto2">Orden de Serv</label>
+                        <input type="text" name="orden_servicio" class="form-control" id="campoTexto2" placeholder="Escribe aquí..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dropdown4">Planta</label>
+                        <select class="form-control" name="planta" id="dropdown4">
+                            <option value="" disabled selected>Seleccione una opción</option>
+                            <% for (const [key, datos] of Object.entries(resultadoPlanta)) { %>
+                                <option value="<%=datos.planta %>"><%=datos.planta %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dropdown5">Region</label>
+                        <select class="form-control" name="region" id="dropdown5">
+                            <option value="" disabled selected>Seleccione una opción</option>
+                            <option value="AGUASCALIENTES">
+                                AGUASCALIENTES
+                            </option>
+                            <option value="CD JUAREZ">
+                                CD JUAREZ
+
+                            </option>
+                            <option value="CD VICTORIA">
+                                CD VICTORIA
+
+
+                            </option>
+                            <option value="CELAYA">
+                                CELAYA
+
+                            </option>
+                            <option value="CHIHUAHUA">
+                                CHIHUAHUA
+
+                            </option>
+                            <option value="DURANGO">
+                                DURANGO
+
+                            </option>
+                            <option value="FRESNILLO">
+                                FRESNILLO
+
+                            </option>
+                            <option value="HONDA">
+                                HONDA
+
+                            </option>
+                            <option value="IRAPUATO">
+                                IRAPUATO
+
+                            </option>
+                            <option value="LEON">
+                                LEON
+
+                            </option>
+                            <option value="LINARES">
+                                LINARES
+
+                            </option>
+                            <option value="MEOQUI">
+                                MEOQUI
+
+                            </option>
+                            <option value="MONTERREY">
+                                MONTERREY
+
+                            </option>
+                            <option value="NUEVO LAREDO">
+                                NUEVO LAREDO
+
+                            </option>
+                            <option value="OTROS">
+                                OTROS
+
+                            </option>
+                            <option value="QUERETARO">
+                                QUERETARO
+
+                            </option>
+                            <option value="REYNOSA">
+                                REYNOSA
+
+                            </option>
+                            <option value="SALTILLO">
+                                SALTILLO
+
+                            </option>
+                            <option value="SILAO">
+                                SILAO
+
+                            </option>
+                            <option value="SLP">
+                                SLP
+
+                            </option>
+                            <option value="TORREON">
+                                TORREON
+
+                            </option>
+                            <option value="ZACATECAS">
+                                ZACATECAS
+                            </option>
+                            <option value="ZAPATA">
+                                ZAPATA
+                            </option>
+
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h4>Descripcion de la orden</h4>
+            <div class="horizontal-group">
+                <div class="form-group">
+                    <label for="descripcion">Descripción:</label>
+                    <input type="text" class="form-control" id="descripcion" placeholder="Descripción Detallada"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="numero">Unidad:</label>
+                    <input type="number" min="1" class="form-control" id="numero" required>
+                </div>
+                <div class="form-group">
+                    <label for="texto1">Precio unitario con IVA:</label>
+                    <input type="number" class="form-control" id="texto1" required>
+                </div>
+                <div class="form-group">
+                    <label for="texto2">Precio Total con IVA:</label>
+                    <input type="text" class="form-control" id="texto2" readonly required>
+                </div>
+                <button class="btn btn-primary" id="btnAgregarFila">
+                    <i class="fa-solid fa-notes-medical"></i>
+                </button>
+            </div>
+            <table id="tabla">
+                <thead>
+                    <tr>
+                        <th>Descripción Detallada</th>
+                        <th>Unidad</th>
+                        <th>Precio unitario con IVA</th>
+                        <th>Precio Total con IVA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <div class="total-container">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="fecha">Fecha de entrega requerida:</label>
+                        <input type="date" min="23-10-2024" class="form-control" id="fecha" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="total">Total:</label>
+                        <input type="text" class="form-control" id="total" placeholder="Total" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Justificaciones</h3>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="justificacion1">Detallar situacion actual:</label>
+                    <input type="text" class="form-control" id="justificacion1" required placeholder="Escribe la justificación 1"
+                        style="height: 80px;">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="justificacion2">Detallar espectativa:</label>
+                    <input type="text" class="form-control" id="justificacion2" required placeholder="Escribe la justificación 2"
+                        style="height: 80px;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="justificacion3">Comentarios adicionales:</label>
+                    <input type="text" class="form-control" id="justificacion3" required placeholder="Escribe la justificación 3"
+                        style="height: 80px;">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="imagen">Agregar Imagen:</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="imagen" accept="image/*"
+                            onchange="updateImagePreview()">
+                        <label class="custom-file-label" for="imagen">Selecciona una imagen...</label>
+                    </div>
+                    <div class="mt-2">
+                        <img id="imagePreview" src="#" alt="Vista previa de la imagen"
+                            style="display: none; max-width: 300px; max-height: 300px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="d-flex align-items-center">
+                <div class="form-group col-md-6 me-3">
+                    <label for="cuenta">Tarjeta o Cuenta: <p id="contador"></p></label>
+                    <input type="text" maxlength="18" class="form-control" id="cuenta" onkeypress='return event.charCode >= 48 && event.charCode <= 57' required>
+                </div>
+
+                <div class="me-3">
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="check4" onclick="toggleModal(this)">
+                        <label class="form-check-label" for="check4">Visualizar Rentabilidades</label>
+                    </div>
+                </div>
+
+                <button class="btn btn-success" onclick="enviarInformacion()">Enviar Información</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="rentabilidadModal" tabindex="-1" aria-labelledby="rentabilidadModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rentabilidadModalLabel">Rentabilidades</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h5>Gastos Directos</h5>
+                    <p>Todo lo cotizable en bc</p>
+                    <ul>
+                        <li>Casas, bodegas</li>
+                        <li>Cobro a cliente</li>
+                        <li>Documentacion de entrada</li>
+                        <li>Gastos de viaje personal operativo</li>
+                        <li>Httas, consumilbles, papeleria</li>
+                        <li>Inspectores</li>
+                        <li>Lonches</li>
+                        <li>Mobiliario propio del proyecto</li>
+                        <li>Telefonos, internet, laptops</li>
+                        <li>Transporte</li>
+                        <li>Uniformes, EPP</li>
+
+                    </ul>
+                    <h5>Gastos Indirectos Operativos</h5>
+
+                    <ul>
+                        <li>Casas, bodegas</li>
+                        <li>Cobro a cliente</li>
+                        <li>Documentacion de entrada</li>
+                        <li>Gastos de viaje personal operativo</li>
+                        <li>Httas, consumilbles, papeleria</li>
+                        <li>Inspectores</li>
+                        <li>Lonches</li>
+                        <li>Mobiliario propio del proyecto</li>
+                        <li>Telefonos, internet, laptops</li>
+                        <li>Transporte</li>
+                        <li>Uniformes, EPP</li>
+
+                    </ul>
+                    <h5>Gastos Indirectos Administrativos</h5>
+                    <p>Gastos Administrativos</p>
+                    <ul>
+                        <li>Autos administrativos</li>
+                        <li>Gastos admon(comisiones, SGMM, honorarios)</li>
+                        <li>Mobiliario administrativo</li>
+                        <li>Nominas, captura, SC, Gastos, GCH, Regionales</li>
+                        <li>Oficina matriz y regionales</li>
+                        <li>Telefonos, internet, laptops</li>
+                        <li>Viajes Administrativos</li>
+
+
+                    </ul>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateLabel() {
+            const input = document.getElementById('imagen');
+            const label = document.querySelector('.custom-file-label');
+            label.textContent = input.files.length > 0 ? input.files[0].name : 'Selecciona una imagen...';
+        }
+
+        function updateImagePreview() {
+            const input = document.getElementById('imagen');
+            const preview = document.getElementById('imagePreview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+
+                reader.readAsDataURL(input.files[0]);
+                updateLabel();
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        function toggleModal(checkbox) {
+            if (checkbox.checked) {
+                $('#rentabilidadModal').modal('show');
+            } else {
+                $('#rentabilidadModal').modal('hide');
+            }
+        }
+
+        function enviarInformacion() {
+            const responsable = document.getElementById('dropdown3').value;
+            const asunto = document.getElementById('campoTexto').value;
+            const ordenServ = document.getElementById('campoTexto2').value;
+            const descripcion = document.getElementById('descripcion').value;
+            const unidad = document.getElementById('numero').value;
+            const precioUnitario = document.getElementById('texto1').value;
+            const precioTotal = document.getElementById('texto2').value;
+            const fecha = document.getElementById('fecha').value;
+            const total = document.getElementById('total').value;
+            const justificacion1 = document.getElementById('justificacion1').value;
+            const justificacion2 = document.getElementById('justificacion2').value;
+            const justificacion3 = document.getElementById('justificacion3').value;
+            const cuenta = document.getElementById('cuenta').value;
+
+            // Captura del checklist
+            const aprobacionFinanciera = document.getElementById('check4').checked ? 'Sí' : 'No';
+            const aprobacionCompras = document.getElementById('check5') ? 'Sí' : 'No';
+            const revisionTecnica = document.getElementById('check6') ? 'Sí' : 'No';
+
+            const info = `
+            Responsable: ${responsable}
+            Asunto: ${asunto}
+            Orden de Servicio: ${ordenServ}
+            Descripción: ${descripcion}
+            Unidad: ${unidad}
+            Precio Unitario: ${precioUnitario}
+            Precio Total: ${precioTotal}
+            Fecha: ${fecha}
+            Total: ${total}
+            Justificación 1: ${justificacion1}
+            Justificación 2: ${justificacion2}
+            Justificación 3: ${justificacion3}
+            Cuenta: ${cuenta}
+            Aprobación Financiera: ${aprobacionFinanciera}
+            Aprobación de Compras: ${aprobacionCompras}
+            Revisión Técnica: ${revisionTecnica}
+        `;
+
+            alert(info); // Aquí podrías enviar la información a un servidor
+        }
+
+        function onlyOne(checkbox) {
+            var checkboxes = document.querySelectorAll('.form-check-input');
+            checkboxes.forEach((item) => {
+                if (item !== checkbox) {
+                    item.checked = false;
+                }
+            });
+        }
+
+        
+    </script>
+    <script src="../scripts/admin/requisicion.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Document</title>
+    <link rel="shortcut icon" href="../img/favicon.png" type="image/x-icon">
+</head>
+<body>
+    <nav class="navbar" style="margin-left: 2%; margin-right: 2%;">
+        <h1>Quality Bolca</h1>
+        <h2>Control de entrada de dispositivos</h2>
+        <img style="width: 5%;" src="../img/favicon.png" alt="">
+    </nav>
+    <div class="container">
+        <form class="row g-3" method="post">
+          <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            <div class="col-md-8">
+              <label for="inputEmail4" class="form-label">Caracteristicas del Dispositivo</label>
+              <input placeholder="Ej. Laptop color azul" type="text" name="caracteristicas" class="form-control" id="inputEmail4">
+            </div>
+            <div class="col-md-4">
+              <label for="inputPassword4" class="form-label">Marca</label>
+              <input type="text" required placeholder="Ej. Asus" name="marca" class="form-control" id="inputPassword4">
+            </div>
+            <div class="col-8">
+              <label for="inputAddress" class="form-label">modelo</label>
+              <input type="text" required  name="modelo" class="form-control" id="inputAddress" placeholder="Modelo del equipo">
+            </div>
+            <div class="col-md-4">
+                <label for="inputState" class="form-label">Tipo de equipo</label>
+                <select id="inputState" name="tipo" class="form-select">
+                  <option value="laptop" selected>Laptop</option>
+                  <option value="celular">Celular</option>
+                  <option value="tablet">Tablet</option>
+                  <option value="otro">Otros</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+              <label for="inputAddress2" class="form-label">Usuario</label>
+              <input  required type="text" name="usuario" class="form-control" id="inputAddress2" placeholder="Nombre de la persona">
+            </div>
+            <div class="col-md-6">
+              <label for="empresaV" class="form-label">Empresa de la visita</label>
+              <input type="text" name="empresaV" placeholder="Introduce el nombre de la empresa" class="form-control" id="empresaV">
+            </div>
+            <div class="col-md-6">
+              <label for="inputCity" class="form-label">Numero de telefono</label>
+              <input type="text" name="numeroT" placeholder="Numero de telefono" class="form-control" id="inputCity">
+            </div>
+            <div class="col-md-6">
+              <label for="inputZip" class="form-label">Motivo</label>
+              <input type="text" name="motivo" class="form-control" placeholder="Motivo de ingreso" id="inputZip">
+            </div>
+            <div class="col-12">
+              <label for="inputAddress2" class="form-label">Encargado</label>
+              <input  required type="text" name="encargado" class="form-control" id="inputAddress2" placeholder="Nombre de la persona">
+            </div>
+            <div class="col-12 mt-2">
+              <button type="submit" class="btn btn-primary">Enviar</button>
+            </div>
+          </form>
+    </div>
+</body>
+
+<% if (mensaje) { %>
+  <script>
+      Swal.fire({
+          title: 'Enviado',
+          icon: 'success',
+          text: 'Informacion enviada con exito'
+      })
+  </script>
+  <% }%>
+</html>

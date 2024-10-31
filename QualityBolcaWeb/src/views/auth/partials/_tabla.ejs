@@ -1,0 +1,26 @@
+<% if (data) { %>
+    <table class="table table-bordered">
+        <thead class="table-info">
+            <tr>
+                <th>ID</th>
+                <th>FECHA MANTENIMIENTO REALIZADO</th>
+                <th>FECHA MANTENIMIENTO PROGRAMADO</th>
+                <th>REALIZADO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (const [key, datos] of Object.entries(data)) { %>
+                <tr>
+                    <td scope="row"><%= datos.id_equipo %></td>
+                    <td><%=datos.dia1 %></td>
+                    <td><%=datos.dia2 %></td>
+                    <% if(!datos.realizado){%>
+                        <td><button class="btnRealizado">realizado</button></td>
+                    <% }else{ %>
+                        <td><button class="btnRealizado">No realizado</button></td>
+                    <% } %>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+<% } else {} %>

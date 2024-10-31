@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vale de Salida de Activos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            height: 50px; /* Ajusta el tamaño del logo */
+        }
+        .header-info {
+            text-align: right;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 40px; /* Espacio considerable debajo del título */
+        }
+        .section {
+            margin-bottom: 20px;
+            text-align: center; /* Centrar contenido en esta sección */
+        }
+        .field {
+            display: flex;
+            justify-content: center; /* Centrar campos */
+            margin-bottom: 5px;
+        }
+        .field label {
+            font-weight: bold;
+            margin-right: 10px; /* Espacio entre label y valor */
+        }
+        .observations {
+            height: 60px;
+            width: 60%;
+            margin: 10px auto; /* Centrar el campo de observaciones */
+            display: block; /* Asegurar que sea un bloque para el centrado */
+        }
+        .status {
+            margin-top: 20px;
+            display: flex; /* Usar flex para alinear horizontalmente */
+            justify-content: center; /* Centrar los botones de radio */
+        }
+        .status div {
+            margin: 0 10px; /* Espacio entre los botones */
+        }
+        .signature {
+            display: flex;
+            justify-content: center; /* Centrar los elementos de firma */
+            margin-top: 40px;
+        }
+        .signature div {
+            text-align: center;
+            margin: 0 20px; /* Espacio entre las secciones de firma */
+        }
+        .input-section {
+            margin: 20px 0; /* Espacio entre el título y este div */
+            width: 100%; /* Ajustar el ancho al 100% */
+        }
+        table {
+            width: 60%; /* Ajustar el ancho de la tabla */
+            margin: 20px auto; /* Centrar la tabla horizontalmente */
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .input-field {
+            width: 100%; /* Hacer que los campos de entrada ocupen todo el ancho */
+            max-width: 300px; /* Limitar el ancho máximo */
+        }
+        .table-input {
+            width: 100%; /* Hacer que los campos de entrada ocupen todo el ancho de la celda */
+            border: none;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="../img/favicon.png" alt="Logo">
+        <h1>Vale de Salida de Activos</h1>
+        <div class="header-info">
+            <div class="field">
+                <label>Folio:</label>
+                <span>0024</span>
+            </div>
+            <div class="field">
+                <label>Fecha:</label>
+                <span>12/08/24</span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="input-section">
+        <form>
+            <div class="field">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" class="input-field" required>
+            </div>
+            <div class="field">
+                <label for="puesto">Puesto:</label>
+                <input type="text" id="puesto" name="puesto" class="input-field" required>
+            </div>
+            <br>
+            <br>
+            <div class="field">
+                <label>Recibí de:</label>
+                <span>Quality Bolca S.A. de C.V.</span>
+            </div>
+        </form>
+    </div>
+
+    <div class="section">
+        <label>Recibe el (los) articulo(s), herramienta(s), mobiliario(s) o equipo(s):</label>
+        <table>
+            <thead>
+                <tr>
+                    <th>Artículo</th>
+                    <th>ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" class="table-input" value="PANTALLA 32"></td>
+                    <td><input type="text" class="table-input" value="QB-IT-0256"></td>
+                </tr>
+                <!-- Puedes agregar más filas aquí si es necesario -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <label>Observaciones:</label>
+        <textarea class="observations" rows="3"></textarea>
+    </div>
+
+    <div class="section status">
+        <label>Estatus:</label>
+        <div>
+            <input type="radio" id="nuevo" name="estatus" value="Nuevo">
+            <label for="nuevo">1. Nuevo</label>
+        </div>
+        <div>
+            <input type="radio" id="usado" name="estatus" value="Usado">
+            <label for="usado">2. Usado y funcional</label>
+        </div>
+    </div>
+
+    <div class="section">
+        <p style="font-size: 14px; text-align: center;">En caso de sustracción, pérdida o daño total o parcial del equipo, autorizo a la empresa a deducir de mis remuneraciones y asignaciones mensuales, o de los haberes finales del finiquito, la suma que al efecto corresponda por aplicaciones de lo dispuesto en el reglamento interior del trabajo.
+        Me comprometo a devolver en óptimas condiciones a la empresa en caso de renuncia o desvinculación antes de dejar las instalaciones de Quality Bolca. Declaro estar en conocimiento y comprometerme a cumplir la Política de Uso de Asignaciones Laborales.</p>
+    </div>
+
+    <div class="signature">
+        <div>
+            <label>Fecha de salida:</label><br>
+            <input type="text" style="border-bottom: 1px solid #000; width: 150px; text-align: center;">
+        </div>
+        <div>
+            <label>Fecha de entrega:</label><br>
+            <input type="text" style="border-bottom: 1px solid #000; width: 150px; text-align: center;">
+        </div>
+        <div>
+            <label>Firma:</label><br>
+            <span>____________</span>
+        </div>
+    </div>
+</body>
+</html>

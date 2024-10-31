@@ -1,0 +1,27 @@
+<% if (resultadoGch) { %>
+    <% for (const [key, datos] of Object.entries(resultadoGch)) { %>
+        <div class="contenedor">
+            <h3><%= datos.NOMBRE %></h3>
+            <div class="cartas">
+                <div class="foto">
+
+                    <% //var nomImg = datos.nombre.split(' ')[0] + ' ' + datos.apellidoPaterno%>
+                    <% //var nomImg = datos.nombre + ' ' +datos.apellidoPaterno%>
+                    <!-- <img src='./Fotos/<%=  //nomImg %>.jpg' alt=""> -->
+                </div>
+                <div>
+                    <ul role="list" class="">
+                        <li class="card-text">Puesto: <%= datos.PUESTO %></li>
+                        <li class="card-text">Region: <%= datos.REGION %></li>
+                        <% if (datos.telefono) { %>
+                        <li class="card-text">Telefono: <%=// datos.telefono %></li>
+                        <% } %>
+                        <% if (datos.correo) { %>
+                        <li class="card-text">Correo: <%=// datos.correo %></li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    <% } %>
+<% } else {} %>

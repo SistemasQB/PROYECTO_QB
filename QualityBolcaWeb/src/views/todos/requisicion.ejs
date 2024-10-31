@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Formulario con Divs</title>
+    <link rel="stylesheet" href="./../styles/requisicion.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <form action="">
+            <div class="section">
+                <h3 style="text-align: center;">REQUISICION DE COMPRA</h3>
+                <br>
+                <br>
+                <div class="form-row">
+                    <div class="left-div">
+                        <label>Rentabilidad:</label>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="check1" onclick="onlyOne(this)">
+                            <label class="form-check-label" for="check1">Gastos Directos</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="check2" onclick="onlyOne(this)">
+                            <label class="form-check-label" for="check2">Gastos Indirectos Operativos</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="check3" onclick="onlyOne(this)">
+                            <label class="form-check-label" for="check3">Gastos Indirectos Administrativos</label>
+                        </div>
+                    </div>
+                    <div class="center-div">
+                        <div class="form-group">
+                            <label for="dropdown3">Responsable que Autoriza</label>
+                            <select class="form-control" id="dropdown3">
+                                <option value="" disabled selected>Seleccione una opción</option>
+                            </select>
+                        </div>
+                        <div class="horizontal-group">
+                            <div class="form-group">
+                                <label for="dropdown1">Proceso</label>
+                                <select class="form-control" id="dropdown1">
+                                    <option value="" disabled selected>Seleccione una opción</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dropdown2">Departamento</label>
+                                <select class="form-control" id="dropdown2">
+                                    <option value="" disabled selected>Seleccione una opción</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="campoTexto">Asunto</label>
+                            <input type="text" class="form-control" id="campoTexto" placeholder="Escribe aquí...">
+                        </div>
+                    </div>
+                    <div class="right-div">
+                        <div class="form-group">
+                            <label for="campoTexto2">Orden de Serv</label>
+                            <input type="text" class="form-control" id="campoTexto2" placeholder="Escribe aquí...">
+                        </div>
+                        <div class="form-group">
+                            <label for="dropdown4">Planta</label>
+                            <select class="form-control" id="dropdown4">
+                                <option value="" disabled selected>Seleccione una opción</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dropdown5">Region</label>
+                            <select class="form-control" id="dropdown5">
+                                <option value="" disabled selected>Seleccione una opción</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h4>Descripcion de la orden</h4>
+                <div class="horizontal-group">
+                    <div class="form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <input type="text" class="form-control" id="descripcion" placeholder="Descripción Detallada"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="numero">Unidad:</label>
+                        <input type="number" class="form-control" id="numero" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="texto1">Precio unitario con IVA:</label>
+                        <input type="text" class="form-control" id="texto1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="texto2">Precio Total con IVA:</label>
+                        <input type="text" class="form-control" id="texto2" required>
+                    </div>
+                    <button class="btn btn-primary" onclick="agregarFila()">
+                        <!-- <i class="fa-solid fa-notes-medical"></i> -->
+                         <img src="./svg/add.svg" alt="">
+                    </button>
+                </div>
+                <table id="tabla">
+                    <thead>
+                        <tr>
+                            <th>Descripción Detallada</th>
+                            <th>Unidad</th>
+                            <th>Precio unitario con IVA</th>
+                            <th>Precio Total con IVA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+                <div class="total-container">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="fecha">Fecha:</label>
+                            <input type="date" class="form-control" id="fecha">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="total">Total:</label>
+                            <input type="text" class="form-control" id="total" placeholder="Total" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Justificaciones</h3>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="justificacion1">Detallar situacion actual:</label>
+                        <input type="text" class="form-control" id="justificacion1"
+                            placeholder="Escribe la justificación 1" style="height: 80px;">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="justificacion2">Detallar espectativa:</label>
+                        <input type="text" class="form-control" id="justificacion2"
+                            placeholder="Escribe la justificación 2" style="height: 80px;">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="justificacion3">Comentarios adicionales:</label>
+                        <input type="text" class="form-control" id="justificacion3"
+                            placeholder="Escribe la justificación 3" style="height: 80px;">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="imagen">Agregar Imagen:</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="imagen" accept="image/*"
+                                onchange="updateImagePreview()">
+                            <label class="custom-file-label" for="imagen">Selecciona una imagen...</label>
+                        </div>
+                        <div class="mt-2">
+                            <img id="imagePreview" src="#" alt="Vista previa de la imagen"
+                                style="display: none; max-width: 300px; max-height: 300px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="d-flex align-items-center">
+                    <div class="form-group col-md-6 me-3">
+                        <label for="cuenta">Tarjeta o Cuenta:</label>
+                        <input type="text" class="form-control" id="cuenta" required>
+                    </div>
+
+                    <div class="me-3">
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="check4" onclick="toggleModal(this)">
+                            <label class="form-check-label" for="check4">Visualizar Rentabilidades</label>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" onclick="enviarInformacion()">Enviar Información</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="rentabilidadModal" tabindex="-1" aria-labelledby="rentabilidadModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rentabilidadModalLabel">Rentabilidades</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h5>Gastos Directos</h5>
+                    <p>Todo lo cotizable en bc</p>
+                    <ul>
+                        <li>Casas, bodegas</li>
+                        <li>Cobro a cliente</li>
+                        <li>Documentacion de entrada</li>
+                        <li>Gastos de viaje personal operativo</li>
+                        <li>Httas, consumilbles, papeleria</li>
+                        <li>Inspectores</li>
+                        <li>Lonches</li>
+                        <li>Mobiliario propio del proyecto</li>
+                        <li>Telefonos, internet, laptops</li>
+                        <li>Transporte</li>
+                        <li>Uniformes, EPP</li>
+
+                    </ul>
+                    <h5>Gastos Indirectos Operativos</h5>
+
+                    <ul>
+                        <li>Casas, bodegas</li>
+                        <li>Cobro a cliente</li>
+                        <li>Documentacion de entrada</li>
+                        <li>Gastos de viaje personal operativo</li>
+                        <li>Httas, consumilbles, papeleria</li>
+                        <li>Inspectores</li>
+                        <li>Lonches</li>
+                        <li>Mobiliario propio del proyecto</li>
+                        <li>Telefonos, internet, laptops</li>
+                        <li>Transporte</li>
+                        <li>Uniformes, EPP</li>
+
+                    </ul>
+                    <h5>Gastos Indirectos Administrativos</h5>
+                    <p>Gastos Administrativos</p>
+                    <ul>
+                        <li>Autos administrativos</li>
+                        <li>Gastos admon(comisiones, SGMM, honorarios)</li>
+                        <li>Mobiliario administrativo</li>
+                        <li>Nominas, captura, SC, Gastos, GCH, Regionales</li>
+                        <li>Oficina matriz y regionales</li>
+                        <li>Telefonos, internet, laptops</li>
+                        <li>Viajes Administrativos</li>
+
+
+                    </ul>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./../scripts/requisicion.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

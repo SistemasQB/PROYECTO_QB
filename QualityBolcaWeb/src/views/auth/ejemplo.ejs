@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toma de Fotografía con Mapa</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            max-width: 600px;
+        }
+        #canvas {
+            display: block;
+            width: 100%;
+            max-width: 600px;
+            border: 2px solid #ccc;
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+</head>
+<body>
+    <h1>Toma una Foto</h1>
+    <button id="takePhoto">Tomar Foto</button>
+    <canvas id="canvas"></canvas>
+    <p id="info"></p>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const info = document.getElementById('info');
+        const mapDiv = document.getElementById('map');
+        const takePhotoButton = document.getElementById('takePhoto');
+        let map;
+        let videoStream;
+
+        // Inicializar la cámara
+        async function initCamera() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            } catch (error) {
+                console.error('Error al acceder a la cámara:', error);
+                info.innerHTML = 'No se pudo acceder a la cámara.';
+            }
+        }
+
+        // Llamar a la función para inicializar la cámara
+        initCamera();
+
+        // Tomar la foto
+        takePhotoButton.addEventListener('click', () => {
+            const video = document.createElement('video');
+            video.srcObject = videoStream;
+            video.play();
+
+            video.addEventListener('loadeddata', () => {
+                const context = canvas.getContext('2d');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0);
+                video.pause();
+                video.srcObject = null; // Liberar el video
+
+                // Hacer visible el lienzo
+                canvas.style.display = 'block';
+
+                // Recuperar la ubicación
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            const { latitude, longitude } = position.coords;
+                            const date = new Date();
+
+                            // Mostrar la fecha y coordenadas
+                            info.innerHTML = `Ubicación: ${latitude}, ${longitude}<br>Hora: ${date.toLocaleString()}`;
+
+                            // Obtener dirección usando Nominatim
+                            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data && data.display_name) {
+                                        info.innerHTML += `<br>Dirección: ${data.display_name}`;
+                                        initMap(latitude, longitude);
+                                    } else {
+                                        info.innerHTML += '<br>No se pudo obtener la dirección.';
+                                    }
+                                })
+                                .catch(error => {
+                                    info.innerHTML += '<br>Error al obtener la dirección.';
+                                    console.error(error);
+                                });
+                        },
+                        () => {
+                            info.innerHTML = 'No se pudo obtener la ubicación. Asegúrate de permitir el acceso a la ubicación.';
+                        },
+                        { timeout: 10000 } // Timeout para geolocalización
+                    );
+                } else {
+                    info.innerHTML = 'Geolocalización no soportada.';
+                }
+            });
+        });
+
+        // Inicializar el mapa
+        function initMap(latitude, longitude) {
+            const location = { lat: latitude, lng: longitude };
+            map = L.map(mapDiv).setView(location, 15);
+
+            // Capa de OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Marcador en la ubicación
+            L.marker(location).addTo(map);
+        }
+    </script>
+</body>
+</html>
