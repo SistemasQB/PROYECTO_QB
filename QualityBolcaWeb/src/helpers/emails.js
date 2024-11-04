@@ -6,8 +6,8 @@ const emailRegistro = async (datos) =>{
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            user: process.env.EMAILI_USER,
+            pass: process.env.EMAILI_PASS
         }
     });
 
@@ -34,8 +34,8 @@ const emailOlvidePassword = async (datos) =>{
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            user: process.env.EMAILI_USER,
+            pass: process.env.EMAILI_PASS
         }
     });
 
@@ -57,8 +57,37 @@ const emailOlvidePassword = async (datos) =>{
         `
     })
 }
+const emailRequisicion = async (datos) =>{
+    const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: {
+            user: process.env.EMAILR_USER,
+            pass: process.env.EMAILR_PASS
+        }
+    });
+
+    const { id, asunto, solicitante, autoriza } = datos
+    console.log(autoriza);
+    
+    const nombre = 'Oscar'
+    //Enviar el email
+    await transport.sendMail({
+        from: 'requisiciones@qualitybolca.net',
+        to: autoriza,
+        subject: 'Requisicion de compras',
+        text: 'Requisicion de compras',
+        html: `
+            <p>Hola ${nombre}, Tienes una requisicion solicitada por ${solicitante}</p>
+            <p>puedes acceder desde la pagina WEB en la pestaña de requisiciones solicitadas
+            <a href="www.qualitybolca.net">Pagina Web</a>
+            </p>
+        `
+    })
+}
 
 export {
     emailRegistro,
-    emailOlvidePassword
+    emailOlvidePassword,
+    emailRequisicion
 }

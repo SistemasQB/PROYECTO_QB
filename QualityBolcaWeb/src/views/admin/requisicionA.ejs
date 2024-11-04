@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./../styles/admin/requisicionA.css">
+    <link rel="stylesheet" href=" https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css.css">
+</head>
+
+<body>
+    <div class="row d-flex justify-content-center container-fluid">
+        <div class="col-md-10">
+            <div class="card-hover-shadow-2x mb-3 card">
+                <div class="card-header-tab card-header">
+                    <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i
+                            class="fa fa-tasks"></i>&nbsp;Requisiciones</div>
+                </div>
+                <div class="scroll-area-sm">
+                    <perfect-scrollbar class="ps-show-limits">
+                        <div style="position: static;" class="ps ps--active-y">
+                            <div class="ps-content">
+                                <ul class=" list-group list-group-flush">
+                                    <% if (requi) { %>
+                                        <% for (const [key, datos] of Object.entries(requi)) { %>
+                                    <li class="list-group-item">
+                                        <div class="todo-indicator bg-warning"></div>
+                                        <div class="widget-content p-0">
+                                            <div class="widget-content-wrapper">
+                                                <div class="widget-content-left mr-2">
+                                                    <h4><%= datos.id %></h4>
+                                                </div>
+                                                <div class="widget-content-left">
+                                                    <div class="widget-heading"> <%= datos.asunto %>
+                                                        <% if (datos.estatus == 1) { %>
+                                                        <div class="badge badge-info ml-2">Pendiente</div>
+                                                        <% } %>
+                                                        <% if (datos.estatus == 2) { %>
+                                                            <div class="badge badge-primary ml-2">Aprobada</div>
+                                                        <% } %>
+                                                        <% if (datos.estatus == 3) { %>
+                                                            <div class="badge badge-danger ml-2">Rechazada</div>
+                                                        <% } %>
+                                                    </div>
+                                                    <div class="widget-subheading"><i><%= datos.departamento %></i></div>
+                                                </div>
+                                                <div class="widget-content-right">
+                                                    <button class="border-1 btn-transition btn btn-outline-success" style="outline: solid green;">
+                                                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKtJREFUSEvtlNENgCAMRI9NdBOdTJ1EN3EVR9FLIGmA0KLyR3/UEN9Lr1WHxuUa89EFasI9ohDRAGACcMSZ/RER4bsXbI9glZKvAgm/AIx/dqDCKXvbgQmuCZglh8bWZZnhJQHhi4fPQlIFLwkIOp8OeGUHlLDCtmQHmvusSzOIJYRy181wbQY8lxI+V8EtAinhfbLn2t/OuqZhFhovObcKqsHhhS5Qo2se0Q2p5R4Zjo+H2gAAAABJRU5ErkJggg=="/></button>
+                                                    <button class="border-1 btn-transition btn btn-outline-danger" style="outline: solid rgb(128, 0, 0);">
+                                                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAI1JREFUSEtjZKAxYKSx+QzEWODAwMCwH4dDGoHiDfgcScgCfIaDzH3AwMCQyMDAcACXJegW/KdSkMHNpbsFVPIAwhhccUBuUGGYNzIsgPkSPdiwiZMVRKMWYE36yOE9GkQjIIhIKQCJzmigGgxU2ZACQJWOI7oGXIUdyPB6EizBWbMRqjJJ8QFWtTS3AAAyqysZPeY+2wAAAABJRU5ErkJggg=="/>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% let des = datos.descripcion.split("▄") %>
+                                        <details>
+                                            <p>Orden de servicio: <%= datos.orden %></p>
+                                            <p><%= datos.createdAt %></p>
+                                            <p><%= datos.departamento %></p>
+                                            <p><%= datos.puesto %></p>
+                                            <p><%= datos.rentabilidad %></p>
+                                            <p><%= datos.region %> / <%= datos.planta %></p>
+                                            <p><%= datos.fechaEntrega %></p>
+
+                                            <summary>Descripcion</summary>
+                                            <table class="table">
+                                                <thead>
+                                                  <tr>
+                                                    <th scope="col">Descripción Detallada</th>
+                                                    <th scope="col">Unidad</th>
+                                                    <th scope="col">Precio unitario con IVA</th>
+                                                    <th scope="col">Precio Total con IVA</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% for(var c=0; c<des.length; c=c+4) {%>
+                                                        <%//for(var [key2, datos2] of Object.entries(des)) {%>
+                                                  <tr>
+                                                    <th><%= des[c] %></th>
+                                                    <td><%= des[c +1] %></td>
+                                                    <td><%= des[c +2] %></td>
+                                                    <td><%= des[c +3] %></td>
+                                                  </tr>
+                                                  <%}%>
+                                                </tbody>
+                                              </table>
+                                              <p>Situacion Actual: <%= datos.situacionActual %></p>
+                                              <p>Expectativa: <%= datos.detallesEspectativa %></p>
+                                              <p>Comentarios: <%= datos.comentariosAdicionales %></p>
+
+                                        </details>
+                                    </li>
+                                        <% } %>
+                                    <% }%>
+                                </ul>
+                            </div>
+                        </div>
+                    </perfect-scrollbar>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

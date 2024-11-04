@@ -31,7 +31,7 @@
     "mysql2": "^3.11.2",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.15",
-    "sequelize": "^6.37.3",
+    "sequelize": "^6.37.5",
     "sweetalert2": "^11.14.1",
     "wavefile": "^11.0.0"
   },

@@ -1,16 +1,12 @@
 import { DataTypes } from 'sequelize'
 import db from "../config/db.js";
 
-const Requisicion = db.define('requisiciones', {
+const Requisicion = db.define('requisicion', {
     rentabilidad:{
         type: DataTypes.STRING,
         allowNull: false
     },
-    responsable:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    proceso:{
+    autoriza:{
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -18,19 +14,7 @@ const Requisicion = db.define('requisiciones', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    asunto:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    orden_servicio:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    planta:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    region:{
+    orden:{
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -38,34 +22,32 @@ const Requisicion = db.define('requisiciones', {
         type: DataTypes.TEXT,
         allowNull: false
     },
-    fecha_requerida:{
+    fechaEntrega:{
         type: DataTypes.DATE,
         allowNull: false
     },
     total:{
         type: DataTypes.DOUBLE
     },
-    situacion_actual:{
+    situacionActual:{
         type: DataTypes.STRING,
         allowNull: false
     },
-    espectativa:{
+    detallesEspectativa:{
         type: DataTypes.STRING,
         allowNull: false
     },
-    comentarios:{
+    comentariosAdicionales:{
         type: DataTypes.STRING,
         allowNull: false
     },
-    tarjeta:{
+    noCuenta:{
         type: DataTypes.STRING,
         allowNull: false
-    },
-    imagen:{
-        type: DataTypes.STRING
     },
     estatus:{
-        type: DataTypes.STRING
+        type: DataTypes.INTEGER,
+        defaultValue: 1
     },
     solicitante:{
         type: DataTypes.STRING
@@ -73,10 +55,29 @@ const Requisicion = db.define('requisiciones', {
     puesto:{
         type: DataTypes.STRING
     },
-    jerarquia_Solicitante:{
+    region:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    planta:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    jerarquiaSolicitante:{
         type: DataTypes.INTEGER
     },
+    asunto:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    proceso:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     contacto:{
+        type: DataTypes.STRING
+    },
+    foto:{
         type: DataTypes.STRING
     }
 })

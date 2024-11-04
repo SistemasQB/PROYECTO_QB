@@ -1,7 +1,9 @@
 import express from "express";
 import Listas from "../models/listas.js"
 import Requisicion from "../models/requisicion.js"
-
+import Curso from "../models/cursos.js"
+import sequelize from 'sequelize'
+import { emailRequisicion } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
@@ -26,7 +28,7 @@ controller.crear = (req, res) => {
 controller.requisicion = async (req, res) => {
     const planta = await Listas.findAll();
     const resultadoPlanta = JSON.parse(JSON.stringify(planta, null, 2));
-    res.render('admin/requisicion2', {
+    res.render('admin/requisicion', {
         resultadoPlanta,
         csrfToken: req.csrfToken(),
         mensaje: false
@@ -34,42 +36,82 @@ controller.requisicion = async (req, res) => {
 }
 
 controller.requisicion2 = async (req, res) => {
+
     const planta2 = await Listas.findAll();
     const resultadoPlanta = JSON.parse(JSON.stringify(planta2, null, 2));
-    const { rentabilidad, responsable, proceso, departamento, asunto, orden_servicio, planta, region, descripcion, fecha_requerida, total, situacion_actual, espectativa, comentarios, tarjeta, imagen, estatus, solicitante, puesto, jerarquia_Solicitante, contacto } = req.body
+    const { id, rentabilidad, autoriza, departamento, orden, descripcion, fechaEntrega, total, situacionActual, detallesEspectativa, comentariosAdicionales, noCuenta, horaRegistro, estatus, solicitante, puesto, region, planta, jerarquiaSolicitante, asunto, proceso, contacto, foto } = req.body
 
     const reqDatos = await Requisicion.create({
+        id,
         rentabilidad,
-        responsable,
-        proceso,
+        autoriza,
         departamento,
-        asunto,
-        orden_servicio,
-        planta,
-        region,
+        orden,
         descripcion,
-        fecha_requerida,
+        fechaEntrega,
         total,
-        situacion_actual,
-        espectativa,
-        comentarios,
-        tarjeta,
-        imagen,
+        situacionActual,
+        detallesEspectativa,
+        comentariosAdicionales,
+        noCuenta,
+        horaRegistro,
         estatus,
         solicitante,
         puesto,
-        jerarquia_Solicitante,
-        contacto
+        region,
+        planta,
+        jerarquiaSolicitante,
+        asunto,
+        proceso,
+        contacto,
+        foto,
     });
     
-    res.render('admin/requisicion2', {
+    emailRequisicion({
+        id: reqDatos.id,
+        solicitante: reqDatos.solicitante,
+        asunto: reqDatos.asunto,
+        autoriza: reqDatos.autoriza
+    })
+
+    res.render('admin/requisicion', {
         resultadoPlanta,
         csrfToken: req.csrfToken(),
         mensaje: true
     })
 }
 
-controller.voz = (req, res) =>{
+controller.requisicionA = async (req, res) => {
+    const requi = await Requisicion.findAll();
+    res.render('admin/requisicionA',{
+        requi
+    })
+}
+
+controller.requisicionA2 = (req, res) => {
+    res.render('admin/requisicionA')
+}
+
+controller.cursos = async (req, res) => {
+    const vCursos = await Curso.findAll();
+    
+    res.render('admin/cursos',{
+        vCursos,
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.cursos2 = async (req, res) => {
+    const vCursos = await Curso.findAll();
+    const resultadoCursos = JSON.parse(JSON.stringify(vCursos, null, 2));
+
+    res.render('admin/cursos',{
+        vCursos,
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.voz = (req, res) => {
     res.render('admin/texto_voz')
 }
 

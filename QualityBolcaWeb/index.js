@@ -8,10 +8,12 @@ import db from "./src/config/db.js";
 import myConnection from "express-myconnection";
 import mysql from "mysql2";
 import multer from "multer";
+
 import Swal from 'sweetalert2'
 // import mariadb from "mariadb";
 import { default as customerRoutes } from "./src/routes/userRoutes.js";
 import { default as adminRoutes } from "./src/routes/adminRoutes.js";
+import { default as allRoutes } from "./src/routes/allRoutes.js";
 
 import mimeTypes from "mime-types";
 import fetch from 'node-fetch'
@@ -126,6 +128,8 @@ app.set('view engine', 'ejs');
 // app.post('/uploader', upload.single('avatar'), (req, res)=>{});
 app.use('/', customerRoutes);
 app.use('/admin', adminRoutes);
+app.use('/all', allRoutes);
+
 
 
 app.use(express.json());
