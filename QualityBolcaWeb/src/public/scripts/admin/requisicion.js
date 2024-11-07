@@ -168,8 +168,7 @@ function agregarFila() {
         celdaTexto1.classList.add('table-light')
         celdaTexto2.classList.add('table-light')
         vTotal = vTotal + parseFloat(texto2)
-        total.value = vTotal
-        console.log(vTotal);
+        total.value = vTotal;
 
         // table-primary
         

@@ -14,6 +14,14 @@ const Curso = db.define('cursos', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    duracion: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    correoContacto: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     disponible: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -25,22 +33,22 @@ const Curso = db.define('cursos', {
     fechaFinal: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW')
+        defaultValue: 'abierto'
     },
     horarioInicio: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: '08:00'
+        defaultValue: 'abierto'
     },
     horarioFinal: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: '08:00'
+        defaultValue: 'abierto'
     },
     ubicacion: {
         type: DataTypes.STRING,
         allowNull: false
-    },
+    }
 })
 
 export default Curso;

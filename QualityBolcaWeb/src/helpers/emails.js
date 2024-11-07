@@ -86,8 +86,69 @@ const emailRequisicion = async (datos) =>{
     })
 }
 
+const emailCursos = async (datos) =>{
+    const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: {
+            user: process.env.EMAILC_USER,
+            pass: process.env.EMAILC_PASS
+        }
+    });
+
+    const { id, asunto, solicitante, autoriza } = datos
+    console.log(autoriza);
+    
+    const nombre = 'Oscar'
+    //Enviar el email
+    await transport.sendMail({
+        from: 'requisiciones@qualitybolca.net',
+        to: autoriza,
+        subject: 'Requisicion de compras',
+        text: 'Requisicion de compras',
+        html: `
+            <p>Hola ${nombre}, Tienes una requisicion solicitada por ${solicitante}</p>
+            <p>puedes acceder desde la pagina WEB en la pestaña de requisiciones solicitadas
+            <a href="www.qualitybolca.net">Pagina Web</a>
+            </p>
+        `
+    })
+}
+
+const registroCursos = async (datos) =>{
+    const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: {
+            user: process.env.EMAILC_USER,
+            pass: process.env.EMAILC_PASS
+        }
+    });
+
+    const {nombreCurso, asistenciaNombres, correo, fecha, horario, ubicacion, correoDestino, nombreContacto} = datos
+
+
+    //Enviar el email
+    await transport.sendMail({
+        from: 'cursos@qualitybolca.net',
+        to: correoDestino,
+        subject: 'solicitud de curso',
+        text: 'solicitud de curso',
+        html: `
+            <p>Hola ${nombreContacto}, Tienes una peticion de tu curso: ${nombreCurso}</p>
+            <p>para el dia ${fecha}, en el siguiente horario ${horario}, en la ubicacion de ${ubicacion}
+            si te es posible realizarlo puedes confirmar que aceptas impartir tu curso al siguiente correo: ${correo}
+            </p>
+            <p> A la cual asistiran las siguientes personas:</p>
+            <p>${asistenciaNombres}</p>
+        `
+    })
+}
+
 export {
     emailRegistro,
     emailOlvidePassword,
-    emailRequisicion
+    emailRequisicion,
+    emailCursos,
+    registroCursos
 }

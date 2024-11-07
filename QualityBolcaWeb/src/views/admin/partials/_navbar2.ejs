@@ -1,0 +1,60 @@
+<style>
+    #offcanvasWithBothOptions {
+        /* -bs-offcanvas-width: 250px; */
+        color: white;
+        width: 250px;
+        background: rgba(49, 49, 49, 0.2);
+        backdrop-filter: blur(4px);
+    }
+
+    body {
+        min-height: 100vh;
+        background: url("../img/favicon.png") no-repeat;
+        background-size: contain;
+        background-position: center;
+        background-color: rgba(71, 69, 69, 0.4);
+    }
+    a{
+        color: white;
+        font-size: 15px;
+    }
+    details{
+        margin-bottom: 8%;
+    }
+    .offcanvas-body details p{
+        margin-left: 20%;
+    }
+
+    .offcanvas-body p::before{
+        content: '=>';
+    }
+
+    .offcanvas-body p:hover{
+        transform: scale(1.1, 1.1)
+    }
+
+</style>
+
+
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+    aria-labelledby="offcanvasWithBothOptionsLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <details>
+            <summary>Cursos</summary>
+            <p><a class="tex" href="cursos" class="link active">Cursos</a></p>
+            <p><a class="tex" href="subirCurso">Subir cursos</a></p>
+        </details>
+        <p><a class="tex" href="directorio">Directorio</a></p>
+        <p><a class="tex" href="../solicitud">Solicitud de Empleo</a></p>
+        <details>
+            <summary>Requisiciones</summary>
+            <p><a class="tex" href="requisicionA">Mis requisicion</a></p>
+            <p><a class="tex" href="requisicion">Crear requisicion</a></p>
+            <p><a class="tex" href="requisicionA">Aprobar requisiciones</a></p>
+        </details>
+    </div>
+</div>

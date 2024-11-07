@@ -11,6 +11,8 @@ router.get('/requisicionA', adminController.requisicionA);
 router.post('/requisicionA', adminController.requisicionA2);
 router.get('/cursos', adminController.cursos);
 router.post('/cursos', adminController.cursos2);
+router.get('/subirCurso', adminController.subirCurso);
+router.post('/subirCurso', adminController.subirCurso2);
 
 router.get('/valeSalida', adminController.valeSalida);
 router.get('/voz', adminController.voz);

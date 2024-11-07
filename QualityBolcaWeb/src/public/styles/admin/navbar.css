@@ -1,0 +1,29 @@
+header {
+    text-align: start;
+}
+
+
+
+.scrollable-text {
+    width: 100%;
+    /* Ancho del contenedor */
+    max-height: 90px;
+    /* Altura máxima del contenedor */
+    overflow: auto;
+    /* Habilita el scroll si el contenido excede el tamaño */
+    /* border: 1px solid #ccc; */
+    /* Bordes para que sea más visible */
+    /* padding: 7px; */
+    /* Espaciado interno */
+    /* Diseño de la barra */
+    scrollbar-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.0);
+    scrollbar-width: thin;
+}
+
+
+
+#btnRegistrarC {
+    height: 100%;
+    width: 100%;
+    /* writing-mode: vertical-lr; */
+}

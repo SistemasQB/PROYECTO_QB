@@ -2,8 +2,9 @@ import express from "express";
 import Listas from "../models/listas.js"
 import Requisicion from "../models/requisicion.js"
 import Curso from "../models/cursos.js"
+import RegistroCursos from "../models/registroCursos.js"
 import sequelize from 'sequelize'
-import { emailRequisicion } from "../helpers/emails.js";
+import { emailRequisicion, registroCursos } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
@@ -103,10 +104,61 @@ controller.cursos = async (req, res) => {
 
 controller.cursos2 = async (req, res) => {
     const vCursos = await Curso.findAll();
-    const resultadoCursos = JSON.parse(JSON.stringify(vCursos, null, 2));
+    const {nombreCurso, asistenciaNombres, correo, fecha, horario, ubicacion, correoContacto, nombreContacto} = req.body
 
-    res.render('admin/cursos',{
-        vCursos,
+    const regCursos = await RegistroCursos.create(
+        {nombreCurso, asistenciaNombres, correo, fecha, horario, ubicacion}
+    )
+
+
+    // registroCursos({
+    //     nombreCurso: regCursos.nombreCurso,
+    //     asistenciaNombres: regCursos.asistenciaNombres,
+    //     correo: regCursos.correo,
+    //     fecha: regCursos.fecha,
+    //     horario: regCursos.horario,
+    //     ubicacion: regCursos.ubicacion,
+    //     correoDestino: correoContacto,
+    //     nombreContacto: nombreContacto
+    // })
+
+    // res.render('admin/cursos',{
+    //     vCursos,
+    //     csrfToken: req.csrfToken()
+    // })
+    // res.send('Hola mundo')
+
+    
+}
+
+controller.subirCurso = async (req, res) => {
+    res.render('admin/registrarCursos',{
+        mensaje: false,
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.subirCurso2 = async(req, res) => {
+    const { nombreCurso, descripcion, capacitador, duracion, correoContacto, disponible, fechaInicio, fechaFinal, horarioInicio, horarioFinal, ubicacion } = req.body
+    
+    const cursoDatos = await Curso.create({
+        nombreCurso,
+        descripcion,
+        capacitador,
+        duracion,
+        correoContacto,
+        disponible,
+        fechaInicio,
+        fechaFinal,
+        horarioInicio,
+        horarioFinal,
+        ubicacion
+    });
+    
+    
+
+    res.render('admin/registrarCursos',{
+        mensaje: true,
         csrfToken: req.csrfToken()
     })
 }

@@ -30,7 +30,7 @@ import fs from 'fs';
 const app = express();
 export const upload = multer({ dest: 'uploads/'})
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

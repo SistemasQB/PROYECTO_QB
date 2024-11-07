@@ -4,101 +4,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./../styles/admin/navbar.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <title>Cursos</title>
+
 </head>
 
 <style>
-    body {
-        text-align: center;
-    }
-
     .card {
-        background-color: rgb(37, 35, 35);
-        color: white;
-        border-color: transparent;
-    }
-
-    #btnRegistrarC{
-        height: 100%;
-        width: 100%;
-        /* writing-mode: vertical-lr; */
-    }
+    background-color: rgb(37, 35, 35);
+    color: white;
+    border-color: transparent;
+}
+body {
+    text-align: center;
+}
 </style>
 
 <header>
-    <%- include('partials/_navbar'); %>
+    <button class="btn btn-primary mt-3 ms-3" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+        <img
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAExJREFUSEtjZKAxYKSx+QyjFhAM4QEJov8EnYVfAYqjsfmA5hZQ6AFU7QMSBzT3Ac3jgOYW0DyIhr4FNI8Dmlsw9ONg1AcoIUDz0hQAbegGGXzv/l0AAAAASUVORK5CYII=" />
+    </button>
+    <%- include('partials/_navbar2'); %>
 </header>
 
 <body>
-    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
     <% if (vCursos) { %>
-    <h1>Cursos Disponibles</h1>
-    <div class="container-sm mt-3">
-        <div class="row" >
-            <% for (const [key, datos] of Object.entries(vCursos)) { %>
-            <div class="col-sm-5 mb-3 mb-sm-0 mt-3">
-                <div class="card border-info">
-                    <div class="card" style="max-width: 540px;">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="../img/photo-1557626204-59dd03fd2d31.webp" class="img-fluid rounded-start"
-                                    alt="...">
-                                    <p>Impartido por: </p>
-                                    <p><%= datos.capacitador %></p>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card-body">
-                                    <h5 class="card-title"><%= datos.nombreCurso %></h5>
-                                    <p class="card-text"><%= datos.descripcion %></p>
+        <h1>Cursos para solicitar</h1>
+        <div class="container-sm mt-3">
+            <div class="row">
+                <% for (const [key, datos] of Object.entries(vCursos)) { %>
+                    <div class="col-sm-5 mb-3 mb-sm-0 mt-3">
+                        <div class="card border-info">
+                            <div class="card" style="max-width: 540px;">
+                                <div class="row g-0">
+                                    <div class="col-md-4">
+                                        <img src="../img/photo-1557626204-59dd03fd2d31.webp"
+                                            class="img-fluid rounded-start" alt="...">
+                                        <p>Impartido por: </p>
+                                        <p>
+                                            <%= datos.capacitador %>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                <%= datos.nombreCurso %>
+                                            </h5>
+                                            <p class="card-text scrollable-text">
+                                                <%= datos.descripcion %>
+                                            </p>
+                                            <p class="card-text">
+                                                <% if (datos.duracion <=1){%>
+                                                    <%= datos.duracion %> Hora
+                                                        <%} else{%>
+                                                            <%= datos.duracion %> Horas
+                                                                <%}%>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="hidden" value="<%= key%>">
+                                        <button type="button" id="btnRegistrarC"
+                                            onclick="formulario('<%= datos.nombreCurso %>', '<%= datos.correoContacto %>', '<%= datos.capacitador %>')"
+                                            class="btn btn-primary">Registrarme</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="hidden" value="<%= key%>">
-                                <button type="button" id="btnRegistrarC" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">registrarme</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <% } %>
             </div>
-            <% } %>
-        </div>
         </div>
         <% }else { %>
-    <h1>No hay cursos Disponibles</h1>
-        <% } %>
+            <h1>No hay cursos Disponibles</h1>
+            <% } %>
 
-
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel"><%= vCursos[0].nombreCurso %></h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form>
-                    <div class="mb-3">
-                      <label for="recipient-name" class="col-form-label">Recipient:</label>
-                      <input type="text" class="form-control" id="recipient-name">
+                <form id="formSolicitarC">
+                    <input type="hidden" name="_csrf" id="csfrT" value='<%=csrfToken%>'>
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 id="h1TextModal"></h1>
+                                    <input class="modal-title fs-5" type="hidden" id="inpTextModal"
+                                        name="nombreCurso"></input>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">Nombre de los
+                                            asistentes</label>
+                                        <input type="text" class="form-control" id="recipient-name">
+                                    </div>
+                                    <input type="button" class="btn btn-primary" onclick="agregarFila()"
+                                        value="Añadir persona">
+                                    <table class="table" id="tableNombresC">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Nombre</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                    <input type="hidden" id="listaNombres" required name="asistenciaNombres">
+                                    <div class="mb-3">
+                                        <label for="recipient-email" class="col-form-label">correo
+                                            electronico</label>
+                                        <input type="email" name="correo" required class="form-control" id="recipient-email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="date-text" class="col-form-label">Fecha deseada para el
+                                            curso</label>
+                                        <input type="date" class="form-control" required name="fecha" id="date-text"></input>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="time-text" class="col-form-label">Hora para el curso</label>
+                                        <input type="time" name="horario" required class="form-control" id="time-text"></input>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="inputState" class="form-label">Ubicación</label>
+                                        <select id="inputState" required class="form-select" name="ubicacion">
+                                            <!-- <option disabled selected>Seleccione una opcion</option> -->
+                                            <option value="Aguascalientes" selected>Aguascalientes</option>
+                                            <option value="Teams">Teams</option>
+                                            <option value="Celaya">Celaya</option>
+                                            <option value="Silao">Silao</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="submit" id="btnEnviarSolcitud" class="btn btn-primary">Enviar
+                                        Solicitud</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                      <label for="message-text" class="col-form-label">Message:</label>
-                      <textarea class="form-control" id="message-text"></textarea>
-                    </div>
-                  </form>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Send message</button>
-                </div>
-              </div>
-            </div>
-          </div>
-    </body>
+                </form>
+</body>
+<script src="./../scripts/admin/cursos.js"></script>
 
 </html>
