@@ -37,12 +37,12 @@
       <div class="col-md-6">
         <label for="inputNombre" class="form-label">Nombre del curso</label>
         <input type="text" class="form-control" name="nombreCurso" placeholder="Ingrese el nombre del curso" required
-          id="inputNombre">
+          id="inputNombre" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
       </div>
       <div class="col-md-6">
         <label for="inputPassword4" class="form-label">Capacitador</label>
         <input type="text" class="form-control" name="capacitador" required
-          placeholder="Ingrese el nombre de la persona que impartira el curso" id="inputPassword4">
+          placeholder="Ingrese el nombre de la persona que impartira el curso" id="inputPassword4" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
       </div>
       <div class="col-6">
         <label for="floatingTextarea">Descripción del curso</label>

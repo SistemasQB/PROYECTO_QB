@@ -7,7 +7,8 @@ import { PORT } from "./src/config.js";
 import db from "./src/config/db.js";
 import myConnection from "express-myconnection";
 import mysql from "mysql2";
-import multer from "multer";
+import cors from "cors";
+// import multer from "multer";
 
 import Swal from 'sweetalert2'
 // import mariadb from "mariadb";
@@ -28,7 +29,9 @@ import fs from 'fs';
 
 
 const app = express();
-export const upload = multer({ dest: 'uploads/'})
+
+app.use(cors());
+// export const upload = multer({ dest: 'uploads2/'})
 
 app.use(express.urlencoded({ extended: false }));
 

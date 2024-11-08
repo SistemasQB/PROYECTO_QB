@@ -19,7 +19,7 @@ import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
 
 
 
-
+const upload = multer ({dest: 'files/'})
 
 const app = express();
 // const upload = multer({ dest: 'images/' })
@@ -529,10 +529,15 @@ controller.agregarImagen = async (req, res) => {
 }
 
 controller.agregarImagen2 = (req, res) => {
-    res.render('auth/agregar-imagen', {
-        csrfToken: req.csrfToken(),
-        mensaje: true
-    })
+    upload.single('file')
+    console.log(req.body);
+    console.log(req.file);
+    
+
+    // res.render('auth/agregar-imagen', {
+    //     csrfToken: req.csrfToken(),
+    //     mensaje: true
+    // })
 }
 
 controller.paginaSolicitud2 = (req, res) => {

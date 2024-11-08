@@ -111,22 +111,16 @@ controller.cursos2 = async (req, res) => {
     )
 
 
-    // registroCursos({
-    //     nombreCurso: regCursos.nombreCurso,
-    //     asistenciaNombres: regCursos.asistenciaNombres,
-    //     correo: regCursos.correo,
-    //     fecha: regCursos.fecha,
-    //     horario: regCursos.horario,
-    //     ubicacion: regCursos.ubicacion,
-    //     correoDestino: correoContacto,
-    //     nombreContacto: nombreContacto
-    // })
-
-    // res.render('admin/cursos',{
-    //     vCursos,
-    //     csrfToken: req.csrfToken()
-    // })
-    // res.send('Hola mundo')
+    registroCursos({
+        nombreCurso: regCursos.nombreCurso,
+        asistenciaNombres: regCursos.asistenciaNombres,
+        correo: regCursos.correo,
+        fecha: regCursos.fecha,
+        horario: regCursos.horario,
+        ubicacion: regCursos.ubicacion,
+        correoDestino: correoContacto,
+        nombreContacto: nombreContacto
+    })
 
     
 }
