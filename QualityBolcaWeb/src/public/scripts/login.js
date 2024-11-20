@@ -11,108 +11,50 @@ const loginForm = $('#login-form')
 const registerForm = $('#register-form')
 const logoutButton = $('#close-session')
 
+const inputEmail = document.getElementById('inputEmail')
 
 
 
-loginForm?.addEventListener('submit', e => {
+
+
+loginForm?.addEventListener('submit',  e => {
     e.preventDefault()
-    console.log('entrando al submit')
-    console.log(document.getElementById('login-password').value, document.getElementById('login-username').value)
-    // console.log('entrando al addevventlistener');
-    fetch('/login2', {
-        method: 'POST'
-    })
-        .then(res => {
-            if (res.ok) {
-                setTimeout(() => {
-                    console.log('enviar informacion')
-                }, 1)
-            } else {
-                console.log('error Usuario o contraseña no valida', res)
-            }
-        })
-    // axios.post('login2', {
+    const checkedR = document.getElementById('checkRemember').checked;
+    const formData = new FormData(loginForm)
+    const urlEncoded = new URLSearchParams(formData).toString();
+    console.log('entrando al fetch');
 
-    // })
-    //     .then(res => {
-    //         if (res.ok) {
-    //             setTimeout(() => {
-    //                 console.log('enviar informacion')
-    //                 window.location.href = '/directorios'
-    //             }, 1)
-    //         } else {
-    //             console.log('error Usuario o contraseña no valida', res)
-    //         }
-
-    //     })
-})
-
-registerForm?.addEventListener('submit', e => {
-    e.preventDefault()
-    const username = $('#register-username').value
-    const password = $('#register-password').value
-    const nombre = $('#register-nombre').value
-    const apellido = $('#register-apellido').value
-
-
-    const ConfirmPassword = $('#register-confirm-password').value
-
-    if (password !== ConfirmPassword) {
-        alert('Passwords do not match')
-        return
+     fetch('/login', {
+        method: 'POST',
+        body: urlEncoded,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
     }
-
-//     fetch('/register', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({ nombre, apellido, username, password })
-//     })
-//         .then(res => {
-//             console.log(res);
-//             if (res.ok) {
-//                 setTimeout(() => {
-//                     window.location.href = '/inicio'
-//                 }, 100)
-//             } else {
-//                 console.log('errro al iniciar sesion');
-//             }
-//         })
+    ).then(
+        response => response.json()
+    ).then(res => {
+        console.log('antes de antrar al res.ok', checkedR);
+            if (res.ok) {
+                console.log('Entrando al res.ok', checkedR.checked);
+                debugger
+                if (checkedR) {
+                    localStorage.setItem('correo', inputEmail.value)
+                } else {
+                    sessionStorage.setItem('correo', inputEmail.value);
+                }
+                location.href = 'inicio'
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    icon: 'error',
+                    text: `${res.msg}`
+                })
+            }
+        }).catch(
+            function (error) {
+                console.log("Hubo un problema con la petición Fetch:" + error.message);
+            }
+        )
 })
 
-// logoutButton?.addEventListener('click', e => {
-//     e.preventDefault()
-//     fetch('/logout', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         }
-//     })
-//         .then(res => {
-//             console.log(res)
-//             window.location.href = '/'
-//         })
-// })
-
-let loginbtn = document.getElementById('login-form');
-let registerbtn = document.getElementById('register');
-let bodyload = document.body;
-bodyload.onload = carga;
-
-
-logForm?.addEventListener('click', e => {
-    loginbtn.style.animation = 'focus-in-contract 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s forwards';
-    registerbtn.style.animation = 'focus-in-expand-fwd 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) forwards';
-})
-
-regForm?.addEventListener('click', e => {
-    registerbtn.style.animation = 'focus-in-contract 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s forwards';
-    loginbtn.style.animation = 'focus-in-expand-fwd 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) forwards';
-})
-
-function carga() {
-    loginbtn.style.animation = 'focus-in-contract 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) forwards';
-}
-
-// export default datosMain;

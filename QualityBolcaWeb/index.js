@@ -47,6 +47,7 @@ app.use( cookieParser() )
 
 app.use( csurf({cookie: true}))
 
+
 //conexion a la base de datos
 try {
   await db.authenticate()

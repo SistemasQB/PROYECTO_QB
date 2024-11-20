@@ -15,24 +15,11 @@
 <nav class="navbar">
 
 </nav>
-
-    <% if (errores !='' ) { %>
-        <script>
-            Swal.fire({
-                title: 'Error',
-                icon: 'error',
-                html: `<% for (const [key, error] of Object.entries(errores)) { %>
-                        <p><%= error.msg %> </p>
-                        <% } %>`
-            })
-        </script>
-        <% } %>
-
             <body>
                 <div class="container">
                     <%- //include('partials/_alerta'); %>
                         <div class="form-box">
-                            <form id="login-form" method="post" action="/login" novalidate>
+                            <form id="login-form" method="post" novalidate>
                                 <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                                 <h1>Quality Bolca</h1>
                                 <h2>Iniciar sesión</h2>
@@ -53,16 +40,13 @@
                                     </label>
                                     <a href="/olvide-password">¿Olvidaste tu contrseña?</a>
                                 </div>
-                                <button class="btn">Iniciar sesión</button>
+                                <button type="submit" class="btn">Iniciar sesión</button>
                                 <div class="account-creation">
                                     <span>¿No tienes cuenta? </span><a href="/registro">Registrate</a>
                                 </div>
                             </form>
                         </div>
-                        <% //if (errores !='' ) { %>
-                            <%- //include('partials/_alertaError'); %>
-                                <% //} %>
                 </div>
             </body>
-
+            <script src="./../scripts/login.js"></script>
 </html>

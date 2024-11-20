@@ -3,11 +3,20 @@ import Listas from "../models/listas.js"
 import Requisicion from "../models/requisicion.js"
 import Curso from "../models/cursos.js"
 import RegistroCursos from "../models/registroCursos.js"
-import sequelize from 'sequelize'
+import Comunicacion from "../models/comunicacion.js"
+import Gch_alta from "../models/gch_alta.js"
+import Sequelize from 'sequelize'
+import on from 'sequelize'
+import { Op } from 'sequelize'
 import { emailRequisicion, registroCursos } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
+
+// Comunicacion.belongsTo(Gch_alta, { foreignKey: 'id', targetKey: 'curp'  });
+// Gch_alta.hasOne(Comunicacion, { foreignKey: 'curp', targetKey: 'id'  })
+
+
 
 
 const app = express();
@@ -24,6 +33,39 @@ controller.enviar = (req, res) => {
 
 controller.crear = (req, res) => {
     res.render('admin/crear')
+}
+
+controller.directorio = async (req, res) => {
+    let vCrup;
+    let vCrup2;
+
+    const bGch_alta = await Gch_alta.findAll({
+        where: {
+            estatus: {[Op.notLike]: '%BAJA%'},
+            puesto: {[Op.notLike]: '%INSPECTOR%'}
+        },
+        attributes: ['nombre', 'puesto', 'apellidoPaterno', 'apellidoMaterno', 'region'],
+        include: [{
+            model: Comunicacion,
+            attributes: ['correo', 'telefono'],
+            on: { 
+                curp: Sequelize.where(Sequelize.col('gch_alta2.curp'), '=', Sequelize.col('comunicacion.id'))
+            }
+            // attributes: ['nombre','apellidoPaterno', 'apellidoMaterno', 'puesto']
+        }]
+    })
+    .then(resultado =>{
+        // console.log(resultado[0].comunicacion.correo);
+        
+         vCrup = resultado
+    });
+
+    // console.log(vCrup[0].comunicacion.telefono);
+    //  console.log(vCrup[61]);
+    
+    res.render('admin/directorio',{
+        vCrup
+    })
 }
 
 controller.requisicion = async (req, res) => {
@@ -159,6 +201,10 @@ controller.subirCurso2 = async(req, res) => {
 
 controller.voz = (req, res) => {
     res.render('admin/texto_voz')
+}
+
+controller.mapa = (req, res) => {
+    res.render('admin/mapas')
 }
 
 controller.valeSalida = (req, res) => {

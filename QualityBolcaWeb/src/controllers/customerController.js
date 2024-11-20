@@ -36,65 +36,76 @@ controller.formularioLogin = (req, res) => {
 controller.autenticar = async (req, res) => {
     await check('email').isEmail().withMessage('El correo es obligatorio').run(req);
     await check('password').notEmpty().withMessage('La contrseña es obligatoria').run(req);
-
+    let error
+    
     let resultado = validationResult(req);
     //Verificar que el resultado este vacio
     if (!resultado.isEmpty()) {
-        return res.render('auth/login', {
-            errores: resultado.array(),
-            csrfToken: req.csrfToken(),
-        })
+        // console.log('Campos vacios');
+        // error = [{}];
+        res.status(400).send({ msg: 'Completa los campos', ok: false});
+        // return res.render('auth/login', {
+        //     errores: resultado.array(),
+        //     csrfToken: req.csrfToken(),
+        // })
+        return
     }
-
+    
     const { email, password } = req.body
 
     //comporbar si el usuario existe
 
     const usuario = await Usuario.findOne({ where: { email } })
     if (!usuario) {
-        return res.render('auth/login', {
-            errores: [{ msg: 'El usuario no existe' }],
-            csrfToken: req.csrfToken(),
-        })
+        // return res.render('auth/login', {
+        //     errores: [{ msg: 'El usuario no existe' }],
+        //     csrfToken: req.csrfToken(),
+        // })
+        error = [{  }];
+        
+        // res.send(errores)
+        res.status(400).send({msg: 'El usuario no existe', ok: false});
+        return
     }
-
-    console.log('El usuario busado es:' + usuario.nombre);
-
-
+    // console.log('El usuario buscado es:' + usuario.nombre);
     //Comprobar si el usuario este confirmado
-
     if (!usuario.confirmado) {
-        return res.render('auth/login', {
-            errores: [{ msg: 'tu cuenta no ha sido confirmada' }],
-            csrfToken: req.csrfToken(),
-        })
+        // return res.render('auth/login', {
+        //     errores: [{ msg: 'tu cuenta no ha sido confirmada' }],
+        //     csrfToken: req.csrfToken(),
+        // })
+        error = [{  }];
+        // res.send(errores)
+        res.status(400).send({msg: 'tu cuenta no ha sido confirmada', ok: false});
+        return
     }
 
     // Revisar la contrseña
 
     if (!usuario.verificarPasssword(password)) {
-        return res.render('auth/login', {
-            errores: [{ msg: 'La contrseña no es correcta' }],
-            csrfToken: req.csrfToken(),
-        })
+        // return res.render('auth/login', {
+        //     errores: [{ msg: 'La contrseña no es correcta' }],
+        //     csrfToken: req.csrfToken(),
+        // })
+        error = [{  }];
+        // res.send(errores)
+        res.status(400).send({msg: 'La contrseña no es correcta', ok: false});
+        return
     }
 
     //Autenticar al usuario
 
     const token = generarJWT(usuario.id, usuario.email)
 
-    console.log(token);
-
-
     //Almacenaren luna cookie
 
-    return res.cookie('_token', token, {
-        httpOnly: true,
-        // secure: true,
-    }).redirect('/inicio')
+    // return res.cookie('_token', token, {
+    //     httpOnly: true,
+    //     secure: true,
+    // }).redirect('/inicio')
 
-
-
+    res.status(200).send({ok: true});
+    return
     // res.render('auth/login', {
     //     errores: '',
     //     usuario: '',

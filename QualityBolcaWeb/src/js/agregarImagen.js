@@ -1,1 +1,1 @@
-import {dropzone} from "dropzone";
+import { } from 'dropzone'
