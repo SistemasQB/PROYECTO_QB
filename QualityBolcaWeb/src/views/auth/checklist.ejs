@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="esp">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CheckList</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body>
     <nav></nav>
     <% if (mensaje) { %>
@@ -16,289 +18,357 @@
             })
         </script>
         <% }%>
-    <div>
-        <form action="/checklist" method="post">
-            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-            <div class="cuadricula btn btn-secondary" id="inspeccion-Visual"> <!-- col-md-6 -->
-                <!-- <details> -->
-                    <!-- <summary>INSPECCION DEL VEHICULO</summary> -->
-                    <div class="">
-                        <label for="unidad" class="form-label titulo" >UNIDAD</label> 
-                        <input type="text" class="form-control cajas" id="UNIDAD" placeholder="Vehiculo" required name="unidad"> 
+            <div>
+                <form action="/checklist" method="post">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                    <div class="cuadricula btn btn-secondary" id="inspeccion-Visual"> <!-- col-md-6 -->
+                        <!-- <details> -->
+                        <!-- <summary>INSPECCION DEL VEHICULO</summary> -->
+                        <div class="">
+                            <label for="unidad" class="form-label titulo">UNIDAD</label>
+                            <input type="text" class="form-control cajas" id="UNIDAD" placeholder="Vehiculo" required
+                                name="unidad">
+                        </div>
+                        <div class="">
+                            <label for="exampleFormControlInput1" class="form-label titulo">PLACAS</label>
+                            <input type="text" class="form-control cajas" placeholder="placas del Vehiculo"
+                                name="placas" required>
+                        </div>
+                        <div class="">
+                            <label for="exampleFormControlInput1" class="form-label titulo">KILOMETRAJE</label>
+                            <input type="text" class="form-control cajas" placeholder="kilometraje actual del Vehiculo"
+                                name="kilometraje" required>
+                        </div>
+                        <div class="">
+                            <label for="exampleFormControlInput1" class="form-label titulo">REGION</label>
+                            <input type="text" class="form-control cajas" placeholder="Region" name="region" required>
+                        </div>
+                        <div class="">
+                            <label for="exampleFormControlInput1" class="form-label titulo">USUARIO</label>
+                            <input type="text" class="form-control cajas" placeholder="Usuario" name="usuario" required>
+                        </div>
+                        <div class="">
+                            <label for="exampleFormControlInput1" class="form-label titulo">RESPONSABLE</label>
+                            <input type="text" class="form-control cajas" placeholder="Responsable" name="responsable"
+                                required>
+                        </div>
+                        <!-- </details> -->
+
                     </div>
-                    <div class="">
-                        <label for="exampleFormControlInput1" class="form-label titulo">PLACAS</label>
-                        <input type="text" class="form-control cajas" placeholder="placas del Vehiculo" name="placas" required>
+                    <div class="" id="llantas">
+                        <label for="" class="TITULO container-fluid">LLANTAS</label>
+                        <div class="cuadricula">
+                            <div class="btn btn-success">
+                                <label for="" class="titulo">DELANTERA DERECHA</label>
+
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">medida</label>
+                                    <input type="text" class="form-control cajas" placeholder="medida de la llanta"
+                                        name="ddm" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">marca</label>
+                                    <input type="text" class="form-control cajas" placeholder="marca de la llanta"
+                                        name="ddmar" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">estado de vida</label>
+                                    <input type="text" class="form-control cajas" placeholder="estado de vida"
+                                        name="ddev" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">estado de rin</label>
+                                    <input type="text" class="form-control cajas" placeholder="estado de rin"
+                                        name="dder" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">polveras</label>
+                                    <input type="text" class="form-control cajas" placeholder="polveras" name="ddp"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="btn btn-warning">
+                                <label for="" class="titulo">DELANTERA IZQUIERDA</label>
+
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">medida</label>
+                                    <input type="text" class="form-control cajas" placeholder="medida de la llanta"
+                                        name="dim" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">marca</label>
+                                    <input type="text" class="form-control cajas" placeholder="marca de la llanta"
+                                        name="dimar" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">estado de vida</label>
+                                    <input type="text" class="form-control cajas" placeholder="estado de vida"
+                                        name="diev" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">estado de rin</label>
+                                    <input type="text" class="form-control cajas" placeholder="estado de rin"
+                                        name="dier" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">polveras</label>
+                                    <input type="text" class="form-control cajas" placeholder="polveras" name="dip"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="btn btn-info">
+                                <label for="" class="titulo">TRASERA DERECHA</label>
+
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">medida</label>
+                                    <input type="text" class="form-control cajas" placeholder="medida de la llanta"
+                                        name="tdm" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">marca</label>
+                                    <input type="text" class="form-control cajas" placeholder="marca de la llanta"
+                                        name="tdmar" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">estado de vida</label>
+                                    <input type="text" class="form-control cajas" placeholder="estado de vida"
+                                        name="tdev" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">estado de rin</label>
+                                    <input type="text" class="form-control cajas" placeholder="estado de rin"
+                                        name="tder" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">polveras</label>
+                                    <input type="text" class="form-control cajas" placeholder="polveras" name="tdp"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="btn btn-danger">
+                                <label for="" class="titulo">TRASERA IZQUIERDA</label>
+
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label cajas">medida</label>
+                                    <input type="text" class="form-control" placeholder="medida de la llanta" name="tim"
+                                        required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">marca</label>
+                                    <input type="text" class="form-control cajas" placeholder="marca de la llanta"
+                                        name="timar" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">estado de vida</label>
+                                    <input type="text" class="form-control cajas" placeholder="estado de vida"
+                                        name="tiev" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">estado de rin</label>
+                                    <input type="text" class="form-control cajas" placeholder="estado de rin"
+                                        name="tier" required>
+                                </div>
+                                <div class="">
+                                    <label for="exampleFormControlInput1" class="form-label">polveras</label>
+                                    <input type="text" class="form-control cajas" placeholder="polveras" name="tip"
+                                        required>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="cuadricula" id="bateria">
+
+
+                            <div class="btn btn-light">
+                                <label for="exampleFormControlInput1" class="container-fluid titulo">CATALIZADOR</label>
+                                <div class="">
+                                    <input type="radio" class="form-check-input" name="catalizador" id="ConCat" checked>
+                                    <label for="">Ok</label>
+                                    <input type="radio" class="form-check-input" name="catalizador" id="SinCat">
+                                    <label for="">No Tiene</label>
+                                    <div id="catalizadorComplementario">
+                                        <label for="marca" id="ec">marca</label>
+                                        <input type="text" class="form-control cajas" name="marcaCatalizador"
+                                            id="marcaCatalizador" placeholder="marca de catalizador">
+                                        <label for="Serie" id="esc">No. Serie</label>
+                                        <input type="text" class="form-control cajas" name="SerieCatalizador"
+                                            id="SerieCatalizador" placeholder="No.serie de catalizador">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn btn-light">
+                                <label for="exampleFormControlInput1" class="container-fluid titulo">BATERIA</label>
+                                <input type="radio" class="form-check-input cajas" name="BATERIA" id='checkBateria'
+                                    checked>Ok
+                                <!-- <label for="">Ok</label > -->
+                                <input type="radio" class="form-check-input" name="Bateria" id="sinBateria">No Tiene
+                                <!-- <label for="">No Tiene</label> -->
+                                <div id="bateriaComplementario">
+                                    <label for="marcaBateria" id="em">marca</label>
+                                    <input type="text" class="form-control cajas" name="marcaBateria" id="marcaBateria"
+                                        placeholder="marca de la bateria de la unidad">
+                                    <label for="Serie" id="es">No. Serie</label>
+                                    <input type="text" class="form-control cajas" name="SerieBateria" id="SerieBateria"
+                                        placeholder="No.serie de la bateria de la unidad">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="documentos" class="cuadricula btn btn-danger">
+                            <div class="">
+                                <label for="exampleFormControlInput1" class="form-label titulo">TARJETA DE
+                                    CIRCULACION</label>
+                                <input type="text" class="form-control cajas" id="UNIDAD"
+                                    placeholder="tarjeta circulacion" required name="tarjetaCirculacion">
+                                <label for="exampleFormControlInput1" class="form-label">VIGENCIA</label>
+                                <input type="datetime-local" class="form-control" name="vigenciaTarjetaCirculacion"
+                                    required>
+                            </div>
+                            <div class="">
+                                <label for="exampleFormControlInput1" class="form-label titulo">POLIZA DE SEGURO</label>
+                                <input type="text" class="form-control cajas" id="UNIDAD" placeholder="POLIZA" required
+                                    name="polizaSeguro">
+                                <label for="exampleFormControlInput1" class="form-label">VIGENCIA</label>
+                                <input type="datetime-local" class="form-control" name="vigenciaPolizaSeguro" required>
+                            </div>
+                            <div class="">
+                                <label for="exampleFormControlInput1" class="form-label titulo">VERIFICACION
+                                    VEHICULAR</label>
+                                <input type="text" class="form-control" id="UNIDAD" placeholder="Verificacion" required
+                                    name="verificacionVehicular">
+                                <label for="exampleFormControlInput1" class="form-label">VIGENCIA</label>
+                                <input type="datetime-local" class="form-control" name="vigenciaVerificacionVehicular"
+                                    required>
+                            </div>
+                            <div class="">
+                                <label for="exampleFormControlInput1" class="form-label titulo">MANUALES</label>
+                                <input type="text" class="form-control" id="UNIDAD" placeholder="Manual" required
+                                    name="manual">
+                                <label for="exampleFormControlInput1" class="form-label">VIGENCIA</label>
+                                <input type="datetime-local" class="form-control" name="vigenciaManual" required>
+                            </div>
+                            <div class="">
+                                <label for="exampleFormControlInput1" class="form-label titulo">Licencia</label>
+                                <input type="text" class="form-control" id="UNIDAD" placeholder="Licencia" required
+                                    name="licencia">
+                                <label for="exampleFormControlInput1" class="form-label">VIGENCIA</label>
+                                <input type="datetime-local" class="form-control" name="vigenciaLicencia" required>
+                            </div>
+                        </div>
+                        <div id="general" class="cuadricula btn btn-warning">
+                            <div class="btn btn-warning">
+                                <label for="anticongelante" class="form-label titulo">Anticongelante</label>
+                                <input type="text" class="form-control cajas" id=""
+                                    placeholder="nivel de anticongelante" required name="anticongelante">
+                            </div>
+                            <div class="btn-warning btn">
+                                <label for="nivelAceite" class="form-label titulo">aceite de motor</label>
+                                <input type="text" class="form-control cajas" id=""
+                                    placeholder="nivel de aceite en motor" required name="nivelAceite">
+                            </div>
+                            <div class="btn btn-warning">
+                                <label for="aceiteDireccion" class="form-label titulo">aceite de direccion</label>
+                                <input type="text" class="form-control cajas" id=""
+                                    placeholder="nivel de aceite en direccion" required name="aceiteDireccion">
+                            </div>
+                            <div class="btn btn-warning">
+                                <label for="aceiteTransmision" class="form-label titulo">aceite de transmision</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="aceite de transmision"
+                                    required name="aceiteTransmision">
+                            </div>
+
+
+                        </div>
+                        <div class="cuadricula btn btn-info">
+                            <div class="btn btn-info">
+                                <label for="liquidoFrenos" class="form-label titulo">Liquido de Frenos</label>
+                                <input type="text" class="form-control cajas" id=""
+                                    placeholder="nivel de liquido de frenos" required name="liquidoFrenos">
+                            </div>
+                            <div class="btn btn-info">
+                                <label for="liquidoClutch" class="form-label titulo">Liquido de clutch</label>
+                                <input type="text" class="form-control cajas" id=""
+                                    placeholder="nivel de liquido de Cluct" required name="liquidoClutch">
+                            </div>
+                            <div class="btn btn-info">
+                                <label for="limpiezaInterior" class="form-label titulo">limpieza interior</label>
+                                <input type="text" class="form-control cajas" id=""
+                                    placeholder="limpieza interior del vehiculo" required name="limpiezaInterior">
+                            </div>
+                            <div class="btn btn-info">
+                                <label for="limpiezaExterior" class="form-label titulo">limpieza exterior</label>
+                                <input type="text" class="form-control cajas" id=""
+                                    placeholder="limpieza exterior del vehiculo" required name="limpiezaExterior">
+                            </div>
+
+                        </div>
+                        <div class="cuadricula btn btn-success">
+                            <div class="btn btn-success">
+                                <label for="claxon" class="form-label titulo">CLAXON</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="funcionalidad claxon"
+                                    required name="claxon">
+                            </div>
+                            <div class="btn btn-success">
+                                <label for="luzFreno" class="form-label titulo">LUZ DE FRENO</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="luz del stop" required
+                                    name="luzFreno">
+                            </div>
+                            <div class="btn btn-success">
+                                <label for="intermitentes" class="form-label titulo">INTERMITENTES</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="luz intermitentes"
+                                    required name="intermitentes">
+                            </div>
+                            <div class="btn btn-success">
+                                <label for="direccionales" class="form-label titulo">DIRECCIONALES</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="DIRECCIONES" required
+                                    name="direccionales">
+                            </div>
+                            <div class="btn btn-success">
+                                <label for="luzReversa" class="form-label titulo">LUZ REVERSA</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="LUZ REVERSA" required
+                                    name="luzReversa">
+                            </div>
+                        </div>
+                        <div class="cuadricula btn btn-primary">
+                            <div class="btn btn-primary">
+                                <label for="luzCuartos" class="form-label titulo">LUZ CUARTOS</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="LUZ CUARTOS" required
+                                    name="luzCuartos">
+                            </div>
+                            <div class="btn btn-primary">
+                                <label for="luzBajas" class="form-label titulo">LUCES BAJAS</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="LUCES BAJAS" required
+                                    name="luzBajas">
+                            </div>
+                            <div class="btn btn-primary">
+                                <label for="luzAltas" class="form-label titulo">LUCES ALTAS</label>
+                                <input type="text" class="form-control cajas" id="" placeholder="LUCES ALTAS" required
+                                    name="luzAltas">
+                            </div>
+                        </div>
+                        <div class="form-floating btn-light" style="outline: solid black; margin: 0 1%; border: 10%;">
+                            <textarea class="form-control" style="border: 10%;"
+                                placeholder="Leave a comment here" id="observacionesG"
+                                name="observacionesG" required></textarea>
+                            <label for="observacionesG">Observaciones Generales</label>
+                        </div>
                     </div>
-                    <div class="">
-                        <label for="exampleFormControlInput1" class="form-label titulo">KILOMETRAJE</label>
-                        <input type="text" class="form-control cajas" placeholder="kilometraje actual del Vehiculo" name="kilometraje" required>
+                    <!--         
+        <input type="submit" style="margin-top: 2%;" class="btn btn-danger"> -->
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <input value="ENVIAR" class="btn btn-primary mt-3 mb-3" type="submit">
                     </div>
-                    <div class="">
-                        <label for="exampleFormControlInput1" class="form-label titulo">REGION</label>
-                        <input type="text" class="form-control cajas" placeholder="Region" name="region" required>
-                    </div>
-                    <div class="">
-                        <label for="exampleFormControlInput1" class="form-label titulo">USUARIO</label>
-                        <input type="text" class="form-control cajas" placeholder="Usuario" name="Usuario" required>
-                    </div>
-                    <div class="">
-                        <label for="exampleFormControlInput1" class="form-label titulo">RESPONSABLE</label>
-                        <input type="text" class="form-control cajas" placeholder="Responsable" name="Responsable" required>
-                    </div>
-                <!-- </details> -->
-                
-            </div>
-            <div class="" id="llantas">
-                <label for="" class="TITULO container-fluid">LLANTAS</label>
-                <div class="cuadricula">
-                    <div class="btn btn-success">
-                        <label for="" class="titulo">DELANTERA DERECHA</label>
-                        
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">medida</label>
-                            <input type="text" class="form-control cajas" placeholder="medida de la llanta" name="ddm" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">marca</label>
-                            <input type="text" class="form-control cajas" placeholder="marca de la llanta" name="ddmar" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">estado de vida</label>
-                            <input type="text" class="form-control cajas" placeholder="estado de vida" name="ddev" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">estado de rin</label>
-                            <input type="text" class="form-control cajas" placeholder="estado de rin" name="dder" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">polveras</label>
-                            <input type="text" class="form-control cajas" placeholder="polveras" name="ddp" required>
-                        </div>
-                    </div>
-                    <div class="btn btn-warning">
-                        <label for="" class="titulo">DELANTERA IZQUIERDA</label>
-                        
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">medida</label>
-                            <input type="text" class="form-control cajas" placeholder="medida de la llanta" name="dim" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">marca</label>
-                            <input type="text" class="form-control cajas" placeholder="marca de la llanta" name="dimar" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">estado de vida</label>
-                            <input type="text" class="form-control cajas" placeholder="estado de vida" name="diev" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">estado de rin</label>
-                            <input type="text" class="form-control cajas" placeholder="estado de rin" name="dier" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">polveras</label>
-                            <input type="text" class="form-control cajas" placeholder="polveras" name="dip" required>
-                        </div>
-                    </div>
-                    <div class="btn btn-info">
-                        <label for="" class="titulo">TRASERA DERECHA</label>
-                        
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">medida</label>
-                            <input type="text" class="form-control cajas" placeholder="medida de la llanta" name="tdm" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">marca</label>
-                            <input type="text" class="form-control cajas" placeholder="marca de la llanta" name="tdmar" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">estado de vida</label>
-                            <input type="text" class="form-control cajas" placeholder="estado de vida" name="tdev" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">estado de rin</label>
-                            <input type="text" class="form-control cajas" placeholder="estado de rin" name="tder" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">polveras</label>
-                            <input type="text" class="form-control cajas" placeholder="polveras" name="tdp" required>
-                        </div>
-                    </div>
-                    <div class="btn btn-danger">
-                        <label for="" class="titulo">TRASERA IZQUIERDA</label>
-                        
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label cajas">medida</label>
-                            <input type="text" class="form-control" placeholder="medida de la llanta" name="tim" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">marca</label>
-                            <input type="text" class="form-control cajas" placeholder="marca de la llanta" name="timar" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">estado de vida</label>
-                            <input type="text" class="form-control cajas" placeholder="estado de vida" name="tiev" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">estado de rin</label>
-                            <input type="text" class="form-control cajas" placeholder="estado de rin" name="tier" required>
-                        </div>
-                        <div class="">
-                            <label for="exampleFormControlInput1" class="form-label">polveras</label>
-                            <input type="text" class="form-control cajas" placeholder="polveras" name="tip" required>
-                        </div>
-                    </div>
-                        
-                </div>
-            <div class="cuadricula" id="bateria">
-                        
-                        
-                <div class="btn btn-light">
-                    <label for="exampleFormControlInput1" class="container-fluid titulo">CATALIZADOR</label>
-                    <div class="">
-                    <input type="radio" class="form-check-input" name="catalizador"  id="ConCat" checked>
-                    <label for="">Ok</label>
-                    <input type="radio" class="form-check-input" name="catalizador" id="SinCat">
-                    <label for="">No Tiene</label>
-                    <div id="catalizadorComplementario">
-                        <label for="marca" id="ec">marca</label>
-                        <input type="text" class="form-control cajas" name="marcaCatalizador" id="marcaCatalizador" placeholder="marca de catalizador">                    
-                        <label for="Serie" id="esc">No. Serie</label>
-                        <input type="text" class="form-control cajas" name="SerieCatalizador" id="SerieCatalizador" placeholder="No.serie de catalizador">
-                    </div>
-                    </div>
-                </div>
-                <div class="btn btn-light">
-                    <label for="exampleFormControlInput1" class="container-fluid titulo">BATERIA</label>
-                    <input type="radio" class="form-check-input cajas" name="BATERIA" id='checkBateria' checked>Ok
-                    <!-- <label for="">Ok</label > -->
-                    <input type="radio" class="form-check-input" name="BATERIA" id="sinBateria">No Tiene
-                    <!-- <label for="">No Tiene</label> -->
-                    <div id="bateriaComplementario">
-                        <label for="marcaBateria" id="em">marca</label>
-                        <input type="text" class="form-control cajas" name="marcaBateria" id="marcaBateria" placeholder="marca de la bateria de la unidad">
-                        <label for="Serie" id="es">No. Serie</label>
-                        <input type="text" class="form-control cajas" name="SerieBateria" id="SerieBateria" placeholder="No.serie de la bateria de la unidad">
-                    </div>
-                </div>
-            </div>
-            <div id="documentos" class="cuadricula btn btn-danger">
-                <div class="">
-                    <label for="exampleFormControlInput1" class="form-label titulo" >TARJETA DE CIRCULACION</label> 
-                    <input type="text" class="form-control cajas" id="UNIDAD" placeholder="tarjeta circulacion" required name="tarjetaCirculacion"> 
-                    <label for="exampleFormControlInput1" class="form-label" >VIGENCIA</label> 
-                    <input type="datetime-local" class="form-control" name="vigenciaTarjetaCirculacion" required>
-                </div>
-                <div class="">
-                    <label for="exampleFormControlInput1" class="form-label titulo" >POLIZA DE SEGURO</label> 
-                    <input type="text" class="form-control cajas" id="UNIDAD" placeholder="POLIZA" required name="polizaSeguro"> 
-                    <label for="exampleFormControlInput1" class="form-label" >VIGENCIA</label> 
-                    <input type="datetime-local" class="form-control" name="vigenciaPolizaSeguro" required>
-                </div>
-                <div class="">
-                    <label for="exampleFormControlInput1" class="form-label titulo" >VERIFICACION VEHICULAR</label> 
-                    <input type="text" class="form-control" id="UNIDAD" placeholder="Verificacion" required name="verificacionVehicular"> 
-                    <label for="exampleFormControlInput1" class="form-label" >VIGENCIA</label> 
-                    <input type="datetime-local" class="form-control" name="vigenciaVerificacionVehicular" required>
-                </div>
-                <div class="">
-                    <label for="exampleFormControlInput1" class="form-label titulo" >MANUALES</label> 
-                    <input type="text" class="form-control" id="UNIDAD" placeholder="Manual" required name="manual"> 
-                    <label for="exampleFormControlInput1" class="form-label" >VIGENCIA</label> 
-                    <input type="datetime-local" class="form-control" name="vigenciaManual" required>
-                </div>
-                <div class="">
-                    <label for="exampleFormControlInput1" class="form-label titulo" >Licencia</label> 
-                    <input type="text" class="form-control" id="UNIDAD" placeholder="Licencia" required name="licencia"> 
-                    <label for="exampleFormControlInput1" class="form-label" >VIGENCIA</label> 
-                    <input type="datetime-local" class="form-control" name="vigenciaLicencia" required>
-                </div>
-            </div>
-            <div id="general" class="cuadricula btn btn-warning">
-                <div class="btn btn-warning">
-                    <label for="anticongelante" class="form-label titulo">Anticongelante</label> 
-                    <input type="text" class="form-control cajas" id="" placeholder="nivel de anticongelante" required name="anticongelante"> 
-                </div>
-                <div class="btn-warning btn">
-                    <label for="nivelAceite" class="form-label titulo" >aceite de motor</label> 
-                    <input type="text" class="form-control cajas" id="" placeholder="nivel de aceite en motor" required name="nivelAceite"> 
-                </div>
-                <div class="btn btn-warning">
-                    <label for="aceiteDireccion" class="form-label titulo" >aceite de direccion</label> 
-                    <input type="text" class="form-control cajas" id="" placeholder="nivel de aceite en direccion" required name="aceiteDireccion"> 
-                </div>
-                <div class="btn btn-warning">
-                    <label for="aceiteTransmision" class="form-label titulo" >aceite de transmision</label> 
-                    <input type="text" class="form-control cajas" id="" placeholder="aceite de transmision" required name="aceiteTransmision"> 
-                </div>
-                
-                
-            </div>
-            <div class="cuadricula btn btn-info">
-                <div class="btn btn-info">
-                    <label for="liquidoFrenos" class="form-label titulo">Liquido de Frenos</label> 
-                    <input type="text" class="form-control cajas" id="" placeholder="nivel de liquido de frenos" required name="liquidoFrenos"> 
-                </div>    
-                <div class="btn btn-info">
-                    <label for="liquidoClutch" class="form-label titulo">Liquido de clutch</label> 
-                    <input type="text" class="form-control cajas" id="" placeholder="nivel de liquido de Cluct" required name="liquidoClutch"> 
-                </div>    
-                <div class="btn btn-info">
-                    <label for="limpiezaInterior" class="form-label titulo">limpieza interior</label> 
-                    <input type="text" class="form-control cajas" id="" placeholder="limpieza interior del vehiculo" required name="limpiezaInterior"> 
-                </div>    
-                <div class="btn btn-info">
-                    <label for="limpiezaExterior" class="form-label titulo">limpieza exterior</label> 
-                    <input type="text" class="form-control cajas" id=""  placeholder="limpieza exterior del vehiculo" required name="limpiezaExterior"> 
-                </div>
+                </form>
 
             </div>
-            <div class="cuadricula btn btn-success">
-                <div class="btn btn-success">
-                    <label for="claxon" class="form-label titulo">CLAXON</label> 
-                    <input type="text" class="form-control cajas" id=""  placeholder="funcionalidad claxon" required name="claxon"> 
-                </div>
-                <div class="btn btn-success">
-                    <label for="luzFreno" class="form-label titulo">LUZ DE FRENO</label>
-                    <input type="text" class="form-control cajas" id=""  placeholder="luz del stop" required name="luzFreno"> 
-                </div>
-                <div class="btn btn-success">
-                    <label for="intermitentes" class="form-label titulo">INTERMITENTES</label> 
-                    <input type="text" class="form-control cajas" id=""  placeholder="luz intermitentes" required name="intermitentes"> 
-                </div>
-                <div class="btn btn-success">
-                    <label for="direccionales" class="form-label titulo">DIRECCIONALES</label> 
-                    <input type="text" class="form-control cajas" id=""  placeholder="DIRECCIONES" required name="direccionales"> 
-                </div>
-                <div class="btn btn-success">
-                    <label for="luzReversa" class="form-label titulo">LUZ REVERSA</label> 
-                    <input type="text" class="form-control cajas" id=""  placeholder="LUZ REVERSA" required name="luzReversa"> 
-                </div>
-            </div>
-            <div class="cuadricula btn btn-primary">
-                <div class="btn btn-primary">
-                    <label for="luzCuartos" class="form-label titulo">LUZ CUARTOS</label> 
-                    <input type="text" class="form-control cajas" id=""  placeholder="LUZ CUARTOS" required name="luzCuartos"> 
-                </div>
-                <div class="btn btn-primary">
-                    <label for="luzBajas" class="form-label titulo">LUCES BAJAS</label> 
-                    <input type="text" class="form-control cajas" id=""  placeholder="LUCES BAJAS" required name="luzBajas"> 
-                </div>
-                <div class="btn btn-primary">
-                    <label for="luzAltas" class="form-label titulo">LUCES ALTAS</label> 
-                    <input type="text" class="form-control cajas" id=""  placeholder="LUCES ALTAS" required name="luzAltas"> 
-                </div>
-            </div>
-        </div>
-        
-        <input type="submit" value="ENVIAR" class="btn btn-danger">
-    </form>
-        
-</div>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="./../styles/estilos-checklist.css">
-<script src="./../scripts/funcionesCheckList.js"></script>
-</head>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+                integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+                crossorigin="anonymous">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+                crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="./../styles/estilos-checklist.css">
+            <script src="./../scripts/funcionesCheckList.js"></script>
+            </head>
 </body>
+
 </html>

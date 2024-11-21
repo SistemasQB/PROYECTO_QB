@@ -294,6 +294,10 @@ const CheckListVehiculos  = db.define('checkListVehiculos', {
         type: DataTypes.STRING,
         
         defaultValue: 'N/A'
+    },
+    observacionesG:{
+        type: DataTypes.TEXT,
+        defaultValue: 'N/A'
     }
 })
 
