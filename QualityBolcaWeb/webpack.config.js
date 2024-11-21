@@ -7,8 +7,8 @@ const __dirname = path.dirname(__filename); // get the name of the directory
 export default{
     mode: 'development',
     entry: {
-        mapa: './src/public/js/mapa.js',
-        agregarImagen: './src/public/js/agregarImagen.js'
+        mapa: './src/js/mapa.js',
+        agregarImagen: './src/js/agregarImagen.js'
     },
     output:{
         filename: '[name].js',

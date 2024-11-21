@@ -1,13 +1,14 @@
 import express from "express";
 import {default as adminController} from './../controllers/adminController.js';
 import protegetRuta from "../middleware/protegetRuta.js";
+import upload from "../middleware/subirImagen.js";
 
 const router = express.Router();
 
 router.get('/inicio', protegetRuta ,adminController.inicio);
 router.get('/enviarfoto', adminController.enviar);
 router.get('/requisicion', adminController.requisicion);
-router.post('/requisicion', adminController.requisicion2);
+router.post('/requisicion', upload.single('imagen') , adminController.requisicion2);
 router.get('/requisicionA', adminController.requisicionA);
 router.get('/directorio', adminController.directorio);
 router.post('/requisicionA', adminController.requisicionA2);

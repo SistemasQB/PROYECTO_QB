@@ -1,0 +1,33 @@
+<%// if (vCrup) { %>
+    <% console.log('informacion '  + vCrup[60]) %>
+    <% for (const [key, datos] of Object.entries(vCrup)) { %>
+        <% if (datos.comunicacion) { %>
+        <% //datos.telefono = datos[key].comunicacion.telefono %>
+        <% //datos.correo = datos.comunicacion.correo %>
+        
+        <div class="contenedor">
+            <h3><%= datos.nombre + ' ' + datos.apellidoPaterno + ' ' +datos.apellidoMaterno %></h3>
+            <div class="cartas">
+                <div class="foto">
+                    <% //var nomImg = datos.nombre.split(' ')[0] + ' ' + datos.apellidoPaterno%>
+                    <% //var nomImg = datos.nombre + ' ' +datos.apellidoPaterno%>
+                    <!-- <img src='./Fotos/<%=  //nomImg %>.jpg' alt=""> -->
+                </div>
+                <div>
+                    <ul role="list" class="">
+                        <li class="card-text">Puesto: <%= datos.puesto %></li>
+                        <li class="card-text">Region: <%= datos.region %></li>
+                        <% if (vCrup[key].comunicacion.telefono != '0') { %>
+                        <li class="card-text">Telefono: <%=  vCrup[key].comunicacion.telefono %></li>
+                        <% } %>
+                        <%if (vCrup[key].comunicacion.correo !='0') { %>
+                        <li class="card-text">Correo: <%= vCrup[key].comunicacion.correo %></li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    <% } %>
+<% } %>
+<% //} %>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="">
+        <input type="text" value="" placeholder="Titulo">
+        <input type="text" value="" placeholder="Categoria">
+        <input type="text" value="" placeholder="Precio">
+        <input type="text" value="" placeholder="Habitaciones">
+        <input type="text" value="" placeholder="Estacionamiento">
+        <input type="text" value="" placeholder="Baños">
+    </form>
+
+    <div>
+        <h3>Ubicación</h3>
+        <p>Ubica la propiedad en el mapa</p>
+        <div id="mapa" class=""  style="height: 500px; width: 500px;"></div>
+        <div>
+            <p class="calle"></p>
+        </div>
+        <input type="hidden" name="calle" id="calle">
+        <input type="hidden" name="lat" id="lat">
+        <input type="hidden" name="lng" id="lng">
+    </div>
+
+        <script src = "https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+        <script src = "https://unpkg.com/esri-leaflet@3.0.8/dist/esri-leaflet.js"></script>
+        <script src = "https://unpkg.com/esri-leaflet-geocoder@2.2.13/dist/esri-leaflet-geocoder.js"></script>
+        <script src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet-geosearch/2.7.0/bundle.min.js"></script>
+        <script src="./../scripts/admin/mapa.js"></script>
+</body>
+
+</html>

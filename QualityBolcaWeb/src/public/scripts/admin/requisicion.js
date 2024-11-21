@@ -1,3 +1,6 @@
+import { Dropzone } from 'dropzone';
+
+
 const selDep = document.getElementById('dropdown1')
 const listaProcesos = document.getElementById('dropdown2')
 const inpPU = document.getElementById('texto1')
@@ -8,7 +11,7 @@ const total = document.getElementById('total')
 const cuenta = document.getElementById('cuenta');
 const contador = document.getElementById('contador');
 
-
+// alert('Funciona')
 
 var option1, option2, option3, option4
 var vTotal = 0
