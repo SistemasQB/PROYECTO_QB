@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REGISTRO DE MANTENIMIENTO AUTONOMO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="../img/firma1-removebg-preview.png" alt="Logo">
+        </div>
+        <h1 class="titulo">REGISTRO DE MANTENIMIENTO AUTONOMO</h1>
+        <div class="informacion">
+            <p>Código: QB-FR-A-16-01</p>
+            <p>Rev.: 00</p>
+            <p>Fecha de emisión: 10-04-2023</p>
+            <p>Fecha de revisión: N/A</p>
+        </div>
+    </header>
+
+    <!-- Formulario adicional -->
+    <section class="formulario">
+        <form class="row g-3 mt-2" id="formManA">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            <div class="col-md-6">
+                <label for="inputRegion" class="form-label">Region</label>
+                <input type="text" class="form-control" id="inputRegion" name="region" required>
+            </div>
+            <div class="col-md-6">
+                <label for="inputState" class="form-label">Tipo de equipo</label>
+                <select id="inputState" class="form-select" name="tipo" required>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Ensamblado">Ensamblado</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c1" type="checkbox" id="flexCheck1">
+                <label class="form-check-label" for="flexCheck1">Desinstalar Programas</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c2" type="checkbox" id="flexCheck2">
+                <label class="form-check-label" for="flexCheck2">Quitar Archivos</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c3" type="checkbox" id="flexCheck3">
+                <label class="form-check-label" for="flexCheck3">Borrar Temporales</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c4" type="checkbox" id="flexCheck4">
+                <label class="form-check-label" for="flexCheck4">Borrar Cookies</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c5" type="checkbox" id="flexCheck5">
+                <label class="form-check-label" for="flexCheck5">Realizar Actualizaciones</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c6" type="checkbox" id="flexCheck6">
+                <label class="form-check-label" for="flexCheck6">Funcionamiento de Altavoces</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c7" type="checkbox" id="flexCheck7">
+                <label class="form-check-label" for="flexCheck7">Funcionamiento de Puertos USB</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c8" type="checkbox" id="flexCheck8">
+                <label class="form-check-label" for="flexCheck8">Funcionamiento de Adaptador de Red</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c9" type="checkbox" id="flexCheck9">
+                <label class="form-check-label" for="flexCheck9">Limpieza General del Equipo</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c10" type="checkbox" id="flexCheck10">
+                <label class="form-check-label" for="flexCheck10">Funcionamiento de Camara y Microfono</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c11" type="checkbox" id="flexCheck11">
+                <label class="form-check-label" for="flexCheck11">Funcionamiento y Limpieza de Teclado y Mouse</label>
+            </div>
+            <div class="col-md-4">
+                <input class="form-check-input" name="c12" type="checkbox" id="flexCheck12">
+                <label class="form-check-label" for="flexCheck12">Funcionamiento Cargador y Centro de Carga</label>
+            </div>
+            <div class="d-grid gap-2 mt-5 col-6 mx-auto">
+                <button class="btn btn-primary" id="btnRegistroma" type="submit">Enviar</button>
+            </div>
+        </form>
+    </section>
+</body>
+
+<style>
+    /* Reset de márgenes y padding */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Estilos generales del cuerpo */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 20px;
+    }
+
+    /* Estilos del encabezado */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        padding: 10px 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Estilos del logo */
+    .logo img {
+        height: 50px;
+        /* Ajusta según el tamaño del logo */
+    }
+
+    /* Estilos del título */
+    .titulo {
+        flex: 1;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    /* Estilos de la sección de información */
+    .informacion {
+        text-align: right;
+    }
+
+    .informacion p {
+        margin: 2px 0;
+    }
+</style>
+
+<script>
+    const btnRegistroma = document.getElementById('btnRegistroma');
+    const registroForm = document.getElementById('formManA');
+
+
+
+    
+
+    registroForm?.addEventListener('submit', e => {
+        e.preventDefault()
+        const flexCheck1 = document.getElementById('flexCheck1')
+    const flexCheck2 = document.getElementById('flexCheck2')
+    const flexCheck3 = document.getElementById('flexCheck3')
+    const flexCheck4 = document.getElementById('flexCheck4')
+    const flexCheck5 = document.getElementById('flexCheck5')
+    const flexCheck6 = document.getElementById('flexCheck6')
+    const flexCheck7 = document.getElementById('flexCheck7')
+    const flexCheck8 = document.getElementById('flexCheck8')
+    const flexCheck9 = document.getElementById('flexCheck9')
+    const flexCheck10 = document.getElementById('flexCheck10')
+    const flexCheck11 = document.getElementById('flexCheck11')
+    const flexCheck12 = document.getElementById('flexCheck12')
+
+    flexCheck1.value = flexCheck1.checked
+    flexCheck2.value = flexCheck2.checked
+    flexCheck3.value = flexCheck3.checked
+    flexCheck4.value = flexCheck4.checked
+    flexCheck5.value = flexCheck5.checked
+    flexCheck6.value = flexCheck6.checked
+    flexCheck7.value = flexCheck7.checked
+    flexCheck8.value = flexCheck8.checked
+    flexCheck9.value = flexCheck9.checked
+    flexCheck10.value = flexCheck10.checked
+    flexCheck11.value = flexCheck11.checked
+    flexCheck12.value = flexCheck12.checked
+
+        const formData = new FormData(registroForm)
+        const urlEncoded = new URLSearchParams(formData).toString();
+
+
+        fetch('./registroma', {
+            method: 'POST',
+            body: urlEncoded,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
+            // .then(
+            //     response => response.json()
+            // )
+            .then(res => {
+                if (res.ok) {
+                    Swal.fire({
+                        title: 'Enviado',
+                        icon: 'success',
+                        text: 'Informacion enviada con exito'
+                    }),
+                        setTimeout(() => {
+                            location.href = 'registroma'
+                        }, 2000)
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        icon: 'error',
+                        text: `${res.msg}`
+                    })
+                }
+            }).catch(
+                function (error) {
+                    console.log("Hubo un problema con la petición Fetch:" + error.message);
+                }
+            )
+    })
+</script>
+
+</html>

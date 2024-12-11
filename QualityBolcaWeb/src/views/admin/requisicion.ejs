@@ -26,14 +26,14 @@
             <nav></nav>
             <div class="container-md">
 
-                <form class="dropzone row g-3 needs-validation" action="/admin/requisicion" id="formRequisicion" method="post">
+                <form class=" row g-3 needs-validation" action="/admin/requisicion" id="formRequisicion" method="post">
                     <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                     <!-- ----------------------------------------------Datos Generales------------------------------------------- -->
                     <h3 style="text-align: center;">REQUISICION DE COMPRA</h3>
                     <div class="col-md-4">
                         <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#exampleModal">
                             Visualizar Rentabilidades
-                          </button>
+                        </button>
                     </div>
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -342,9 +342,9 @@
                             id="floatingTextarea"></textarea>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class=" col-md-6">
                         <label for="formFile" class="form-label">Subir imagen</label>
-                        <input class="form-control" name="imagen" type="file" id="formFile">
+                        <input class="dropzone form-control" name="imagen" type="file" id="formFile">
                     </div>
 
                     <div>

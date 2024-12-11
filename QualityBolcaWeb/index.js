@@ -8,6 +8,7 @@ import db from "./src/config/db.js";
 import myConnection from "express-myconnection";
 import mysql from "mysql2";
 import cors from "cors";
+
 // import multer from "multer";
 
 import Swal from 'sweetalert2'
@@ -15,6 +16,7 @@ import Swal from 'sweetalert2'
 import { default as customerRoutes } from "./src/routes/userRoutes.js";
 import { default as adminRoutes } from "./src/routes/adminRoutes.js";
 import { default as allRoutes } from "./src/routes/allRoutes.js";
+import { default as sistemasRoutes } from "./src/routes/sistemasRoutes.js";
 
 import mimeTypes from "mime-types";
 import fetch from 'node-fetch'
@@ -83,56 +85,16 @@ export function alerta( tipoA, mensaje) {
 
 app.use(express.static('./src/public'));
 
-// const conecta = mariadb.createPool({
-//   host:'86.38.218.253',
-//   user:'mysql',
-//   password:'8646559a',
-//   port:'3308',
-//   database:'express'
-// })
-//definir base de datos
-// app.use(myConnection(mysql, {
-//   host: '86.38.218.253',
-//   user: 'mariadb',
-//   password: '8646559a',
-//   port: '3308',
-//   database: 'express'
-// }, 'single'));
-
-// app.use(myConnection(conecta))
-
 //Habilirar  EJS
 app.set('views', path.join('\src', 'views'));
 app.set('view engine', 'ejs');
 
 
-
-
-// const storage = multer.diskStorage({
-//   destination: 'uploads/',
-//   filename: function (req, file, cb) {
-//     cb("", 'curriculum' + '.' + mimeTypes.extension(file.mimetype));
-//   }
-// })
-
-// const upload = multer({
-//   storage: storage
-// })
-
-
-//Routing
-// app.get('/', customerRoutes);
-// app.get('/registro', customerRoutes);
-// app.get('/olvide-password', customerRoutes);
-// app.get('/directorio', customerRoutes);
-// app.get('/mantenimiento', customerRoutes);
-// app.get('/solicitud', customerRoutes);
-// app.post('/enviar', customerRoutes);
-// app.post('/enviarCorreo', customerRoutes);
-// app.post('/uploader', upload.single('avatar'), (req, res)=>{});
 app.use('/', customerRoutes);
 app.use('/admin', adminRoutes);
 app.use('/all', allRoutes);
+app.use('/sistemas', sistemasRoutes);
+
 
 
 

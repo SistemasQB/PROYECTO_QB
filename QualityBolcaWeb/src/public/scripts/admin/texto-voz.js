@@ -22,3 +22,5 @@ btnVoz.addEventListener ('click',async () =>{
     wav.fromScratch(1, output.sampling_rate, '32f', output.audio);
     fs.writeFileSync('out.wav', wav.toBuffer());
 })
+
+

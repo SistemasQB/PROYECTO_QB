@@ -30,20 +30,20 @@ loginForm?.addEventListener('submit',  e => {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         }
-    }
-    ).then(
-        response => response.json()
-    ).then(res => {
+    })
+    // .then(
+    //     response => response.json(),
+    // )
+    .then(res => {
         console.log('antes de antrar al res.ok', checkedR);
             if (res.ok) {
                 console.log('Entrando al res.ok', checkedR.checked);
-                debugger
                 if (checkedR) {
                     localStorage.setItem('correo', inputEmail.value)
                 } else {
                     sessionStorage.setItem('correo', inputEmail.value);
                 }
-                location.href = 'inicio'
+                location.href = '/inicio'
             } else {
                 Swal.fire({
                     title: 'Error',

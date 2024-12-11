@@ -99,10 +99,10 @@ controller.autenticar = async (req, res) => {
 
     //Almacenaren luna cookie
 
-    // return res.cookie('_token', token, {
-    //     httpOnly: true,
-    //     secure: true,
-    // }).redirect('/inicio')
+    res.cookie('_token', token, {
+        httpOnly: true,
+        secure: true,
+    })
 
     res.status(200).send({ok: true});
     return

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/@coreui/coreui-pro@5.8.0/dist/css/coreui.min.css" rel="stylesheet"
+        integrity="sha384-hbx3WW3VEnpFGfGaaDgwb9GZ5DxxQebbCzE/MHHkkH7RbRhEoI3aXxDAFxNnTGnt" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui-pro@5.8.0/dist/js/coreui.bundle.min.js"
+        integrity="sha384-aUfnS+hkMBjwlmClHswy/heTcxNQGkwv2aZATR+O6N9AfSs9Q3a2BJZSlrMeg2sS"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<style>
+    body {
+        /* background: #1C1E26; */
+        height: 100vh;
+        display: flex;
+    }
+
+    .container_calendar {
+        width: 400px;
+        height: 550px;
+        margin: 5% auto;
+    }
+
+    .body_calendar {
+        width: 100%;
+        height: 100%;
+        background: white;
+        border-radius: 0px 0px 15px 15px;
+        margin-top: 5%;
+    }
+
+    .container_weedays {
+        width: 90%;
+        height: 40px;
+        /* background: #fa80725e; */
+        display: flex;
+        margin: 0px auto;
+    }
+
+    .container_weedays span {
+        color: #506CF5;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        height: 100%;
+        line-height: 2.5;
+    }
+
+    #contenedor_calendarios{
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .week_days_item {
+        display: flex;
+        /* background: firebrick; */
+        margin: auto;
+        width: calc(100% / 7);
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .week_days_item:hover {
+        color: #506CF5;
+    }
+
+    .prev_days {
+        opacity: 0.5;
+    }
+
+    .container_days {
+        width: 90%;
+        height: auto;
+        /* background: darkcyan; */
+        display: flex;
+        flex-flow: row wrap;
+        margin: 0px auto;
+    }
+
+    .container_days span {
+        color: #4e4e4e;
+        /* background: #000; */
+        height: 20px;
+        margin: 5px 0px;
+        padding: 0px;
+        font-family: Arial;
+    }
+
+    .container_days .today {
+        display: flex;
+    }
+
+    .container_days .today:after {
+        content: "";
+        width: 19px;
+        height: 19px;
+        background: #506CF5;
+        position: absolute;
+        border-radius: 50%;
+        border: 5px solid #506CF5;
+        opacity: 0.6;
+        margin: -5px 0px 0px 1px;
+    }
+
+    /*# sourceMappingURL=styles.css.map */
+</style>
+
+<header>
+    <button class="btn btn-primary mt-3 ms-3" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+        <img
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAExJREFUSEtjZKAxYKSx+QyjFhAM4QEJov8EnYVfAYqjsfmA5hZQ6AFU7QMSBzT3Ac3jgOYW0DyIhr4FNI8Dmlsw9ONg1AcoIUDz0hQAbegGGXzv/l0AAAAASUVORK5CYII=" />
+    </button>
+    <!-- <%- include('partials/_navbar2'); %> -->
+</header>
+
+<body>
+    <div class="container" style="text-align: center;">
+        <h2>Solicitud de vacaciones</h2>
+        <h5 style="color: lightskyblue;">Oscar Artruo De luna Lujan</h5>
+        <h6>Dias restantes <p>10</p>
+        </h6>
+        <div class="container mt-5">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="#">Día</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Rango</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Mixto</a></li>
+                </ul>
+            </nav>
+            <div class="container text-center">
+                <div class="row">
+                    <div class="col-sm-6 col-lg-5 mb-3 mb-sm-0">
+                        <div data-coreui-locale="en-US" data-coreui-placeholder="Seleccionar Fecha"
+                            data-coreui-toggle="date-picker"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div data-coreui-toggle="date-range-picker" data-coreui-placeholder="Fecha Inical, Fecha Final">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container text-center" id="contenedor_calendarios">
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days1">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days2">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days3">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days4">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days5">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days6">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days7">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days8">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days9">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days10">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days11">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+                <div class="body_calendar" id="body_calendar">
+                    <div class="container_weedays">
+                        <span class="week_days_item">D</span>
+                        <span class="week_days_item">L</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">M</span>
+                        <span class="week_days_item">J</span>
+                        <span class="week_days_item">V</span>
+                        <span class="week_days_item">S</span>
+                    </div>
+                    <div class="container_days" id="container_days12">
+                        <span class="week_days_item item_day"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+var now = new Date();
+
+
+const body_calendar = document.getElementById('body_calendar')
+    // const contenedorDias2 = document.getElementById('contenedorDias')
+
+    const body_calendar2 = document.getElementsByClassName('body_calendar')
+
+    
+    var monthName = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+    "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    const fechaIngreso = 3;
+    var comodin = fechaIngreso
+    for (let index = 0; index < 12; index++) {
+        if (comodin > 11) {
+            comodin = 0
+        }
+        const titulo = document.createElement('h5')
+        titulo.textContent = monthName[comodin]
+        body_calendar2[index].appendChild(titulo)
+        comodin++
+    }
+
+    var day = now.getDate();
+    // var month = now.getMonth();
+    var month = fechaIngreso
+    var currentMonth = month;
+    var year = now.getFullYear();
+
+    var year2 = year
+
+    initCalender();
+
+    function initCalender() {
+        for(let i = startDay(month); i>0; i--){
+        $("#container_days1").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +1); i>0; i--){
+        $("#container_days2").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +2); i>0; i--){
+        $("#container_days3").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +3); i>0; i--){
+        $("#container_days4").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +4); i>0; i--){
+        $("#container_days5").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +5); i>0; i--){
+        $("#container_days6").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +6); i>0; i--){
+        $("#container_days7").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +7); i>0; i--){
+        $("#container_days8").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +8); i>0; i--){
+        $("#container_days9").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +9); i>0; i--){
+        $("#container_days10").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +10); i>0; i--){
+        $("#container_days11").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+        for(let i = startDay(month +11); i>0; i--){
+        $("#container_days12").append
+        (`<span class="week_days_item item_day prev_days">${getTotalDays(month-1)-(i-1)}</span>`);
+        }
+}
+
+    for(let i=1; i<=getTotalDays(month); i++){
+        $("#container_days1").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+1); i++){
+        $("#container_days2").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+
+    for(let i=1; i<=getTotalDays(month+2); i++){
+        $("#container_days3").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+3); i++){
+        $("#container_days4").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+4); i++){
+        $("#container_days5").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+5); i++){
+        $("#container_days6").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+6); i++){
+        $("#container_days7").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+7); i++){
+        $("#container_days8").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+8); i++){
+        $("#container_days9").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+9); i++){
+        $("#container_days10").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+10); i++){
+        $("#container_days11").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    for(let i=1; i<=getTotalDays(month+11); i++){
+        $("#container_days12").append
+        (`<span class="week_days_item item_day">${i}</span>`);
+    }
+    
+    function startDay(month2) {
+        if (month2>11) {
+            year2 = year + 1
+            month2 = month2 - 12
+        }
+        var start = new Date(year2, month2, 0);
+         
+        return ((start.getDate() - 1) === -1) ? 6 : start.getDay();
+    }
+
+    function leapMonth(c) {
+        if (c) {
+            return ((year + 1 % 400 === 0) || (year + 1 % 4 === 0) && (year + 1 % 100 !== 0));
+        }else{
+            return ((year % 400 === 0) || (year% 4 === 0) && (year% 100 !== 0));
+        }
+    }
+    var bisiesto = false
+    function getTotalDays(month2) {
+
+        if (month2 > 11) {
+            bisiesto = true
+            month2 = month2 - 12
+        }
+
+        if (month2 === -1) month2 = 11;
+
+        var numMonthReal = month2 + 1;
+
+        console.log(numMonthReal);
+        
+
+        if( numMonthReal == 1 || numMonthReal == 3 || numMonthReal == 5 || numMonthReal == 8 || numMonthReal == 7 || numMonthReal == 10 || numMonthReal == 12){
+        return 31;
+    }else if( numMonthReal == 4 || numMonthReal == 6 || numMonthReal == 11
+             ||  numMonthReal == 9 ){
+        return 30;
+    }else{
+        return leapMonth(bisiesto) ? 29:28;
+    }
+    }
+</script>
+
+</html>
+
+
+<!-- date-picker-input -->
+    

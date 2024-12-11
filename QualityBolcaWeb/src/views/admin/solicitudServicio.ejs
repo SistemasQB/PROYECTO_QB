@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLICITUD DE SERVICIO</title>
+    <link rel="stylesheet" href="./../styles/admin/checks.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../img/favicon.png" alt="Logo">
+        </div>
+        <h1 class="titulo">SOLICITUD DE SERVICIO</h1>
+        <div class="informacion">
+            <p>Código: QB-FR-A-16-03</p>
+            <p>Rev.: 00</p>
+            <p>Fecha de emisión: 10-04-2023</p>
+            <p>Fecha de revisión: N/A</p>
+        </div>
+    </header>
+
+    <!-- Formulario adicional -->
+    <section class="formulario">
+        
+        <form action="#" method="POST">
+            <label for="folio">Folio:</label>
+            <input type="text" id="folio" name="folio" required>
+
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" name="fecha" required>
+
+            <label for="region">Región:</label>
+            <input type="text" id="region" name="region" required>
+
+            <label for="nombre">Nombre del solicitante:</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <label for="dispositivo">Tipo de dispositivo:</label>
+            <input type="text" id="dispositivo" name="dispositivo" required>
+
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
+
+            <button type="submit" style="background-color: blue; color: white;">Enviar</button>
+
+    </section>
+</body>
+</html>

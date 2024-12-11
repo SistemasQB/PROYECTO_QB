@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REGISTRO DE MANTENIMIENTO AUTONOMO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./../styles/admin/checks.css">
+</head>
+
+<header>
+    <button class="btn btn-primary mt-3 ms-3" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+        <img
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAExJREFUSEtjZKAxYKSx+QyjFhAM4QEJov8EnYVfAYqjsfmA5hZQ6AFU7QMSBzT3Ac3jgOYW0DyIhr4FNI8Dmlsw9ONg1AcoIUDz0hQAbegGGXzv/l0AAAAASUVORK5CYII=" />
+    </button>
+    <%- include('../partials/_navbar2'); %>
+</header>
+
+<body style="align-self: center;">
+    <div class="d-grid gap-2 mt-6 mb-4 col-8 mx-auto">
+        <h1>REGISTRO DE MANTENIMIENTO AUTONOMO</h1>
+    </div>
+
+    <div class="container-md">
+        <table class="table">
+            <thead class="table-info">
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Region</th>
+                    <th scope="col">Registro</th>
+                </tr>
+            </thead>
+            <tbody style="background-color: transparent;">
+
+            </tbody>
+        </table>
+    </div>
+    <!-- Button trigger modal -->
+
+    <!-- Modal -->
+    <div class="modal modal-xl fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="logo">
+                        <img src="../img/firma1-removebg-preview.png" alt="Logo">
+                    </div>
+                    <h1 class="titulo">REGISTRO DE MANTENIMIENTO AUTONOMO</h1>
+                    <div class="informacion">
+                        <p>Código: QB-FR-A-16-01</p>
+                        <p>Rev.: 00</p>
+                        <p>Fecha de emisión: 10-04-2023</p>
+                        <p>Fecha de revisión: N/A</p>
+                    </div>
+                </div>
+                <div id="modalBody" class="modal-body row g-3">
+                    <div class="col-md-6">
+                        <label for="inputEmail4" class="form-label">Fecha</label>
+                        <p id="pFecha"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputPassword4" class="form-label">Región:</label>
+                        <p id="pRegion"></p>
+                    </div>
+                    <div class="col-6">
+                        <label for="inputAddress" class="form-label">Nombre quien realiza:</label>
+                        <p id="pNombre"></p>
+                    </div>
+                    <div class="col-3">
+                        <label for="inputAddress2" class="form-label">e-mail:</label>
+                        <p id="pEmail"></p>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="inputCity" class="form-label">Tipo de Equipo :</label>
+                        <p id="pTipo"></p>
+                    </div>
+                    <div class="col-md-12 text-center" style="background-color: rgba(31,78,120,255); color: white; font-weight: bold;">
+                        Checklist
+                    </div>
+                    <!-- ----------------------------Checklist----------------------------------------------- -->
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist1">
+                        <label class="form-check-label" for="checklist1">
+                            Desintalar programas
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist2">
+                        <label class="form-check-label" for="checklist2">
+                            Quitar archivos
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist3">
+                        <label class="form-check-label" for="checklist3">
+                            Borrar Temporales
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist4">
+                        <label class="form-check-label" for="checklist4">
+                            Borrar cookies
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist5">
+                        <label class="form-check-label" for="checklist5">
+                            Realizar actualizaciones
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist6">
+                        <label class="form-check-label" for="checklist6">
+                            Funcionamiento de altavoces
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist7">
+                        <label class="form-check-label" for="checklist7">
+                            Funcionamiento puertos USB
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist8">
+                        <label class="form-check-label" for="checklist8">
+                            Funcionamiento adaptador de red
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist9">
+                        <label class="form-check-label" for="checklist9">
+                            Limpieza general del equipo
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist10">
+                        <label class="form-check-label" for="checklist10">
+                            Funcionamiento de camara y microfono
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist11">
+                        <label class="form-check-label" for="checklist11">
+                            Funcionamiento y limpieza de teclado y mouse
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input class="form-check-input"  type="checkbox" value="" id="checklist12">
+                        <label class="form-check-label" for="checklist12">
+                            Funcionamiento cargador y centro de carga
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <h6>Firma de quien realiza</h6>
+                    <h6 id="hNombre" style="text-decoration: underline;"></h6>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+                <p style="font-size: 50%; background-color: rgba(217,217,217,255) ;" class="text-center">Carr. A Paso Blanco No. 300, Localidad Tepetates c.p.20908, Jesús María Aguascalientes</p>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<script>
+    const serverData = <%- resultador %>;
+
+    console.log(serverData);
+
+
+    const tbody = document.querySelector('tbody')
+    const modalBody = document.getElementById('modalBody')
+    const pFecha = document.getElementById('pFecha')
+    const pRegion = document.getElementById('pRegion')
+    const pNombre = document.getElementById('pNombre')
+    const pEmail = document.getElementById('pEmail')
+    const pTipo = document.getElementById('pTipo')
+    const hNombre = document.getElementById('hNombre')
+
+    
+
+    // const checklist1 = document.getElementById('checklist1')
+    // const checklist2 = document.getElementById('checklist2')
+    // const checklist3 = document.getElementById('checklist3')
+    // const checklist4 = document.getElementById('checklist4')
+    // const checklist5 = document.getElementById('checklist5')
+    // const checklist6 = document.getElementById('checklist6')
+    // const checklist7 = document.getElementById('checklist7')
+    // const checklist8 = document.getElementById('checklist8')
+    // const checklist9 = document.getElementById('checklist9')
+    // const checklist10 = document.getElementById('checklist10')
+    // const checklist11 = document.getElementById('checklist11')
+    // const checklist12 = document.getElementById('checklist12')
+
+
+    //   const modal = document.getElementById('exampleModal')
+    const modal = new bootstrap.Modal('#exampleModal')
+
+    for (let index = 0; index < serverData.length; index++) {
+        const tr = document.createElement('tr')
+        const td1 = document.createElement('td')
+        const td2 = document.createElement('td')
+        const td3 = document.createElement('td')
+        const td4 = document.createElement('td')
+        const btn = document.createElement('button')
+
+        // JSON.parse(JSON.stringify(planta, null, 2))
+
+        td1.textContent = serverData[index].nombre
+        td2.textContent = serverData[index].createdAt
+        td3.textContent = serverData[index].region
+
+        td3.setAttribute('id', 'pRegion2')
+        btn.innerHTML = "Mostrar"
+
+        btn.setAttribute('class', 'btn btn-primary')
+        btn.setAttribute('type', 'button')
+        // btn.setAttribute('data-bs-target','#exampleModal')
+        // btn.setAttribute('data-bs-toggle','modal')
+        btn.addEventListener('click', () => mostarModal(index))
+
+
+        tbody.appendChild(tr);
+        tr.appendChild(td1)
+        tr.appendChild(td2)
+        tr.appendChild(td3)
+        tr.appendChild(td4)
+        td4.appendChild(btn)
+    }
+    
+    function mostarModal(e) {
+
+        const checlist = document.getElementsByClassName('form-check-input')
+
+        pFecha.innerText = serverData[e].createdAt
+        pRegion.innerText = serverData[e].region
+        pNombre.innerText = serverData[e].nombre
+        pEmail.innerText = serverData[e].email
+        pTipo.innerText = serverData[e].tipo
+        hNombre.innerText = serverData[e].nombre
+
+
+        const cs = [
+        serverData[e].c1,
+        serverData[e].c2,
+        serverData[e].c3,
+        serverData[e].c4,
+        serverData[e].c5,
+         serverData[e].c6,
+         serverData[e].c7,
+         serverData[e].c8,
+         serverData[e].c9,
+         serverData[e].c10,
+         serverData[e].c11,
+         serverData[e].c12]
+         
+        // ciclo para marcar los checks
+        for (let c = 0; c < 12; c++) {
+            if (cs[c] == 1) {
+                checlist[c].checked = true
+            }else{
+                checlist[c].checked = false
+            }
+            checlist[c].disabled = true
+        }
+
+        modal.show();
+    }
+
+</script>
+
+<script src="./../scripts/sistemas/registromati.js"></script>
+
+</html>

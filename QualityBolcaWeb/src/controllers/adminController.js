@@ -2,6 +2,8 @@ import express from "express";
 import Listas from "../models/listas.js"
 import Requisicion from "../models/requisicion.js"
 import Curso from "../models/cursos.js"
+import PedirCurso from "../models/pedirCurso.js"
+import RegistroMa from "../models/registroma.js";
 import RegistroCursos from "../models/registroCursos.js"
 import Comunicacion from "../models/comunicacion.js"
 import Gch_alta from "../models/gch_alta.js"
@@ -167,7 +169,7 @@ controller.cursos2 = async (req, res) => {
     
 }
 
-controller.subirCurso = async (req, res) => {
+controller.subirCurso =  (req, res) => {
     res.render('admin/registrarCursos',{
         mensaje: false,
         csrfToken: req.csrfToken()
@@ -197,6 +199,99 @@ controller.subirCurso2 = async(req, res) => {
         mensaje: true,
         csrfToken: req.csrfToken()
     })
+}
+
+controller.solicitudServicio =  (req, res) => {
+    res.render('admin/solicitudServicio',{
+        mensaje: false,
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.solicitudServicio2 = async(req, res) => {
+    const { nombreCurso, descripcion, capacitador, duracion, correoContacto, disponible, fechaInicio, fechaFinal, horarioInicio, horarioFinal, ubicacion } = req.body
+    
+    const cursoDatos = await Curso.create({
+        nombreCurso,
+        descripcion,
+        capacitador,
+        duracion,
+        correoContacto,
+        disponible,
+        fechaInicio,
+        fechaFinal,
+        horarioInicio,
+        horarioFinal,
+        ubicacion
+    });
+    
+    
+
+    res.render('admin/solicitudServicio',{
+        mensaje: true,
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.pedirCurso = (req, res) => {
+    res.render('admin/pedirCurso',{
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.pedirCurso2 = async(req, res) => {
+    const { nombre, curso } = req.body
+
+    const pedirC = await PedirCurso.create({
+        nombre,
+        curso
+    });
+}
+
+controller.registroma = async (req, res) => {
+    const vRegistro = await RegistroMa.findAll();
+    res.render('admin/registroma',{
+        vRegistro,
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.registroma2 = async(req, res) => {
+    const { nombre, email  } = req.usuario
+    const { region, tipo, c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12 } = req.body    
+    const registroDatos = await RegistroMa.create({
+        nombre,
+        region,
+        tipo,
+        email,
+        c1,
+        c2,
+        c3,
+        c4,
+        c5,
+        c6,
+        c7,
+        c8,
+        c9,
+        c10,
+        c11,
+        c12
+    });
+
+    res.status(200).send({ok: true});
+    return
+    // res.render('admin/registroma',{
+    //     mensaje: true,
+    //     csrfToken: req.csrfToken()
+    // })
+}
+
+controller.vacaciones = (req, res) =>{
+    res.render('admin/vacaciones')
+}
+
+controller.vacaciones2 = (req, res) =>{
+    res.render('admin/vacaciones')
 }
 
 controller.voz = (req, res) => {
