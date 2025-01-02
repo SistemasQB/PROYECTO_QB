@@ -22,7 +22,6 @@ loginForm?.addEventListener('submit',  e => {
     const checkedR = document.getElementById('checkRemember').checked;
     const formData = new FormData(loginForm)
     const urlEncoded = new URLSearchParams(formData).toString();
-    console.log('entrando al fetch');
 
      fetch('/login', {
         method: 'POST',

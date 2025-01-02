@@ -3,7 +3,7 @@ const table = document.querySelector('table')
 const tbody = document.querySelector('tbody')
 const formSolicitarC = document.getElementById('formData')
 
-var datosCurso
+var datosCurso = ''
 
 function agregarCurso() {
 

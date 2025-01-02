@@ -40,6 +40,8 @@ router.get('/solicitud', customerController.paginaSolicitud);
 router.post('/enviar', customerController.paginaSolicitud2);
 router.post('/uploader', customerController.uploads);
 router.post('/enviarCorreo', customerController.enviarCorreo);
+router.get('/juegos', customerController.juegos);
+router.post('/juegos', customerController.juegos2);
 
 
 export default router;

@@ -1,4 +1,4 @@
-import { Dropzone } from 'dropzone';
+// import { Dropzone } from 'dropzone';
 
 
 const selDep = document.getElementById('dropdown1')
@@ -136,9 +136,9 @@ btnAgregarFila.addEventListener('click', () => {
     agregarFila()
 })
 
-cuenta.addEventListener('keyup', () =>{
-    contador.textContent = 18 - cuenta.value.length
-})
+// cuenta.addEventListener('keyup', () =>{
+//     contador.textContent = 18 - cuenta.value.length
+// })
 
 function limpiar() {
     while (listaProcesos.firstChild) {

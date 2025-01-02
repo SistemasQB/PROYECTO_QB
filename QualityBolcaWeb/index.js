@@ -17,6 +17,7 @@ import { default as customerRoutes } from "./src/routes/userRoutes.js";
 import { default as adminRoutes } from "./src/routes/adminRoutes.js";
 import { default as allRoutes } from "./src/routes/allRoutes.js";
 import { default as sistemasRoutes } from "./src/routes/sistemasRoutes.js";
+import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
 
 import mimeTypes from "mime-types";
 import fetch from 'node-fetch'
@@ -35,7 +36,7 @@ const app = express();
 app.use(cors());
 // export const upload = multer({ dest: 'uploads2/'})
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -94,6 +95,7 @@ app.use('/', customerRoutes);
 app.use('/admin', adminRoutes);
 app.use('/all', allRoutes);
 app.use('/sistemas', sistemasRoutes);
+app.use('/calidad', calidadRoutes);
 
 
 

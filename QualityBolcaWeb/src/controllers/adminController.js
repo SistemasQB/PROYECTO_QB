@@ -126,6 +126,12 @@ controller.requisicion2 = async (req, res) => {
     })
 }
 
+controller.requisicion3 = async (req, res) => {
+
+    console.log('subiendo imagen...');
+    
+}
+
 controller.requisicionA = async (req, res) => {
     const requi = await Requisicion.findAll();
     res.render('admin/requisicionA',{

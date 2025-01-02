@@ -6,6 +6,7 @@ import Usuario from "../models/Usuario.js"
 import Listas from "../models/listas.js"
 import Gch_Alta from "../models/gch_alta.js"
 import CheckListVehiculos from "../models/checklist.js";
+import JuegosM from "../models/juegos.js";
 import ControlDispositivos from "../models/ControlDispositivos.js"
 import EncuestaS from "../models/encuestaSatisfaccion.js"
 import Swal from 'sweetalert2'
@@ -16,6 +17,7 @@ import { check, validationResult } from "express-validator";
 import { alerta } from "../../index.js";
 import { generarJWT, generarId } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
+import Juegos from "../models/juegos.js";
 
 
 
@@ -731,6 +733,29 @@ controller.enviarCorreo = (req, res) => {
             main().catch(console.error);
         });
     });
+}
+
+controller.juegos = async (req, res) => {
+    const resultadosJugadores = await JuegosM.findAll({
+        order: [['wpm', 'DESC']],
+        limit: 10,
+    });
+
+    res.render('auth/juegos', {
+        csrfToken: req.csrfToken(),
+        resultadosJugadores
+    })
+}
+
+controller.juegos2 = async (req, res) => {
+
+    const { nombreJugador, wpm, accuracy } = req.body
+    const juegosR = await JuegosM.create({
+        nombreJugador, wpm, accuracy
+    })
+    // res.render('auth/juegos', {
+    //     csrfToken: req.csrfToken()
+    // })
 }
 
 export default controller;
