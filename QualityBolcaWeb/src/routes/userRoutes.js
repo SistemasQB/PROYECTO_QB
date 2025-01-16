@@ -1,12 +1,7 @@
 import 'dotenv/config'
 import express from "express";
 import {default as customerController} from './../controllers/customerController.js';
-
-import multer from "multer";
-
-
-const upload = multer({ dest: 'uploads/'})
-
+import upload from "../middleware/subirpdf.js";
 
 const router = express.Router();
 
@@ -36,12 +31,17 @@ router.get('/encuestaSatisfaccion', customerController.encuestaSatisfaccion)
 router.post('/encuestaSatisfaccion', customerController.encuestaSatisfaccion2)
 router.get('/directorio', customerController.paginaDirectorio);
 router.get('/mantenimiento', customerController.paginaMantenimiento);
-router.get('/solicitud', customerController.paginaSolicitud);
+router.get('/solicitud/:cp', customerController.paginaSolicitud);
+router.post('/solicitud', customerController.paginaSolicitud2);
+// router.post('/solicitud/:cp', customerController.paginaSolicitud3);
+router.get('/subirsolicitud/:id',customerController.subirSolicitud);
+router.post('/subirsolicitud/:id', upload.single('pdfFile'),customerController.subirSolicitud2);
 router.post('/enviar', customerController.paginaSolicitud2);
 router.post('/uploader', customerController.uploads);
 router.post('/enviarCorreo', customerController.enviarCorreo);
 router.get('/juegos', customerController.juegos);
 router.post('/juegos', customerController.juegos2);
+router.get('/documentosControlados', customerController.documentosControlados);
 
 
 export default router;

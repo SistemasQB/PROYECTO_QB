@@ -32,6 +32,5 @@ router.get('/voz', adminController.voz);
 router.get('/crear', adminController.crear);
 
 
-
 export default router;
 

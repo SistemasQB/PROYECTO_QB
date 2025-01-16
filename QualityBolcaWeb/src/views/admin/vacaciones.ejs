@@ -615,7 +615,7 @@
 
     // Función para eliminar un número del array si ya existe
 function eliminarNumero(numeroYear ,numberoDia) {
-    const anadir = (numberoDia) + '' + (numeroYear)
+    const anadir = (numberoDia + 1) + '' + (numeroYear)
     const anadir2 = parseInt(anadir)
     const index = diassolicitados.indexOf(anadir2);
     if (index !== -1) {
@@ -675,9 +675,31 @@ function eliminarNumero(numeroYear ,numberoDia) {
             return leapMonth(bisiesto) ? 29 : 28;
         }
     }
+
+
+    function convertirDiaEnFecha(diaDelAno, ano) {
+    // Crear una fecha inicial en el primer día del año
+    let fecha = new Date(ano, 0, 1);
+    // Sumar los días especificados
+    fecha.setDate(fecha.getDate() + diaDelAno - 1);
+    
+    // Obtener el día, mes y año de la fecha resultante
+    let dia = fecha.getDate();
+    let mes = fecha.getMonth() + 1; // Los meses en JavaScript son 0-indexados
+    let anoResultante = fecha.getFullYear();
+    
+    return `${dia}/${mes}/${anoResultante}`;
+}
+
+// Ejemplo de uso
+let resultado = convertirDiaEnFecha(35, 2025);
+console.log(resultado); // Salida: "4/2/2025"
+
 </script>
 
 </html>
+
+
 
 
 <!-- date-picker-input -->

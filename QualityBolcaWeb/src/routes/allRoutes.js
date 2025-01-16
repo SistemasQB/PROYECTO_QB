@@ -6,7 +6,4 @@ const router = express.Router();
 // router.get('/subirCurso', allController.subirCurso);
 // router.post('/subirCurso', allController.subirCurso2);
 
-
-
-
 export default router;

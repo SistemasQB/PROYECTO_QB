@@ -8,7 +8,8 @@ export default{
     mode: 'development',
     entry: {
         mapa: './src/js/mapa.js',
-        agregarImagen: './src/js/agregarImagen.js'
+        agregarImagen: './src/js/agregarImagen.js',
+        agregarpdf: './src/js/agregarpdf.js',
     },
     output:{
         filename: '[name].js',

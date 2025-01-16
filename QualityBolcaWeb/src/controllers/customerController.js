@@ -1,14 +1,18 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from 'uuid';
 import { transporter } from "../../index.js";
 import Usuario from "../models/Usuario.js"
 import Listas from "../models/listas.js"
 import Gch_Alta from "../models/gch_alta.js"
 import CheckListVehiculos from "../models/checklist.js";
 import JuegosM from "../models/juegos.js";
+import PuestosM from "../models/puestos.js";
+import SolicitudM from "../models/atraccion/solicitud.js";
 import ControlDispositivos from "../models/ControlDispositivos.js"
 import EncuestaS from "../models/encuestaSatisfaccion.js"
+import cpsM from "../models/cps.js"
 import Swal from 'sweetalert2'
 import multer from "multer";
 import mimeTypes from "mime-types";
@@ -21,7 +25,8 @@ import Juegos from "../models/juegos.js";
 
 
 
-const upload = multer ({dest: 'files/'})
+
+const upload = multer({ dest: 'files/' })
 
 const app = express();
 // const upload = multer({ dest: 'images/' })
@@ -39,20 +44,20 @@ controller.autenticar = async (req, res) => {
     await check('email').isEmail().withMessage('El correo es obligatorio').run(req);
     await check('password').notEmpty().withMessage('La contrseña es obligatoria').run(req);
     let error
-    
+
     let resultado = validationResult(req);
     //Verificar que el resultado este vacio
     if (!resultado.isEmpty()) {
         // console.log('Campos vacios');
         // error = [{}];
-        res.status(400).send({ msg: 'Completa los campos', ok: false});
+        res.status(400).send({ msg: 'Completa los campos', ok: false });
         // return res.render('auth/login', {
         //     errores: resultado.array(),
         //     csrfToken: req.csrfToken(),
         // })
         return
     }
-    
+
     const { email, password } = req.body
 
     //comporbar si el usuario existe
@@ -63,10 +68,10 @@ controller.autenticar = async (req, res) => {
         //     errores: [{ msg: 'El usuario no existe' }],
         //     csrfToken: req.csrfToken(),
         // })
-        error = [{  }];
-        
+        error = [{}];
+
         // res.send(errores)
-        res.status(400).send({msg: 'El usuario no existe', ok: false});
+        res.status(400).send({ msg: 'El usuario no existe', ok: false });
         return
     }
     // console.log('El usuario buscado es:' + usuario.nombre);
@@ -76,9 +81,9 @@ controller.autenticar = async (req, res) => {
         //     errores: [{ msg: 'tu cuenta no ha sido confirmada' }],
         //     csrfToken: req.csrfToken(),
         // })
-        error = [{  }];
+        error = [{}];
         // res.send(errores)
-        res.status(400).send({msg: 'tu cuenta no ha sido confirmada', ok: false});
+        res.status(400).send({ msg: 'tu cuenta no ha sido confirmada', ok: false });
         return
     }
 
@@ -89,9 +94,9 @@ controller.autenticar = async (req, res) => {
         //     errores: [{ msg: 'La contrseña no es correcta' }],
         //     csrfToken: req.csrfToken(),
         // })
-        error = [{  }];
+        error = [{}];
         // res.send(errores)
-        res.status(400).send({msg: 'La contrseña no es correcta', ok: false});
+        res.status(400).send({ msg: 'La contrseña no es correcta', ok: false });
         return
     }
 
@@ -106,7 +111,7 @@ controller.autenticar = async (req, res) => {
         secure: true,
     })
 
-    res.status(200).send({ok: true});
+    res.status(200).send({ ok: true });
     return
     // res.render('auth/login', {
     //     errores: '',
@@ -362,8 +367,127 @@ controller.requisicion2 = async (req, res) => {
     const Requisicion = await Requisicion.create(req.body);
 }
 
-controller.paginaSolicitud = (req, res) => {
-    res.render('auth/solicitud')
+
+controller.paginaSolicitud = async(req, res) => {
+
+    // const { cp } = req.params
+
+    // const cps = await cpsM.findAll({ attributes: ['colonia', 'estado'], where: { cp: cp } })
+
+    res.render('auth/solicitud', {
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.paginaSolicitud2 = async (req, res) => {
+
+    const {
+        puesto,
+        sueldo,
+        nombre,
+        apellidoP,
+        apellidoM,
+        correo,
+        telefono,
+        direccion,
+        region,
+        cp,
+        experiencia,
+        adeudos,
+        cv } = req.body
+
+    try {
+        const resSolcitudM = await SolicitudM.create({
+            id: uuidv4(),
+            puesto,
+            sueldo,
+            nombre,
+            apellidoP,
+            apellidoM,
+            correo,
+            telefono,
+            direccion,
+            region,
+            cp,
+            experiencia,
+            adeudos,
+            cv
+        })
+        res.json({ ok: true, id: resSolcitudM.id });
+        // res.status(200).send({ solId: resSolcitudM.id});
+        return
+    } catch (error) {
+        console.log('error al enviar informaicon' + error);
+
+        res.status(400).send({ ok: false, message: error });
+        return
+    }
+
+
+
+}
+
+controller.paginaSolicitud3 = async (req, res) => {
+
+    const { cp } = req.params
+
+    const cps = await cpsM.findAll({ attributes: ['colonia', 'estado'], where: { cp: cp } })
+
+    console.log(cps);
+        
+        res.json({ ok: true, id: resSolcitudM.id });
+        // res.status(200).send({ solId: resSolcitudM.id});
+        return
+}
+
+controller.subirSolicitud = async (req, res) => {
+
+    const { id } = req.params
+    //validar la solicitud existente
+
+
+    const solicitud = await SolicitudM.findByPk(id)
+
+
+
+    if (!solicitud) {
+        return res.redirect('/solicitud');
+    }
+
+    //validar la solicitud no tenga pdf
+
+    if (solicitud.cv != null) {
+        return res.redirect('/solicitud');
+    }
+
+    res.render('auth/subirsolicitud', {
+        csrfToken: req.csrfToken(),
+        solicitud
+    })
+}
+
+controller.subirSolicitud2 = async (req, res, next) => {
+    const { id } = req.params
+
+    const solicitud = await SolicitudM.findByPk(id)
+
+
+    // solicitud.cv = req.file.filename
+
+    // await solicitud.save()
+
+    try {
+        console.log('nombre de la imagen', req.file.filename);
+
+        //almacenar el pdf
+        solicitud.cv = req.file.filename
+        await solicitud.save()
+        next()
+
+    } catch (error) {
+        console.log(error);
+
+    }
 }
 
 controller.asistencia = async (req, res) => {
@@ -543,9 +667,9 @@ controller.agregarImagen = async (req, res) => {
 
 controller.agregarImagen2 = (req, res) => {
     upload.single('file')
-    console.log(req.body);
-    console.log(req.file);
-    
+    // console.log(req.body);
+    // console.log(req.file);
+
 
     // res.render('auth/agregar-imagen', {
     //     csrfToken: req.csrfToken(),
@@ -553,24 +677,8 @@ controller.agregarImagen2 = (req, res) => {
     // })
 }
 
-controller.paginaSolicitud2 = (req, res) => {
-    const datos = req.body;
-
-    req.getConnection((err, conn) => {
-        // console.log(datos.nombre)
-        // conn.query('insert into solicitudEmpleo set ?', [datos], (err, customers) => {
-        conn.query(`insert into solicitudEmpleo set puesto='analista', sueldo='10000', nombre='nose', correo='info.sistemas@qualitybolca.com', telefono='4492737260', direccion='amazonita 313', adeudos='1';`, (err, customers) => {
-            if (err) {
-                res.json(err);
-            }
-            res.render('auth/solicitud', {
-            });
-        });
-    });
-}
 
 controller.uploads = (req, res) => {
-    console.log('Entrando al post1');
     const datos = req.body;
 
     if (!datos.nombre) {
@@ -727,7 +835,6 @@ controller.enviarCorreo = (req, res) => {
                     text: 'hola',
                     html: cuerpo
                 });
-                console.log("Message sent: %s", info.messageId);
                 // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.semail>
             }
             main().catch(console.error);
@@ -756,6 +863,10 @@ controller.juegos2 = async (req, res) => {
     // res.render('auth/juegos', {
     //     csrfToken: req.csrfToken()
     // })
+}
+
+controller.documentosControlados = (req, res) => {
+    res.render('auth/documentoscontrolados')
 }
 
 export default controller;

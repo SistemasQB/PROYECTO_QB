@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <title>Perfiles de Usuarios - Quality BOLCA</title>
+    <style>
+        :root {
+            --primary-blue: #0099FF;
+            --secondary-blue: #0066FF;
+            --dark-text: #333333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        header {
+            background: var(--white);
+            color: var(--dark-text);
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 50px;
+            margin-right: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--dark-text);
+        }
+
+        .search-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        #search {
+            width: 60%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        #search:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .user-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .user-card h3 {
+            margin-top: 0;
+            color: var(--primary-blue);
+        }
+
+        .user-card p {
+            margin: 5px 0;
+            color: var(--dark-text);
+        }
+
+        .user-card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-card a:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../img/logo.jpg" alt="Quality BOLCA Logo">
+                    <h1>Perfiles de Usuarios</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Buscar usuarios...">
+        </div>
+
+
+        <% // if (registro) { %>
+            <div class="user-grid">
+                <% for (const [key, datos] of Object.entries(registro)) { %>
+                    <% let nombreC=datos.nombre +' ' + datos.apellidoP + ' ' + datos.apellidoM %>
+                    <div class="user-card">
+                        <h3>Nombre: <%= nombreC %></h3>
+                        <p>Sueldo: <%= datos.sueldo %></p>
+                        <p>Puesto: <%= datos.puesto %></p>
+                        <p>Correo: <%= datos.correo %></p>
+                        <p>Telefono: <%= datos.telefono %></p>
+                        <p>Direccion: <%= datos.direccion %></p>
+                        <p>Experiencia: <%= datos.experiencia %></p>
+                        <p>Adeudos: <%= datos.adeudos %></p>
+                        
+                        <!-- Button trigger modal -->
+
+                            <input type="button" class="btn btn-primary"
+                            onclick="adjuntarPdf('<%=datos.cv%>','<%= nombreC %>')" value="Ver CV">
+
+
+                            <% if(datos.revisado !=null) {%>
+                                <p>revisado: <%= datos.revisado %></p>
+                                <%}%>
+                                
+                                <% switch(datos.estatus) {
+                                    case 0: %>
+                                        <p style="color:#8a4cda;">Pendiente de revisar</p>
+                                        <% break; %>
+                                    <% case 1:%>
+                                        <p style="color: #44e413f5;">Candidato Apto</p>
+                                        <%break; %>
+                                    <% case 2:%>
+                                        <p style="color: #e95a68;">Candidato No Apto</p>
+                                        <%break; %>
+                                <% } %>
+
+            </div>
+            <% } %>
+    </div>
+    <% //} %>
+
+
+
+        </div>
+
+        <section>
+            <!-- Modal -->
+            <div class="modal fade modal-lg" id="embedModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div style="height: 100%;" class="modal-dialog">
+                    <div style="height: 80%;" class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel" style="text-transform: uppercase;">
+                            </h1>
+                        </div>
+                        <div class="modal-body">
+                            <embed id="embedPdf" type="" style="width: 100%; height: 100%;">
+                        </div>
+                        <div class="modal-footer" style="justify-content: center">
+                            <textarea class="form-control" name="" id="textComentario" rows="2"
+                                placeholder="Comentario"></textarea>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="estatus" id="inlineRadio1"
+                                    value="1">
+                                <label class="form-check-label" for="inlineRadio1">Candidato Apto</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" checked name="estatus"
+                                    id="inlineRadio2" value="2">
+                                <label class="form-check-label" for="inlineRadio2">Candidato No Apto</label>
+                            </div>
+                            
+                        </div>
+                        <button type="button" class="btn btn-success" id="btnComentario" hidden
+                            data-bs-dismiss="">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+
+            document.getElementById('search').addEventListener('input', function (e) {
+                let filter = e.target.value.toLowerCase();
+                let userCards = document.getElementsByClassName('user-card');
+
+                for (let i = 0; i < userCards.length; i++) {
+                    let userName = userCards[i].getElementsByTagName('h3')[0].textContent.toLowerCase();
+                    if (userName.indexOf(filter) > -1) {
+                        userCards[i].style.display = "";
+                    } else {
+                        userCards[i].style.display = "none";
+                    }
+                }
+            });
+
+            const embedModal = new bootstrap.Modal(document.getElementById('embedModal'))
+            const staticBackdropLabel = document.getElementById('staticBackdropLabel')
+            function adjuntarPdf(numeroPdf, key2) {
+                staticBackdropLabel.textContent = key2
+                embedModal.show()
+                const embedPdf = document.getElementById('embedPdf');
+                let rutapdf = '../cv/' + numeroPdf
+                embedPdf.setAttribute('src', rutapdf)
+            }
+            const btnComentario = document.getElementById('btnComentario')
+            const textComentario = document.getElementById('textComentario')
+            textComentario.addEventListener('keyup', () => {
+                if (textComentario.value.length > 10) {
+                    btnComentario.hidden = false
+                }
+            })
+
+            btnComentario.addEventListener('click', () => {
+                // embedModal.dispose()
+                embedModal.hide()
+            })
+        </script>
+</body>
+
+</html>

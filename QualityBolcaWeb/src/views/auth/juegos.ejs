@@ -217,13 +217,25 @@
 
   const myModal = new bootstrap.Modal(document.getElementById('exampleModal'))
   const btnempezarJuego = document.getElementById('btnempezarJuego')
+  const inputNombre = document.getElementById('formGroupExampleInput')
 
 
   document.body.onload = function () {
     myModal.show()
   }
 
+  inputNombre.addEventListener('keydown', function(e) {
+    if (e.code === 'Enter') {
+      jugar2()
+    }
+  });
+
+
   btnempezarJuego.addEventListener('click', function () {
+    jugar2()
+  })
+
+  function jugar2() {
     const nombreJugar = document.getElementById('formGroupExampleInput')
     if (nombreJugar.value != "") {
       myModal.hide()
@@ -235,7 +247,7 @@
         icon: "error"
       });
     }
-  })
+  }
 
 
 
@@ -431,7 +443,7 @@
     }
   }
 
-  function gameOver() {
+function gameOver() {
     $game.style.display = 'none'
     $results.style.display = 'flex'
 
