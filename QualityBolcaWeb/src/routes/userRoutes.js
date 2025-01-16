@@ -31,7 +31,7 @@ router.get('/encuestaSatisfaccion', customerController.encuestaSatisfaccion)
 router.post('/encuestaSatisfaccion', customerController.encuestaSatisfaccion2)
 router.get('/directorio', customerController.paginaDirectorio);
 router.get('/mantenimiento', customerController.paginaMantenimiento);
-router.get('/solicitud/:cp', customerController.paginaSolicitud);
+router.get('/solicitud', customerController.paginaSolicitud);
 router.post('/solicitud', customerController.paginaSolicitud2);
 // router.post('/solicitud/:cp', customerController.paginaSolicitud3);
 router.get('/subirsolicitud/:id',customerController.subirSolicitud);
