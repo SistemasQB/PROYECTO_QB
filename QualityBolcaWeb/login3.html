@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Quality BOLCA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background-color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    padding: 2rem;
+}
+
+.login-card {
+    background: #2a2a2a;
+    max-width: 400px;
+    margin: 0 auto;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.logo-container {
+    background: white;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+}
+
+.logo {
+    width: 80px;
+    height: auto;
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 1.75rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+input {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #3a3a3a;
+    border: 2px solid #4a4a4a;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #0088cc;
+    box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.2);
+}
+
+label {
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    color: #888;
+    font-size: 1rem;
+    transition: all 0.3s;
+    pointer-events: none;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label {
+    top: -0.5rem;
+    left: 0.5rem;
+    font-size: 0.75rem;
+    color: #0088cc;
+    background-color: #2a2a2a;
+    padding: 0 0.25rem;
+}
+
+.login-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #0088cc;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.login-button:hover {
+    background-color: #0099ee;
+}
+
+.login-button:active {
+    transform: translateY(1px);
+}
+
+.links {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.links a {
+    color: #0088cc;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.3s;
+}
+
+.links a:hover {
+    color: #0099ee;
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 1.5rem;
+    }
+    
+    .logo-container {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .logo {
+        width: 70px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="card-image">
+                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo.jpg-no8f3olTcDHC94ldkTYYtQHazX5uCs.jpeg" alt="Quality BOLCA Logo" class="logo">
+            </div>
+            <div class="card-form">
+                <h2>Bienvenido de vuelta</h2>
+                <p>Por favor, ingresa tus credenciales para acceder</p>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Correo electrónico" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Contraseña" required>
+                    </div>
+                    <div class="remember-forgot">
+                        <label>
+                            <input type="checkbox" id="remember">
+                            Recordarme
+                        </label>
+                        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    <button type="submit" class="login-button">Iniciar sesión</button>
+                </form>
+                <p class="signup-link">¿No tienes una cuenta? <a href="#">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

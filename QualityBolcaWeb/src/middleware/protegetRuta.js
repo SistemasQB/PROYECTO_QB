@@ -5,7 +5,7 @@ import { Usuario } from '../models/index.js';
 
 
 const protegerRuta = async(req, res, next) =>{
-
+    // sessionStorage.setItem('comprobacion','12');
     //Verificar si hay un tok<en
     const { _token } = req.cookies
     if(!_token){
@@ -26,6 +26,7 @@ const protegerRuta = async(req, res, next) =>{
             return res.redirect('/')
         }
         return next();
+
     } catch (erro) {
         return res.clearCookie('_token').redirect('/')
     }

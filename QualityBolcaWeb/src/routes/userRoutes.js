@@ -43,5 +43,7 @@ router.get('/juegos', customerController.juegos);
 router.post('/juegos', customerController.juegos2);
 router.get('/documentosControlados', customerController.documentosControlados);
 
+router.get('/api/:variable', customerController.api);
+
 
 export default router;

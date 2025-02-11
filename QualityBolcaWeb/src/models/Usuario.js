@@ -3,25 +3,25 @@ import bcrypt from "bcrypt";
 import db from "../config/db.js";
 
 const Usuario = db.define('usuario', {
-    nombre:{
-        type: DataTypes.STRING,
-        allowNull: false
+    codigoempleado:{
+        type: DataTypes.STRING(30),
+        primaryKey: true
     },
-    puesto:{
+    permisos:{
         type: DataTypes.STRING,
-        allowNull: false
-    },
-    email:{
-        type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     password:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     token: DataTypes.STRING,
-    confirmado: DataTypes.BOOLEAN
+    confirmado: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0
+    }
 },{
+    timestamps: false,
     hooks:{
         beforeCreate: async function (usuario) {
             const salt = await bcrypt.genSalt(10);

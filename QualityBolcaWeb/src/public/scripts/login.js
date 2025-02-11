@@ -7,7 +7,7 @@ const $ = el => document.querySelector(el)
 const logForm = $('#loginBtn')
 const regForm = $('#registerBtn')
 
-const loginForm = $('#login-form')
+const loginForm = document.getElementById('loginForm')
 const registerForm = $('#register-form')
 const logoutButton = $('#close-session')
 
@@ -19,10 +19,10 @@ const inputEmail = document.getElementById('inputEmail')
 
 loginForm?.addEventListener('submit',  e => {
     e.preventDefault()
-    const checkedR = document.getElementById('checkRemember').checked;
+    // const checkedR = document.getElementById('checkRemember').checked;
     const formData = new FormData(loginForm)
     const urlEncoded = new URLSearchParams(formData).toString();
-
+    
      fetch('/login', {
         method: 'POST',
         body: urlEncoded,
@@ -30,24 +30,15 @@ loginForm?.addEventListener('submit',  e => {
             'Content-Type': 'application/x-www-form-urlencoded',
         }
     })
-    // .then(
-    //     response => response.json(),
-    // )
+    .then(response => response.json())
     .then(res => {
-        console.log('antes de antrar al res.ok', checkedR);
             if (res.ok) {
-                console.log('Entrando al res.ok', checkedR.checked);
-                if (checkedR) {
-                    localStorage.setItem('correo', inputEmail.value)
-                } else {
-                    sessionStorage.setItem('correo', inputEmail.value);
-                }
                 location.href = '/inicio'
             } else {
                 Swal.fire({
                     title: 'Error',
                     icon: 'error',
-                    text: `${res.msg}`
+                    text: res.msg
                 })
             }
         }).catch(

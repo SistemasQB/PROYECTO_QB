@@ -54,54 +54,5 @@ const Mejora = db.define('mejora', {
     timestamps: false,
 });
 
-const Beneficio = db.define('beneficio', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    mejora_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Mejora,
-            key: 'id'
-        },
-        allowNull: false,
-    },
-    tipo_beneficio: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-    }
-}, {
-    timestamps: false,
-});
 
-const ProcesoMejora = db.define('proceso_mejora', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    mejora_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Mejora,
-            key: 'id'
-        },
-        allowNull: false,
-    },
-    descripcion: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
-    }
-}, {
-    timestamps: false,
-});
-
-// Definir relaciones
-Mejora.hasMany(Beneficio, { foreignKey: 'mejora_id' });
-Mejora.hasMany(ProcesoMejora, { foreignKey: 'mejora_id' });
-Beneficio.belongsTo(Mejora, { foreignKey: 'mejora_id' });
-ProcesoMejora.belongsTo(Mejora, { foreignKey: 'mejora_id' });
-
-export { Mejora, Beneficio, ProcesoMejora };
+export default Mejora 

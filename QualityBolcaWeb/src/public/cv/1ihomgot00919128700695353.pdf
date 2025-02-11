@@ -1,0 +1,306 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 6195
+>>
+stream
+0.5670000000000001 w
+0 G
+BT
+/F1 16 Tf
+18.3999999999999986 TL
+0 g
+28.3464566929133888 813.5435433070865656 Td
+() Tj
+T* (                            <input type="hidden" name="_csrf" value="XTq6w4dI-3l_TymA0kxzcJTWb9Q7HkZ-ZHdQ">) Tj
+T* (                            <div class="form-group">) Tj
+T* (                                <label for="puesto">Puesto Solicitado</label>) Tj
+T* (                                <input type="text" class="form-control" name="puesto" id="puesto" placeholder="Ingresa el puesto solicitado" required="" style="text-transform:uppercase">) Tj
+T* (                            </div>) Tj
+T* (                            <div class="form-group">) Tj
+T* (                                <label for="sueldo">Sueldo Mensual Esperado</label>) Tj
+T* (                                <input type="text" class="form-control" name="sueldo" id="sueldo" placeholder="Ingresa el sueldo esperado" required="" onkeypress="return event.charCode >= 48 &amp;&amp; event.charCode <= 57">) Tj
+T* (                            </div>) Tj
+T* (                            <div class="row">) Tj
+T* (                                <div class="col">) Tj
+T* (                                    <label for="nombre">Nombre\(s\)</label>) Tj
+T* (                                    <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Ingresa tu nombre" required="" style="text-transform:uppercase">) Tj
+T* (                                </div>) Tj
+T* (                                <div class="col">) Tj
+T* (                                    <label for="nombre">Apellido Paterno</label>) Tj
+T* (                                    <input type="text" name="apellidoP" class="form-control" id="apellidoP" placeholder="Ingresa tu apellido paterno" required="" style="text-transform:uppercase">) Tj
+T* (                                </div>) Tj
+T* (                                <div class="col">) Tj
+T* (                                    <label for="nombre">Apellido Materno</label>) Tj
+T* (                                    <input type="text" name="apellidoM" class="form-control" id="apellidoM" placeholder="Ingresa tu apellido materno" required="" style="text-transform:uppercase">) Tj
+T* (                                </div>) Tj
+T* (                            </div>) Tj
+T* (                            <div class="form-group">) Tj
+T* (                                <label for="email">Correo Electrónico</label>) Tj
+T* (                                <input type="email" name="correo" class="form-control" id="email" placeholder="Ingresa tu correo electrónico" style="text-transform:lowercase">) Tj
+T* (                            </div>) Tj
+T* (                            <div class="row">) Tj
+T* (                                <div class="col">) Tj
+T* (                                    <label for="nombre">Número de Teléfono</label>) Tj
+T* (                                    <input type="tel" name="telefono" class="form-control" id="telefono" placeholder="Ingresa tu número de teléfono" required="" style="text-transform:uppercase" onkeypress="return event.charCode >= 48 &amp;&amp; event.charCode <= 57">) Tj
+T* (                                </div>) Tj
+T* (                                <div class="col">) Tj
+T* (                                    <label for="nombre">Region</label>) Tj
+T* (                                    <input type="text" name="region" class="form-control" id="region" placeholder="Ingresa tu region" required="" style="text-transform:uppercase">) Tj
+T* (                                </div>) Tj
+T* (                                <div class="col">) Tj
+T* (                                    <label for="nombre">Codigo Postal</label>) Tj
+T* (                                    <input type="text" name="cp" class="form-control" id="cp" placeholder="Ingresa tu codigo postal" required="" onkeypress="return event.charCode >= 48 &amp;&amp; event.charCode <= 57">) Tj
+T* (                                        <button class="btn btn-info" type="button" id="btnCP">Buscar</button>) Tj
+T* (                                </div>) Tj
+T* (                            </div>) Tj
+T* (                            <div class="form-group">) Tj
+T* (                                <label for="direccion">Dirección</label>) Tj
+T* (                                <input type="text" name="direccion" class="form-control" id="direccion" placeholder="Calle Numero Colonia" required="" style="text-transform:uppercase">) Tj
+T* (                            </div>) Tj
+T* (                            <div class="form-group">) Tj
+T* (                                <label for="experiencia">Experiencia Laboral</label>) Tj
+T* (                                <textarea class="form-control" name="experiencia" id="experiencia" rows="4" placeholder="Describe tu experiencia laboral"></textarea>) Tj
+T* (                            </div>) Tj
+T* (                            <div class="form-group">) Tj
+T* (                                <label>Actualmente tiene adeudos con Banorte: </label>) Tj
+T* (                                <div class="form-check">) Tj
+T* (                                    <input type="radio" class="form-check-input" id="adeudoSi" name="adeudos" value="1" required="">) Tj
+T* (                                    <label class="form-check-label" name="radio" for="adeudoSi">Sí</label>) Tj
+T* (                                </div>) Tj
+T* (                                <div class="form-check">) Tj
+T* (                                    <input type="radio" class="form-check-input" id="adeudoNo" name="adeudos" value="0" required="">) Tj
+T* (                                    <label class="form-check-label" name="radio" for="adeudoNo">No</label>) Tj
+T* (                                </div>) Tj
+T* (                            </div>) Tj
+T* (                            <div class="d-grid gap-2 col-6 mx-auto">) Tj
+T* (                                <button type="submit" id="enviar-solicitud" class="btn btn-primary btn-block">Enviar) Tj
+T* (                                    Solicitud</button>) Tj
+T* (                              </div>) Tj
+T* (                        ) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 2.5.1)
+/CreationDate (D:20250116093144-06'00')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000006399 00000 n 
+0000008216 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000006456 00000 n 
+0000006581 00000 n 
+0000006711 00000 n 
+0000006844 00000 n 
+0000006981 00000 n 
+0000007104 00000 n 
+0000007233 00000 n 
+0000007365 00000 n 
+0000007501 00000 n 
+0000007629 00000 n 
+0000007756 00000 n 
+0000007885 00000 n 
+0000008018 00000 n 
+0000008120 00000 n 
+0000008464 00000 n 
+0000008550 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <0F7B225F6CFFD07D8C16755195E7F4CC> <0F7B225F6CFFD07D8C16755195E7F4CC> ]
+>>
+startxref
+8654
+%%EOF

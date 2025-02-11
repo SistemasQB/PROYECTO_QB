@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%=csrfToken%>">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" , href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.css">
+    <title>Requisición de compra</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f6f9fc 0%, #edf2f7 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 3px solid #f0f4f8;
+        }
+
+        .logo {
+            width: 130px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .title {
+            font-size: 28px;
+            color: #2d3748;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .doc-info {
+            text-align: right;
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .form-section {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2.5rem;
+        }
+        .grid-1 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select,
+        .text-area {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        .text-area:focus {
+            outline: none;
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 2.5rem;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            padding: 1.25rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #334155;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .total-row {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 2.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            accent-color: #3b82f6;
+        }
+
+        .text-area {
+            height: 150px;
+            resize: none;
+        }
+
+        .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 4rem;
+            padding: 2rem;
+            background: #f8fafc;
+            border-radius: 15px;
+        }
+
+        .signature {
+            text-align: center;
+        }
+
+        .signature-line {
+            width: 100%;
+            border-top: 2px solid #cbd5e1;
+            margin-bottom: 0.75rem;
+        }
+
+        .signature p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        /* Hover effects */
+        input[type="text"]:hover,
+        select:hover,
+        .text-area:hover {
+            border-color: #cbd5e1;
+        }
+
+        /* From Uiverse.io by adamgiebl */
+        .cssbuttons-io-button {
+            display: flex;
+            align-items: center;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 300;
+            font-size: 16px;
+            padding: 0.7em 1.4em 0.7em 1.4em;
+            color: white;
+            background: #ad5389;
+            background: linear-gradient(0deg,
+                    rgb(0, 133, 202) 0%,
+                    rgb(0, 87, 184) 50%);
+            border: none;
+            box-shadow: 0 0.7em 1.5em -0.5em #142fa798;
+            letter-spacing: 0.05em;
+            border-radius: 20em;
+        }
+
+        .cssbuttons-io-button svg {
+            margin-right: 6px;
+        }
+
+        .cssbuttons-io-button:hover {
+            background: linear-gradient(0deg,
+                    rgb(0, 133, 202) 50%,
+                    rgb(0, 87, 184) 100%);
+            box-shadow: 0 0.5em 1.5em -0.5em #040b4e98;
+        }
+
+        .cssbuttons-io-button:active {
+            box-shadow: 0 0.3em 1em -0.5em #1614a798;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .signatures {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .header {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .logo {
+                margin: 0 auto;
+            }
+
+            .doc-info {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="../img/Quality-BOLCA.png" alt="Logo" class="logo">
+            <h1 class="title">Requisición de compra</h1>
+            <div class="doc-info">
+                <p>Código:OB-FR-A-11-01</p>
+                <p>Rev: 07</p>
+                <p>Fecha de emisión: 07-08-2019</p>
+                <p>Fecha de revisión: 31-07-2024</p>
+            </div>
+        </header>
+<form action="">
+        <div class="form-section">
+            
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Asunto</label>
+                    <input type="text" placeholder="Asunto...">
+                </div>
+                <div class="form-group">
+                    <label>Puesto</label>
+                    <input type="text" placeholder="Ej. Analista">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Responsable que autoriza</label>
+                    <select class="form-control" name="autoriza" id="dropdown3" required>
+                        <option value="" disabled selected>Seleccione una opción</option>
+                        <option value="ana.rodriguez@qualitybolca.com">CALIDAD</option>
+                        <option value="monica.rodriguez@qualitybolca.com">ATRACCION DE CAPITAL HUMANO</option>
+                        <option value="enrique.valdez@qualitybolca.com">CAPITAL HUMANO</option>
+                        <option value="veronica.perez@qualitybolca.com">CAPTURACION</option>
+                        <option value="gariela.cadena@qualitybolca.com">COMPRAS</option>
+                        <option value="isabel.castro@qualitybolca.com">FACTURACION Y COBRANZA</option>
+                        <option value="laura.vieyra@qualitybolca.com">GASTOS</option>
+                        <option value="gerardo.morales@qualitybolca.com.mx">LOGISTICA VEHICULAR</option>
+                        <option value="omar.lujan@qualitybolca.com">LUJAN DAVALOS OMAR ALEJANDRO</option>
+                        <option value="eduardo.begines@qualitybolca.com">OPERACIONES</option>
+                        <option value="elias.osuna@qualitybolca.net">OSUNA RODRIGUEZ ELIAS</option>
+                        <option value="lidia.medina@qualitybolca.com">SERVICIO AL CLIENTE</option>
+                        <option value="info.sistemas@qualitybolca.com">TECNOLOGIAS DE LA INFORMACION</option>
+                        <option value="gabriel.hong@qualitybolca.com">VENTAS</option>
+                        <option value="laura.vieyra@qualitybolca.com">VIEYRA GONZALEZ LAURA SUSANA</option>
+                        <option value="arturo.wong@qualitybolca.com">WONG CASTAÑEDA JOSE ARTURO</option>
+                        <option value="mirna.wong@qualitybolca.com">WONG LOPEZ MIRNA IVETTE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Proceso al que perteneces</label>
+                    <!-- <input type="text" placeholder="Ej. Gestion de Infrestructura"> -->
+                     <select name="proceso" id="dropdown1">
+                        <option value="" disabled selected>Seleccione una opción</option>
+                        <option value="ADMINISTRACION Y FINANZAS">ADMINISTRACION Y FINANZAS</option>
+                        <option value="COMERCIALIZACION Y VENTA">COMERCIALIZACION Y VENTAs</option>
+                        <option value="CONTROL Y MEJORA DEL SERVICIO">CONTROL Y MEJORA DEL SERVICIO</option>
+                        <option value="EJECUCION DEL SERVICIO">EJECUCION DEL SERVICIO</option>
+                        <option value="GESTION DE CAPITAL HUMANO">GESTION DE CAPITAL HUMANO</option>
+                        <option value="GESTION DE INFRAESTRUCTURA">GESTION DE INFRAESTRUCTURA</option>
+                        <option value="PLANEACION DEL SERVICIO">PLANEACION DEL SERVICIO</option>
+                        <option value="PLANEACION Y DIRECCION ESTRATEGICA">PLANEACION Y DIRECCION ESTRATEGICA
+                        </option>
+                        <option value="SISTEMA DE GESTION DE CALIDAD">SISTEMA DE GESTION DE CALIDAD</option>
+                     </select>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Departamento</label>
+                    <!-- <input type="text" placeholder="Ej. Tecologias de la Información"> -->
+                    <select class="form-control" name="departamento" id="dropdown2" required>
+                        <option value="" disabled selected>Seleccione una opción</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <Label>Region</Label>
+                    <select class="form-control" name="region" id="dropdown5" required>
+                        <option value="" disabled selected>Seleccione una opción</option>
+                        <option value="AGUASCALIENTES">
+                            AGUASCALIENTES
+                        </option>
+                        <option value="CD JUAREZ">
+                            CD JUAREZ
+                        </option>
+                        <option value="CD VICTORIA">
+                            CD VICTORIA
+                        </option>
+                        <option value="CELAYA">
+                            CELAYA
+                        </option>
+                        <option value="CHIHUAHUA">
+                            CHIHUAHUA
+                        </option>
+                        <option value="DURANGO">
+                            DURANGO
+                        </option>
+                        <option value="FRESNILLO">
+                            FRESNILLO
+                        </option>
+                        <option value="HONDA">
+                            HONDA
+                        </option>
+                        <option value="IRAPUATO">
+                            IRAPUATO
+                        </option>
+                        <option value="LEON">
+                            LEON
+                        </option>
+                        <option value="LINARES">
+                            LINARES
+                        </option>
+                        <option value="MEOQUI">
+                            MEOQUI
+                        </option>
+                        <option value="MONTERREY">
+                            MONTERREY
+                        </option>
+                        <option value="NUEVO LAREDO">
+                            NUEVO LAREDO
+                        </option>
+                        <option value="OTROS">
+                            OTROS
+                        </option>
+                        <option value="QUERETARO">
+                            QUERETARO
+                        </option>
+                        <option value="REYNOSA">
+                            REYNOSA
+                        </option>
+                        <option value="SALTILLO">
+                            SALTILLO
+                        </option>
+                        <option value="SILAO">
+                            SILAO
+                        </option>
+                        <option value="SLP">
+                            SLP
+                        </option>
+                        <option value="TORREON">
+                            TORREON
+                        </option>
+                        <option value="ZACATECAS">
+                            ZACATECAS
+                        </option>
+                        <option value="ZAPATA">
+                            ZAPATA
+                        </option>
+                    </select>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="">Planta</label>
+                    <select class="form-control" name="planta" id="dropdown4" required>
+                        <option value="" disabled selected>Seleccione una opción</option>
+                        <% for (const [key, datos] of Object.entries(resultadoPlanta)) { %>
+                            <option value="<%=datos.planta %>">
+                                <%=datos.planta %>
+                            </option>
+                            <% } %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Orden de Servicio (Cotización)</label>
+                    <input type="text" placeholder="Ingrese orden de servicio">
+                </div>
+                <div class="form-group">
+                    <label>Tarjeta o Cuenta</label>
+                    <input type="text" placeholder="Ej. 1234567891234567" minlength="16" maxlength="18"
+                    onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                </div>
+            </div>
+
+            <div class="checkbox-group" style="justify-content: center;">
+                <div class="checkbox-item">
+                    <input type="radio" id="gastos-directos" name="rentabilidad">
+                    <label for="gastos-directos">Gastos Directos</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="radio" id="gastos-indirectos" name="rentabilidad">
+                    <label for="gastos-indirectos">Gastos Indirectos Operativos</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="radio" id="gastos-admin" name="rentabilidad">
+                    <label for="gastos-admin">Gastos Indirectos Administrativos</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="checkbox-group">
+                <div class="form-group" style="width: 20%;">
+                    <label>Descripcion detallada</label>
+                    <textarea class="text-area" style="height: 100%;" id="descripcion" name="descripcion"
+                        placeholder="Ej. guantes de seguridad marca DEWALT"></textarea>
+                    <!-- <input type="text" placeholder="Ej. guantes de seguridad marca DEWALT"> -->
+                </div>
+                <div class="form-group" style="width: 20%;">
+                    <label>Cantidad Unidades</label>
+                    <input type="number" min="0" placeholder="Unidades a comprar" id="numero">
+                </div>
+                <div class="form-group" style="width: 15%;">
+                    <label>Precio Unitario</label>
+                    <input type="number" min="0" placeholder="Precio pesos MXN" id="texto1">
+                </div>
+                <div class="form-group" style="width: 15%;">
+                    <label>Precio Total</label>
+                    <input type="number" min="0" placeholder="$0.0" disabled id="texto2">
+                </div>
+                <!-- <button id="btnAgregar">Agregar</button> -->
+                <!-- From Uiverse.io by adamgiebl -->
+                <div class="form-group" style="width: 15%; text-align: center; margin-top: 3%;">
+                    <!-- <button class="cssbuttons-io-button" id="btnAgregarFila"> -->
+                    <button class="cssbuttons-io-button" id="btnAgregarFila">
+                        <svg height="5%" width="40%" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z" fill="currentColor"></path>
+                        </svg>
+                        <span>Agregar</span>
+                    </button>
+                </div>
+
+
+
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Descripción detallada</th>
+                    <th>Unidad</th>
+                    <th>Precio Unitario con IVA</th>
+                    <th>Precio total con IVA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- <tr>
+                    <td>1</td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td>0.00</td>
+                    <td><button><img src="../svg/x.svg"></img></button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td>0.00</td>
+                    <td><button><img src="../svg/x.svg"></img></button></td>
+                </tr>       
+                <tr>
+                    <td>3</td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td>0.00</td>
+                    <td><button style=""><img src="../svg/x.svg"></img></button></td>
+                </tr> -->
+                <tr class="total-row">
+                    <td colspan="4">Importe Total</td>
+                    <td id = "total">0.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="form-group">
+            <label>Fecha de entrega requerida</label>
+            <input type="date" placeholder="DD/MM/AAAA">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Detallar situación actual</label>
+                <textarea class="text-area" placeholder="Describa la situación actual..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Detallar expectativa</label>
+                <textarea class="text-area" placeholder="Describa la expectativa..."></textarea>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Comentarios adicionales</label>
+                <textarea class="text-area" placeholder="Comentarios adicionales..."></textarea>
+            </div>
+        <!-- </div> -->
+    </form>
+
+    
+        <!-- <div class="grid-2"> -->
+            <div class="form-group">
+                <label>Imagen</label>
+        <form id="formImgRequisicion" 
+            class="dropzone" enctype="multipart/form-data"
+            action="/">
+                <!-- <textarea class="text-area" placeholder="Imagen de referencia..."></textarea> -->
+            </div>
+        </form>
+        </div>
+
+    
+        <div class="signatures">
+            <div class="signature">
+                <p>Oscar Arturo De luna Luján</p>
+                <div class="signature-line"></div>
+                <p>Firma Solicitante</p>
+            </div>
+            <div class="signature">
+                <p>Oscar Arturo De luna Luján</p>
+                <div class="signature-line"></div>
+                <p>Firma Jefe Inmediato</p>
+            </div>
+        </div>
+        <details>
+            <summary>Rentabilidad</summary>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gastos Directos</th>
+                        <th>Gastos Indirectos Operativos</th>
+                        <th>Gastos Indirectos Administrativos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <b>Todo lo cotizable en bc</b>
+                            <br>
+                            <ul>
+                                <li>Casas, bodegas</li>
+                                <li>Cobro a cliente</li>
+                                <li>Documentacion de entrada</li>
+                                <li>Gastos de viaje personal operativo</li>
+                                <li>Httas, consumilbles, papeleria</li>
+                                <li>Inspectores</li>
+                                <li>Lonches</li>
+                                <li>Mobiliario propio del proyecto</li>
+                                <li>Telefonos, internet, laptops</li>
+                                <li>Transporte</li>
+                                <li>Uniformes, EPP</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <b>Gastos indirectos operativos</b>
+                            <br>
+                            <ul>
+                                <li>Casas, bodegas</li>
+                                <li>Cobro a cliente</li>
+                                <li>Documentacion de entrada</li>
+                                <li>Gastos de viaje personal operativo</li>
+                                <li>Httas, consumilbles, papeleria</li>
+                                <li>Inspectores</li>
+                                <li>Lonches</li>
+                                <li>Mobiliario propio del proyecto</li>
+                                <li>Telefonos, internet, laptops</li>
+                                <li>Transporte</li>
+                                <li>Uniformes, EPP</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <b>Gastos Administrativos</b>
+                            <br>
+                            <ul>
+                                <li>Autos administrativos</li>
+                                <li>Gastos admon(comisiones, SGMM, honorarios)</li>
+                                <li>Mobiliario administrativo</li>
+                                <li>Nominas, captura, SC, Gastos, GCH, Regionales</li>
+                                <li>Oficina matriz y regionales</li>
+                                <li>Telefonos, internet, laptops</li>
+                                <li>Viajes Administrativos</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </details>
+    </div>
+</body>
+<script src="../scripts/admin/requisicion.js"></script>
+<script src="../js/directoriofoto.js"></script>
+
+</html>

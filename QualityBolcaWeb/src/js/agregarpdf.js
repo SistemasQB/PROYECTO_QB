@@ -1,10 +1,7 @@
 import { Dropzone } from "dropzone";
 import Swal from 'sweetalert2'
 
-
 // alert('Funciono el dropzone')
-
-
 
 // const token = document.getElementById('metacsrf').getAttribute('content');
 

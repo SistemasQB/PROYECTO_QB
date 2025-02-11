@@ -58,6 +58,9 @@ const Solicitud = db.define('solicitud', {
     cv:{
         type: DataTypes.STRING,
         allowNull: true
+    },comentario: {
+        type: DataTypes.STRING,
+        allowNull: true
     },estatus: {
         type: DataTypes.TINYINT,
         defaultValue: 0,
@@ -65,8 +68,6 @@ const Solicitud = db.define('solicitud', {
         type: DataTypes.STRING,
         allowNull: true
     }
-},{
-    timestamps: false // Desactiva createdAt y updatedAt
 })
 
 export default Solicitud;

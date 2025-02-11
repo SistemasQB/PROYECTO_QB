@@ -30,7 +30,11 @@ router.get('/mapa', adminController.mapa);
 router.get('/valeSalida', adminController.valeSalida);
 router.get('/voz', adminController.voz);
 router.get('/crear', adminController.crear);
-
+router.get('/mejoracontinua', adminController.mejoracontinua);
+router.post('/mejoracontinua', adminController.mejoracontinua2);
+router.get('/reuniones', adminController.reuniones);
+router.post('/reuniones', adminController.reuniones2);
+router.get('/glosario', adminController.glosario);
 
 export default router;
 

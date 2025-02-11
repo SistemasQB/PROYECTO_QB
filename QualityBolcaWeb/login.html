@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Quality BOLCA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" href="src/public/img/favicon.png" />
+</head>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    padding: 1rem;
+}
+
+.login-card {
+    background: white;
+    max-width: 400px;
+    margin: 0 auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 2rem 2rem 1rem;
+    text-align: center;
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 1.5rem;
+}
+
+.card-header h1 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-header p {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.card-content {
+    padding: 1.5rem 2rem 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #444;
+    font-size: 0.875rem;
+}
+
+input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #0088cc;
+    box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.1);
+}
+
+.login-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #0088cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #0077bb;
+}
+
+.login-button:active {
+    transform: translateY(1px);
+}
+
+.forgot-password {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.forgot-password a {
+    color: #0088cc;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s;
+}
+
+.forgot-password a:hover {
+    color: #0077bb;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .login-card {
+        margin: 1rem;
+    }
+    
+    .card-header,
+    .card-content {
+        padding: 1rem;
+    }
+    
+    .logo {
+        width: 150px;
+    }
+}
+</style>
+
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="card-header">
+                <img src="src/public/img/Quality-BOLCA.png" alt="Quality BOLCA Logo" class="logo">
+                <h1>Bienvenido</h1>
+                <p>Ingresa tus credenciales para continuar</p>
+            </div>
+            <div class="card-content">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Correo electrónico</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            placeholder="nombre@empresa.com" 
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="login-button">
+                        Iniciar sesión
+                    </button>
+                </form>
+                <div class="forgot-password">
+                    <a href="#">¿Olvidaste tu contraseña?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

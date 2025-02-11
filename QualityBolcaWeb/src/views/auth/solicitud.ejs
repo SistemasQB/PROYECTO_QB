@@ -86,16 +86,16 @@
                                         onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="10">
                                 </div>
                                 <div class="col">
-                                    <label for="nombre">Region</label>
-                                    <input type="text" name="region" class="form-control" id="region"
-                                        placeholder="Ingresa tu region" required style="text-transform:uppercase">
-                                </div>
-                                <div class="col">
                                     <label for="nombre">Codigo Postal</label>
                                     <input type="text" name="cp" class="form-control" id="cp"
                                         placeholder="Ingresa tu codigo postal" required
                                         onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="5">
                                         <!-- <button class="btn btn-info" type="button" id="btnCP">Buscar</button> -->
+                                </div>
+                                <div class="col">
+                                    <label for="nombre">Region</label>
+                                    <input type="text" name="region" class="form-control" id="region"
+                                        placeholder="Ingresa tu region" required style="text-transform:uppercase">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -126,8 +126,7 @@
                                     Solicitud</button>
                               </div>
                         </form>
-
-                        <!-- <button onclick="generatePDF()">Generar PDF</button> -->
+                        <button onclick="generatePDF()">Generar PDF</button>
                     </div>
                 </div>
             </div>

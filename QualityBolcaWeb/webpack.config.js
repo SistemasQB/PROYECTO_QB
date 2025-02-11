@@ -10,6 +10,8 @@ export default{
         mapa: './src/js/mapa.js',
         agregarImagen: './src/js/agregarImagen.js',
         agregarpdf: './src/js/agregarpdf.js',
+        directoriofoto: './src/js/directoriofoto.js',
+        directoriofoto: './src/js/imagenrequisicion.js',
     },
     output:{
         filename: '[name].js',

@@ -13,40 +13,81 @@
 </head>
 
 <nav class="navbar">
-
+    
 </nav>
-            <body>
-                <div class="container">
-                    <%- //include('partials/_alerta'); %>
-                        <div class="form-box">
-                            <form id="login-form" method="post" novalidate>
-                                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                                <h1>Quality Bolca</h1>
-                                <h2>Iniciar sesión</h2>
-                                <div class="input-box">
-                                    <input name="email" id="inputEmail" type="email">
-                                    <label for="inputEmail">Email</label>
-                                    <i class='bx bxs-user'></i>
-                                </div>
-                                <div class="input-box">
-                                    <input name="password" type="password" id="inputContrseña">
-                                    <label for="inputContrseña">Contraseña</label>
-                                    <i class='bx bxs-lock-alt'></i>
-                                </div>
-                                <div class="forget-section">
-                                    <label for="checkRemember">
-                                        <input type="checkbox" name="remember" id="checkRemember">
-                                        Recordarme
-                                    </label>
-                                    <a href="/olvide-password">¿Olvidaste tu contrseña?</a>
-                                </div>
-                                <button type="submit" class="btn">Iniciar sesión</button>
-                                <div class="account-creation">
-                                    <span>¿No tienes cuenta? </span><a href="/registro">Registrate</a>
-                                </div>
-                            </form>
-                        </div>
+
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="card-header">
+                <img src="../img/Quality-BOLCA.png" alt="Quality BOLCA Logo" class="logo">
+                <h1>Bienvenido</h1>
+                <p>Ingresa tus credenciales para continuar</p>
+            </div>
+            <div class="card-content">
+                <form id="loginForm">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                    <div class="form-group">
+                        <label for="email">Numero de empleado</label>
+                        <input 
+                            type="string" 
+                            id="idempleado"
+                            name="codigoempleado"
+                            placeholder="12345" 
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="login-button">
+                        Iniciar sesión
+                    </button>
+                </form>
+                <div class="forgot-password">
+                    <a href="/olvide-password">¿Olvidaste tu contraseña?</a>
                 </div>
-            </body>
-            <script src="./../scripts/login.js"></script>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="container">
+        <%- //include('partials/_alerta'); %>
+            <div class="form-box">
+                <form id="login-form" method="post" novalidate>
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                    <h1>Quality Bolca</h1>
+                    <h2>Iniciar sesión</h2>
+                    <div class="input-box">
+                        <input name="email" id="inputEmail" type="email">
+                        <label for="inputEmail">Email</label>
+                        <i class='bx bxs-user'></i>
+                    </div>
+                    <div class="input-box">
+                        <input name="password" type="password" id="inputContrseña">
+                        <label for="inputContrseña">Contraseña</label>
+                        <i class='bx bxs-lock-alt'></i>
+                    </div>
+                    <div class="forget-section">
+                        <label for="checkRemember">
+                            <input type="checkbox" name="remember" id="checkRemember">
+                            Recordarme
+                        </label>
+                        <a href="/olvide-password">¿Olvidaste tu contrseña?</a>
+                    </div>
+                    <button type="submit" class="btn">Iniciar sesión</button>
+                    <div class="account-creation">
+                        <span>¿No tienes cuenta? </span><a href="/registro">Registrate</a>
+                    </div>
+                </form>
+            </div>
+    </div> -->
+</body>
+<script src="./../scripts/login.js"></script>
+
 </html>

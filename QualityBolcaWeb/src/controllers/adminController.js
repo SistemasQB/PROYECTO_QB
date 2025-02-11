@@ -1,12 +1,42 @@
 import express from "express";
-import Listas from "../models/listas.js"
-import Requisicion from "../models/requisicion.js"
-import Curso from "../models/cursos.js"
-import PedirCurso from "../models/pedirCurso.js"
-import RegistroMa from "../models/registroma.js";
-import RegistroCursos from "../models/registroCursos.js"
-import Comunicacion from "../models/comunicacion.js"
-import Gch_alta from "../models/gch_alta.js"
+// import Listas from "../models/listas.js"
+// import Requisicion from "../models/requisicion.js"
+// import Curso from "../models/cursos.js"
+// import PedirCurso from "../models/pedirCurso.js"
+// import RegistroMa from "../models/registroma.js";
+// import RegistroCursos from "../models/registroCursos.js"
+// import Comunicacion from "../models/comunicacion.js"
+// import { informaciongch , informacionpuesto} from "../models/index.js"
+
+import {
+    Asistencia,
+    Cps,
+    ControlDispositivos,
+    DocumentosControlados,
+    EncuestaS,
+    juegos,
+    Mejora,
+    pedirCurso,
+    precios,
+    puestos,
+    registroCurso,
+    registroma,
+    requisicion,
+    verificacion5s,
+    CheckListVehiculos,
+    Listas,
+    Requisicion,
+    Curso,
+    RegistroCursos,
+    Comunicacion,
+    Usuario,
+    Gch_Alta,
+    informaciongch,
+    informacionpuesto
+} from "../models/index.js";
+// import InformacionpuestoM from "../models/informacionpuesto.js"
+
+// import Gch_alta from "../models/gch_alta.js"
 import Sequelize from 'sequelize'
 import on from 'sequelize'
 import { Op } from 'sequelize'
@@ -39,33 +69,57 @@ controller.crear = (req, res) => {
 
 controller.directorio = async (req, res) => {
     let vCrup;
-    let vCrup2;
 
-    const bGch_alta = await Gch_alta.findAll({
+    const bGch_alta = await informaciongch.findAll({
+        attributes: ['idpuesto', 'nombre', 'apellidopaterno', 'apellidomaterno', 'fechanacimiento', 'fechaalta', 'sexo', 'numerosegurosocial', 'fotografia'],
         where: {
-            estatus: {[Op.notLike]: '%BAJA%'},
-            puesto: {[Op.notLike]: '%INSPECTOR%'}
+            [Op.or]:
+                [
+                    {
+                        fechaalta: { [Op.gt]: Sequelize.col('fechabaja') }
+                    },
+                    {
+                        fechareingreso: { [Op.gt]: Sequelize.col('fechabaja') }
+                    },
+                ],
+            [Op.and]:
+            [
+                {
+                    idpuesto:{ [Op.ne]: 45},
+                }
+            ]
         },
-        attributes: ['nombre', 'puesto', 'apellidoPaterno', 'apellidoMaterno', 'region'],
-        include: [{
-            model: Comunicacion,
-            attributes: ['correo', 'telefono'],
-            on: { 
-                curp: Sequelize.where(Sequelize.col('gch_alta2.curp'), '=', Sequelize.col('comunicacion.id'))
-            }
-            // attributes: ['nombre','apellidoPaterno', 'apellidoMaterno', 'puesto']
-        }]
-    })
-    .then(resultado =>{
-        // console.log(resultado[0].comunicacion.correo);
         
-         vCrup = resultado
-    });
+        //     include: [{
+        //         model: informacionpuesto,
+        //         attributes: ['descripcion'],
+        //         on: {
+        //             idpuesto: {
+        //     [Sequelize.Op.eq]: Sequelize.col('nom10006'+'.idpuesto')
+        //   }
+        //         }
+        //     }]
+
+        include: [{
+            model: informacionpuesto,
+            attributes: ['descripcion'],
+            on: {
+                idpuesto: Sequelize.where(Sequelize.col('nom10001.idpuesto'), '=', Sequelize.col('nom10006.idpuesto'))
+            }
+        }],
+        order: [[Sequelize.literal('nombre'), 'ASC']],
+    }
+    )
+        .then(resultado => {
+            // console.log(resultado[0]);
+
+            vCrup = resultado
+        });
 
     // console.log(vCrup[0].comunicacion.telefono);
     //  console.log(vCrup[61]);
-    
-    res.render('admin/directorio',{
+
+    res.render('admin/directorio', {
         vCrup
     })
 }
@@ -73,7 +127,7 @@ controller.directorio = async (req, res) => {
 controller.requisicion = async (req, res) => {
     const planta = await Listas.findAll();
     const resultadoPlanta = JSON.parse(JSON.stringify(planta, null, 2));
-    res.render('admin/requisicion', {
+    res.render('admin/requisicion3', {
         resultadoPlanta,
         csrfToken: req.csrfToken(),
         mensaje: false
@@ -111,7 +165,7 @@ controller.requisicion2 = async (req, res) => {
         contacto,
         foto,
     });
-    
+
     emailRequisicion({
         id: reqDatos.id,
         solicitante: reqDatos.solicitante,
@@ -129,12 +183,12 @@ controller.requisicion2 = async (req, res) => {
 controller.requisicion3 = async (req, res) => {
 
     console.log('subiendo imagen...');
-    
+
 }
 
 controller.requisicionA = async (req, res) => {
     const requi = await Requisicion.findAll();
-    res.render('admin/requisicionA',{
+    res.render('admin/requisicionA', {
         requi
     })
 }
@@ -145,8 +199,8 @@ controller.requisicionA2 = (req, res) => {
 
 controller.cursos = async (req, res) => {
     const vCursos = await Curso.findAll();
-    
-    res.render('admin/cursos',{
+
+    res.render('admin/cursos', {
         vCursos,
         csrfToken: req.csrfToken()
     })
@@ -154,10 +208,10 @@ controller.cursos = async (req, res) => {
 
 controller.cursos2 = async (req, res) => {
     const vCursos = await Curso.findAll();
-    const {nombreCurso, asistenciaNombres, correo, fecha, horario, ubicacion, correoContacto, nombreContacto} = req.body
+    const { nombreCurso, asistenciaNombres, correo, fecha, horario, ubicacion, correoContacto, nombreContacto } = req.body
 
     const regCursos = await RegistroCursos.create(
-        {nombreCurso, asistenciaNombres, correo, fecha, horario, ubicacion}
+        { nombreCurso, asistenciaNombres, correo, fecha, horario, ubicacion }
     )
 
 
@@ -172,19 +226,19 @@ controller.cursos2 = async (req, res) => {
         nombreContacto: nombreContacto
     })
 
-    
+
 }
 
-controller.subirCurso =  (req, res) => {
-    res.render('admin/registrarCursos',{
+controller.subirCurso = (req, res) => {
+    res.render('admin/registrarCursos', {
         mensaje: false,
         csrfToken: req.csrfToken()
     })
 }
 
-controller.subirCurso2 = async(req, res) => {
+controller.subirCurso2 = async (req, res) => {
     const { nombreCurso, descripcion, capacitador, duracion, correoContacto, disponible, fechaInicio, fechaFinal, horarioInicio, horarioFinal, ubicacion } = req.body
-    
+
     const cursoDatos = await Curso.create({
         nombreCurso,
         descripcion,
@@ -198,25 +252,25 @@ controller.subirCurso2 = async(req, res) => {
         horarioFinal,
         ubicacion
     });
-    
-    
 
-    res.render('admin/registrarCursos',{
+
+
+    res.render('admin/registrarCursos', {
         mensaje: true,
         csrfToken: req.csrfToken()
     })
 }
 
-controller.solicitudServicio =  (req, res) => {
-    res.render('admin/solicitudServicio',{
+controller.solicitudServicio = (req, res) => {
+    res.render('admin/solicitudServicio', {
         mensaje: false,
         csrfToken: req.csrfToken()
     })
 }
 
-controller.solicitudServicio2 = async(req, res) => {
+controller.solicitudServicio2 = async (req, res) => {
     const { nombreCurso, descripcion, capacitador, duracion, correoContacto, disponible, fechaInicio, fechaFinal, horarioInicio, horarioFinal, ubicacion } = req.body
-    
+
     const cursoDatos = await Curso.create({
         nombreCurso,
         descripcion,
@@ -230,22 +284,22 @@ controller.solicitudServicio2 = async(req, res) => {
         horarioFinal,
         ubicacion
     });
-    
-    
 
-    res.render('admin/solicitudServicio',{
+
+
+    res.render('admin/solicitudServicio', {
         mensaje: true,
         csrfToken: req.csrfToken()
     })
 }
 
 controller.pedirCurso = (req, res) => {
-    res.render('admin/pedirCurso',{
+    res.render('admin/pedirCurso', {
         csrfToken: req.csrfToken()
     })
 }
 
-controller.pedirCurso2 = async(req, res) => {
+controller.pedirCurso2 = async (req, res) => {
     const { nombre, curso } = req.body
 
     const pedirC = await PedirCurso.create({
@@ -256,15 +310,15 @@ controller.pedirCurso2 = async(req, res) => {
 
 controller.registroma = async (req, res) => {
     const vRegistro = await RegistroMa.findAll();
-    res.render('admin/registroma',{
+    res.render('admin/registroma', {
         vRegistro,
         csrfToken: req.csrfToken()
     })
 }
 
-controller.registroma2 = async(req, res) => {
-    const { nombre, email  } = req.usuario
-    const { region, tipo, c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12 } = req.body    
+controller.registroma2 = async (req, res) => {
+    const { nombre, email } = req.usuario
+    const { region, tipo, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12 } = req.body
     const registroDatos = await RegistroMa.create({
         nombre,
         region,
@@ -284,7 +338,7 @@ controller.registroma2 = async(req, res) => {
         c12
     });
 
-    res.status(200).send({ok: true});
+    res.status(200).send({ ok: true });
     return
     // res.render('admin/registroma',{
     //     mensaje: true,
@@ -292,11 +346,11 @@ controller.registroma2 = async(req, res) => {
     // })
 }
 
-controller.vacaciones = (req, res) =>{
+controller.vacaciones = (req, res) => {
     res.render('admin/vacaciones')
 }
 
-controller.vacaciones2 = (req, res) =>{
+controller.vacaciones2 = (req, res) => {
     res.render('admin/vacaciones')
 }
 
@@ -311,5 +365,28 @@ controller.mapa = (req, res) => {
 controller.valeSalida = (req, res) => {
     res.render('admin/vale')
 }
+
+controller.mejoracontinua = (req, res) => {
+    res.render('admin/mejoracontinua')
+}
+
+controller.mejoracontinua2 = (req, res) => {
+    res.render('admin/mejoracontinua')
+}
+
+
+controller.reuniones = (req, res) => {
+    res.render('admin/reuniones')
+}
+
+controller.reuniones2 = (req, res) => {
+    res.render('admin/reuniones')
+}
+
+controller.glosario = (req, res) => {
+    res.render('admin/glosario')
+}
+
+
 
 export default controller;

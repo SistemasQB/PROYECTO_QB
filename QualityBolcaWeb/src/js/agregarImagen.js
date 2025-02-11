@@ -8,7 +8,7 @@ import { Dropzone } from "dropzone";
 
 const btnAgregarImg = document.getElementById('btnAgregarImg')
 const token = document.querySelector('meta[name="csrf-token"]').content
-//agregar imagenees
+//agregar imagenes
 
 Dropzone.options.formImagen = {
     dictDefaultMessage: 'Sube tus imágenes aqui',
@@ -26,7 +26,7 @@ Dropzone.options.formImagen = {
     paramName: 'imagen',
     init: function () {
         const dropzone = this
-        const btnPublicar = document.getElementById('btnEnviarImg')
+        const btnPublicar = document.getElementById('btnAgregarImg')
 
         btnPublicar.addEventListener('click',function(){
             dropzone.processQueue()

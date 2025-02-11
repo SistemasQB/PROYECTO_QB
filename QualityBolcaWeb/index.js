@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { PORT } from "./src/config.js";
+// import dbSQLS from "./src/config/dbSQLS.js";
 import db from "./src/config/db.js";
 import myConnection from "express-myconnection";
 import mysql from "mysql2";
@@ -20,6 +21,7 @@ import { default as allRoutes } from "./src/routes/allRoutes.js";
 import { default as sistemasRoutes } from "./src/routes/sistemasRoutes.js";
 import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
 import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
+import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
 
 import mimeTypes from "mime-types";
 import fetch from 'node-fetch'
@@ -99,6 +101,7 @@ app.use('/all', allRoutes);
 app.use('/sistemas', sistemasRoutes);
 app.use('/calidad', calidadRoutes);
 app.use('/atraccion', atraccionRoutes);
+app.use('/capitalhumano', capitalhumanoRoutes);
 
 
 

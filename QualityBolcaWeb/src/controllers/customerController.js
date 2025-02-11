@@ -3,27 +3,40 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 import { transporter } from "../../index.js";
-import Usuario from "../models/Usuario.js"
-import Listas from "../models/listas.js"
-import Gch_Alta from "../models/gch_alta.js"
-import CheckListVehiculos from "../models/checklist.js";
-import JuegosM from "../models/juegos.js";
-import PuestosM from "../models/puestos.js";
-import SolicitudM from "../models/atraccion/solicitud.js";
-import ControlDispositivos from "../models/ControlDispositivos.js"
-import EncuestaS from "../models/encuestaSatisfaccion.js"
-import cpsM from "../models/cps.js"
+
+import {
+    Cps,
+    ControlDispositivos,
+    DocumentosControlados,
+    EncuestaS,
+    juegos,
+    Mejora,
+    pedirCurso,
+    precios,
+    puestos,
+    registroCurso,
+    registroma,
+    requisicion,
+    verificacion5s,
+    CheckListVehiculos,
+    Listas,
+    Requisicion,
+    Curso,
+    RegistroCursos,
+    Comunicacion,
+    Usuario,
+    Gch_Alta,
+    informaciongch,
+    informacionpuesto
+} from "../models/index.js";
+
 import Swal from 'sweetalert2'
 import multer from "multer";
 import mimeTypes from "mime-types";
-import requisicion from "../models/requisicion.js";
 import { check, validationResult } from "express-validator";
 import { alerta } from "../../index.js";
 import { generarJWT, generarId } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
-import Juegos from "../models/juegos.js";
-
-
 
 
 const upload = multer({ dest: 'files/' })
@@ -41,48 +54,24 @@ controller.formularioLogin = (req, res) => {
 }
 
 controller.autenticar = async (req, res) => {
-    await check('email').isEmail().withMessage('El correo es obligatorio').run(req);
-    await check('password').notEmpty().withMessage('La contrseña es obligatoria').run(req);
-    let error
-
-    let resultado = validationResult(req);
-    //Verificar que el resultado este vacio
-    if (!resultado.isEmpty()) {
-        // console.log('Campos vacios');
-        // error = [{}];
+    // await check('email').isEmail().withMessage('El correo es obligatorio').run(req);
+    // await check('password').notEmpty().withMessage('La contrseña es obligatoria').run(req);
+        const { codigoempleado, password } = req.body
+        
+    if (codigoempleado == '' || password == '') {
         res.status(400).send({ msg: 'Completa los campos', ok: false });
-        // return res.render('auth/login', {
-        //     errores: resultado.array(),
-        //     csrfToken: req.csrfToken(),
-        // })
         return
     }
 
-    const { email, password } = req.body
+   //comporbar si el usuario existe
 
-    //comporbar si el usuario existe
-
-    const usuario = await Usuario.findOne({ where: { email } })
+    const usuario = await Usuario.findOne({ where: { codigoempleado } })
     if (!usuario) {
-        // return res.render('auth/login', {
-        //     errores: [{ msg: 'El usuario no existe' }],
-        //     csrfToken: req.csrfToken(),
-        // })
-        error = [{}];
-
-        // res.send(errores)
         res.status(400).send({ msg: 'El usuario no existe', ok: false });
         return
     }
-    // console.log('El usuario buscado es:' + usuario.nombre);
     //Comprobar si el usuario este confirmado
     if (!usuario.confirmado) {
-        // return res.render('auth/login', {
-        //     errores: [{ msg: 'tu cuenta no ha sido confirmada' }],
-        //     csrfToken: req.csrfToken(),
-        // })
-        error = [{}];
-        // res.send(errores)
         res.status(400).send({ msg: 'tu cuenta no ha sido confirmada', ok: false });
         return
     }
@@ -90,12 +79,6 @@ controller.autenticar = async (req, res) => {
     // Revisar la contrseña
 
     if (!usuario.verificarPasssword(password)) {
-        // return res.render('auth/login', {
-        //     errores: [{ msg: 'La contrseña no es correcta' }],
-        //     csrfToken: req.csrfToken(),
-        // })
-        error = [{}];
-        // res.send(errores)
         res.status(400).send({ msg: 'La contrseña no es correcta', ok: false });
         return
     }
@@ -113,11 +96,6 @@ controller.autenticar = async (req, res) => {
 
     res.status(200).send({ ok: true });
     return
-    // res.render('auth/login', {
-    //     errores: '',
-    //     usuario: '',
-    //     csrfToken: req.csrfToken()
-    // })
 }
 
 controller.formularioRegistro = (req, res) => {
@@ -136,44 +114,44 @@ controller.formularioOlvidePassword = (req, res) => {
 }
 
 controller.resetPassword = async (req, res) => {
-    await check('email').isEmail().withMessage('Esto no parece un email').run(req);
+    // await check('email').isEmail().withMessage('Esto no parece un email').run(req);
 
-    let resultado = validationResult(req);
+    // let resultado = validationResult(req);
     //Verificar que el resultado este vacio
-    if (!resultado.isEmpty()) {
-        return res.render('auth/olvide-password', {
-            csrfToken: req.csrfToken(),
-            errores: resultado.array()
-        })
-    }
+    // if (!resultado.isEmpty()) {
+    //     return res.render('auth/olvide-password', {
+    //         csrfToken: req.csrfToken(),
+    //         errores: resultado.array()
+    //     })
+    // }
 
     //Buscar el usuario
 
-    const { email } = req.body
-    const usuario = await Usuario.findOne({ where: { email } })
+
+
+
+    const { codigoempleado } = req.body
+    // res.status(400).send({ msg: req.body, ok: false });
+    const usuario = await Usuario.findOne({ where: { codigoempleado: codigoempleado } })
 
     if (!usuario) {
-        return res.render('auth/olvide-password', {
-            csrfToken: req.csrfToken(),
-            errores: [{ msg: 'El email no pertenece a ningun usuario' }]
-        })
+        res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
+        return
     }
-
+    const usuario2 = await Informaciongch.findOne({ where: { codigoempleado: codigoempleado } })
     //Generar un token y enviar email
     usuario.token = generarId();
     await usuario.save();
 
     //Enviar un email
     emailOlvidePassword({
-        email: usuario.email,
-        nombre: usuario.nombre,
+        email: usuario2.CorreoElectronico,
+        nombre: usuario2.nombrelargo,
         token: usuario.token
     })
-
     //Mostrar mensaje de confirmacion
-    res.render('auth/confirmar-cuenta', {
-        errores: ''
-    })
+    res.status(200).send({ msg: 'Informacion enviada con exito', ok: true });
+    return
 }
 
 controller.comprobarToken = async (req, res) => {
@@ -181,9 +159,9 @@ controller.comprobarToken = async (req, res) => {
 
     const usuario = await Usuario.findOne({ where: { token } })
     if (!usuario) {
-        return res.render('auth/confirmar-cuenta', {
+        return res.render('auth/reset-password', {
             csrfToken: req.csrfToken(),
-            error: true
+            token
         })
     }
 
@@ -191,25 +169,25 @@ controller.comprobarToken = async (req, res) => {
 
     res.render('auth/reset-password', {
         csrfToken: req.csrfToken(),
-        errores: ''
+        token
     })
 }
 
 controller.nuevoPassword = async (req, res) => {
     // Validar la contrseña
-    await check('password').isLength({ min: 6 }).withMessage('La contrseña debe tener minimo 6 caracteres').run(req);
-
-    let resultado = validationResult(req);
-    //Verificar que el resultado este vacio
-    if (!resultado.isEmpty()) {
-        return res.render('auth/reset-password', {
-            errores: resultado.array(),
-            csrfToken: req.csrfToken()
-        })
+    const { password, password2 } = req.body
+    if (password.length < 6) {
+        res.status(400).send({ msg: 'la contraseña debe tener minimo 6 caracteres', ok: false });
+        return
     }
 
+    if (password !== password2) {
+        res.status(400).send({ msg: 'las contraseñas no son iguales', ok: false });
+        return
+    }
+    //Verificar que el resultado este vacio
+
     const { token } = req.params
-    const { password } = req.body
     // Identificar quien hace el cambio
     const usuario = await Usuario.findOne({ where: { token } })
 
@@ -217,12 +195,12 @@ controller.nuevoPassword = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     usuario.password = await bcrypt.hash(password, salt);
     usuario.token = null;
+    usuario.confirmado = true;
 
     await usuario.save()
 
-    res.render('auth/confirmar-cuenta', {
-        errores: ''
-    })
+    res.status(200).send({ msg: 'Contraseña cambiada con exito', ok: true });
+        return
 }
 
 controller.registrar = async (req, res) => {
@@ -367,12 +345,11 @@ controller.requisicion2 = async (req, res) => {
     const Requisicion = await Requisicion.create(req.body);
 }
 
-
-controller.paginaSolicitud = async(req, res) => {
+controller.paginaSolicitud = async (req, res) => {
 
     // const { cp } = req.params
 
-    // const cps = await cpsM.findAll({ attributes: ['colonia', 'estado'], where: { cp: cp } })
+    // const cps = await Cps.findAll({ attributes: ['colonia', 'estado'], where: { cp: cp } })
 
     res.render('auth/solicitud', {
         csrfToken: req.csrfToken()
@@ -397,7 +374,7 @@ controller.paginaSolicitud2 = async (req, res) => {
         cv } = req.body
 
     try {
-        const resSolcitudM = await SolicitudM.create({
+        const resSolcitudM = await Solicitud.create({
             id: uuidv4(),
             puesto,
             sueldo,
@@ -431,13 +408,13 @@ controller.paginaSolicitud3 = async (req, res) => {
 
     const { cp } = req.params
 
-    const cps = await cpsM.findAll({ attributes: ['colonia', 'estado'], where: { cp: cp } })
+    const cps = await Cps.findAll({ attributes: ['colonia', 'estado'], where: { cp: cp } })
 
     console.log(cps);
-        
-        res.json({ ok: true, id: resSolcitudM.id });
-        // res.status(200).send({ solId: resSolcitudM.id});
-        return
+
+    res.json({ ok: true, id: resSolcitudM.id });
+    // res.status(200).send({ solId: resSolcitudM.id});
+    return
 }
 
 controller.subirSolicitud = async (req, res) => {
@@ -446,7 +423,7 @@ controller.subirSolicitud = async (req, res) => {
     //validar la solicitud existente
 
 
-    const solicitud = await SolicitudM.findByPk(id)
+    const solicitud = await Solicitud.findByPk(id)
 
 
 
@@ -469,7 +446,7 @@ controller.subirSolicitud = async (req, res) => {
 controller.subirSolicitud2 = async (req, res, next) => {
     const { id } = req.params
 
-    const solicitud = await SolicitudM.findByPk(id)
+    const solicitud = await Solicitud.findByPk(id)
 
 
     // solicitud.cv = req.file.filename
@@ -477,7 +454,7 @@ controller.subirSolicitud2 = async (req, res, next) => {
     // await solicitud.save()
 
     try {
-        console.log('nombre de la imagen', req.file.filename);
+        // console.log('nombre de la imagen', req.file.filename);
 
         //almacenar el pdf
         solicitud.cv = req.file.filename
@@ -843,7 +820,7 @@ controller.enviarCorreo = (req, res) => {
 }
 
 controller.juegos = async (req, res) => {
-    const resultadosJugadores = await JuegosM.findAll({
+    const resultadosJugadores = await Juegos.findAll({
         order: [['wpm', 'DESC']],
         limit: 10,
     });
@@ -857,7 +834,7 @@ controller.juegos = async (req, res) => {
 controller.juegos2 = async (req, res) => {
 
     const { nombreJugador, wpm, accuracy } = req.body
-    const juegosR = await JuegosM.create({
+    const juegosR = await Juegos.create({
         nombreJugador, wpm, accuracy
     })
     // res.render('auth/juegos', {
@@ -866,7 +843,13 @@ controller.juegos2 = async (req, res) => {
 }
 
 controller.documentosControlados = (req, res) => {
-    res.render('auth/documentoscontrolados')
+    res.render('auth/documentoscontrolados2')
 }
+
+controller.api = (req, res) => {
+    res.json({ ok: true })
+}
+
+
 
 export default controller;

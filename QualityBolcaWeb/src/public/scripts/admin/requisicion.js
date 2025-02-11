@@ -7,7 +7,6 @@ const inpPU = document.getElementById('texto1')
 const inpPU2 = document.getElementById('texto2')
 const inpU = document.getElementById('numero')
 const btnAgregarFila = document.getElementById('btnAgregarFila')
-const total = document.getElementById('total')
 const cuenta = document.getElementById('cuenta');
 const contador = document.getElementById('contador');
 
@@ -146,32 +145,43 @@ function limpiar() {
     }
 }
 
+let c = 0
+const tabla = document.getElementsByTagName('tbody')[0];
 function agregarFila() {
     const descripcion = document.getElementById('descripcion').value;
     const numero = document.getElementById('numero').value;
     const texto1 = document.getElementById('texto1').value;
     const texto2 = document.getElementById('texto2').value;
-    const hdescripcion = document.getElementById('hdescripcion')
+    const total = document.getElementById('total')
+    let hdescripcion
 
     if (descripcion && numero && texto1 && texto2) {
-        const tabla = document.getElementById('tabla').getElementsByTagName('tbody')[0];
-        const nuevaFila = tabla.insertRow();
+        c++
+        // const tabla = document.getElementById('tabla').getElementsByTagName('tbody')[0];
+        
+        const nuevaFila = tabla.insertRow(c-1);
 
-        const celdaDescripcion = nuevaFila.insertCell(0);
-        const celdaNumero = nuevaFila.insertCell(1);
-        const celdaTexto1 = nuevaFila.insertCell(2);
-        const celdaTexto2 = nuevaFila.insertCell(3);
-        hdescripcion.value += descripcion + '▄' + numero + '▄' + texto1 + '▄' + texto2 + '▄'
+        const celdaNumeracion = nuevaFila.insertCell(0);
+        const celdaDescripcion = nuevaFila.insertCell(1);
+        const celdaNumero = nuevaFila.insertCell(2);
+        const celdaTexto1 = nuevaFila.insertCell(3);
+        const celdaTexto2 = nuevaFila.insertCell(4);
+        const celdabtn = nuevaFila.insertCell(5);
+        hdescripcion += c + '▄' + descripcion + '▄' + numero + '▄' + texto1 + '▄' + texto2 + '▄'
+        celdaNumeracion.textContent = c;
+        celdaNumeracion.classList.add('contadorLista')
         celdaDescripcion.textContent = descripcion;
         celdaNumero.textContent = numero;
         celdaTexto1.textContent = texto1;
         celdaTexto2.textContent = texto2;
-        celdaDescripcion.classList.add('table-light')
-        celdaNumero.classList.add('table-light')
-        celdaTexto1.classList.add('table-light')
-        celdaTexto2.classList.add('table-light')
+        celdabtn.innerHTML = `<button type="button" class="btn btn-danger" onclick="eliminarRegistro(${c})">Eliminar</button>`
+        // celdaNumeracion.classList.add('table-light')
+        // celdaDescripcion.classList.add('table-light')
+        // celdaNumero.classList.add('table-light')
+        // celdaTexto1.classList.add('table-light')
+        // celdaTexto2.classList.add('table-light')
         vTotal = vTotal + parseFloat(texto2)
-        total.value = vTotal;
+        total.textContent = vTotal;
 
         // table-primary
         
@@ -185,7 +195,44 @@ function agregarFila() {
             title: 'Error',
             icon: 'error',
             // text: 'Debe llenar los recuadros no sea ¡Imbecil!'
-            text: 'Debe llenar los recuadros no sea ¡flojo!'
+            text: 'Debe llenar los recuadros'
         })
     }
+
+    anadirRegistro(c ,descripcion, numero, texto1, texto2);
 }
+
+
+let registros = [];
+
+// Función para añadir registros
+function anadirRegistro(param1, param2, param3, param4, param5) {
+    let registro = { param1, param2, param3, param4, param5 };
+    registros.push(registro);
+    console.log('Registro añadido:', registro);
+}
+
+// Función para eliminar registros
+function eliminarRegistro(valor) {
+    registros = registros.filter(registro => registro.param1 !== valor);
+    // console.log('Registros después de eliminar:', registros);
+    tabla.deleteRow(valor -1);
+
+    contadorLista = document.getElementsByClassName('contadorLista');
+    for (let i = 1; i < contadorLista.length + 1; i++) {
+        contadorLista[i].textContent = i + 1;
+    }
+    c--;
+}
+
+// Ejemplo de uso
+// document.getElementById('anadirButton').addEventListener('click', () => {
+    // Aquí puedes obtener los valores de los inputs
+//     const descripcion = document.getElementById('descripcion').value;
+//     const numero = document.getElementById('numero').value;
+//     const texto1 = document.getElementById('texto1').value;     
+//     const texto2 = document.getElementById('texto2').value;
+    
+    
+// });
+

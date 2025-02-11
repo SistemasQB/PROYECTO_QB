@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" , href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.css">
+    <title>Registro de mejora</title>
+    <style>
+        :root {
+            --primary-color: #0066a4;
+            --border-color: #e0e0e0;
+            --background-gray: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background: white;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+        }
+
+        .header-info {
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        .header-info p {
+            margin: 0.3rem 0;
+            color: #666;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            padding: 1.5rem 0;
+            background: white;
+        }
+
+        .form-section {
+            padding: 2rem;
+        }
+
+        .section-title {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--background-gray);
+            border-radius: 4px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .situation-box {
+            padding: 1.5rem;
+            background: var(--background-gray);
+            border-radius: 4px;
+            min-height: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="../img/Quality-BOLCA.png" alt="BOLCA Logo" class="logo">
+            <h1 class="title">Registro de mejora</h1>
+            <div class="header-info">
+                <p>Código: QB-FR-A-06-01</p>
+                <p>Rev.: 06</p>
+                <p>Fecha de emisión: 30-11-2017</p>
+                <p>Fecha de revisión: 31-10-2024</p>
+            </div>
+        </header>
+
+        
+
+        <form>
+            <section class="form-section">
+                <h2 class="section-title">Información sobre el (los) generador (es) de la idea y la aplicabilidad</h2>
+                
+                <div class="form-group">
+                    <label>Nombre de la mejora</label>
+                    <input type="text" name="nombre_mejora">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Generador de la idea o Líder del equipo de mejora</label>
+                        <input type="text" name="generador">
+                    </div>
+                    <div class="form-group">
+                        <label>Puesto</label>
+                        <input type="text" name="puesto">
+                    </div>
+                    <div class="form-group">
+                        <label>Proceso al que perteneces</label>
+                        <input type="text" name="puesto">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre del equipo (Si aplica)</label>
+                    <input type="text" name="proceso">
+                </div>
+
+                <div class="form-group" >
+                    <label>Nombre de los participantes</label>
+                    <input type="text" name="proceso">
+                    <div class="form-group" id="lsitaParticipantes" style="text-align: center; margin-top: 3%;">
+                        <p>Nombre de los participantes</p>
+                        <p>Nombre de los participantes</p>
+                        <p>Nombre de los participantes</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Proceso (s) donde se aplica la mejora </label>
+                    <input type="text" name="proceso">
+                </div>
+
+                <div class="form-group">
+                    <label>Región (s) donde se propone la mejora</label>
+                    <input type="text" name="proceso">
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="section-title">Tipo de mejora y beneficios</h2>
+
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ahorro" name="tipo_mejora">
+                        <label for="ahorro">Genera un ahorro material</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sistema" name="tipo_mejora">
+                        <label for="sistema">Facilita el trabajo diario</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="indirecta" name="tipo_mejora">
+                        <label for="indirecta">Mejora el ambiente laboral</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ambiental" name="tipo_mejora">
+                        <label for="ambiental">Crear un entorno más saludable</label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ahorro" name="tipo_mejora">
+                        <label for="ahorro">Genera un ahorro material</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sistema" name="tipo_mejora">
+                        <label for="sistema">Genera un ahorro económico</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="indirecta" name="tipo_mejora">
+                        <label for="indirecta">Facilita el trabajo diario </label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ambiental" name="tipo_mejora">
+                        <label for="ambiental">Ahorra tiempos</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ahorro" name="tipo_mejora">
+                        <label for="ahorro">Efectividad en tu proceso</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="sistema" name="tipo_mejora">
+                        <label for="sistema">Mejora el ambiente laboral </label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="indirecta" name="tipo_mejora">
+                        <label for="indirecta">Mejora el ambiente laboral</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ambiental" name="tipo_mejora">
+                        <label for="ambiental">Cambio en beneficio a la organización</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ambiental" name="tipo_mejora">
+                        <label for="ambiental">Crear un entorno más saludable y sostenible</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ambiental" name="tipo_mejora">
+                        <label for="ambiental">Mitiga el impacto negativo de cualquier actividad en el medio ambiente</label>
+                    </div>
+                </div>
+
+                <div class="benefits-grid">
+                    <div class="situation-box">
+                        <h3>Situación Actual:</h3>
+                        <textarea rows="6"></textarea>
+                    </div>
+                    <div class="situation-box">
+                        <h3>Mejora Propuesta:</h3>
+                        <textarea rows="6"></textarea>
+                    </div>
+                </div>
+            </section>
+        </form>
+    </div>
+</body>
+</html>

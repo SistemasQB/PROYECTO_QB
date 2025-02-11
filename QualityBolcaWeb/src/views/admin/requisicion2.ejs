@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requisición de compra</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .logo {
+            width: 120px;
+        }
+
+        .title {
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+
+        .doc-info {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+
+        .justification {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .text-area {
+            width: 100%;
+            height: 150px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .signature {
+            text-align: center;
+        }
+
+        .signature-line {
+            width: 100%;
+            border-top: 1px solid #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-sOHipJ1horIAiE24vJoSCPEQ5Vb0CV.png" alt="Logo" class="logo">
+            <h1 class="title">Requisición de compra</h1>
+            <div class="doc-info">
+                <p>Código:OB-FR-A-11-01</p>
+                <p>Rev: 07</p>
+                <p>Fecha de emisión: 07-08-2019</p>
+                <p>Fecha de revisión: 31-07-2024</p>
+            </div>
+        </header>
+
+        <div class="form-section">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Orden de Servicio (Cotización)</label>
+                    <input type="text">
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Solicitud</label>
+                    <input type="text">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Nombre de Solicitante</label>
+                    <input type="text">
+                </div>
+                <div class="form-group">
+                    <label>Puesto</label>
+                    <input type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Departamento</label>
+                <input type="text">
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="gastos-directos">
+                    <label for="gastos-directos">Gastos Directos</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="gastos-indirectos">
+                    <label for="gastos-indirectos">Gastos Indirectos Operativos</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="gastos-admin">
+                    <label for="gastos-admin">Gastos Indirectos Administrativos</label>
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Descripción detallada</th>
+                    <th>Unidad</th>
+                    <th>Precio Unitario con IVA</th>
+                    <th>Precio total con IVA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td><input type="text" style="border: none;"></td>
+                    <td>0.00</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="4">Importe Total</td>
+                    <td>0.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="form-group">
+            <label>Fecha de entrega requerida</label>
+            <input type="text">
+        </div>
+
+        <div class="justification">
+            <div class="form-group">
+                <label>Detallar situación actual</label>
+                <textarea class="text-area"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Detallar expectativa</label>
+                <textarea class="text-area"></textarea>
+            </div>
+        </div>
+
+        <div class="signatures">
+            <div class="signature">
+                <div class="signature-line"></div>
+                <p>Firma Solicitante</p>
+            </div>
+            <div class="signature">
+                <div class="signature-line"></div>
+                <p>Firma Jefe Inmediato</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

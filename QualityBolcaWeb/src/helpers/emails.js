@@ -44,7 +44,7 @@ const emailOlvidePassword = async (datos) =>{
     //Enviar el email
     const ruta = process.env.BACKEND_URL + ':' + process.env.PORT + '/olvide-password/' + token;
     await transport.sendMail({
-        from: 'mantenimiento@qualitybolca.net',
+        from: 'sistema@qualitybolca.net',
         to: email,
         subject: 'Retablece tu contraseña en Qualitybolca.net',
         text: 'Retablece tu contraseña en Qualitybolca.net',
