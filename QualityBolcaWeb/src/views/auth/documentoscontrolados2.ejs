@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -158,754 +159,151 @@
             background-color: var(--hover-bg);
             border-radius: 0.25rem;
         }
+
+        details{
+            font-size: 16px;
+            margin-top: 1rem;
+        }
+
+        details details{
+            margin-left: 2rem;
+            font-size: 14px;
+            margin-bottom: 1rem;
+        }
+
+
+        details details p{
+            margin-left: 2rem;
+            font-size: 14px;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
+
 <body>
     <div class="tree-container">
         <ul class="tree">
-            <!-- Nivel 1 -->
-            <li class="tree-item">
-                <div class="tree-content">
-                    <span class="tree-toggle expanded">
-                        <i class="fas fa-chevron-right"></i>
-                    </span>
-                    <span class="tree-icon folder">
-                        <i class="fas fa-folder"></i>
-                    </span>
-                    <span class="tree-label">Documentos</span>
-                    <span class="item-count">11 items</span>
-                </div>
-                <ul class="tree-children expanded">
-                    <!-- Nivel 2 -->
-                    <li class="tree-item">
-                        <div class="tree-content">
-                            <span class="tree-toggle expanded">
-                                <i class="fas fa-chevron-right"></i>
-                            </span>
-                            <span class="tree-icon folder">
-                                <i class="fas fa-folder"></i>
-                            </span>
-                            <span class="tree-label">Registros</span>
-                            <span class="item-count">3 items</span>
-                        </div>
-                        <ul class="tree-children expanded">
-                            <!-- Nivel 3 -->
-                            <li class="tree-item">
-                                <div class="tree-content">
-                                    <span class="tree-toggle expanded">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </span>
-                                    <span class="tree-icon folder">
-                                        <i class="fas fa-folder"></i>
-                                    </span>
-                                    <span class="tree-label">Formatos de registros</span>
-                                </div>
-                                <ul class="tree-children expanded">
-                                    <!-- Nivel 4 -->
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-01-01 Lista maestra de documentos.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-01-03 Hoja de emisión, cambio o baja de documentos.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-01-04 Hoja de notificación de emisión y cambio.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-01-05 Lista maestra de registros.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-02-01 Reporte de salidas no conformes.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-02-02 Control de reporte de salidas no conformes.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-03-02 Lista de asistencia..pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-03-03 Programa de competencias.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-03-04 Solicitud y evaluación de competencias.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-03-05 Examen curso de inducción.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-01 Programa de capacitación a un nuevo puesto.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-02 Evaluación de desempeño del colaborador en un nuevo puesto.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-03 Examen de medición rápida de habilidades.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-04 Contrato individual de trabajo por tiempo determinado.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-05 Contrato individual de trabajo por tiempo indeterminado.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-06 Requisición de personal.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-08 Mapa de calor.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-09 Tabla de requerimiento de colaboradores.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-10 Carta de confidencialidad inspector.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-11 Carátula del expediente y Condiciones de trabajo.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-12 Encuesta de salida.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-13 Entrevista por competencias.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-14 Carta de confidencialidad mandos medios.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-15 Carta de confidencialidad por separación voluntaria.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-04-16 Requisición de personal operativo.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-05-01 Reporte de no conformidad y acción correctiva.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-05-02 Control de reportes de no conformidad y acción correctiva.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-06-01 Registro de mejora.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-07-01 Programa anual de auditoría interna.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-07-03 Lista de verificación para auditoria interna.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-07-04 Memorándum para notificar auditoría interna.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-07-05 Minuta de reunión de apertura y cierre de auditoría.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-07-06 Reporte final de auditoría.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-07-07 Plan de auditoría interna del SGC.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-07-08 Lista de verificación para auditoria interna de proceso.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-07-09 Lista de auditores internos calificados al SGC y del proceso.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-08-02 Evaluación a proveedores.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-08-03 Selección del proveedor.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-08-04 Re-evaluación de proveedores.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-08-05 Control de entrega de proveedores.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-08-06 Listado de Proveedores Nacional.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-09-01-E-I Encuesta de satisfacción del cliente al primer servicio.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-09-02 Relación de clientes.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-09-03-E Orden de Nuevo Servicio.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-09-03-I Request For New Service.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-09-04 Lista de seguimiento de clientes potenciales.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-11-01 Requisición de compra.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-15-02 Control de Almacén.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-15-03 Reporte de inventario físico.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-15-04 Programa anual de inventario.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-15-05 Vale de resguardo de herramienta o equipo.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-15-06 Inventario.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-16-01 Registro de mantenimiento autonomo.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-16-02 Check list de mantenimiento autónomo de vehiculos.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-16-03 Solicitud de servicio.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-17-01 Análisis de rentabilidad de proyectos.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-17-02 Formato de desviación.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-18-01 Evaluación de desempeño.pdf</span>
-                                        </div>
-                                    </li>
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">QB-FR-A-18-02 Encuesta de satisfacción del evento.pdf</span>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="tree-item">
-                                <div class="tree-content">
-                                    <span class="tree-toggle expanded">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </span>
-                                    <span class="tree-icon folder">
-                                        <i class="fas fa-folder"></i>
-                                    </span>
-                                    <span class="tree-label">styles</span>
-                                </div>
-                                <ul class="tree-children expanded">
-                                    <li class="tree-item">
-                                        <div class="tree-content">
-                                            <span class="tree-toggle" style="visibility: hidden;">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                            <span class="tree-icon file">
-                                                <i class="fas fa-file-code"></i>
-                                            </span>
-                                            <span class="tree-label">main.css</span>
-                                            <span class="file-type">CSS</span>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="tree-item">
-                        <div class="tree-content">
-                            <span class="tree-toggle" style="visibility: hidden;">
-                                <i class="fas fa-chevron-right"></i>
-                            </span>
-                            <span class="tree-icon file">
-                                <i class="fas fa-file"></i>
-                            </span>
-                            <span class="tree-label">package.json</span>
-                            <span class="file-type">JSON</span>
-                        </div>
-                    </li>
-                    <li class="tree-item">
-                        <div class="tree-content">
-                            <span class="tree-toggle" style="visibility: hidden;">
-                                <i class="fas fa-chevron-right"></i>
-                            </span>
-                            <span class="tree-icon file">
-                                <i class="fas fa-file-code"></i>
-                            </span>
-                            <span class="tree-label">README.md</span>
-                            <span class="file-type">MD</span>
-                        </div>
-                    </li>
-                </ul>
-            </li>
+                <h1>Documentos</summary>
+                <details>
+                    <summary>Registros</summary>
+                    <details>
+                        <summary>Formatos de registros</summary>
+                        <p>QB-FR-A-01-01 Lista maestra de documentos.pdf</p>
+                        <p>QB-FR-A-01-03 Hoja de emisión, cambio o baja de documentos.pdf</p>
+                        <p>QB-FR-A-01-04 Hoja de notificación de emisión y cambio.pdf</p>
+                        <p>QB-FR-A-01-05 Lista maestra de registros.pdf</p>
+                        <p>QB-FR-A-02-01 Reporte de salidas no conformes.pdf</p>
+                        <p>QB-FR-A-02-02 Control de reporte de salidas no conformes.pdf</p>
+                        <p>QB-FR-A-03-02 Lista de asistencia..pdf</p>
+                        <p>QB-FR-A-03-03 Programa de competencias.pdf</p>
+                        <p>QB-FR-A-03-04 Solicitud y evaluación de competencias.pdf</p>
+                        <p>QB-FR-A-03-05 Examen curso de inducción.pdf</p>
+                        <p>QB-FR-A-04-01 Programa de capacitación a un nuevo puesto.pdf</p>
+                        <p>QB-FR-A-04-02 Evaluación de desempeño del colaborador en un nuevo puesto.pdf</p>
+                        <p>QB-FR-A-04-03 Examen de medición rápida de habilidades.pdf</p>
+                        <p>QB-FR-A-04-04 Contrato individual de trabajo por tiempo determinado.pdf</p>
+                        <p>QB-FR-A-04-05 Contrato individual de trabajo por tiempo indeterminado.pdf</p>
+                        <p>QB-FR-A-04-06 Requisición de personal.pdf</p>
+                        <p>QB-FR-A-04-08 Mapa de calor.pdf</p>
+                        <p>QB-FR-A-04-09 Tabla de requerimiento de colaboradores.pdf</p>
+                        <p>QB-FR-A-04-10 Carta de confidencialidad inspector.pdf</p>
+                        <p>QB-FR-A-04-11 Carátula del expediente y Condiciones de trabajo.pdf</p>
+                        <p>QB-FR-A-04-12 Encuesta de salida.pdf</p>
+                        <p>QB-FR-A-04-13 Entrevista por competencias.pdf</p>
+                        <p>QB-FR-A-04-14 Carta de confidencialidad mandos medios.pdf</p>
+                        <p>QB-FR-A-04-15 Carta de confidencialidad por separación voluntaria.pdf</p>
+                        <p>QB-FR-A-04-16 Requisición de personal operativo.pdf</p>
+                        <p>QB-FR-A-05-01 Reporte de no conformidad y acción correctiva.pdf</p>
+                        <p>QB-FR-A-05-02 Control de reportes de no conformidad y acción correctiva.pdf</p>
+                        <p>QB-FR-A-06-01 Registro de mejora.pdf</p>
+                        <p>QB-FR-A-07-01 Programa anual de auditoría interna.pdf</p>
+                        <p>QB-FR-A-07-03 Lista de verificación para auditoria interna.pdf</p>
+                        <p>QB-FR-A-07-04 Memorándum para notificar auditoría interna.pdf</p>
+                        <p>QB-FR-A-07-05 Minuta de reunión de apertura y cierre de auditoría.pdf</p>
+                        <p>QB-FR-A-07-06 Reporte final de auditoría.pdf</p>
+                        <p>QB-FR-A-07-07 Plan de auditoría interna del SGC.pdf</p>
+                        <p>QB-FR-A-07-08 Lista de verificación para auditoria interna de proceso.pdf</p>
+                        <p>QB-FR-A-07-09 Lista de auditores internos calificados al SGC y del proceso.pdf</p>
+                        <p>QB-FR-A-08-02 Evaluación a proveedores.pdf</p>
+                        <p>QB-FR-A-08-03 Selección del proveedor.pdf</p>
+                        <p>QB-FR-A-08-04 Re-evaluación de proveedores.pdf</p>
+                        <p>QB-FR-A-08-05 Control de entrega de proveedores.pdf</p>
+                        <p>QB-FR-A-08-06 Listado de Proveedores Nacional.pdf</p>
+                        <p>QB-FR-A-09-01-E-I Encuesta de satisfacción del cliente al primer servicio.pdf</p>
+                        <p>QB-FR-A-09-02 Relación de clientes.pdf</p>
+                        <p>QB-FR-A-09-03-E Orden de Nuevo Servicio.pdf</p>
+                        <p>QB-FR-A-09-03-I Request For New Service.pdf</p>
+                        <p>QB-FR-A-09-04 Lista de seguimiento de clientes potenciales.pdf</p>
+                        <p>QB-FR-A-11-01 Requisición de compra.pdf</p>
+                        <p>QB-FR-A-15-02 Control de Almacén.pdf</p>
+                        <p>QB-FR-A-15-03 Reporte de inventario físico.pdf</p>
+                        <p>QB-FR-A-15-04 Programa anual de inventario.pdf</p>
+                        <p>QB-FR-A-15-05 Vale de resguardo de herramienta o equipo.pdf</p>
+                        <p>QB-FR-A-15-06 Inventario.pdf</p>
+                        <p>QB-FR-A-16-01 Registro de mantenimiento autonomo.pdf</p>
+                        <p>QB-FR-A-16-02 Check list de mantenimiento autónomo de vehiculos.pdf</p>
+                        <p>QB-FR-A-16-03 Solicitud de servicio.pdf</p>
+                        <p>QB-FR-A-17-01 Análisis de rentabilidad de proyectos.pdf</p>
+                        <p>QB-FR-A-17-02 Formato de desviación.pdf</p>
+                        <p>QB-FR-A-18-01 Evaluación de desempeño.pdf</p>
+                        <p>QB-FR-A-18-02 Encuesta de satisfacción del evento.pdf</p>
+                    </details>
+                    <details>
+                        <summary>Formatos independientes administrativos</summary>
+                        <p>QB-FI-A-01 Seguimiento p los objetivos de cplidpd.pdf</p>
+                        <p>QB-FI-A-02-E Encuestp sptisfpcción del cliente.pdf</p>
+                        <p>QB-FI-A-02-I Customer Sptisfpction.pdf</p>
+                        <p>QB-FI-A-03 Listp de psistencip personpl QB.pdf</p>
+                        <p>QB-FI-A-04 Seguimiento p los indicpdores de proceso.pdf</p>
+                        <p>QB-FI-A-06 Progrpmp de mpntenimiento de equipo de computo.pdf</p>
+                        <p>QB-FI-A-07-E Cotizpción Quplity Bolcp.pdf</p>
+                        <p>QB-FI-A-07-I Quotption Quplity Bolcp.pdf</p>
+                        <p>QB-FI-A-08 Cprtp de notificpción de dpño o pérdidp p lp propiedpd del cliente y
+                            proveedores.pdf</p>
+                        <p>QB-FI-A-09 Minutp de juntp.pdf</p>
+                        <p>QB-FI-A-12 Listp de verificpción de niveles.pdf</p>
+                        <p>QB-FI-A-13 Minutp de lp revisión por lp dirección.pdf</p>
+                        <p>QB-FI-A-14 Seguimiento p lps condiciones no conformes detectpdps en los niveles de
+                            iluminpción.pdf</p>
+                        <p>QB-FI-A-15 Comportpmiento diprio de horps.pdf</p>
+                        <p>QB-FI-A-17 Actp Administrptivp.pdf</p>
+                        <p>QB-FI-A-18 Pedido de insumos.pdf</p>
+                        <p>QB-FI-A-19 Orden de Comprp.pdf</p>
+                        <p>QB-FI-A-22 Expmen de hpbilidpdes.pdf</p>
+                        <p>QB-FI-A-24 Expmen pprp cppturistp de dptos.pdf</p>
+                        <p>QB-FI-A-25 Informe de verificpción.pdf</p>
+                        <p>QB-FI-A-26 Mpntenimiento preventivo de equipo de computo.pdf</p>
+                        <p>QB-FI-A-32 Requisición Mensupl-1.pdf</p>
+                        <p>QB-FI-A-33 Registro de discreppncips.pdf</p>
+                        <p>QB-FI-A-34 GAP Análisis.pdf</p>
+                        <p>QB-FI-A-35 Listp de verificpción de operpción diprip del proceso.pdf</p>
+                    </details>
+                    <details>
+                        <summary>Formatos independientes operativos</summary>
+                        <p>QB-FI-O-01-E Reporte diario.pdf</p>
+                        <p>QB-FI-O-01-I Daily report.pdf</p>
+                        <p>QB-FI-O-02-E Reporte semanal.pdf</p>
+                        <p>QB-FI-O-02-I Weekly report.pdf</p>
+                        <p>QB-FI-O-03 Hoja de operación estandar.pdf</p>
+                        <p>QB-FI-O-04 Lista maestra de hojas de operación estándar.pdf</p>
+                        <p>QB-FI-O-08 Control de entrega de material.pdf</p>
+                        <p>QB-FI-O-09 Apertura de servicio.pdf</p>
+                        <p>QB-FI-O-10 Concentrado de personal.pdf</p>
+                        <p>QB-FI-O-16 Encuesta de satisfacción laboral.pdf</p>
+                        <p>QB-FI-O-17 Programa de calibración de equipo de medición.pdf</p>
+                        <p>QB-FI-O-21 Registro de mantenimiento vehicular.pdf</p>
+                        <p>QB-FI-O-22 Consumo de gasolina .pdf</p>
+                        <p>QB-FI-O-24 Checklist de condiciones de área de trabajo.pdf</p>
+                        <p>QB-FI-O-25 Reporte diario acumulado.pdf</p>
+                        <p>QB-FI-O-26 Lista Verificación 5´S.pdf</p>
+                        <p>QB-FI-O-27 Control de Proyectos.pdf</p>
+                    </details>
+                </details>
+                <details>
+                    <summary>Documentos</summary>
+                    
+                </details>
         </ul>
     </div>
 
@@ -914,7 +312,6 @@
             item.addEventListener('click', (e) => {
                 const toggle = item.querySelector('.tree-toggle');
                 const children = item.nextElementSibling;
-                
                 if (children && children.classList.contains('tree-children')) {
                     children.classList.toggle('collapsed');
                     children.classList.toggle('expanded');
@@ -924,4 +321,1065 @@
         });
     </script>
 </body>
+
 </html>
+
+
+<!-- ////////////////////////////// -->
+<li class="tree-item">
+    <div class="tree-content">
+        <span class="tree-toggle expanded">
+            <i class="fas fa-chevron-right"></i>
+        </span>
+        <span class="tree-icon folder">
+            <i class="fas fa-folder"></i>
+        </span>
+        <span class="tree-label">Documentos</span>
+        <span class="item-count">11 items</span>
+    </div>
+    <ul class="tree-children expanded">
+        <!-- Nivel 2 -->
+        <li class="tree-item">
+            <div class="tree-content">
+                <span class="tree-toggle expanded">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+                <span class="tree-icon folder">
+                    <i class="fas fa-folder"></i>
+                </span>
+                <span class="tree-label">Registros</span>
+                <span class="item-count">3 items</span>
+            </div>
+            <ul class="tree-children expanded">
+                <!-- Nivel 3 -->
+                <li class="tree-item">
+                    <div class="tree-content">
+                        <span class="tree-toggle expanded">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                        <span class="tree-icon folder">
+                            <i class="fas fa-folder"></i>
+                        </span>
+                        <span class="tree-label">Formatos de registros</span>
+                    </div>
+                    <ul class="tree-children expanded">
+                        <!-- Nivel 4 -->
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-01-01 Lista maestra de
+                                    documentos.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-01-03 Hoja de emisión, cambio o baja de
+                                    documentos.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-01-04 Hoja de notificación de emisión y
+                                    cambio.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-01-05 Lista maestra de registros.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-02-01 Reporte de salidas no
+                                    conformes.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-02-02 Control de reporte de salidas no
+                                    conformes.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-03-02 Lista de asistencia..pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-03-03 Programa de competencias.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-03-04 Solicitud y evaluación de
+                                    competencias.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-03-05 Examen curso de inducción.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-01 Programa de capacitación a un nuevo
+                                    puesto.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-02 Evaluación de desempeño del
+                                    colaborador en un nuevo puesto.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-03 Examen de medición rápida de
+                                    habilidades.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-04 Contrato individual de trabajo por
+                                    tiempo determinado.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-05 Contrato individual de trabajo por
+                                    tiempo indeterminado.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-06 Requisición de personal.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-08 Mapa de calor.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-09 Tabla de requerimiento de
+                                    colaboradores.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-10 Carta de confidencialidad
+                                    inspector.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-11 Carátula del expediente y Condiciones
+                                    de trabajo.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-12 Encuesta de salida.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-13 Entrevista por
+                                    competencias.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-14 Carta de confidencialidad mandos
+                                    medios.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-15 Carta de confidencialidad por
+                                    separación voluntaria.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-04-16 Requisición de personal
+                                    operativo.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-05-01 Reporte de no conformidad y acción
+                                    correctiva.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-05-02 Control de reportes de no conformidad
+                                    y acción correctiva.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-06-01 Registro de mejora.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-07-01 Programa anual de auditoría
+                                    interna.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-07-03 Lista de verificación para auditoria
+                                    interna.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-07-04 Memorándum para notificar auditoría
+                                    interna.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-07-05 Minuta de reunión de apertura y
+                                    cierre de auditoría.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-07-06 Reporte final de auditoría.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-07-07 Plan de auditoría interna del
+                                    SGC.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-07-08 Lista de verificación para auditoria
+                                    interna de proceso.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-07-09 Lista de auditores internos
+                                    calificados al SGC y del proceso.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-08-02 Evaluación a proveedores.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-08-03 Selección del proveedor.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-08-04 Re-evaluación de
+                                    proveedores.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-08-05 Control de entrega de
+                                    proveedores.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-08-06 Listado de Proveedores
+                                    Nacional.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-09-01-E-I Encuesta de satisfacción del
+                                    cliente al primer servicio.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-09-02 Relación de clientes.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-09-03-E Orden de Nuevo Servicio.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-09-03-I Request For New Service.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-09-04 Lista de seguimiento de clientes
+                                    potenciales.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-11-01 Requisición de compra.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-15-02 Control de Almacén.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-15-03 Reporte de inventario
+                                    físico.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-15-04 Programa anual de
+                                    inventario.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-15-05 Vale de resguardo de herramienta o
+                                    equipo.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-15-06 Inventario.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-16-01 Registro de mantenimiento
+                                    autonomo.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-16-02 Check list de mantenimiento autónomo
+                                    de vehiculos.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-16-03 Solicitud de servicio.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-17-01 Análisis de rentabilidad de
+                                    proyectos.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-17-02 Formato de desviación.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-18-01 Evaluación de desempeño.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FR-A-18-02 Encuesta de satisfacción del
+                                    evento.pdf</span>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li class="tree-item">
+                    <div class="tree-content">
+                        <span class="tree-toggle expanded">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                        <span class="tree-icon folder">
+                            <i class="fas fa-folder"></i>
+                        </span>
+                        <span class="tree-label">Formatos independientes administrativos</span>
+                    </div>
+                    <ul class="tree-children expanded">
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-01 Seguimiento a los objetivos de
+                                    calidad.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-02-E Encuesta satisfacción del
+                                    cliente.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-02-I Customer Satisfaction.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-03 Lista de asistencia personal
+                                    QB.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-04 Seguimiento a los indicadores de
+                                    proceso.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-06 Programa de mantenimiento de equipo de
+                                    computo.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-07-E Cotización Quality Bolca.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-07-I Quotation Quality Bolca.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-08 Carta de notificación de daño o pérdida
+                                    a la propiedad del cliente y proveedores.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-09 Minuta de junta.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-12 Lista de verificación de
+                                    niveles.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-13 Minuta de la revisión por la
+                                    dirección.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-14 Seguimiento a las condiciones no
+                                    conformes detectadas en los niveles de iluminación.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-15 Comportamiento diario de
+                                    horas.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-17 Acta Administrativa.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-18 Pedido de insumos.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-19 Orden de Compra.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-22 Examen de habilidades.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-24 Examen para capturista de
+                                    datos.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-25 Informe de verificación.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-26 Mantenimiento preventivo de equipo de
+                                    computo.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-32 Requisición Mensual-1.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-33 Registro de discrepancias.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-34 GAP Análisis.pdf</span>
+                            </div>
+                        </li>
+                        <li class="tree-item">
+                            <div class="tree-content">
+                                <span class="tree-toggle" style="visibility: hidden;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="tree-icon file">
+                                    <i class="fas fa-file-code"></i>
+                                </span>
+                                <span class="tree-label">QB-FI-A-35 Lista de verificación de operación
+                                    diaria del proceso.pdf</span>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="tree-item">
+            <div class="tree-content">
+                <span class="tree-toggle" style="visibility: hidden;">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+                <span class="tree-icon file">
+                    <i class="fas fa-file"></i>
+                </span>
+                <span class="tree-label">package.json</span>
+                <span class="file-type">JSON</span>
+            </div>
+        </li>
+        <li class="tree-item">
+            <div class="tree-content">
+                <span class="tree-toggle" style="visibility: hidden;">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+                <span class="tree-icon file">
+                    <i class="fas fa-file-code"></i>
+                </span>
+                <span class="tree-label">README.md</span>
+                <span class="file-type">MD</span>
+            </div>
+        </li>
+    </ul>
+</li>

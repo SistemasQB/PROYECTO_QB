@@ -27,7 +27,8 @@ import {
     Usuario,
     Gch_Alta,
     informaciongch,
-    informacionpuesto
+    informacionpuesto,
+    Glosario
 } from "../models/index.js";
 
 import Swal from 'sweetalert2'
@@ -848,6 +849,14 @@ controller.documentosControlados = (req, res) => {
 
 controller.api = (req, res) => {
     res.json({ ok: true })
+}
+
+controller.calidadD = (req, res) =>{
+    const { documento } = req.params
+    // const documento = 'QB-PR-A-12 Tecnologías de la información.pdf'
+    res.render('auth/calidadD', {
+        documento
+    })
 }
 
 

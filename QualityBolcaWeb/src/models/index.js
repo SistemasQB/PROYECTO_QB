@@ -24,6 +24,7 @@ import { default as Usuario } from "./Usuario.js"
 import { default as Gch_Alta } from "./gch_alta.js";
 import { default as informaciongch } from "./informaciongch.js";
 import { default as informacionpuesto } from "./informacionpuesto.js";
+import { default as Glosario } from "./glosario.js";
 
 // import { default as adminController } from './../controllers/adminController.js';
 
@@ -67,5 +68,6 @@ export {
     Usuario,
     Gch_Alta,
     informaciongch,
-    informacionpuesto
+    informacionpuesto,
+    Glosario
 }

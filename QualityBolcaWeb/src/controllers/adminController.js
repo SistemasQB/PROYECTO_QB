@@ -32,7 +32,8 @@ import {
     Usuario,
     Gch_Alta,
     informaciongch,
-    informacionpuesto
+    informacionpuesto,
+    Glosario
 } from "../models/index.js";
 // import InformacionpuestoM from "../models/informacionpuesto.js"
 
@@ -383,8 +384,12 @@ controller.reuniones2 = (req, res) => {
     res.render('admin/reuniones')
 }
 
-controller.glosario = (req, res) => {
-    res.render('admin/glosario')
+controller.glosario = async (req, res) => {
+    const glosario = await Glosario.findAll();
+
+    res.render('admin/glosario',{
+        glosario
+    })
 }
 
 
