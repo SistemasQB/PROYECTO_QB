@@ -15,6 +15,8 @@ const Comunicacion = db.define('comunicacion', {
         type: DataTypes.STRING,
         allowNull: true
     }
+},{
+    timestamps: false
 })
 // Comunicacion.associate = models =>{
 //     Comunicacion.belongsTo(models.gch_alta2)

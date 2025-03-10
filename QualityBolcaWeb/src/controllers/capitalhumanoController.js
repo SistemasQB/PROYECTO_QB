@@ -1,6 +1,10 @@
 import express from "express";
-import InformaciongchM from "../models/informaciongch.js"
-import InformacionpuestoM from "../models/informacionpuesto.js"
+
+
+import {
+    informaciongch,
+    informacionpuesto,
+} from "../models/index.js";
 import Sequelize from 'sequelize'
 import { Op } from 'sequelize'
 
@@ -15,7 +19,7 @@ const controller = {};
 controller.directorioGCH = async (req, res) => {
     let vCrup;
 
-    const bGch_alta = await InformaciongchM.findAll({
+    const bGch_alta = await informaciongch.findAll({
         attributes: ['idempleado', 'idpuesto', 'nombre', 'codigoempleado', 'apellidopaterno', 'apellidomaterno', 'fechanacimiento', 'fechaalta', 'sexo', 'numerosegurosocial'],
         where: {
             [Op.or]:
@@ -38,7 +42,7 @@ controller.directorioGCH = async (req, res) => {
                 ]
         },
         //     include: [{
-        //         model: InformacionpuestoM,
+        //         model: informacionpuesto,
         //         attributes: ['descripcion'],
         //         on: {
         //             idpuesto: {
@@ -48,7 +52,7 @@ controller.directorioGCH = async (req, res) => {
         //     }]
 
         include: [{
-            model: InformacionpuestoM,
+            model: informacionpuesto,
             attributes: ['descripcion'],
             on: {
                 idpuesto: Sequelize.where(Sequelize.col('nom10001.idpuesto'), '=', Sequelize.col('nom10006.idpuesto'))
@@ -73,7 +77,7 @@ controller.directorioGCH = async (req, res) => {
 controller.subirfoto = async (req, res) => {
     const { idempleado } = req.params
 
-    const fotoempleado = await InformaciongchM.findByPk(idempleado)
+    const fotoempleado = await informaciongch.findByPk(idempleado)
 
     if (!fotoempleado) {
         return res.redirect('/capitalhumano/directorio');
@@ -92,7 +96,7 @@ controller.subirfoto = async (req, res) => {
 }
 controller.subirfoto2 = async (req, res, next) => {
     const { idempleado } = req.params
-    const informacionR = await InformaciongchM.findByPk(idempleado)
+    const informacionR = await informaciongch.findByPk(idempleado)
 
     console.log(informacionR);
 

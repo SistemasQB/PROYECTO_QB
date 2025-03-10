@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+    <title>Asignación de Equipo</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --text-color: #1f2937;
+            --light-gray: #f3f4f6;
+            --border-color: #d1d5db;
+            --danger-color: #dc2626;
+            --success-color: #16a34a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .document {
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+        
+        .document-title {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+        
+        .equipment-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            background-color: var(--light-gray);
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .terms {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+        
+        .terms ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .terms li {
+            margin-bottom: 5px;
+        }
+        
+        .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .signature-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .signature-line {
+            width: 100%;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+            height: 50px;
+        }
+        
+        .date {
+            text-align: right;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        
+        /* Buttons styles */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .btn-accept {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-accept:hover {
+            background-color: #15803d;
+        }
+        
+        .btn-reject {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background-color: #b91c1c;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Canvas styles */
+        #signatureCanvas {
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+        
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .canvas-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .signatures {
+                grid-template-columns: 1fr;
+            }
+            
+            .document {
+                padding: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+        <!-- ... (previous content remains the same) ... -->
+        <div class="header">
+            <img src="../img/Quality-BOLCA.png" alt="Logo de la Empresa" class="logo">
+            <div>
+                <h2>Carta de asignación de equipo de computo</h2>
+                <p>Documento de entrega y responsabilidad</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3 class="section-title">Información del Equipo</h3>
+            <div class="equipment-details">
+                <div class="detail-item">
+                    <span class="detail-label">Tipo de Equipo:</span>
+                    <span class="detail-value">Laptop HP EliteBook</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Número de Serie:</span>
+                    <span class="detail-value">SN12345678</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Modelo:</span>
+                    <span class="detail-value">840 G5</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Código de Inventario:</span>
+                    <span class="detail-value">INV-2023-0042</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Estado:</span>
+                    <span class="detail-value">Nuevo</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Accesorios:</span>
+                    <span class="detail-value">Cargador, Mouse, Maletín</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3 class="section-title">Información del Colaborador</h3>
+            <div class="equipment-details">
+                <div class="detail-item">
+                    <span class="detail-label">Nombre:</span>
+                    <span class="detail-value">Juan Pérez González</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Departamento:</span>
+                    <span class="detail-value">Tecnología</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Cargo:</span>
+                    <span class="detail-value">Desarrollador Senior</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">ID Empleado:</span>
+                    <span class="detail-value">EMP-2023-0123</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="date">
+            <p><strong>Fecha de Entrega:</strong> 3 de marzo de 2025</p>
+        </div>
+        
+        <div class="section">
+            <h3 class="section-title">Condiciones de Uso</h3>
+            <div class="terms">
+                <p>El colaborador que recibe el equipo se compromete a:</p>
+                <ul>
+                    <li>Utilizar el equipo únicamente para fines laborales.</li>
+                    <li>Mantener el equipo en buenas condiciones y reportar cualquier daño inmediatamente.</li>
+                    <li>No instalar software no autorizado por la empresa.</li>
+                    <li>No prestar o transferir el equipo a terceros.</li>
+                    <li>Devolver el equipo en caso de terminación de la relación laboral.</li>
+                    <li>Seguir todas las políticas de seguridad informática de la empresa.</li>
+                    <li>Asumir responsabilidad por pérdida o daño debido a negligencia.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="signatures">
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <p><strong>Firma del Responsable de TI</strong></p>
+                <p>Nombre: Ana Martínez Soto</p>
+                <p>Cargo: Gerente de TI</p>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line"></div>
+                <p><strong>Firma del Colaborador</strong></p>
+                <p>Nombre: Juan Pérez González</p>
+                <p>Fecha: 3 de marzo de 2025</p>
+            </div>
+        </div>
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-accept" id="acceptBtn">Aceptar</button>
+            <button class="btn btn-reject" id="rejectBtn">Rechazar</button>
+        </div>
+    </div>
+    
+    <!-- Modal for rejection comments -->
+    <div class="modal-overlay" id="rejectModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Motivo de Rechazo</h3>
+                <button class="modal-close" id="closeRejectModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="rejectComments">Por favor, indique el motivo del rechazo:</label>
+                    <textarea class="form-control" id="rejectComments" placeholder="Escriba sus comentarios aquí..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelReject">Cancelar</button>
+                <button class="btn btn-danger" id="sendReject">Enviar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for signature -->
+    <div class="modal-overlay" id="signatureModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Firma de Aceptación</h3>
+                <button class="modal-close" id="closeSignatureModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- <div class="canvas-container">
+                    <canvas id="signatureCanvas" width="400" height="200"></canvas>
+                    <div class="canvas-actions">
+                        <button class="btn" id="clearSignature">Limpiar</button>
+                    </div>
+                </div> -->
+                <form action="/upload" class="dropzone" id="myDropzone"></form>
+            <canvas id="signatureCanvas" width="400" height="200"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelSignature">Cancelar</button>
+                <button class="btn btn-accept" id="sendSignature">Enviar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const rejectBtn = document.getElementById('rejectBtn');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const rejectModal = document.getElementById('rejectModal');
+        const signatureModal = document.getElementById('signatureModal');
+        const closeRejectModal = document.getElementById('closeRejectModal');
+        const closeSignatureModal = document.getElementById('closeSignatureModal');
+        const cancelReject = document.getElementById('cancelReject');
+        const cancelSignature = document.getElementById('cancelSignature');
+        const sendReject = document.getElementById('sendReject');
+        const sendSignature = document.getElementById('sendSignature');
+        const rejectComments = document.getElementById('rejectComments');
+        const signatureCanvas = document.getElementById('signatureCanvas');
+        const clearSignature = document.getElementById('clearSignature');
+        
+        const ctx = signatureCanvas.getContext('2d');
+        let isDrawing = false;
+        
+        // Function to open modal
+        function openModal(modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Function to close modal
+        function closeModal(modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            if (modal === rejectModal) {
+                rejectComments.value = '';
+            } else if (modal === signatureModal) {
+                clearSignatureCanvas();
+            }
+        }
+        
+        // Event listeners for reject modal
+        rejectBtn.addEventListener('click', () => openModal(rejectModal));
+        closeRejectModal.addEventListener('click', () => closeModal(rejectModal));
+        cancelReject.addEventListener('click', () => closeModal(rejectModal));
+        
+        // Event listeners for signature modal
+        acceptBtn.addEventListener('click', () => openModal(signatureModal));
+        closeSignatureModal.addEventListener('click', () => closeModal(signatureModal));
+        cancelSignature.addEventListener('click', () => closeModal(signatureModal));
+        
+        // Close modals when clicking outside
+        [rejectModal, signatureModal].forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal(modal);
+                }
+            });
+        });
+        
+        // Handle send rejection button click
+        sendReject.addEventListener('click', function() {
+            const comments = rejectComments.value.trim();
+            if (comments === '') {
+                alert('Por favor, indique el motivo del rechazo.');
+                return;
+            }
+            
+            alert('Rechazo enviado con éxito. Comentarios: ' + comments);
+            closeModal(rejectModal);
+            // Here you would typically send the rejection data to a server
+        });
+    </script>
+</body>
+</html>
+

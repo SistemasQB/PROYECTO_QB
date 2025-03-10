@@ -1,116 +1,328 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./../styles/admin/requisicionA.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
+    <title>Sistema de Requisiciones - Quality BOLCA</title>
+    <style>
+        :root {
+            --primary-blue: #0088CC;
+            --text-gray: #666;
+            --border-color: #ddd;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .logo {
+            height: 50px;
+        }
+
+        .title {
+            color: var(--primary-blue);
+            font-size: 24px;
+        }
+
+        .h3A {
+            color: green;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: space-around;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-view {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-gray);
+        }
+
+        .btn-approve {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-reject {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal:target {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1000px;
+            position: relative;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            text-align: inherit;
+        }
+
+        .modal-title {
+            color: var(--primary-blue);
+            font-size: 20px;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 24px;
+            top: 24px;
+            text-decoration: none;
+            color: var(--text-gray);
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            grid-template-areas:
+                "IG DP DP"
+                "IR DP DP"
+                "DS DE DC";
+        }
+
+        .info-section h3 {
+            color: var(--primary-blue);
+            margin-bottom: 12px;
+        }
+
+        .info-section b{
+            color: var(--primary-blue);
+            margin-bottom: 2%;
+        }
+
+        .info-item {
+            margin-bottom: 8px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: var(--text-gray);
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .actions {
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                padding: 6px 12px;
+            }
+        }
+    </style>
 </head>
 
-<header>
-    <button class="btn btn-primary mt-3 ms-3" type="button" data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
-        <img
-            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAExJREFUSEtjZKAxYKSx+QyjFhAM4QEJov8EnYVfAYqjsfmA5hZQ6AFU7QMSBzT3Ac3jgOYW0DyIhr4FNI8Dmlsw9ONg1AcoIUDz0hQAbegGGXzv/l0AAAAASUVORK5CYII=" />
-    </button>
-    <%- include('partials/_navbar2'); %>
-</header>
-
 <body>
-    <div class="row d-flex justify-content-center container-fluid">
-        <div class="col-md-10">
-            <div class="card-hover-shadow-2x mb-3 card">
-                <div class="card-header-tab card-header">
-                    <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i
-                            class="fa fa-tasks"></i>&nbsp;Requisiciones</div>
+    <div class="container">
+        <header class="header">
+            <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo.jpg-aXwHvmXZn1y4mDBP7vdO3vr5eHn5MK.jpeg"
+                alt="Quality BOLCA Logo" class="logo">
+            <h1 class="title">Sistema de Requisiciones</h1>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Asunto</th>
+                        <th>Fecha</th>
+                        <th style="text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (const [key, datos] of Object.entries(requi)) { %>
+                        <tr>
+                            <td>
+                                <%= datos.solicitante %>
+                            </td>
+                            <td>
+                                <%= datos.asunto %>
+                            </td>
+                            <td>
+                                <% let subcadena = datos.createdAt.toString().split('T')[0];%>
+                                <%= subcadena = subcadena.split(' ')[2] + ' ' + subcadena.split(' ')[1] +  ' ' + subcadena.split(' ')[3]%>
+                                <% console.log(subcadena)%>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a href="#modal-1" onclick="abrirModal('<%= JSON.stringify(datos) %>')"
+                                        class="btn btn-view">👁️ Ver</a>
+                                    <button class="btn btn-approve">✓ Aprobar</button>
+                                    <button class="btn btn-reject">✕ Rechazar</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <%}%>
+                            <!-- Puedes agregar más filas aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-1" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title h3A" style="text-transform: uppercase;"></h1>
+                <a href="#" onclick="elimnarFilas()" class="modal-close">✕</a>
+                <br>
+                <span class="h3A"></span>
+            </div>
+            <div class="modal-grid">
+                <div class="info-section" style="grid-area: IG;">
+                    <h3>Información General</h3>
+                    <div class="info-item">
+                        <span class="info-label">Nombre:</span> <span class="spanIG"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Puesto:</span> <span class="spanIG"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Departamento:</span> <span class="spanIG"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Fecha:</span> <span class="spanIG"></span>
+                    </div>
+
                 </div>
-                <div class="scroll-area-sm">
-                    <perfect-scrollbar class="ps-show-limits">
-                        <div style="position: static;" class="ps ps--active-y">
-                            <div class="ps-content">
-                                <ul class=" list-group list-group-flush">
-                                    <% if (requi) { %>
-                                        <% for (const [key, datos] of Object.entries(requi)) { %>
-                                    <li class="list-group-item">
-                                        <div class="todo-indicator bg-warning"></div>
-                                        <div class="widget-content p-0">
-                                            <div class="widget-content-wrapper">
-                                                <div class="widget-content-left mr-2">
-                                                    <h4><%= datos.id %></h4>
-                                                </div>
-                                                <div class="widget-content-left">
-                                                    <div class="widget-heading"> <%= datos.asunto %>
-                                                        <% if (datos.estatus == 1) { %>
-                                                        <div class="badge badge-info ml-2">Pendiente</div>
-                                                        <% } %>
-                                                        <% if (datos.estatus == 2) { %>
-                                                            <div class="badge badge-primary ml-2">Aprobada</div>
-                                                        <% } %>
-                                                        <% if (datos.estatus == 3) { %>
-                                                            <div class="badge badge-danger ml-2">Rechazada</div>
-                                                        <% } %>
-                                                    </div>
-                                                    <div class="widget-subheading"><i><%= datos.departamento %></i></div>
-                                                </div>
-                                                <div class="widget-content-right">
-                                                    <button class="border-1 btn-transition btn btn-outline-success" style="outline: solid green;">
-                                                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAKtJREFUSEvtlNENgCAMRI9NdBOdTJ1EN3EVR9FLIGmA0KLyR3/UEN9Lr1WHxuUa89EFasI9ohDRAGACcMSZ/RER4bsXbI9glZKvAgm/AIx/dqDCKXvbgQmuCZglh8bWZZnhJQHhi4fPQlIFLwkIOp8OeGUHlLDCtmQHmvusSzOIJYRy181wbQY8lxI+V8EtAinhfbLn2t/OuqZhFhovObcKqsHhhS5Qo2se0Q2p5R4Zjo+H2gAAAABJRU5ErkJggg=="/></button>
-                                                    <button class="border-1 btn-transition btn btn-outline-danger" style="outline: solid rgb(128, 0, 0);">
-                                                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAI1JREFUSEtjZKAxYKSx+QzEWODAwMCwH4dDGoHiDfgcScgCfIaDzH3AwMCQyMDAcACXJegW/KdSkMHNpbsFVPIAwhhccUBuUGGYNzIsgPkSPdiwiZMVRKMWYE36yOE9GkQjIIhIKQCJzmigGgxU2ZACQJWOI7oGXIUdyPB6EizBWbMRqjJJ8QFWtTS3AAAyqysZPeY+2wAAAABJRU5ErkJggg=="/>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <% let des = datos.descripcion.split("▄") %>
-                                        <details>
-                                            <p>Orden de servicio: <%= datos.orden %></p>
-                                            <p><%= datos.createdAt %></p>
-                                            <p><%= datos.departamento %></p>
-                                            <p><%= datos.puesto %></p>
-                                            <p><%= datos.rentabilidad %></p>
-                                            <p><%= datos.region %> / <%= datos.planta %></p>
-                                            <p><%= datos.fechaEntrega %></p>
-
-                                            <summary>Descripcion</summary>
-                                            <table class="table">
-                                                <thead>
-                                                  <tr>
-                                                    <th scope="col">Descripción Detallada</th>
-                                                    <th scope="col">Unidad</th>
-                                                    <th scope="col">Precio unitario con IVA</th>
-                                                    <th scope="col">Precio Total con IVA</th>
-                                                  </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <% for(var c=0; c<des.length; c=c+4) {%>
-                                                        <%//for(var [key2, datos2] of Object.entries(des)) {%>
-                                                  <tr>
-                                                    <th><%= des[c] %></th>
-                                                    <td><%= des[c +1] %></td>
-                                                    <td><%= des[c +2] %></td>
-                                                    <td><%= des[c +3] %></td>
-                                                  </tr>
-                                                  <%}%>
-                                                </tbody>
-                                              </table>
-                                              <p>Situacion Actual: <%= datos.situacionActual %></p>
-                                              <p>Expectativa: <%= datos.detallesEspectativa %></p>
-                                              <p>Comentarios: <%= datos.comentariosAdicionales %></p>
-
-                                        </details>
-                                    </li>
-                                        <% } %>
-                                    <% }%>
-                                </ul>
-                            </div>
-                        </div>
-                    </perfect-scrollbar>
+                <div class="info-section" style="grid-area: DP;">
+                    <h3>Detalles del Producto</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Descripcion</th>
+                                <th>unidad</th>
+                                <th>precio unitario</th>
+                                <th style="text-align: center;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyModal">
+                            <!-- <tr>
+                                <th>Descripcion</th>
+                                <th>unidad</th>
+                                <th>precio unitario</th>
+                                <th style="text-align: center;">Total</th>
+                            </tr> -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>Total: </th>
+                                <th id="tfoottr"></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="info-section" style="grid-area: IR;">
+                    <b>Region: </b>
+                    <span class="spanR"></span>
+                    <br>
+                    <b>Planta: </b>
+                    <span class="spanR"></span>
+                    <br>
+                    <b>Cotización: </b>
+                    <span class="spanR"></span>
+                    <br>
+                    <b>Fecha Requerida: </b>
+                    <span class="spanR"></span>
+                </div>
+                <div class="info-section" style="grid-area: DS;">
+                    <h3>Detallar situación actual</h3>
+                    <p class="pS">Comentarios sobre la requisición y detalles específicos del pedido.</p>
+                </div>
+                <div class="info-section" style="grid-area: DE;">
+                    <h3>Detallar expectativa</h3>
+                    <p class="pS">Comentarios sobre la requisición y detalles específicos del pedido.</p>
+                </div>
+                <div class="info-section" style="grid-area: DC;">
+                    <h3>Comentarios adicionales</h3>
+                    <p class="pS">Comentarios sobre la requisición y detalles específicos del pedido.</p>
                 </div>
             </div>
         </div>
@@ -118,3 +330,87 @@
 </body>
 
 </html>
+<!-- <script src="../scripts/admin/requisicionA.js"></script> -->
+
+<script>
+    const pS = document.getElementsByClassName('pS')
+    const spanIG = document.getElementsByClassName('spanIG')
+    const spanR = document.getElementsByClassName('spanR')
+    const h3A = document.getElementsByClassName('h3A')
+    const tabla = document.getElementById('tbodyModal');
+    function abrirModal(datos) {
+        const datosParsed = JSON.parse(datos);
+        console.log('Datos de la requisición:', datosParsed);
+        pS[0].textContent = datosParsed.situacionActual
+        pS[1].textContent = datosParsed.detallesEspectativa
+        pS[2].textContent = datosParsed.comentariosAdicionales
+
+        let subcadena = datosParsed.createdAt.split('T')[0];
+        console.log(subcadena);
+        // subcadena = subcadena.split(' ')[1] + ' ' + subcadena.split(' ')[2] +  ' ' + subcadena.split(' ')[3]
+        spanIG[0].textContent = datosParsed.solicitante
+        spanIG[1].textContent = datosParsed.puesto
+        spanIG[2].textContent = datosParsed.departamento
+        spanIG[3].textContent = subcadena
+        
+        subcadena = datosParsed.fechaEntrega.split('T')[0];
+        console.log(subcadena);
+        // subcadena = subcadena.split(' ')[1] + ' ' + subcadena.split(' ')[2] +  ' ' + subcadena.split(' ')[3]
+
+        spanR[0].textContent = datosParsed.region
+        spanR[1].textContent = datosParsed.planta
+        spanR[2].textContent = datosParsed.orden
+        spanR[3].textContent = subcadena
+
+
+        h3A[0].textContent = datosParsed.asunto
+        h3A[1].textContent = datosParsed.rentabilidad
+
+        filasTabla(datosParsed)
+    }
+
+    function filasTabla(datosParsed) {
+        
+        const filas = datosParsed.descripcion.split('▄')
+console.log(filas)
+        if (filas.length > 4) {
+            let c1 = Math.floor(filas.length / 4)
+            for (let c = 0; c < c1; c++) {
+                const nuevaFila = tabla.insertRow();
+                const celdaDescripcion = nuevaFila.insertCell(0);
+                const celdaUnidad = nuevaFila.insertCell(1);
+                const celdaPrecioU = nuevaFila.insertCell(2);
+                const celdaPrecioT = nuevaFila.insertCell(3);
+
+                celdaDescripcion.textContent =filas[0 +  (c * 4)] 
+                celdaUnidad.textContent =filas[1 + (c * 4)] 
+                celdaPrecioU.textContent =filas[2 + (c * 4)] 
+                celdaPrecioT.textContent =filas[3 + (c * 4)] 
+            }
+        } else {
+            const nuevaFila = tabla.insertRow();
+                const celdaDescripcion = nuevaFila.insertCell(0);
+                const celdaUnidad = nuevaFila.insertCell(1);
+                const celdaPrecioU = nuevaFila.insertCell(2);
+                const celdaPrecioT = nuevaFila.insertCell(3);
+
+                celdaDescripcion.textContent =filas[0] 
+                celdaUnidad.textContent =filas[1] 
+                celdaPrecioU.textContent =filas[2] 
+                celdaPrecioT.textContent =filas[3] 
+        }
+        document.getElementById('tfoottr').textContent= datosParsed.total
+    }
+
+    function elimnarFilas() {
+    const filas2 = tabla.getElementsByTagName('tr');
+    const filasArray = Array.from(filas2); // Convertir a array para evitar problemas al eliminar
+
+    // Eliminar todas las filas excepto la primera (cabecera)
+    filasArray.forEach((fila2, index) => {
+        // if (index > 1) {
+            tabla.deleteRow(0); // Siempre eliminar la segunda fila ya que las filas se reindexan
+        // }
+    });
+    }
+</script>

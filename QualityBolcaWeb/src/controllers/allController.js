@@ -1,6 +1,6 @@
 import express from "express";
 
-import Curso from "../models/cursos.js"
+// import Curso from "../models/cursos.js"
 
 
 const app = express();

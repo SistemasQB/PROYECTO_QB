@@ -24,6 +24,8 @@ const EncuestaS = db.define('encuestaS', {
     question8: DataTypes.BOOLEAN,
     question8c: DataTypes.STRING,
     question9c: DataTypes.STRING
+},{
+    timestamps: false
 })
 
 export default EncuestaS;

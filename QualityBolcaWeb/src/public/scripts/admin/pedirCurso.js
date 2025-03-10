@@ -48,11 +48,15 @@ const campo3 = document.getElementById('floatingTextarea')
 
 }
 
-btnEnviar.addEventListener('click', (e)=>{
+btnEnviar.addEventListener('submit', (e)=>{
+    console.log(typeof datosCurso);
+    
     e.preventDefault()
     const formData = new FormData(formSolicitarC)
     formData.append('curso', datosCurso);
     const urlEncoded = new URLSearchParams(formData).toString();
+    console.log(urlEncoded);
+    
     if (document.getElementById('inputNombre').value != "") {
         fetch('/admin/pedirCurso', {
             method: 'POST',
@@ -70,7 +74,7 @@ btnEnviar.addEventListener('click', (e)=>{
                 }
             }),
             setTimeout(()=> {
-                location.href = 'cursos'
+                location.href = 'pedirCurso'
             }, 5000)
         ).catch(
             function (error) {
@@ -80,7 +84,7 @@ btnEnviar.addEventListener('click', (e)=>{
     }else{
         Swal.fire({
             title: "Error",
-            text: "El nombre no pueden estar vacios",
+            text: "El nombre no puede estar vacio",
             icon: "error",
           });
     }

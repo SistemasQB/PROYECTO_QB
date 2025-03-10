@@ -844,12 +844,8 @@ controller.juegos2 = async (req, res) => {
 }
 
 controller.documentosControlados = (req, res) => {
-    res.render('auth/documentoscontrolados2')
 }
 
-controller.api = (req, res) => {
-    res.json({ ok: true })
-}
 
 controller.calidadD = (req, res) =>{
     const { documento } = req.params

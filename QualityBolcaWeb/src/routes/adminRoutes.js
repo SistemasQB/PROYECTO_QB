@@ -22,6 +22,8 @@ router.get('/solicitudServicio', adminController.solicitudServicio);
 router.post('/solicitudServicio', adminController.solicitudServicio2);
 router.get('/pedirCurso', adminController.pedirCurso);
 router.post('/pedirCurso', adminController.pedirCurso2);
+router.get('/solicitudesCursos', adminController.solicitudesCursos);
+router.post('/solicitudesCursos', adminController.solicitudesCursos2);
 router.get('/vacaciones', adminController.vacaciones);
 router.post('/vacaciones', adminController.vacaciones2);
 router.get('/registroma', protegetRuta, adminController.registroma);
@@ -35,6 +37,11 @@ router.post('/mejoracontinua', adminController.mejoracontinua2);
 router.get('/reuniones', adminController.reuniones);
 router.post('/reuniones', adminController.reuniones2);
 router.get('/glosario', adminController.glosario);
+router.get('/api/:ap', adminController.api);
+router.get('/organigrama', adminController.organigrama);
+router.get('/valeresguardo', adminController.valeresguardo);
+router.post('/valeresguardo', adminController.valeresguardo2);
+
+
 
 export default router;
-

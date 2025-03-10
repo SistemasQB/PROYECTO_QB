@@ -6,10 +6,16 @@ const PedirCurso = db.define('pedirCurso', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    region:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     curso:{
         type: DataTypes.STRING,
         allowNull: false
     }
+},{
+    timestamps: false
 })
 
 

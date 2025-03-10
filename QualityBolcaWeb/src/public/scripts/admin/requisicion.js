@@ -158,8 +158,8 @@ function agregarFila() {
     if (descripcion && numero && texto1 && texto2) {
         c++
         // const tabla = document.getElementById('tabla').getElementsByTagName('tbody')[0];
-        
-        const nuevaFila = tabla.insertRow(c-1);
+        const rows = document.querySelectorAll('tr');
+        const nuevaFila = tabla.insertRow(rows-1);
 
         const celdaNumeracion = nuevaFila.insertCell(0);
         const celdaDescripcion = nuevaFila.insertCell(1);
@@ -222,7 +222,7 @@ function eliminarRegistro(valor) {
     for (let i = 1; i < contadorLista.length + 1; i++) {
         contadorLista[i].textContent = i + 1;
     }
-    c--;
+    c-=2;
 }
 
 // Ejemplo de uso

@@ -49,6 +49,8 @@ const Curso = db.define('cursos', {
         type: DataTypes.STRING,
         allowNull: false
     }
+},{
+    timestamps: false
 })
 
 export default Curso;

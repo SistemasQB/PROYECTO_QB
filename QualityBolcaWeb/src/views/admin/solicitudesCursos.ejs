@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directorio de Cursos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 2rem;
+        }
+
+        .header {
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .header h1 {
+            color: #0088cc;
+            font-size: 1.8rem;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            max-width: 500px;
+            margin-left: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 1rem;
+        }
+
+        .card-title {
+            color: #0088cc;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .card-content {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            color: #444;
+            font-size: 0.95rem;
+        }
+
+        .info-item i {
+            color: #0088cc;
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: #e6f3ff;
+            color: #0088cc;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-container {
+                margin-left: 0;
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="/admin/solicitudesCursos"><h1>Cursos Solicitados</h1></a>
+        <div class="search-container">
+            <input type="text" class="search-input" id="buscador" placeholder="Buscar por nombre, curso o región...">
+        </div>
+    </header>
+
+    <div class="grid-container">
+        <!-- Ejemplo de tarjeta 1 -->
+        <% for (const [key, datos] of Object.entries(vPedirCurso)) { %>
+            <% let datosC = datos.curso.split('▄') %>
+            <% if (datosC.length > 4) { %>
+                <% let c1 = Math.floor(datosC.length / 3) %>
+                <% for (var c = 0; c < c1; c++) { %>
+                    <div class="card">
+                        <div class="card-header">
+                            <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-3KiJ1zxuPj94zz8xUCkGD4VFxsZYyD.png"
+                                alt="Logo" class="card-logo">
+                            <div>
+                                <h2 class="card-title">
+                                    <%= datos.nombre %>
+                                </h2>
+                                <div class="card-subtitle">
+                                    <%= datos.region %>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-item">
+                                <i>📚</i>
+                                <span>
+                                    <%= datosC[0 + (c * 3)] %>
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <i>🏷️</i>
+                                <span class="tag"><%= datosC[1 +  (c * 3)] %></span>
+                            </div>
+                            <div class="info-item">
+                                <i>📝</i>
+                                <span><%= datosC[2 + (c * 3)] %></span>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <div class="card">
+                    <div class="card-header">
+                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-3KiJ1zxuPj94zz8xUCkGD4VFxsZYyD.png"
+                            alt="Logo" class="card-logo">
+                        <div>
+                            <h2 class="card-title">
+                                <%= datos.nombre %>
+                            </h2>
+                            <div class="card-subtitle">
+                                <%= datos.region %>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-item">
+                            <i>📚</i>
+                            <span>
+                                <%= datosC[0] %>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <i>🏷️</i>
+                            <span class="tag"><%= datosC[1] %></span>
+                        </div>
+                        <div class="info-item">
+                            <i>📝</i>
+                            <span><%= datosC[2] %></span>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</body>
+
+<script>
+    const buscador = document.querySelector("#buscador")
+
+    buscador.addEventListener("search", e => {
+        e.target.value = ""
+        document.querySelectorAll(".card").forEach(fruta => {
+
+fruta.textContent.toLowerCase().includes(e.target.value.toLowerCase())
+    ? fruta.classList.remove("hidden")
+    : fruta.classList.add("hidden")
+})
+    })
+
+    buscador.addEventListener("keyup", e => {
+
+
+            if (e.key === "Escape") e.target.value = ""
+
+
+            document.querySelectorAll(".card").forEach(fruta => {
+
+                fruta.textContent.toLowerCase().includes(e.target.value.toLowerCase())
+                    ? fruta.classList.remove("hidden")
+                    : fruta.classList.add("hidden")
+            })
+    })
+</script>
+
+</html>

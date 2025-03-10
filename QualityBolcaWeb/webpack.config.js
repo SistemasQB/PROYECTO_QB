@@ -12,6 +12,7 @@ export default{
         agregarpdf: './src/js/agregarpdf.js',
         directoriofoto: './src/js/directoriofoto.js',
         directoriofoto: './src/js/imagenrequisicion.js',
+        firmas: './src/js/firmas.js'
     },
     output:{
         filename: '[name].js',

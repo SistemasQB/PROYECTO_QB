@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organigrama Interactivo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 100px;
+            height: auto;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        #organigrama {
+            position: relative;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            min-height: 800px;
+            margin-top: 20px;
+        }
+
+        .node {
+            position: absolute;
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            padding: 10px;
+            min-width: 120px;
+            text-align: center;
+            cursor: move;
+            user-select: none;
+            z-index: 1;
+        }
+
+        .node:hover {
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            line-height: 20px;
+            text-align: center;
+            cursor: pointer;
+            display: none;
+        }
+
+        .node:hover .delete-btn {
+            display: block;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+            text-align: center;
+        }
+
+        .metadata {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        #addNodeDialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        #addNodeDialog input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="../img/Quality-BOLCA.png" alt="Logo" class="logo">
+        <div>
+            <button class="btn" onclick="showAddNodeDialog()">➕ Añadir</button>
+            <button class="btn" onclick="saveAsImage()">💾 Guardar como imagen</button>
+        </div>
+    </div>
+
+    <h1 class="title">ORGANIGRAMA ADMINISTRATIVO Y OPERATIVO DE QUALITY BOLCA S.A. DE C.V.</h1>
+    
+    <div class="metadata">
+        <div>Código: QB-DI-A-01</div>
+        <div>Rev.: 12</div>
+        <div>Fecha de emisión: 11-04-2019</div>
+        <div>Fecha de revisión: 30-01-2025</div>
+    </div>
+
+    <div id="organigrama">
+        <!-- Nodos del organigrama -->
+        <div class="node" data-title="CEO">
+            CEO
+            <button class="delete-btn" onclick="deleteNode(this.parentNode)">×</button>
+        </div>
+        <div class="node" data-title="Gestión de Capital humano">
+            Gestión de Capital humano
+            <button class="delete-btn" onclick="deleteNode(this.parentNode)">×</button>
+        </div>
+        <div class="node" data-title="Comercialización y ventas">
+            Comercialización y ventas
+            <button class="delete-btn" onclick="deleteNode(this.parentNode)">×</button>
+        </div>
+        <div class="node" data-title="Administración">
+            Administración
+            <button class="delete-btn" onclick="deleteNode(this.parentNode)">×</button>
+        </div>
+        <!-- Los demás nodos se pueden agregar con el botón "Añadir" -->
+    </div>
+
+    <div id="addNodeDialog">
+        <h3>Añadir nuevo nodo</h3>
+        <input type="text" id="newNodeTitle" placeholder="Título del nodo">
+        <button class="btn" onclick="addNewNode()">Añadir</button>
+        <button class="btn" onclick="closeAddNodeDialog()">Cancelar</button>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // Variables para el arrastre
+        let selectedNode = null;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        // Inicializar posiciones aleatorias para los nodos
+        document.querySelectorAll('.node').forEach(initializeNode);
+
+        function initializeNode(node) {
+            node.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+            node.style.top = Math.random() * (window.innerHeight - 200) + 'px';
+            
+            // Eventos para arrastrar
+            node.addEventListener('mousedown', startDragging);
+        }
+
+        function startDragging(e) {
+            if (e.target.classList.contains('delete-btn')) return;
+            selectedNode = e.currentTarget;
+            offsetX = e.clientX - selectedNode.offsetLeft;
+            offsetY = e.clientY - selectedNode.offsetTop;
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDragging);
+        }
+
+        function drag(e) {
+            if (!selectedNode) return;
+
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+
+            // Mantener el nodo dentro del contenedor
+            const container = document.getElementById('organigrama');
+            const maxX = container.clientWidth - selectedNode.offsetWidth;
+            const maxY = container.clientHeight - selectedNode.offsetHeight;
+
+            selectedNode.style.left = Math.min(Math.max(0, x), maxX) + 'px';
+            selectedNode.style.top = Math.min(Math.max(0, y), maxY) + 'px';
+        }
+
+        function stopDragging() {
+            selectedNode = null;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDragging);
+        }
+
+        function saveAsImage() {
+            const element = document.getElementById('organigrama');
+            
+            html2canvas(element, {
+                backgroundColor: '#ffffff',
+                scale: 2, // Mejor calidad
+            }).then(canvas => {
+                // Crear enlace de descarga
+                const link = document.createElement('a');
+                link.download = 'organigrama.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        function showAddNodeDialog() {
+            document.getElementById('addNodeDialog').style.display = 'block';
+        }
+
+        function closeAddNodeDialog() {
+            document.getElementById('addNodeDialog').style.display = 'none';
+        }
+
+        function addNewNode() {
+            const title = document.getElementById('newNodeTitle').value;
+            if (title) {
+                const newNode = document.createElement('div');
+                newNode.className = 'node';
+                newNode.innerHTML = `
+                    ${title}
+                    <button class="delete-btn" onclick="deleteNode(this.parentNode)">×</button>
+                `;
+                newNode.dataset.title = title;
+                document.getElementById('organigrama').appendChild(newNode);
+                initializeNode(newNode);
+                closeAddNodeDialog();
+                document.getElementById('newNodeTitle').value = '';
+            }
+        }
+
+        function deleteNode(node) {
+            if (confirm('¿Estás seguro de que quieres eliminar este nodo?')) {
+                node.remove();
+            }
+        }
+    </script>
+</body>
+</html>

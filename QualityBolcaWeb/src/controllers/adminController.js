@@ -84,22 +84,13 @@ controller.directorio = async (req, res) => {
                     },
                 ],
             [Op.and]:
-            [
-                {
-                    idpuesto:{ [Op.ne]: 45},
-                }
-            ]
+                [
+                    {
+                        idpuesto: { [Op.ne]: 45 },
+                    }
+                ]
         },
-        
-        //     include: [{
-        //         model: informacionpuesto,
-        //         attributes: ['descripcion'],
-        //         on: {
-        //             idpuesto: {
-        //     [Sequelize.Op.eq]: Sequelize.col('nom10006'+'.idpuesto')
-        //   }
-        //         }
-        //     }]
+
 
         include: [{
             model: informacionpuesto,
@@ -112,13 +103,9 @@ controller.directorio = async (req, res) => {
     }
     )
         .then(resultado => {
-            // console.log(resultado[0]);
-
             vCrup = resultado
         });
 
-    // console.log(vCrup[0].comunicacion.telefono);
-    //  console.log(vCrup[61]);
 
     res.render('admin/directorio', {
         vCrup
@@ -294,17 +281,62 @@ controller.solicitudServicio2 = async (req, res) => {
     })
 }
 
-controller.pedirCurso = (req, res) => {
+controller.pedirCurso = async(req, res) => {
+    let vCrup;
+
+    const bGch_alta = await informaciongch.findAll({
+        attributes: ['nombrelargo'],
+        where: {
+            [Op.or]:
+                [
+                    {
+                        fechaalta: { [Op.gt]: Sequelize.col('fechabaja') }
+                    },
+                    {
+                        fechareingreso: { [Op.gt]: Sequelize.col('fechabaja') }
+                    },
+                ],
+            [Op.and]:
+                [
+                    {
+                        idpuesto: { [Op.ne]: 45 },
+                    }
+                ]
+        }
+    })
+        .then(resultado => {
+            vCrup = resultado
+        });
     res.render('admin/pedirCurso', {
-        csrfToken: req.csrfToken()
+        csrfToken: req.csrfToken(),
+        vCrup
     })
 }
 
 controller.pedirCurso2 = async (req, res) => {
-    const { nombre, curso } = req.body
+    const { nombre, curso, region } = req.body
 
-    const pedirC = await PedirCurso.create({
+    const pedirC = await pedirCurso.create({
         nombre,
+        region,
+        curso
+    });
+}
+
+controller.solicitudesCursos = async(req, res) => {
+    const vPedirCurso = await pedirCurso.findAll();
+    res.render('admin/solicitudesCursos', {
+        csrfToken: req.csrfToken(),
+        vPedirCurso
+    })
+}
+
+controller.solicitudesCursos2 = async (req, res) => {
+    const { nombre, curso, region } = req.body
+
+    const pedirC = await pedirCurso.create({
+        nombre,
+        region,
         curso
     });
 }
@@ -386,11 +418,29 @@ controller.reuniones2 = (req, res) => {
 
 controller.glosario = async (req, res) => {
     const glosario = await Glosario.findAll();
-
-    res.render('admin/glosario',{
+    res.render('admin/glosario', {
         glosario
     })
 }
+
+controller.api = async (req, res) => {
+    const glosario = await Glosario.findAll();
+    res.json(JSON.stringify(glosario, null, 2));
+    // res.j
+}
+
+controller.organigrama = (req, res) => {
+    res.render('admin/organigrama')
+}
+
+controller.valeresguardo = (req, res) => {
+    res.render('admin/valeresguardo')
+}
+
+controller.valeresguardo2 = (req, res) => {
+    res.render('admin/valeresguardo')
+}
+
 
 
 

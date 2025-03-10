@@ -2,28 +2,25 @@ import { DataTypes, Sequelize } from "sequelize";
 const sequelize = new Sequelize('sqlite::memory:');
 import db from "../config/db.js";
 
-const Glosario = db.define('glosarios', {
-    id:{
+const Departamentos = db.define('departamentos', {
+    idpuesto:{
         type: DataTypes.INTEGER,
         primaryKey: true
     },
-    palabra:{
-        type: DataTypes.STRING,
+    proceso:{
+        type: DataTypes.INTEGER,
         allowNull: false
     },
-    significado:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    codigo:{
+    departamento:{
         type: DataTypes.STRING,
         allowNull: false
     }
 },{
+    tableName: 'departamentos',
     sequelize,
     freezeTableName: true, // Desactiva la pluralización automática
     timestamps: false
-})
+}
+)
 
-
-export default Glosario;
+export default Departamentos;

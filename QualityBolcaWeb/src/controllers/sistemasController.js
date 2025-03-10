@@ -1,6 +1,8 @@
 import express from "express";
 
-import RegistroMa from "../models/registroma.js";
+import {
+    registroma
+} from "../models/index.js";
 
 
 
@@ -10,7 +12,7 @@ const app = express();
 const controller = {};
 
 controller.registroMA = async(req, res) => {
-    const registro = await RegistroMa.findAll();
+    const registro = await registroma.findAll();
     const resultador =  JSON.stringify(registro, null, 2)
     res.render('admin/sistemas/registromati',{
         resultador

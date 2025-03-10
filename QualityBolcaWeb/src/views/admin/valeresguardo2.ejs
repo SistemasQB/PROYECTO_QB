@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dropzone y Fabric.js</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
+</head>
+<body>
+    <form action="/upload" class="dropzone" id="myDropzone"></form>
+    <canvas id="canvas" width="800" height="600" style="background-color: red;"></canvas>
+    <button id="sendButton">Enviar Imagen</button>
+
+    <script>
+        var canvas = new fabric.Canvas('canvas');
+
+        // Configura Dropzone
+        Dropzone.options.myDropzone = {
+            init: function() {
+                this.on("success", function(file, response) {
+                    // Carga la imagen en Fabric.js
+                    fabric.Image.fromURL(response.imageUrl, function(img) {
+                        canvas.clear();
+                        canvas.add(img);
+                        canvas.isDrawingMode = true; // Permite dibujar
+                    });
+                });
+            }
+        };
+
+        // Enviar la imagen del canvas al servidor
+        document.getElementById('sendButton').addEventListener('click', function() {
+            var dataURL = canvas.toDataURL('image/png');
+            var blob = dataURLToBlob(dataURL);
+
+            var formData = new FormData();
+            formData.append('file', blob, 'canvas-image.png');
+
+            fetch('/upload-canvas', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+              .then(data => console.log(data))
+              .catch(error => console.error('Error:', error));
+        });
+
+        function dataURLToBlob(dataURL) {
+            var binary = atob(dataURL.split(',')[1]);
+            var array = [];
+            for (var i = 0; i < binary.length; i++) {
+                array.push(binary.charCodeAt(i));
+            }
+            return new Blob([new Uint8Array(array)], {type: 'image/png'});
+        }
+    </script>
+</body>
+</html>

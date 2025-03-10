@@ -3,9 +3,9 @@ import db from "../config/db.js";
 
 
 const Listas = db.define('plantas', {
-    planta: DataTypes.STRING,
-    createdAt: false,
-    updatedAt: false
+    planta: DataTypes.STRING
+},{
+    timestamps: false
 })
 
 export default Listas;
