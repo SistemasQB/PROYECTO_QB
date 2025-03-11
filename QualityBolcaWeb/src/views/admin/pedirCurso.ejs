@@ -148,7 +148,7 @@
             <input type="hidden" name="_csrf" value="<%=csrfToken%>">
             <div class="form-group">
                 <label for="nombre">Nombre completo (empezando con el apellido)</label>
-                <input type="text" list="nombrelargo" id="inputNombre" name="nombre" required>
+                <input type="text" list="nombrelargo" id="inputNombre" name="nombre">
             </div>
 
             <datalist id="nombrelargo">
@@ -159,12 +159,12 @@
 
             <div class="form-group">
                 <label for="curso">Curso</label>
-                <input type="text" id="inputCurso" name="" required>
+                <input type="text" id="inputCurso" name="">
             </div>
 
             <div class="form-group">
                 <Label>Region</Label>
-                <select class="form-control" name="region" id="dropdown5" required>
+                <select class="form-control" name="region" id="dropdown5">
                     <option value="" disabled selected>Seleccione una opción</option>
                     <option value="AGUASCALIENTES">
                         AGUASCALIENTES
@@ -243,11 +243,11 @@
                 <label>Tipo</label>
                 <div class="radio-group">
                     <div class="radio-option">
-                        <input type="radio" id="competencia" class="form-check-input" name="tipo" value="competencia" checked required>
+                        <input type="radio" id="competencia" class="form-check-input" name="tipo" value="competencia" checked>
                         <label for="competencia">Competencia</label>
                     </div>
                     <div class="radio-option">
-                        <input type="radio" id="productividad" class="form-check-input" name="tipo" value="productividad" required>
+                        <input type="radio" id="productividad" class="form-check-input" name="tipo" value="productividad">
                         <label for="productividad">Productividad</label>
                     </div>
                 </div>
@@ -255,7 +255,7 @@
 
             <div class="form-group">
                 <label for="floatingTextarea">Descripción</label>
-                <textarea id="floatingTextarea" name="descripcion" rows="4" required></textarea>
+                <textarea id="floatingTextarea" name="descripcion" rows="4"></textarea>
             </div>
 
             <button type="button" id="" onclick="agregarCurso()" class="btn btn-primary">Agregar Curso</button>

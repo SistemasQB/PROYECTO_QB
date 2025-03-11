@@ -41,6 +41,7 @@ router.get('/api/:ap', adminController.api);
 router.get('/organigrama', adminController.organigrama);
 router.get('/valeresguardo', adminController.valeresguardo);
 router.post('/valeresguardo', adminController.valeresguardo2);
+router.get('/generarfirma/:codigo', adminController.generarfirma);
 
 
 

@@ -48,7 +48,7 @@ const campo3 = document.getElementById('floatingTextarea')
 
 }
 
-btnEnviar.addEventListener('submit', (e)=>{
+btnEnviar.addEventListener('click', (e)=>{
     console.log(typeof datosCurso);
     
     e.preventDefault()

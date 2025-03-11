@@ -441,7 +441,9 @@ controller.valeresguardo2 = (req, res) => {
     res.render('admin/valeresguardo')
 }
 
-
+controller.generarfirma = (req, res) => {
+    res.render('admin/generarfirma')
+}
 
 
 export default controller;
