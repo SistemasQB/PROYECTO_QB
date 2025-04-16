@@ -14,7 +14,7 @@ const emailRegistro = async (datos) =>{
     const { email, nombre, token } = datos
 
     //Enviar el email
-    const ruta = process.env.BACKEND_URL + ':' + process.env.PORT + '/confirmar/' + token;
+    const ruta = process.env.BACKEND_URL + '/confirmar/' + token;
     await transport.sendMail({
         from: 'sistema@qualitybolca.net',
         to: email,
