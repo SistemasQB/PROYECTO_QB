@@ -41,7 +41,7 @@ router.get('/glosario', adminController.glosario);
 router.get('/api', adminController.api);
 router.get('/organigrama', adminController.organigrama);
 router.get('/valeresguardo',protegetRuta, adminController.valeresguardo);
-router.post('/valeresguardo',adminController.valeresguardo2);
+router.post('/valeresguardo', protegetRuta, adminController.valeresguardo3);
 router.post('/subirfirma',protegetRuta, upload2.single('firmaFile'),adminController.valeresguardo2);
 router.get('/generarfirma/:codigo', adminController.generarfirma);
 router.get('/mantenimientoautonomo', adminController.mantenimientoautonomo);

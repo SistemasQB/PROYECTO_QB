@@ -285,7 +285,7 @@ controller.solicitudServicio2 = async (req, res) => {
     })
 }
 
-controller.pedirCurso = async(req, res) => {
+controller.pedirCurso = async (req, res) => {
     let vCrup;
 
     const bGch_alta = await informaciongch.findAll({
@@ -327,7 +327,7 @@ controller.pedirCurso2 = async (req, res) => {
     });
 }
 
-controller.solicitudesCursos = async(req, res) => {
+controller.solicitudesCursos = async (req, res) => {
     const vPedirCurso = await pedirCurso.findAll();
     res.render('admin/solicitudesCursos', {
         csrfToken: req.csrfToken(),
@@ -472,13 +472,13 @@ controller.organigrama = (req, res) => {
     res.render('admin/organigrama')
 }
 
-controller.valeresguardo = async(req, res) => {
+controller.valeresguardo = async (req, res) => {
     let valeasignacion
 
     const { codigoempleado } = req.usuario
 
-    const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado }} );
-        // console.log(obtenerFolio);
+    const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado } });
+    // console.log(obtenerFolio);
 
     const resultado = await db.query(
         `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
@@ -488,16 +488,16 @@ controller.valeresguardo = async(req, res) => {
          INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
          WHERE i.folio = :nfolio;`,
         {
-            replacements: { nfolio: obtenerFolio.idFolio}, // Sustituir parámetros
+            replacements: { nfolio: obtenerFolio.idFolio }, // Sustituir parámetros
             type: QueryTypes.SELECT // Tipo de consulta: SELECT
         }
-      ).then((resultados) => {
+    ).then((resultados) => {
         valeasignacion = resultados;
-      });
-      
+    });
 
 
-    res.render('admin/valeresguardo',{
+
+    res.render('admin/valeresguardo', {
         csrfToken: req.csrfToken(),
         valeasignacion
     })
@@ -507,25 +507,47 @@ controller.valeresguardo2 = async (req, res, next) => {
 
     const { codigoempleado } = req.usuario
 
-    const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado }} );
+    const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado } });
 
-    console.log(obtenerFolio, req.file.filename);
-    
+    // console.log(obtenerFolio, req.file.filename);
+
     try {
         obtenerFolio.Firma = req.file.filename
-            await obtenerFolio.save()
-            next()
-            res.status(200).send({ msg: 'Firma enviada con exito', ok: true });
-            return
+        await obtenerFolio.save()
+        next()
+        res.status(200).send({ msg: 'Firma enviada con exito', ok: true });
+        return
     } catch (error) {
         res.status(400).send({ msg: 'Error al firmar el vale', ok: false });
         return
     }
 }
 
+controller.valeresguardo3 = async (req, res) => {
+
+    const { codigoempleado } = req.usuario
+
+    const { comentarios } = req.body
+
+    const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado } });
+
+    // console.log(obtenerFolio, req.file.filename);
+
+    try {
+        obtenerFolio.comentarios = comentarios
+        await obtenerFolio.save()
+        // next()
+        res.status(200).send({ msg: 'Comentarios enviados', ok: true });
+        return
+    } catch (error) {
+        res.status(400).send({ msg: 'Error al enviar los comentarios', ok: false });
+        return
+    }
+}
+
 controller.generarfirma = (req, res) => {
-    const {codigo} = req.params
-    res.render('admin/generarfirma',{
+    const { codigo } = req.params
+    res.render('admin/generarfirma', {
         csrfToken: req.csrfToken(),
         codigo
     })

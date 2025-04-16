@@ -323,7 +323,9 @@
             <div>
                 <h2>Carta de asignación de equipo de computo</h2>
                 <p>Documento de entrega y responsabilidad</p>
-                <p>Folio: <span><%=valeasignacion[0].folio%></span></p>
+                <p>Folio: <span>
+                        <%=valeasignacion[0].folio%>
+                    </span></p>
             </div>
         </div>
 
@@ -331,42 +333,47 @@
             <h3 class="section-title">Información del Equipo</h3>
 
 
-            
+
             <div class="equipment-details">
-                    <% for (const [key, datos] of Object.entries(valeasignacion)) { %>
+                <% for (const [key, datos] of Object.entries(valeasignacion)) { %>
                     <div class="detail-item">
                         <p><span class="detail-label">Tipo de Equipo:</span>
-                        <span class="detail-value">
-                            <%=datos.tipo%>
-                        </span></p>
+                            <span class="detail-value">
+                                <%=datos.tipo%>
+                            </span>
+                        </p>
                         <p><span class="detail-label">Número de Serie:</span>
-                        <span class="detail-value">
-                            <%=datos.serie%>
-                        </span></p>
+                            <span class="detail-value">
+                                <%=datos.serie%>
+                            </span>
+                        </p>
                         <p><span class="detail-label">Marca:</span>
-                        <span class="detail-value">
-                            <%=datos.marca%>
-                        </span></p>
+                            <span class="detail-value">
+                                <%=datos.marca%>
+                            </span>
+                        </p>
                         <p><span class="detail-label">Código de Inventario:</span>
-                        <span class="detail-value">
-                            <%=datos.idInventario%>
-                        </span></p>
+                            <span class="detail-value">
+                                <%=datos.idInventario%>
+                            </span>
+                        </p>
                         <p><span class="detail-label">Estado:</span>
-                        <% if (datos.estado=='1' ) { %>
-                            <% var estado2='Nuevo' %>
-                                <% }else{ %>
-                                    <% var estado2='Usado' %>
-                                        <% } %>
-                                            <span class="detail-value">
-                                                <%= estado2 %>
-                                            </span>
-                                            <span class="detail-label">Accesorios:</span>
-                                            <span class="detail-value">
-                                                <%=datos.accesorios%>
-                                            </span></p>
+                            <% if (datos.estado=='1' ) { %>
+                                <% var estado2='Nuevo' %>
+                                    <% }else{ %>
+                                        <% var estado2='Usado' %>
+                                            <% } %>
+                                                <span class="detail-value">
+                                                    <%= estado2 %>
+                                                </span>
+                                                <span class="detail-label">Accesorios:</span>
+                                                <span class="detail-value">
+                                                    <%=datos.accesorios%>
+                                                </span>
+                        </p>
                     </div>
                     <% } %>
-                </div>
+            </div>
 
         </div>
 
@@ -426,8 +433,8 @@
             <div class="signature-box">
                 <div class="signature-line" style="text-align: center;">
                     <% if (valeasignacion[0].Firma) { %>
-                    <img src="../firmas/618818.webp" style="max-width: 150px;" alt="" srcset="">
-                    <% } %>
+                        <img src="../firmas/618818.webp" style="max-width: 150px;" alt="" srcset="">
+                        <% } %>
                 </div>
                 <p><strong>Firma del Responsable de TI</strong></p>
                 <p>Nombre: Oscar Arturo De luna Lujan</p>
@@ -436,8 +443,12 @@
             <div class="signature-box">
                 <div class="signature-line" style="text-align: center;">
                     <% if (valeasignacion[0].Firma) { %>
-                    <img src="../firmas/<%=valeasignacion[0].Firma%>" style="max-width: 150px;" alt="" srcset="">
-                    <% } %>
+                        <img src="../firmas/<%=valeasignacion[0].Firma%>" style="max-width: 150px;" alt="" srcset="">
+                        <% } %>
+                        <% if (valeasignacion[0].comentarios) { %>
+                            <p>Se rechazo por el siguiente motivo:</p>
+                            <p style="color: red;"><%=valeasignacion[0].comentarios%></p>
+                        <% } %>
                 </div>
                 <p><strong>Firma del Colaborador</strong></p>
                 <p>Nombre: <%=valeasignacion[0].nombrelargo%>
@@ -447,32 +458,36 @@
             </div>
         </div>
         <!-- Action Buttons -->
-        <% if (!valeasignacion[0].Firma) { %>
-        <div class="action-buttons">
-            <button class="btn btn-accept" id="acceptBtn">Aceptar</button>
-            <button class="btn btn-reject" id="rejectBtn">Rechazar</button>
-        </div>
-        <% } %>
+        <% if (!valeasignacion[0].Firma && !valeasignacion[0].comentarios) { %>
+            <div class="action-buttons">
+                <button class="btn btn-accept" id="acceptBtn">Aceptar</button>
+                <button class="btn btn-reject" id="rejectBtn">Rechazar</button>
+            </div>
+            <% } %>
     </div>
 
     <!-- Modal for rejection comments -->
     <div class="modal-overlay" id="rejectModal">
         <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Motivo de Rechazo</h3>
-                <button class="modal-close" id="closeRejectModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="rejectComments">Por favor, indique el motivo del rechazo:</label>
-                    <textarea class="form-control" id="rejectComments"
-                        placeholder="Escriba sus comentarios aquí..."></textarea>
+            <form action="" id="formComentarios">
+                <div class="modal-header">
+                    <h3 class="modal-title">Motivo de Rechazo</h3>
+                    <button class="modal-close" id="closeRejectModal">&times;</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" id="cancelReject">Cancelar</button>
-                <button class="btn btn-danger" id="sendReject">Enviar</button>
-            </div>
+                <div class="modal-body">
+                    <div class="form-group">
+
+                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                        <label for="rejectComments">Por favor, indique el motivo del rechazo:</label>
+                        <textarea class="form-control" id="rejectComments" name="comentarios"
+                            placeholder="Escriba sus comentarios aquí..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="cancelReject">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" id="btnEnviarC">Enviar</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -483,7 +498,8 @@
                 <h3 class="modal-title">Firma de Aceptación</h3>
                 <button class="modal-close" id="closeSignatureModal">&times;</button>
             </div>
-            <h4><a href="/admin/generarfirma/<%=valeasignacion[0].numeroEmpleado%>" target="_blank">Si no cuentas con firma haz click aquí</a></h4>
+            <h4><a href="/admin/generarfirma/<%=valeasignacion[0].numeroEmpleado%>" target="_blank">Si no cuentas con
+                    firma haz click aquí</a></h4>
             <div class="modal-body">
                 <!-- <div class="canvas-container">
                     <canvas id="signatureCanvas" width="400" height="200"></canvas>
@@ -522,9 +538,51 @@
         const rejectComments = document.getElementById('rejectComments');
         const signatureCanvas = document.getElementById('signatureCanvas');
         const clearSignature = document.getElementById('clearSignature');
-
+        const formComentarios = document.getElementById('formComentarios')
         const ctx = signatureCanvas.getContext('2d');
         let isDrawing = false;
+
+
+        formComentarios.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(formComentarios)
+            const urlEncoded = new URLSearchParams(formData).toString();
+            console.log(urlEncoded);
+
+            fetch(`valeresguardo`, {
+                method: 'POST',
+                body: urlEncoded,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+                .then(response => response.json())
+                .then(res => {
+                    console.log(res);
+                    if (res.ok) {
+                        Swal.fire({
+                            title: res.msg,
+                            text: "Comentarios enviados",
+                            icon: "success",
+                            allowOutsideClick: false,
+                            button: "OK"
+                        }).then((value) => {
+                            if (value) {
+                                window.location.href = "valeResguardo"
+                            }
+                        });;
+                    } else {
+                        Swal.fire({
+                            title: res.msg,
+                            icon: "error",
+                            text: "Error al enviar los comentarios",
+                            allowOutsideClick: false,
+                            button: "OK"
+                        });
+                    }
+                })
+        });
+
 
         // Function to open modal
         function openModal(modal) {
