@@ -19,6 +19,7 @@ import { default as customerRoutes } from "./src/routes/userRoutes.js";
 import { default as adminRoutes } from "./src/routes/adminRoutes.js";
 import { default as allRoutes } from "./src/routes/allRoutes.js";
 import { default as sistemasRoutes } from "./src/routes/sistemasRoutes.js";
+import { default as sorteoRoutes } from "./src/routes/sorteoRoutes.js";
 import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
 import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
 import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
@@ -102,6 +103,8 @@ app.use('/sistemas', sistemasRoutes);
 app.use('/calidad', calidadRoutes);
 app.use('/atraccion', atraccionRoutes);
 app.use('/capitalhumano', capitalhumanoRoutes);
+app.use('/sorteo', sorteoRoutes);
+
 
 
 

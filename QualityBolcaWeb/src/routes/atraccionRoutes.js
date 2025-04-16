@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.get('/solicitudes', protegetRuta, atraccionController.solicitudes);
 router.post('/solicitudes', protegetRuta, atraccionController.solicitudes2);
+router.get('/test', atraccionController.test);
+router.post('/test', atraccionController.test2);
 // router.post('/subirCurso', allController.subirCurso2);
 
 

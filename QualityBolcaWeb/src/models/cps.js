@@ -15,11 +15,11 @@ const Cps = db.define('cps', {
         allowNull: true
     },
     municipio: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true
     },
     estado: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: true
     }
 },{

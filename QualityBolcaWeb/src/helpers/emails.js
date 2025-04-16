@@ -16,7 +16,7 @@ const emailRegistro = async (datos) =>{
     //Enviar el email
     const ruta = process.env.BACKEND_URL + ':' + process.env.PORT + '/confirmar/' + token;
     await transport.sendMail({
-        from: 'mantenimiento@qualitybolca.net',
+        from: 'sistema@qualitybolca.net',
         to: email,
         subject: 'Confirmar tu cuenta Qualitybolca.net',
         text: 'Confirmar tu cuenta Qualitybolca.net',

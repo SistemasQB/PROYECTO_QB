@@ -86,13 +86,13 @@ controller.autenticar = async (req, res) => {
 
     //Autenticar al usuario
 
-    const token = generarJWT(usuario.id, usuario.email)
+    const token = generarJWT(usuario.codigoempleado)
 
-    //Almacenaren luna cookie
+    //Almacenar en una cookie
 
     res.cookie('_token', token, {
         httpOnly: true,
-        secure: true,
+        secure: false,
     })
 
     res.status(200).send({ ok: true });
@@ -134,6 +134,8 @@ controller.resetPassword = async (req, res) => {
     const { codigoempleado } = req.body
     // res.status(400).send({ msg: req.body, ok: false });
     const usuario = await Usuario.findOne({ where: { codigoempleado: codigoempleado } })
+    console.log(codigoempleado);
+    
 
     if (!usuario) {
         res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
@@ -205,52 +207,63 @@ controller.nuevoPassword = async (req, res) => {
 }
 
 controller.registrar = async (req, res) => {
+
+    console.log('entrando al controller de registro');
+    
     //validaciones
-    await check('nombre').notEmpty().withMessage('El nombre no puede ir vacio').run(req);
-    await check('puesto').notEmpty().withMessage('El puesto no puede ir vacio').run(req);
-    await check('email').isEmail().withMessage('Esto no parece un email').run(req);
+    await check('codigoempleado').notEmpty().withMessage('El Codigo de empleado no puede ir vacio').run(req);
     await check('password').isLength({ min: 6 }).withMessage('La contrseña debe tener minimo 6 caracteres').run(req);
     await check('confirm-password').custom((value, { req }) => {
         return value === req.body.password;
     }).withMessage('Las contraseñas no son iguales').run(req);
 
     let resultado = validationResult(req);
+    console.log('entrando al controller de registro', resultado);
     //Verificar que el resultado este vacio
     if (!resultado.isEmpty()) {
         return res.render('auth/registro', {
             errores: resultado.array(),
-            csrfToken: req.csrfToken(),
-            usuario: {
-                nombre: req.body.nombre,
-                puesto: req.body.puesto,
-                email: req.body.email
-            }
+            csrfToken: req.csrfToken()
         })
     }
 
     //Extraer los datos
-    const { nombre, email, puesto, password } = req.body
+    const { codigoempleado, password } = req.body
+    // console.log('nose', codigoempleado);
+    
+    //Verificar si el usuario ya esta registrado
+    const gchUsuario = await informaciongch.findOne({ where: { codigoempleado } })
 
-    //Verificar que el usuario no este duplicado
-    const existeUsuario = await Usuario.findOne({ where: { email } })
+    console.log(gchUsuario);
+    
+    
+    if (!gchUsuario) {
+        // return res.render('auth/registro', {
+        //     errores: [{ok: false, msg: 'El usuario no Existe' }],
+        //     csrfToken: req.csrfToken()
+        // })
+        res.status(400).send({ ok: false, msg: 'El usuario no Existe' });
+        return
+    }
+
+    console.log('nose2', codigoempleado);
+    //Verificar que el usuario existe
+    const existeUsuario = await Usuario.findOne({ where: { codigoempleado } })
+    console.log(existeUsuario);
     if (existeUsuario) {
-        return res.render('auth/registro', {
-            errores: [{ msg: 'El usuario ya esta registrado' }],
-            csrfToken: req.csrfToken(),
-            usuario: {
-                nombre: req.body.nombre,
-                puesto: req.body.puesto,
-                email: req.body.email
-            }
-        })
+        // return res.render('auth/registro', {s
+        
+        //     errores: [{ ok: false, msg: 'El usuario ya esta registrado' }],
+        //     csrfToken: req.csrfToken()
+        // })
+        res.status(400).send({ ok: false, msg: 'El usuario ya esta registrado' });
+        return
     }
 
 
     //Almacenar usuario
     const usuario = await Usuario.create({
-        nombre,
-        puesto,
-        email,
+        codigoempleado: codigoempleado,
         password,
         token: generarId()
     });
@@ -258,16 +271,15 @@ controller.registrar = async (req, res) => {
 
     // Enviar email de confirmacion
     emailRegistro({
-        nombre: usuario.nombre,
-        email: usuario.email,
+        nombre: gchUsuario.nombrelargo,
+        email: gchUsuario.CorreoElectronico,
         token: usuario.token
     })
 
     //Mostrando al usuario que confirme correo
 
-    res.render('auth/confirmar-cuenta', {
-        errores: ''
-    })
+    res.status(200).send({ ok: true });
+    return
 
 }
 
@@ -844,6 +856,9 @@ controller.juegos2 = async (req, res) => {
 }
 
 controller.documentosControlados = (req, res) => {
+    res.render('auth/documentosControlados', {
+        
+    })
 }
 
 

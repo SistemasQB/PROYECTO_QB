@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoria 2025</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<style>
+    /* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #1f2937;
+    font-size: 2.5rem;
+}
+
+/* Grid layout */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Card styles */
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.card-header h2 {
+    font-size: 1.25rem;
+    color: #374151;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+/* Form elements */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.button:hover {
+    background-color: #2563eb;
+}
+
+.button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.full-width {
+    width: 100%;
+}
+
+/* Countdown styles */
+.countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.countdown-item {
+    background-color: #f9fafb;
+    border-radius: 6px;
+    padding: 15px 10px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.countdown-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.countdown-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+.note {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 10px;
+}
+
+/* Calendar styles */
+.excluded-dates-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .excluded-dates-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.calendar-container {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #4b5563;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.calendar-nav-btn:hover {
+    background-color: #f3f4f6;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.calendar-weekdays div {
+    padding: 10px 0;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    padding: 5px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.calendar-day:hover:not(.empty):not(.selected) {
+    background-color: #f3f4f6;
+}
+
+.calendar-day.empty {
+    cursor: default;
+}
+
+.calendar-day.selected {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.calendar-day.weekend {
+    color: #ef4444;
+}
+
+/* Excluded dates list */
+.excluded-dates-list-container h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #4b5563;
+}
+
+.excluded-dates-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.no-dates {
+    color: #9ca3af;
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.excluded-date-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background-color: #f9fafb;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.excluded-date-badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 9999px;
+    color: #4b5563;
+}
+
+.remove-date-btn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+}
+
+.remove-date-btn:hover {
+    background-color: #f3f4f6;
+    color: #ef4444;
+}
+</style>
+<body>
+    <main class="container">
+        <h1>Auditoria 2025</h1>
+
+        <div class="grid">
+            <!-- Target Date Configuration -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Configurar Fecha Objetivo</h2>
+                </div>
+                <div class="card-content">
+                    <div class="form-group">
+                        <label for="target-date">Fecha Objetivo</label>
+                        <input type="date" id="target-date" class="input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Countdown Display -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Cuenta Regresiva</h2>
+                </div>
+                <div class="card-content">
+                    <div class="countdown-grid">
+                        <div class="countdown-item">
+                            <div id="days" class="countdown-value">0</div>
+                            <div class="countdown-label">Días</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div id="hours" class="countdown-value">0</div>
+                            <div class="countdown-label">Horas</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div id="minutes" class="countdown-value">0</div>
+                            <div class="countdown-label">Minutos</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div id="seconds" class="countdown-value">0</div>
+                            <div class="countdown-label">Segundos</div>
+                        </div>
+                    </div>
+                    <p class="note">Solo se cuentan días laborables (Lunes a Viernes)</p>
+                </div>
+            </div>
+
+            <!-- Excluded Dates -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <h2>Fechas Excluidas</h2>
+                </div>
+                <div class="card-content">
+                    <div class="excluded-dates-grid">
+                        <div class="calendar-container">
+                            <div class="calendar-header">
+                                <button id="prev-month" class="calendar-nav-btn">&lt;</button>
+                                <h3 id="current-month">Abril 2025</h3>
+                                <button id="next-month" class="calendar-nav-btn">&gt;</button>
+                            </div>
+                            <div class="calendar-weekdays">
+                                <div>Dom</div>
+                                <div>Lun</div>
+                                <div>Mar</div>
+                                <div>Mié</div>
+                                <div>Jue</div>
+                                <div>Vie</div>
+                                <div>Sáb</div>
+                            </div>
+                            <div id="calendar-days" class="calendar-days"></div>
+                            <button id="add-date" class="button full-width" disabled>Agregar Fecha</button>
+                        </div>
+                        <div class="excluded-dates-list-container">
+                            <h3>Fechas a descontar:</h3>
+                            <div id="excluded-dates-list" class="excluded-dates-list">
+                                <p id="no-dates" class="no-dates">No hay fechas excluidas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements
+    const targetDateInput = document.getElementById('target-date');
+    const daysElement = document.getElementById('days');
+    const hoursElement = document.getElementById('hours');
+    const minutesElement = document.getElementById('minutes');
+    const secondsElement = document.getElementById('seconds');
+    const calendarDaysContainer = document.getElementById('calendar-days');
+    const currentMonthElement = document.getElementById('current-month');
+    const prevMonthButton = document.getElementById('prev-month');
+    const nextMonthButton = document.getElementById('next-month');
+    const addDateButton = document.getElementById('add-date');
+    const excludedDatesList = document.getElementById('excluded-dates-list');
+    const noDatesParagraph = document.getElementById('no-dates');
+
+    // State variables
+    let targetDate = loadTargetDate() || new Date('2025-12-31');
+    let excludedDates = loadExcludedDates() || [];
+    let selectedDate = null;
+    let currentCalendarDate = new Date();
+
+    // Set initial target date
+    targetDateInput.value = formatDateForInput(targetDate);
+
+    // Initialize calendar
+    renderCalendar();
+
+    // Event listeners
+    targetDateInput.addEventListener('change', function() {
+        targetDate = new Date(this.value);
+        saveTargetDate(targetDate);
+    });
+
+    prevMonthButton.addEventListener('click', function() {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+        renderCalendar();
+    });
+
+    nextMonthButton.addEventListener('click', function() {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+        renderCalendar();
+    });
+
+    addDateButton.addEventListener('click', function() {
+        if (selectedDate) {
+            addExcludedDate(selectedDate);
+            selectedDate = null;
+            renderCalendar();
+            updateAddButtonState();
+        }
+    });
+
+    // Helper functions
+    function formatDateForInput(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function formatDateForDisplay(date) {
+        return date.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    function isWeekend(date) {
+        const day = date.getDay();
+        return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
+    }
+
+    function isExcludedDate(date) {
+        return excludedDates.some(excludedDate => 
+            new Date(excludedDate).toDateString() === date.toDateString()
+        );
+    }
+
+    function isSameDay(date1, date2) {
+        return date1.getDate() === date2.getDate() &&
+               date1.getMonth() === date2.getMonth() &&
+               date1.getFullYear() === date2.getFullYear();
+    }
+
+    function calculateBusinessDays(startDate, endDate) {
+        let count = 0;
+        const currentDate = new Date(startDate);
+        
+        while (currentDate <= endDate) {
+            // Skip weekends and excluded dates
+            if (!isWeekend(currentDate) && !isExcludedDate(currentDate)) {
+                count++;
+            }
+            
+            // Move to the next day
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        
+        return count;
+    }
+
+    function calculateTimeRemaining() {
+        const now = new Date();
+        
+        // If target date is in the past, return zeros
+        if (targetDate < now) {
+            return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        }
+
+        // Calculate business days
+        const businessDays = calculateBusinessDays(now, targetDate);
+        
+        // Calculate remaining time for the current day
+        const totalSeconds = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
+        const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = Math.floor(totalSeconds % 60);
+
+        return {
+            days: businessDays,
+            hours,
+            minutes,
+            seconds
+        };
+    }
+
+    function updateCountdown() {
+        const timeRemaining = calculateTimeRemaining();
+        
+        daysElement.textContent = timeRemaining.days;
+        hoursElement.textContent = timeRemaining.hours;
+        minutesElement.textContent = timeRemaining.minutes;
+        secondsElement.textContent = timeRemaining.seconds;
+    }
+
+    function renderCalendar() {
+        // Update month and year display
+        currentMonthElement.textContent = currentCalendarDate.toLocaleDateString('es-ES', {
+            month: 'long',
+            year: 'numeric'
+        });
+
+        // Clear previous calendar days
+        calendarDaysContainer.innerHTML = '';
+
+        // Get first day of the month
+        const firstDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1);
+        // Get last day of the month
+        const lastDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 0);
+        
+        // Get the day of the week for the first day (0 = Sunday, 6 = Saturday)
+        const firstDayOfWeek = firstDay.getDay();
+        
+        // Add empty cells for days before the first day of the month
+        for (let i = 0; i < firstDayOfWeek; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day empty';
+            calendarDaysContainer.appendChild(emptyDay);
+        }
+        
+        // Add days of the month
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const date = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), day);
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            dayElement.textContent = day;
+            
+            // Mark weekends
+            if (isWeekend(date)) {
+                dayElement.classList.add('weekend');
+            }
+            
+            // Mark excluded dates
+            if (isExcludedDate(date)) {
+                dayElement.style.textDecoration = 'line-through';
+                dayElement.style.color = '#9ca3af';
+            }
+            
+            // Mark selected date
+            if (selectedDate && isSameDay(date, selectedDate)) {
+                dayElement.classList.add('selected');
+            }
+            
+            // Add click event to select date
+            dayElement.addEventListener('click', function() {
+                if (!isExcludedDate(date)) {
+                    selectedDate = date;
+                    renderCalendar();
+                    updateAddButtonState();
+                }
+            });
+            
+            calendarDaysContainer.appendChild(dayElement);
+        }
+    }
+
+    function updateAddButtonState() {
+        addDateButton.disabled = !selectedDate || isExcludedDate(selectedDate);
+    }
+
+    function addExcludedDate(date) {
+        if (!isExcludedDate(date)) {
+            excludedDates.push(new Date(date));
+            saveExcludedDates(excludedDates);
+            renderExcludedDatesList();
+        }
+    }
+
+    function removeExcludedDate(index) {
+        excludedDates.splice(index, 1);
+        saveExcludedDates(excludedDates);
+        renderExcludedDatesList();
+        renderCalendar();
+    }
+
+    function renderExcludedDatesList() {
+        // Show or hide "No dates" message
+        if (excludedDates.length === 0) {
+            noDatesParagraph.style.display = 'block';
+        } else {
+            noDatesParagraph.style.display = 'none';
+        }
+
+        // Remove all date items except the "No dates" paragraph
+        const dateItems = excludedDatesList.querySelectorAll('.excluded-date-item');
+        dateItems.forEach(item => item.remove());
+
+        // Add excluded dates to the list
+        excludedDates.forEach((date, index) => {
+            const dateItem = document.createElement('div');
+            dateItem.className = 'excluded-date-item';
+            
+            const dateBadge = document.createElement('span');
+            dateBadge.className = 'excluded-date-badge';
+            dateBadge.textContent = formatDateForDisplay(new Date(date));
+            
+            const removeButton = document.createElement('button');
+            removeButton.className = 'remove-date-btn';
+            removeButton.innerHTML = '&times;';
+            removeButton.addEventListener('click', function() {
+                removeExcludedDate(index);
+            });
+            
+            dateItem.appendChild(dateBadge);
+            dateItem.appendChild(removeButton);
+            excludedDatesList.appendChild(dateItem);
+        });
+    }
+
+    // LocalStorage functions
+    function saveTargetDate(date) {
+        localStorage.setItem('auditoria2025_targetDate', date.toISOString());
+    }
+
+    function loadTargetDate() {
+        const savedDate = localStorage.getItem('auditoria2025_targetDate');
+        return savedDate ? new Date(savedDate) : null;
+    }
+
+    function saveExcludedDates(dates) {
+        const datesJSON = JSON.stringify(dates.map(date => date.toISOString()));
+        localStorage.setItem('auditoria2025_excludedDates', datesJSON);
+    }
+
+    function loadExcludedDates() {
+        const savedDates = localStorage.getItem('auditoria2025_excludedDates');
+        return savedDates ? JSON.parse(savedDates).map(dateStr => new Date(dateStr)) : [];
+    }
+
+    // Add link to display page
+    const linkContainer = document.createElement('div');
+    linkContainer.className = 'card full-width';
+    linkContainer.innerHTML = `
+        <div class="card-header">
+            <h2>Ver Página de Visualización</h2>
+        </div>
+        <div class="card-content">
+            <p class="note">Después de configurar la fecha objetivo y las fechas excluidas, puede ver la página de visualización:</p>
+            <a href="display.html" class="button full-width" style="display: block; text-align: center; margin-top: 10px; text-decoration: none;">
+                Ir a Página de Visualización
+            </a>
+        </div>
+    `;
+    document.querySelector('.grid').appendChild(linkContainer);
+
+    // Start countdown
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+});
+</script>
+</html>

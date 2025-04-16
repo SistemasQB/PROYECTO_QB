@@ -33,14 +33,18 @@ import {
     Gch_Alta,
     informaciongch,
     informacionpuesto,
-    Glosario
+    Glosario,
+    Vales,
+    Inventario
 } from "../models/index.js";
 // import InformacionpuestoM from "../models/informacionpuesto.js"
 
 // import Gch_alta from "../models/gch_alta.js"
 import Sequelize from 'sequelize'
+import db from "../config/db.js";
+
 import on from 'sequelize'
-import { Op } from 'sequelize'
+import { Op, QueryTypes } from 'sequelize'
 import { emailRequisicion, registroCursos } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
@@ -72,7 +76,7 @@ controller.directorio = async (req, res) => {
     let vCrup;
 
     const bGch_alta = await informaciongch.findAll({
-        attributes: ['idpuesto', 'nombre', 'apellidopaterno', 'apellidomaterno', 'fechanacimiento', 'fechaalta', 'sexo', 'numerosegurosocial', 'fotografia'],
+        attributes: ['idpuesto', 'nombre', 'apellidopaterno', 'apellidomaterno', 'fechanacimiento', 'fechaalta', 'sexo', 'numerosegurosocial', 'codigoempleado'],
         where: {
             [Op.or]:
                 [
@@ -423,9 +427,44 @@ controller.glosario = async (req, res) => {
     })
 }
 
-controller.api = async (req, res) => {
+controller.api2 = async (req, res) => {
     const glosario = await Glosario.findAll();
     res.json(JSON.stringify(glosario, null, 2));
+    // res.j
+}
+controller.api = async (req, res) => {
+    let vCrup;
+
+    const bGch_alta = await informaciongch.findAll({
+        attributes: ['idpuesto', 'nombre', 'apellidopaterno', 'apellidomaterno', 'fechanacimiento', 'fechaalta', 'sexo', 'numerosegurosocial', 'fotografia'],
+        where: {
+            [Op.or]:
+                [
+                    {
+                        fechaalta: { [Op.gt]: Sequelize.col('fechabaja') }
+                    },
+                    {
+                        fechareingreso: { [Op.gt]: Sequelize.col('fechabaja') }
+                    },
+                ],
+        },
+
+
+        include: [{
+            model: informacionpuesto,
+            attributes: ['descripcion'],
+            on: {
+                idpuesto: Sequelize.where(Sequelize.col('nom10001.idpuesto'), '=', Sequelize.col('nom10006.idpuesto'))
+            }
+        }],
+        order: [[Sequelize.literal('nombre'), 'ASC']],
+    }
+    )
+        .then(resultado => {
+            vCrup = resultado
+        });
+
+    res.json(JSON.stringify(vCrup, null, 2));
     // res.j
 }
 
@@ -433,17 +472,67 @@ controller.organigrama = (req, res) => {
     res.render('admin/organigrama')
 }
 
-controller.valeresguardo = (req, res) => {
-    res.render('admin/valeresguardo')
+controller.valeresguardo = async(req, res) => {
+    let valeasignacion
+
+    const { codigoempleado } = req.usuario
+
+    const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado }} );
+        // console.log(obtenerFolio);
+
+    const resultado = await db.query(
+        `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
+         FROM inventario i
+         INNER JOIN vales v ON i.folio = v.idfolio
+         INNER JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
+         INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+         WHERE i.folio = :nfolio;`,
+        {
+            replacements: { nfolio: obtenerFolio.idFolio}, // Sustituir parámetros
+            type: QueryTypes.SELECT // Tipo de consulta: SELECT
+        }
+      ).then((resultados) => {
+        valeasignacion = resultados;
+      });
+      
+
+
+    res.render('admin/valeresguardo',{
+        csrfToken: req.csrfToken(),
+        valeasignacion
+    })
 }
 
-controller.valeresguardo2 = (req, res) => {
-    res.render('admin/valeresguardo')
+controller.valeresguardo2 = async (req, res, next) => {
+
+    const { codigoempleado } = req.usuario
+
+    const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado }} );
+
+    console.log(obtenerFolio, req.file.filename);
+    
+    try {
+        obtenerFolio.Firma = req.file.filename
+            await obtenerFolio.save()
+            next()
+            res.status(200).send({ msg: 'Firma enviada con exito', ok: true });
+            return
+    } catch (error) {
+        res.status(400).send({ msg: 'Error al firmar el vale', ok: false });
+        return
+    }
 }
 
 controller.generarfirma = (req, res) => {
-    res.render('admin/generarfirma')
+    const {codigo} = req.params
+    res.render('admin/generarfirma',{
+        csrfToken: req.csrfToken(),
+        codigo
+    })
 }
 
+controller.mantenimientoautonomo = (req, res) => {
+    res.render('admin/mantenimientoautonomo')
+}
 
 export default controller;

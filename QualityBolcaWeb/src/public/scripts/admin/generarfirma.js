@@ -1,3 +1,5 @@
+const code2 = document.getElementById('spancodigo').textContent
+
 document.addEventListener('DOMContentLoaded', function() {
   const canvas = document.getElementById('signatureCanvas');
   const placeholderText = document.getElementById('placeholderText');
@@ -114,11 +116,12 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Descargar firma como WEBP con metadatos
   async function downloadSignature() {
+    
     if (!hasDrawn) return;
     
     try {
       // Crear un blob con los metadatos
-      const metadata = new Blob([JSON.stringify({ code })], { type: 'application/json' });
+      const metadata = new Blob([JSON.stringify({ code2 })], { type: 'application/json' });
       
       // Crear un ImageBitmap del canvas
       const imageBitmap = await createImageBitmap(canvas);
@@ -142,8 +145,9 @@ document.addEventListener('DOMContentLoaded', function() {
       // Crear y hacer clic en el enlace de descarga
       const url = URL.createObjectURL(finalBlob);
       const link = document.createElement('a');
+      console.log();
       link.href = url;
-      link.download = `signature_${code}.webp`;
+      link.download = `signature_${code2}.webp`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

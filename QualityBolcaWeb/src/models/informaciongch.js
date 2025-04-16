@@ -32,7 +32,7 @@ const Informaciongch = db.define('nom10001', {
         allowNull: false
     },
     fotografia:{
-        type: DataTypes.CHAR(50),
+        type: DataTypes.CHAR(100),
         allowNull: false
     },
     apellidopaterno:{

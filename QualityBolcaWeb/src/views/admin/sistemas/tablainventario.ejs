@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventario - Visualización</title>
+    <link rel="stylesheet" href="../styles/sistemas/tablainventario.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <main class="container">
+        <h1>Sistema de Inventario</h1>
+        
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Buscar en el inventario...">
+                <button id="searchButton"><i class="fas fa-search"></i></button>
+            </div>
+            <button id="addItemButton" class="btn-primary">Añadir Nuevo Item</button>
+        </div>
+
+        <div class="table-container">
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th data-sort="idInventario">ID Inventario <i class="fas fa-sort"></i></th>
+                        <th data-sort="componentes">Componentes <i class="fas fa-sort"></i></th>
+                        <th data-sort="tipo">Tipo <i class="fas fa-sort"></i></th>
+                        <th data-sort="marca">Marca <i class="fas fa-sort"></i></th>
+                        <th data-sort="serie">Serie <i class="fas fa-sort"></i></th>
+                        <th data-sort="folio">Folio <i class="fas fa-sort"></i></th>
+                        <th data-sort="estado">Estado <i class="fas fa-sort"></i></th>
+                        <th data-sort="precio">Precio <i class="fas fa-sort"></i></th>
+                        <th data-sort="fechaCompra">Fecha Compra <i class="fas fa-sort"></i></th>
+                        <th data-sort="fechaEntrega">Fecha Entrega <i class="fas fa-sort"></i></th>
+                        <th data-sort="numEmpleado">Num. Empleado <i class="fas fa-sort"></i></th>
+                        <th data-sort="usoExclusivo">Uso Exclusivo <i class="fas fa-sort"></i></th>
+                        <th data-sort="accesorios">Accesorios <i class="fas fa-sort"></i></th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los datos se cargarán dinámicamente con JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button id="prevPage" disabled><i class="fas fa-chevron-left"></i> Anterior</button>
+            <span id="pageInfo">Página 1 de 1</span>
+            <button id="nextPage" disabled>Siguiente <i class="fas fa-chevron-right"></i></button>
+        </div>
+    </main>
+
+    <!-- Modal para ver detalles -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalles del Item</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Los detalles se cargarán dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/sistemas/tablainventario.js"></script>
+</body>
+</html>

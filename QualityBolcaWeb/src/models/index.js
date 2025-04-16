@@ -25,6 +25,10 @@ import { default as informaciongch } from './informaciongch.js';
 import { default as informacionpuesto } from './informacionpuesto.js';
 import { default as Glosario } from './glosario.js';
 import { default as Departamentos } from './departamentos.js';
+import { default as Inventario } from './inventario.js';
+import { default as Mantenimiento } from './mantenimiento.js';
+import { default as Vales } from './vales.js';
+import { default as Testcleaver } from './atraccion/testcleaver.js';
 
 // Configuración de Sequelize
 const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
@@ -42,8 +46,20 @@ Gch_Alta.hasOne(Comunicacion, { foreignKey: 'curp', sourceKey: 'id' });
 informaciongch.belongsTo(informacionpuesto, { foreignKey: 'idpuesto', targetKey: 'idpuesto' });
 informacionpuesto.hasOne(informaciongch, { foreignKey: 'idpuesto', sourceKey: 'idpuesto' });
 
-informaciongch.belongsTo(Departamentos, { foreignKey: 'idpuesto', targetKey: 'idpuesto' });
-Departamentos.hasOne(informaciongch, { foreignKey: 'idpuesto', sourceKey: 'idpuesto' });
+// Vales.belongsTo(informaciongch, { foreignKey: 'numeroEmpleado', targetKey: 'codigoempleado' });
+// Vales.hasOne(informaciongch, { foreignKey: 'numeroEmpleado', targetKey: 'codigoempleado' });
+
+
+// Vales.hasOne(Inventario, { foreignKey: 'IdFolio', targetKey: 'folio' });
+
+// Inventario.belongsTo(Vales, { foreignKey: 'folio', targetKey: 'idFolio' });
+// Vales.hasOne(Inventario, { foreignKey: 'folio', sourceKey: 'idFolio' });
+
+
+
+
+
+
 
 // Sincronizar la base de datos
 (async () => {
@@ -81,5 +97,9 @@ export {
   informaciongch,
   informacionpuesto,
   Glosario,
-  Departamentos
+  Departamentos,
+  Inventario,
+  Mantenimiento,
+  Vales,
+  Testcleaver
 };

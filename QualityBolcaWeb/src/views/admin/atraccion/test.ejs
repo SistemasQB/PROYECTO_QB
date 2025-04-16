@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test CLEAVER - Evaluación de Personalidad</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    :root {
+    --primary: #2a9d8f;
+    --primary-light: #8ecec3;
+    --primary-dark: #1e7168;
+    --secondary: #e9c46a;
+    --accent: #f4a261;
+    --dark: #264653;
+    --gray-dark: #495057;
+    --gray: #adb5bd;
+    --gray-light: #e9ecef;
+    --light: #f8f9fa;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --radius: 10px;
+    --radius-sm: 6px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f5f7f9;
+    color: var(--dark);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header Styles */
+header {
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.logo-icon {
+    width: 50px;
+    height: 50px;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+h1 {
+    color: var(--dark);
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: var(--primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.header-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: var(--radius-sm);
+}
+
+/* Section Styles */
+.form-section {
+    background-color: white;
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 100%;
+    background-color: var(--primary);
+}
+
+.section-title {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding-left: 1rem;
+    border-left: 4px solid var(--secondary);
+}
+
+/* Form Styles */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--gray-dark);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--gray-light);
+    border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif;
+    transition: var(--transition);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+}
+
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* .radio-label input[type="radio"] {
+    display: none;
+} */
+
+/* .radio-custom {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--gray);
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    position: relative;
+    transition: var(--transition);
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom {
+    border-color: var(--primary);
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary);
+    border-radius: 50%;
+} */
+
+/* Instructions Styles */
+.instructions {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    background-color: var(--light);
+    padding: 1.5rem;
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--secondary);
+}
+
+.instruction-icon {
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+/* Traits Styles */
+.traits-container {
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.traits-header {
+    display: flex;
+    background-color: var(--primary);
+    color: white;
+    padding: 1rem;
+}
+
+.trait-name-header {
+    flex: 1;
+    font-weight: 600;
+}
+
+.trait-options-header {
+    display: flex;
+    width: 120px;
+}
+
+.trait-options-header span {
+    flex: 1;
+    text-align: center;
+    font-weight: 600;
+}
+
+.traits-group {
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.traits-group:last-child {
+    border-bottom: none;
+}
+
+.group-title {
+    background-color: var(--gray-light);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: var(--gray-dark);
+}
+
+.trait-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.trait-item:last-child {
+    border-bottom: none;
+}
+
+.trait-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.trait-options {
+    display: flex;
+    width: 120px;
+}
+
+.trait-options .radio-label {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.btn-submit {
+    padding: 0.75rem 2.5rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    background-color: var(--primary);
+    color: white;
+    box-shadow: var(--shadow);
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    color: var(--gray-dark);
+    padding: 1rem 0;
+    border-top: 1px solid var(--gray-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .form-section {
+        padding: 1.5rem;
+    }
+    
+    .trait-options {
+        width: 100px;
+    }
+}
+</style>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">C</div>
+                    <h1>Test CLEAVER</h1>
+                </div>
+                <p class="subtitle">Evaluación de Personalidad</p>
+            </div>
+            <div class="header-decoration"></div>
+        </header>
+
+        <form id="cleaverForm">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            <section class="form-section">
+                <h2 class="section-title">Información Personal</h2>
+                
+                <div class="personal-info">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Nombre Completo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="estadoCivil">Estado Civil:</label>
+                            <input type="text" id="estadoCivil" name="estadoCivil" placeholder="Estado Civil" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sexo:</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="sexo" value="M" required>
+                                    <span class="radio-custom"></span>
+                                    <span>M</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="sexo" value="F" required>
+                                    <span class="radio-custom"></span>
+                                    <span>F</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edad">Edad:</label>
+                            <input type="number" id="edad" name="edad" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="escolaridad">Escolaridad:</label>
+                            <select id="escolaridad" name="escolaridad" required>
+                                <option value="">Seleccione una opción</option>
+                                <option value="primaria">Primaria</option>
+                                <option value="secundaria">Secundaria</option>
+                                <option value="preparatoria">Preparatoria</option>
+                                <option value="universidad">Universidad</option>
+                                <option value="posgrado">Posgrado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="puesto">Puesto:</label>
+                            <input type="text" id="puesto" name="puesto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fechaNac">Fecha Nac.:</label>
+                            <input type="date" id="fechaNac" name="fechaNac" required>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="section-title">Instrucciones</h2>
+                
+                <div class="instructions">
+                    <div class="instruction-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
+                    <p>Las palabras descriptivas que verá a continuación se encuentran agrupadas en series de cuatro. Examine las palabras de cada serie y anote una "X" bajo la columna "MÁS" de la palabra que mejor describa su forma de ser o de comportarse. Después marque una "X" en la palabra que menos lo describe o se acerque a su forma de ser, bajo la columna de "MENOS".</p>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2 class="section-title">Evaluación de Personalidad</h2>
+                
+                <div class="traits-container">
+                    <div class="traits-header">
+                        <div class="trait-name-header">Rasgo</div>
+                        <div class="trait-options-header">
+                            <span>MÁS</span>
+                            <span>MENOS</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 1 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 1</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Persuasivo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Persuasivo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Persuasivo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Gentil</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Gentil" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Gentil" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Humilde</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Humilde" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Humilde" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Original</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Original" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Original" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 2 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 2</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Fuerza de Voluntad</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Fuerza_de_Voluntad" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Fuerza_de_Voluntad" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Mente Abierta</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Mente_Abierta" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Mente_Abierta" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Complaciente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Complaciente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Complaciente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Animoso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Animoso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Animoso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 3 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 3</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Obediente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Obediente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Obediente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Quisquilloso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Quisquilloso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Quisquilloso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Inconquistable</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Inconquistable" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Inconquistable" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Juguetón</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Jugueton" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Jugueton" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 4 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 4</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Aventurero</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Aventurero" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Aventurero" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Receptivo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Receptivo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Receptivo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="trait-item">
+                            <div class="trait-name">Cordial</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Cordial" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Cordial" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Moderado</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Moderado" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Moderado" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 5 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 5</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Agresivo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Agresivo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Agresivo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Alma de la Fiesta</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Alma_de_la_Fiesta" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Alma_de_la_Fiesta" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="trait-item">
+                            <div class="trait-name">Comodino</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Comodino" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Comodino" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Temeroso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Temeroso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Temeroso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 6 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 6</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Confiado</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Confiado" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Confiado" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Simpatizador</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Simpatizador" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Simpatizador" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="trait-item">
+                            <div class="trait-name">Tolerante</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Tolerante" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Tolerante" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Afirmativo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Afirmativo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Afirmativo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 7 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 7</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Respetuoso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Respetuoso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Respetuoso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Emprendedor</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Emprendedor" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Emprendedor" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="trait-item">
+                            <div class="trait-name">Optimista</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Optimista" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Optimista" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Servicial</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Servicial" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Servicial" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 8 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 8</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Indulgente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Indulgente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Indulgente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Esteta</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Esteta" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Esteta" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="trait-item">
+                            <div class="trait-name">Vigoroso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Vigoroso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Vigoroso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Sociable</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Sociable" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Sociable" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 9 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 9</div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Agradable</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Agradable" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Agradable" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Temeroso de Dios</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Temeroso_de_Dios" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Temeroso_de_Dios" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="trait-item">
+                            <div class="trait-name">Tenaz</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Tenaz" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Tenaz" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="trait-item">
+                            <div class="trait-name">Atractivo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Atractivo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Atractivo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 10 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 10</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Ecuánime</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Ecuanime" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Ecuanime" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Preciso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Preciso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Preciso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Nervioso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Nervioso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Nervioso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Jovial</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Jovial" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Jovial" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 11 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 11</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Valiente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Valiente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Valiente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Inspirador</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Inspirador" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Inspirador" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Sumiso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Sumiso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Sumiso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Tímido</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Timido" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Timido" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 12 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 12</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Parlanchín</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Parlanchin" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Parlanchin" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Controlado</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Controlado" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Controlado" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Convencional</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Convencional" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Convencional" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Decisivo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Decisivo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Decisivo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 13 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 13</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Cauteloso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Cauteloso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Cauteloso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Determinado</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Determinado" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Determinado" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Convincente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Convincente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Convincente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Bonachón</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Bonachon" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Bonachon" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 14 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 14</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Disciplinado</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Disciplinado" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Disciplinado" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Generoso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Generoso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Generoso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Animoso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Animoso2" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Animoso2" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Persistente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Persistente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Persistente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 15 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 15</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Adaptable</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Adaptable" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Adaptable" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Disputador</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Disputador" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Disputador" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Indiferente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Indiferente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Indiferente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Sangre Liviana</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Sangre_Liviana" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Sangre_Liviana" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 16 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 16</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Cohibido</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Cohibido" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Cohibido" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Exacto</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Exacto" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Exacto" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Franco</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Franco" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Franco" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Buen Compañero</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Buen_Companero" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Buen_Companero" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 17 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 17</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Dócil</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Dócil" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Dócil" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Atrevido</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Atrevido" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Atrevido" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Leal</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Leal" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Leal" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Encantador</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Encantador" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Encantador" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 18 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 18</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Competitivo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Competitivo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Competitivo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Alegre</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Alegre" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Alegre" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Considerado</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Considerado" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Considerado" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Armonioso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Armonioso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Armonioso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 19 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 19</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Amiguero</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Amiguero" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Amiguero" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Paciente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Paciente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Paciente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Confianza en si Mismo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Confianza_en_si_Mismo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Confianza_en_si_Mismo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Mesurado para Hablar</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Mesurado_para_Hablar" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Mesurado_para_Hablar" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 20 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 20</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Diplomático</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Diplomatico" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Diplomatico" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Audaz</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Audaz" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Audaz" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Refinado</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Refinado" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Refinado" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Satisfecho</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Satisfecho" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Satisfecho" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 21 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 21</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Dispuesto</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Dispuesto" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Dispuesto" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Deseoso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Deseoso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Deseoso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Consecuente</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Consecuente" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Consecuente" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Entusiasta</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Entusiasta" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Entusiasta" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo 22 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 22</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Admirable</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Admirable" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Admirable" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Bondadoso</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Bondadoso" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Bondadoso" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Resignado</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Resignado" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Resignado" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Carácter Firme</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Caracter_Firme" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Caracter_Firme" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 23 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 23</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Conforme</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Conforme" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Conforme" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Confiable</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Confiable" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Confiable" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Pacifico</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Pacifico" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Pacifico" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Positivo</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Positivo" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Positivo" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo 24 -->
+                    <div class="traits-group">
+                        <div class="group-title">Grupo 24</div>
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Inquieto</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Inquieto" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Inquieto" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Popular</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Popular" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Popular" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Buen Vecino</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Buen_Vecino" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Buen_Vecino" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="trait-item">
+                            <div class="trait-name">
+                                Devoto</div>
+                            <div class="trait-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="Devoto" value="1" required>
+                                    <span class="radio-custom"></span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="Devoto" value="0">
+                                    <span class="radio-custom"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Enviar Resultados</button>
+            </div>
+        </form>
+        
+        <footer>
+            <!-- <p>© 2025 Test CLEAVER - Todos los derechos reservados</p> -->
+        </footer>
+    </div>
+    
+    <script src="../scripts/atraccion/testcleaver.js"></script>
+</body>
+</html>

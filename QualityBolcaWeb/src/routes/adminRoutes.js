@@ -2,6 +2,7 @@ import express from "express";
 import { default as adminController } from './../controllers/adminController.js';
 import protegetRuta from "../middleware/protegetRuta.js";
 import upload from "../middleware/subirImagen.js";
+import upload2 from "../middleware/valeresguardo.js";
 
 const router = express.Router();
 
@@ -37,11 +38,13 @@ router.post('/mejoracontinua', adminController.mejoracontinua2);
 router.get('/reuniones', adminController.reuniones);
 router.post('/reuniones', adminController.reuniones2);
 router.get('/glosario', adminController.glosario);
-router.get('/api/:ap', adminController.api);
+router.get('/api', adminController.api);
 router.get('/organigrama', adminController.organigrama);
-router.get('/valeresguardo', adminController.valeresguardo);
-router.post('/valeresguardo', adminController.valeresguardo2);
+router.get('/valeresguardo',protegetRuta, adminController.valeresguardo);
+router.post('/valeresguardo',adminController.valeresguardo2);
+router.post('/subirfirma',protegetRuta, upload2.single('firmaFile'),adminController.valeresguardo2);
 router.get('/generarfirma/:codigo', adminController.generarfirma);
+router.get('/mantenimientoautonomo', adminController.mantenimientoautonomo);
 
 
 

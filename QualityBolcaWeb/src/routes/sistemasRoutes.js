@@ -6,5 +6,11 @@ import upload from "../middleware/subirImagen.js";
 const router = express.Router();
 
 router.get('/registroma',adminController.registroMA);
+router.get('/addinventario',adminController.addinventario);
+router.post('/addinventario',adminController.addinventario2);
+router.get('/addvales',adminController.addvales);
+router.post('/addvales',adminController.addvales2);
+router.get('/tablainventario',adminController.tablainventario);
+router.get('/api/:query2',adminController.api);
 
 export default router;

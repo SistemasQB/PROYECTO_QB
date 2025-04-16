@@ -1,669 +1,777 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorador de Archivos</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explorador de Archivos</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-    }
+/* Estilos generales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    body {
-        min-height: 100vh;
-        background-color: #f5f5f5;
-        padding: 2rem;
-    }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f9fafb;
+  color: #374151;
+  line-height: 1.5;
+}
 
-    .container {
-        max-width: 800px;
+.main {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
 
-        margin: 0 auto;
-    }
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-    h1 {
-        color: #0088CC;
-        margin-bottom: 2rem;
-        font-size: 2rem;
-    }
+.hidden {
+  display: none !important;
+}
 
-    .explorer {
-        background: white;
-        height: 90%;
-        height: 100vh;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        /* display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 30px; */
-        /* display: inline-block; */
-        /* justify-content: space-between; */
-    }
+/* Explorador de archivos */
+.file-explorer {
+  background-color: white;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
 
-    #sectiondocumentos {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 2fr));
-        gap: 30px;
-    }
+/* Encabezado */
+.header {
+  background: linear-gradient(to right, #14b8a6, #0d9488);
+  padding: 1.5rem;
+  color: white;
+}
 
-    summary {
-        list-style: none;
-        /* Elimina el triángulo predeterminado */
-    }
+.title {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
 
-    summary::before {
-        content: "";
-        /* background-image: url('../img/favicon.png'); */
-        background-image: url('../svg/folder.svg');
-        /* Agrega tu imagen aquí */
-        background-repeat: no-repeat;
-        background-size: auto;
-        display: inline-block;
-        margin-right: 10px;
-        width: 100%;
-        /* max-height: 200px; */
-        height: 20vh;
-        /* Espacio entre la imagen y el texto, si se usa */
-    }
+.icon {
+  margin-right: 0.5rem;
+}
 
-    .detailContenedor details > summary::before {
-        background-image: url('../svg/folder2.svg');
-        margin-left: 10%;
-    }
+.breadcrumb {
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+}
 
-    .detailContenedor details  details> summary::before {
-        background-image: url('../svg/folder3.svg');
-        margin-left: 20%;
-    }
+.separator {
+  margin: 0 0.5rem;
+}
+
+/* Paneles */
+.panels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 768px) {
+  .panels {
+    grid-template-columns: 1fr 1fr 2fr;
+  }
+}
+
+.panel {
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.panel-wide {
+  grid-column: span 1;
+}
+
+@media (min-width: 768px) {
+  .panel-wide {
+    grid-column: span 2;
+  }
+}
+
+.panel-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.panel-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.panel-content {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+/* Lista de carpetas */
+.folder-list {
+  list-style: none;
+}
+
+.folder-item {
+  margin-bottom: 0.25rem;
+}
+
+.folder-button {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #4b5563;
+}
+
+.folder-button:hover {
+  background-color: #f3f4f6;
+}
+
+.folder-button.selected {
+  background-color: #e6fffa;
+  color: #0d9488;
+}
+
+.folder-icon {
+  margin-right: 0.5rem;
+  color: #14b8a6;
+}
+
+.file-icon {
+  margin-right: 0.5rem;
+  color: #ef4444;
+}
+
+/* Grid de carpetas */
+.folder-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .folder-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.folder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.folder-card:hover {
+  background-color: #f9fafb;
+}
+
+.folder-card.selected {
+  background-color: #e6fffa;
+  border-color: #99f6e4;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.folder-icon-container {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e6fffa;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.file-icon-container {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fee2e2;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.folder-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  color: #4b5563;
+}
+
+/* Área de resultado */
+.result-area {
+  border-top: 1px solid #e5e7eb;
+}
+
+.result-header {
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.result-content {
+  min-height: 400px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-viewer {
+  width: 100%;
+  height: 500px;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.25rem;
+}
+
+/* Mensaje vacío */
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-icon {
+  margin-bottom: 1rem;
+  color: #d1d5db;
+}
 </style>
-
 <body>
+  <main class="main">
     <div class="container">
-        <h1>Explorador de Archivos</h1>
-        <div class="explorer">
-            <details class="detailContenedor">
-                <summary>Documentos</summary> <!-- El summary puede estar vacío si solo deseas la imagen -->
-                <section id="sectiondocumentos"></section>
-                <details>
-                    <summary>Diagramas de flujo</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <li><a href="#embedpdf" id="QB-DF-A-01" onclick="mostrarPDF('QB-DF-A-01')">QB-DF-A-01
-                                Comercialización y ventas</a></li>
-                        <li><a href="#embedpdf" id="QB-DF-A-02" onclick="mostrarPDF('QB-DF-A-02')">QB-DF-A-02 Gestión de
-                                Capital Humano</a></li>
-                        <li><a href="#embedpdf" id="QB-DF-A-03" onclick="mostrarPDF('QB-DF-A-03')">QB-DF-A-03
-                                Administración y finanzas</a></li>
-                        <li><a href="#embedpdf" id="QB-DF-A-04" onclick="mostrarPDF('QB-DF-A-04')">QB-DF-A-04 Ejecución
-                                del servicio</a></li>
-                        <li><a href="#embedpdf" id="QB-DF-A-05" onclick="mostrarPDF('QB-DF-A-05')">QB-DF-A-05 Gestión
-                                sistema de calidad</a></li>
-                        <li><a href="#embedpdf" id="QB-DF-A-06" onclick="mostrarPDF('QB-DF-A-06')">QB-DF-A-06 Gestión de
-                                infraestructura</a></li>
-                        <li><a href="#embedpdf" id="QB-DF-A-07" onclick="mostrarPDF('QB-DF-A-07')">QB-DF-A-07 Planeación
-                                del servicio</a></li>
-                        <li><a href="#embedpdf" id="QB-DF-A-08" onclick="mostrarPDF('QB-DF-A-08')">QB-DF-A-08 Control y
-                                mejora del servicio</a></li>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                <details>
-                    <summary>Documentos independientes</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <li><a href="#embedpdf" id="QB-DI-A-01" onclick="mostrarPDF('QB-DI-A-01')">QB-DI-A-01
-                                Organigrama administrativo y operativo</a></li>
-                        <li><a href="#embedpdf" id="QB-DI-A-02" onclick="mostrarPDF('QB-DI-A-02')">QB-DI-A-02 Misión
-                                visión y valores de Quality Bolca S.A. de C.V</a></li>
-                        <li><a href="#embedpdf" id="QB-DI-A-03" onclick="mostrarPDF('QB-DI-A-03')">QB-DI-A-03 Reglamento
-                                interior de trabajo</a></li>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                <details>
-                    <summary>Documentos para postear</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <li><a href="#embedpdf" id="" onclick="mostrarPDF('')">Imagenes</a></li>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                <details>
-                    <summary>Formatos</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <details>
-                            <summary>Formatos independientes administrativos</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="QB-FI-A-01" onclick="mostrarPDF('QB-FI-A-01')">QB-FI-A-01
-                                        Seguimiento a los objetivos de calidad</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-02-E"
-                                        onclick="mostrarPDF('QB-FI-A-02-E')">QB-FI-A-02-E Encuesta satisfacción del
-                                        cliente</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-02-I"
-                                        onclick="mostrarPDF('QB-FI-A-02-I')">QB-FI-A-02-I Customer Satisfaction</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-03" onclick="mostrarPDF('QB-FI-A-03')">QB-FI-A-03
-                                        Lista de asistencia personal QB</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-04" onclick="mostrarPDF('QB-FI-A-04')">QB-FI-A-04
-                                        Seguimiento a los indicadores de proceso</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-06" onclick="mostrarPDF('QB-FI-A-06')">QB-FI-A-06
-                                        Programa de mantenimiento de equipo de computo</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-07-E"
-                                        onclick="mostrarPDF('QB-FI-A-07-E')">QB-FI-A-07-E Cotización Quality Bolca</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FI-A-07-I"
-                                        onclick="mostrarPDF('QB-FI-A-07-I')">QB-FI-A-07-I Quotation Quality Bolca</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FI-A-08" onclick="mostrarPDF('QB-FI-A-08')">QB-FI-A-08
-                                        Carta de notificación de daño o pérdida a la propiedad del cliente y proveedores
-                                        externos</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-09" onclick="mostrarPDF('QB-FI-A-09')">QB-FI-A-09
-                                        Minuta de junta</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-12" onclick="mostrarPDF('QB-FI-A-12')">QB-FI-A-12
-                                        Lista de verificación de niveles</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-13" onclick="mostrarPDF('QB-FI-A-13')">QB-FI-A-13
-                                        Minuta de la revisión por la dirección</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-14" onclick="mostrarPDF('QB-FI-A-14')">QB-FI-A-14
-                                        Seguimiento a las condiciones</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-15" onclick="mostrarPDF('QB-FI-A-15')">QB-FI-A-15
-                                        Comportamiento diario de horas</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-17" onclick="mostrarPDF('QB-FI-A-17')">QB-FI-A-17
-                                        Acta Administrativa</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-18" onclick="mostrarPDF('QB-FI-A-18')">QB-FI-A-18
-                                        Pedido de insumos</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-19" onclick="mostrarPDF('QB-FI-A-19')">QB-FI-A-19
-                                        Orden de Compra</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-22" onclick="mostrarPDF('QB-FI-A-22')">QB-FI-A-22
-                                        Examen de habilidades</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-24" onclick="mostrarPDF('QB-FI-A-24')">QB-FI-A-24
-                                        Examen para capturista de datos</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-25" onclick="mostrarPDF('QB-FI-A-25')">QB-FI-A-25
-                                        Informe de verificación</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-26" onclick="mostrarPDF('QB-FI-A-26')">QB-FI-A-26
-                                        Mantenimiento preventivo de equipo de computo</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-32" onclick="mostrarPDF('QB-FI-A-32')">QB-FI-A-32
-                                        Requisición Mensual</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-33" onclick="mostrarPDF('QB-FI-A-33')">QB-FI-A-33
-                                        Registro de discrepancias</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-34" onclick="mostrarPDF('QB-FI-A-34')">QB-FI-A-34
-                                        GAP Análisis</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-A-35" onclick="mostrarPDF('QB-FI-A-35')">QB-FI-A-35
-                                        Lista de verificación de operación diaria del proceso</a></li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>Formatos de registros</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="QB-FR-A-01-01"
-                                        onclick="mostrarPDF('QB-FR-A-01-01')">QB-FR-A-01-01 Lista maestra de
-                                        documentos</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-01-03"
-                                        onclick="mostrarPDF('QB-FR-A-01-03')">QB-FR-A-01-03 Hoja de emisión cambio o
-                                        baja de documentos</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-01-04"
-                                        onclick="mostrarPDF('QB-FR-A-01-04')">QB-FR-A-01-04 Hoja de notificación de
-                                        emisión y cambio</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-01-05"
-                                        onclick="mostrarPDF('QB-FR-A-01-05')">QB-FR-A-01-05 Lista maestra de
-                                        registros</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-02-01"
-                                        onclick="mostrarPDF('QB-FR-A-02-01')">QB-FR-A-02-01 Reporte de salidas no
-                                        conformes</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-02-02"
-                                        onclick="mostrarPDF('QB-FR-A-02-02')">QB-FR-A-02-02 Control de reporte de
-                                        salidas no conformes</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-03-02"
-                                        onclick="mostrarPDF('QB-FR-A-03-02')">QB-FR-A-03-02 Lista de asistencia.</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-03-03"
-                                        onclick="mostrarPDF('QB-FR-A-03-03')">QB-FR-A-03-03 Programa de competencias</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-03-04"
-                                        onclick="mostrarPDF('QB-FR-A-03-04')">QB-FR-A-03-04 Solicitud y evaluación de
-                                        competencias</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-03-05"
-                                        onclick="mostrarPDF('QB-FR-A-03-05')">QB-FR-A-03-05 Examen curso de
-                                        inducción</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-01"
-                                        onclick="mostrarPDF('QB-FR-A-04-01')">QB-FR-A-04-01 Programa de capacitación a
-                                        un nuevo puesto</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-02"
-                                        onclick="mostrarPDF('QB-FR-A-04-02')">QB-FR-A-04-02 Evaluación de desempeño del
-                                        colaborador en un nuevo puesto</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-03"
-                                        onclick="mostrarPDF('QB-FR-A-04-03')">QB-FR-A-04-03 Examen de medición rápida de
-                                        habilidades</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-04"
-                                        onclick="mostrarPDF('QB-FR-A-04-04')">QB-FR-A-04-04 Contrato individual de
-                                        trabajo por tiempo determinado</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-05"
-                                        onclick="mostrarPDF('QB-FR-A-04-05')">QB-FR-A-04-05 Contrato individual de
-                                        trabajo por tiempo indeterminado</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-06"
-                                        onclick="mostrarPDF('QB-FR-A-04-06')">QB-FR-A-04-06 Requisición de personal</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-07"
-                                        onclick="mostrarPDF('QB-FR-A-04-07')">QB-FR-A-04-07 Control de Proyectos</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-06"
-                                        onclick="mostrarPDF('QB-FR-A-04-06')">QB-FR-A-04-06 Mapa de calor</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-09"
-                                        onclick="mostrarPDF('QB-FR-A-04-09')">QB-FR-A-04-09 Tabla de requerimiento de
-                                        colaboradores</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-10"
-                                        onclick="mostrarPDF('QB-FR-A-04-10')">QB-FR-A-04-10 Carta de confidencialidad
-                                        inspector</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-11"
-                                        onclick="mostrarPDF('QB-FR-A-04-11')">QB-FR-A-04-11 Carátula del expediente y
-                                        Condiciones de trabajo</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-12"
-                                        onclick="mostrarPDF('QB-FR-A-04-12')">QB-FR-A-04-12 Encuesta de salida</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-13"
-                                        onclick="mostrarPDF('QB-FR-A-04-13')">QB-FR-A-04-13 Entrevista por
-                                        competencias.</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-14"
-                                        onclick="mostrarPDF('QB-FR-A-04-14')">QB-FR-A-04-14 Carta de confidencialidad
-                                        mandos medios</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-04-15"
-                                        onclick="mostrarPDF('QB-FR-A-04-15')">QB-FR-A-04-15 Carta de confidencialidad
-                                        por separación voluntaria</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-05-01"
-                                        onclick="mostrarPDF('QB-FR-A-05-01')">QB-FR-A-05-01 Reporte de no conformidad y
-                                        acción correctiva</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-05-02"
-                                        onclick="mostrarPDF('QB-FR-A-05-02')">QB-FR-A-05-02 Control de reportes de no
-                                        conformidad y acción correctiva</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-06-01"
-                                        onclick="mostrarPDF('QB-FR-A-06-01')">QB-FR-A-06-01 Registro de mejora</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-07-01"
-                                        onclick="mostrarPDF('QB-FR-A-07-01')">QB-FR-A-07-01 Programa anual de auditoria
-                                        interna</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-07-03"
-                                        onclick="mostrarPDF('QB-FR-A-07-03')">QB-FR-A-07-03 Lista de verificación para
-                                        auditoria interna</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-07-04"
-                                        onclick="mostrarPDF('QB-FR-A-07-04')">QB-FR-A-07-04 Memorandum para notificar
-                                        auditoría interna.</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-07-05"
-                                        onclick="mostrarPDF('QB-FR-A-07-05')">QB-FR-A-07-05 Minuta de reunión de
-                                        apertura y cierre de auditoria</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-07-06"
-                                        onclick="mostrarPDF('QB-FR-A-07-06')">QB-FR-A-07-06 Reporte final de
-                                        auditoría</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-07-07"
-                                        onclick="mostrarPDF('QB-FR-A-07-07')">QB-FR-A-07-07 Plan de auditoría interna
-                                        del SGC</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-07-08"
-                                        onclick="mostrarPDF('QB-FR-A-07-08')">QB-FR-A-07-08 Lista de verificación para
-                                        auditoria interna de proceso</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-07-09"
-                                        onclick="mostrarPDF('QB-FR-A-07-09')">QB-FR-A-07-09 Lista de auditores internos
-                                        calificados al SGC y del proceso</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-08-02"
-                                        onclick="mostrarPDF('QB-FR-A-08-02')">QB-FR-A-08-02 Evaluación a proveedores</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-08-03"
-                                        onclick="mostrarPDF('QB-FR-A-08-03')">QB-FR-A-08-03 Selección del proveedor</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-08-04"
-                                        onclick="mostrarPDF('QB-FR-A-08-04')">QB-FR-A-08-04 Re-evaluación de
-                                        proveedores</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-08-05"
-                                        onclick="mostrarPDF('QB-FR-A-08-05')">QB-FR-A-08-05 Control de entrega de
-                                        proveedores</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-08-06"
-                                        onclick="mostrarPDF('QB-FR-A-08-06')">QB-FR-A-08-06 Listado de Proveedores
-                                        Nacional</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-09-01-E-I"
-                                        onclick="mostrarPDF('QB-FR-A-09-01-E-I')">QB-FR-A-09-01-E-I Encuesta de
-                                        satisfacción del cliente al primer servicio</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-09-02"
-                                        onclick="mostrarPDF('QB-FR-A-09-02')">QB-FR-A-09-02 Relación de clientes</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-09-03-E"
-                                        onclick="mostrarPDF('QB-FR-A-09-03-E')">QB-FR-A-09-03-E Orden de Nuevo
-                                        Servicio</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-09-03-I"
-                                        onclick="mostrarPDF('QB-FR-A-09-03-I')">QB-FR-A-09-03-I Request For New
-                                        Service</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-09-04"
-                                        onclick="mostrarPDF('QB-FR-A-09-04')">QB-FR-A-09-04 Lista de seguimiento de
-                                        clientes potenciales</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-11-01"
-                                        onclick="mostrarPDF('QB-FR-A-11-01')">QB-FR-A-11-01 Requisición de compra</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-11-01"
-                                        onclick="mostrarPDF('QB-FR-A-11-01')">QB-FR-A-11-01 Requisición de
-                                        compra-Gabriela Cadena</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-15-02"
-                                        onclick="mostrarPDF('QB-FR-A-15-02')">QB-FR-A-15-02 Control de Almacén</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-15-03"
-                                        onclick="mostrarPDF('QB-FR-A-15-03')">QB-FR-A-15-03 Reporte de inventario
-                                        físico</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-15-04"
-                                        onclick="mostrarPDF('QB-FR-A-15-04')">QB-FR-A-15-04 Programa anual de
-                                        inventario</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-15-05"
-                                        onclick="mostrarPDF('QB-FR-A-15-05')">QB-FR-A-15-05 Vale de resguardo de
-                                        herramienta o equipo</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-15-06"
-                                        onclick="mostrarPDF('QB-FR-A-15-06')">QB-FR-A-15-06 Inventario</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-16-01"
-                                        onclick="mostrarPDF('QB-FR-A-16-01')">QB-FR-A-16-01 Registro de mantenimiento
-                                        autonomo</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-16-02"
-                                        onclick="mostrarPDF('QB-FR-A-16-02')">QB-FR-A-16-02 Check list de mantenimiento
-                                        autónomo de vehiculos</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-16-03"
-                                        onclick="mostrarPDF('QB-FR-A-16-03')">QB-FR-A-16-03 Solicitud de servicio</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-17-01"
-                                        onclick="mostrarPDF('QB-FR-A-17-01')">QB-FR-A-17-01 Análisis de rentabilidad de
-                                        proyectos</a></li>
-                                <li><a href="#embedpdf" id="QB-FR-A-17-02"
-                                        onclick="mostrarPDF('QB-FR-A-17-02')">QB-FR-A-17-02 Formato de desviación</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-18-01"
-                                        onclick="mostrarPDF('QB-FR-A-18-01')">QB-FR-A-18-01 Evaluación de desempeño</a>
-                                </li>
-                                <li><a href="#embedpdf" id="QB-FR-A-18-02"
-                                        onclick="mostrarPDF('QB-FR-A-18-02')">QB-FR-A-18-02 Encuesta de satisfacción del
-                                        evento</a></li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>Formatos independientes operativos</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="QB-FI-O-01-E"
-                                        onclick="mostrarPDF('QB-FI-O-01-E')">QB-FI-O-01-E Reporte diario</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-01-I"
-                                        onclick="mostrarPDF('QB-FI-O-01-I')">QB-FI-O-01-1 Daily report</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-02-E"
-                                        onclick="mostrarPDF('QB-FI-O-02-E')">QB-FI-O-02-E Reporte semanal</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-02-I"
-                                        onclick="mostrarPDF('QB-FI-O-02-I')">QB-FI-O-02-I Weekly report</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-03" onclick="mostrarPDF('QB-FI-O-03')">QB-FI-O-03
-                                        Hoja de operación estandar</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-04" onclick="mostrarPDF('QB-FI-O-04')">QB-FI-O-04
-                                        Lista maestra de hojas de operación estándar</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-08" onclick="mostrarPDF('QB-FI-O-08')">QB-FI-O-08
-                                        Control de entrega de material</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-09" onclick="mostrarPDF('QB-FI-O-09')">QB-FI-O-09
-                                        Apertura de servicio</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-10" onclick="mostrarPDF('QB-FI-O-10')">QB-FI-O-10
-                                        Concentrado de personal</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-16" onclick="mostrarPDF('QB-FI-O-16')">QB-FI-O-16
-                                        Encuesta de satisfacción laboral</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-17" onclick="mostrarPDF('QB-FI-O-17')">QB-FI-O-17
-                                        Programa de calibración de equipo de medición</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-21" onclick="mostrarPDF('QB-FI-O-21')">QB-FI-O-21
-                                        Registro de mantenimiento vehicular</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-22" onclick="mostrarPDF('QB-FI-O-22')">QB-FI-O-22
-                                        Consumo de gasolina</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-24" onclick="mostrarPDF('QB-FI-O-24')">QB-FI-O-24
-                                        Checklist de condiciones de área de trabajo</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-25" onclick="mostrarPDF('QB-FI-O-25')">QB-FI-O-25
-                                        Reporte diario acumulado</a></li>
-                                <li><a href="#embedpdf" id="QB-FI-O-26" onclick="mostrarPDF('QB-FI-O-26')">QB-FI-O-26
-                                        Lista Verificación 5Ss</a></li>
-                            </ul>
-                        </details>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                <details>
-                    <summary>Instrucciones de trabajo</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <li><a href="#embedpdf" id="QB-IT-A-01" onclick="mostrarPDF('QB-IT-A-01')">QB-IT-A-01 Estructura
-                                documental</a></li>
-                        <li><a href="#embedpdf" id="QB-IT-A-02" onclick="mostrarPDF('QB-IT-A-02')">QB-IT-A-02
-                                Elaboración de la Hoja de operación estándar</a></li>
-                        <li><a href="#embedpdf" id="QB-IT-A-03" onclick="mostrarPDF('QB-IT-A-03')">QB-IT-A-03 Nómina</a>
-                        </li>
-                        <li><a href="#embedpdf" id="QB-IT-A-05" onclick="mostrarPDF('QB-IT-A-05')">QB-IT-A-05 Aplicación
-                                de encuesta de satisfacción del cliente</a></li>
-                        <li><a href="#embedpdf" id="QB-IT-A-06" onclick="mostrarPDF('QB-IT-A-06')">QB-IT-A-06 Inspección
-                                y re trabajo</a></li>
-                        <li><a href="#embedpdf" id="QB-IT-A-07" onclick="mostrarPDF('QB-IT-A-07')">QB-IT-A-07 Captura de
-                                datos</a></li>
-                        <li><a href="#embedpdf" id="QB-IT-A-09" onclick="mostrarPDF('QB-IT-A-09')">QB-IT-A-09
-                                Facturación de servicios</a></li>
-                        <li><a href="#embedpdf" id="QB-IT-A-10" onclick="mostrarPDF('QB-IT-A-10')">QB-IT-A-10 Promoción
-                                del personal</a></li>
-                        <li><a href="#embedpdf" id="QB-IT-A-11" onclick="mostrarPDF('QB-IT-A-11')">QB-IT-A-11 Aplicación
-                                de la encuesta de satisfacción laboral</a></li>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                <details>
-                    <summary>Manual de la calidad</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <li><a href="#embedpdf" id="QB-MC-A-01-I" onclick="mostrarPDF('QB-MC-A-01-I')">QB-MC-A-01-I
-                                Manual de la calidad</a></li>
-                        <li><a href="#embedpdf" id="QB-MC-A-01-II" onclick="mostrarPDF('QB-MC-A-01-II')">QB-MC-A-01-II
-                                Manual de la calidad</a></li>
-                        <li><a href="#embedpdf" id="QB-MC-A-01-III"
-                                onclick="mostrarPDF('QB-MC-A-01-III')">QB-MC-A-01-III Manual de la calidad</a></li>
-                        <li><a href="#embedpdf" id="QB-MC-A-01-IV" onclick="mostrarPDF('QB-MC-A-01-IV')">QB-MC-A-01-IV
-                                Manual de la calidad</a></li>
-                        <li><a href="#embedpdf" id="QB-MC-A-01-V" onclick="mostrarPDF('QB-MC-A-01-V')">QB-MC-A-01-V
-                                Manual de la calidad</a></li>
-                        <li><a href="#embedpdf" id="QB-MC-A-01-VI" onclick="mostrarPDF('QB-MC-A-01-VI')">QB-MC-A-01-VI
-                                Manual de la calidad</a></li>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                <details>
-                    <summary>Matriz de información</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <li><a href="#embedpdf" id="QB-MI-A-01" onclick="mostrarPDF('QB-MI-A-01')">QB-MI-A-01 Matriz de
-                                roles y responsabilidades del SGC</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-03" onclick="mostrarPDF('QB-MI-A-03')">QB-MI-A-03
-                                Interacción del proceso Planeación y dirección estrategica</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-04" onclick="mostrarPDF('QB-MI-A-04')">QB-MI-A-04 Partes
-                                interesadas</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-06" onclick="mostrarPDF('QB-MI-A-06')">QB-MI-A-06 Matriz de
-                                competencia mínima requerida para el puesto</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-07" onclick="mostrarPDF('QB-MI-A-07')">QB-MI-A-07
-                                Interacción del proceso Administración y Finanzas</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-08" onclick="mostrarPDF('QB-MI-A-08')">QB-MI-A-08
-                                Interacción del proceso de Gestión de la Calidad</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-09" onclick="mostrarPDF('QB-MI-A-09')">QB-MI-A-09 Manual de
-                                políticas QB</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-10" onclick="mostrarPDF('QB-MI-A-10')">QB-MI-A-10
-                                Interaccion del proceso de comercializacion y ventas</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-12" onclick="mostrarPDF('QB-MI-A-12')">QB-MI-A-12
-                                Interacción del proceso ejecución del servicio</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-13" onclick="mostrarPDF('QB-MI-A-13')">QB-MI-A-13 Mapa de
-                                conocimiento</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-14" onclick="mostrarPDF('QB-MI-A-14')">QB-MI-A-14
-                                Interacción del proceso Gestión de infraestructura</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-16" onclick="mostrarPDF('QB-MI-A-16')">QB-MI-A-16
-                                Interacción del proceso Planeación del servicio</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-18" onclick="mostrarPDF('QB-MI-A-18')">QB-MI-A-18
-                                Interacción del proceso control y mejora del servicio</a></li>
-                        <li><a href="#embedpdf" id="QB-MI-A-19" onclick="mostrarPDF('QB-MI-A-19')">QB-MI-A-19
-                                Interacción del proceso Gestión de Capital Humano</a></li>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                <details>
-                    <summary>Normas y leyes externas</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <details>
-                            <summary>DOF</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="20210420_DOF"
-                                        onclick="mostrarPDF('20210420_DOF')">20210420_DOF</a></li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>ISO 19011</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="ISO 19011" onclick="mostrarPDF('ISO 19011')">ISO 19011</a>
-                                </li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>ISO 31000 gestión de riesgos</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="ISO 31000 E" onclick="mostrarPDF('ISO 31000 E')">ISO 31000
-                                        gestion de riesgos Español</a></li>
-                                <li><a href="#embedpdf" id="ISO 31000 I" onclick="mostrarPDF('ISO 31000 I')">ISO 31000
-                                        gestion de riesgos Ingles</a></li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>ISO 9001 2015</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="Definiciones ISO 9000 2015"
-                                        onclick="mostrarPDF('Definiciones ISO 9000 2015')">Definiciones ISO 9000
-                                        2015</a></li>
-                                <li><a href="#embedpdf" id="Fundamentos y vocabulario ISO 9000 2015"
-                                        onclick="mostrarPDF('Fundamentos y vocabulario ISO 9000 2015')">Fundamentos y
-                                        vocabulario ISO 9000 2015</a></li>
-                                <li><a href="#embedpdf" id="ISO 9001 2015 Español"
-                                        onclick="mostrarPDF('ISO 9001 2015 Español')">ISO 9001 2015 Español</a></li>
-                                <li><a href="#embedpdf" id="ISO 9001 2015 Ingles"
-                                        onclick="mostrarPDF('ISO 9001 2015 Ingles')">ISO 9001 2015 Ingles</a></li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>Ley federal del trabajo 2021</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="ley federal del trabajo 2021"
-                                        onclick="mostrarPDF('ley federal del trabajo 2021')">ley federal del trabajo
-                                        2021</a></li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>NMX-CC-9000-IMNC-2015</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="NMX-CC-9000-IMNC"
-                                        onclick="mostrarPDF('NMX-CC-9000-IMNC')">NMX-CC-9000-IMNC-2015_Fundamentos y
-                                        vocabulario</a></li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>NMX-Z-012-1-2-1987</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="Norma Mexicana NMX-Z"
-                                        onclick="mostrarPDF('Norma Mexicana NMX-Z')">Norma Mexicana NMX-Z-12-2-1987</a>
-                                </li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>NOM-025-STPS-2008</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="NOM-025-STPS-2008"
-                                        onclick="mostrarPDF('NOM-025-STPS-2008')">NOM-025-STPS-2008 Condiciones de
-                                        iluminación en los centros de trabajo</a></li>
-                            </ul>
-                        </details>
-                        <details>
-                            <summary>NOM-035-STPS</summary>
-                            <!-- <hr> -->
-                            <ul>
-                                <li><a href="#embedpdf" id="NOM 035 STPS" onclick="mostrarPDF('NOM 035 STPS')">NOM 035
-                                        STPS</a></li>
-                            </ul>
-                        </details>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                <details>
-                    <summary>Procedimientos</summary>
-                    <!-- <hr> -->
-                    <ul>
-                        <li><a href="#embedpdf" id="QB-PR-A-01" onclick="mostrarPDF('QB-PR-A-01')">QB-PR-A-01 Control de
-                                la información documentada</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-02" onclick="mostrarPDF('QB-PR-A-02')">QB-PR-A-02 Control de
-                                salidas no conformes</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-03" onclick="mostrarPDF('QB-PR-A-03')">QB-PR-A-03 Formación
-                                y desarrollo de colaboradores</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-04" onclick="mostrarPDF('QB-PR-A-04')">QB-PR-A-04 Atracción
-                                selección contratación y separación de colaboradores</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-04" onclick="mostrarPDF('QB-PR-A-04')">QB-PR-A-04 Atracción,
-                                selección, contratación y separación de colaboradores</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-05" onclick="mostrarPDF('QB-PR-A-05')">QB-PR-A-05 No
-                                conformidad y acción correctiva</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-06" onclick="mostrarPDF('QB-PR-A-06')">QB-PR-A-06 Mejora
-                                continua</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-07" onclick="mostrarPDF('QB-PR-A-07')">QB-PR-A-07 Auditorías
-                                internas</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-08" onclick="mostrarPDF('QB-PR-A-08')">QB-PR-A-08 Control de
-                                Proveedores</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-09" onclick="mostrarPDF('QB-PR-A-09')">QB-PR-A-09 Ventas</a>
-                        </li>
-                        <li><a href="#embedpdf" id="QB-PR-A-10" onclick="mostrarPDF('QB-PR-A-10')">QB-PR-A-10
-                                Facturación y Cobranza</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-11" onclick="mostrarPDF('QB-PR-A-11')">QB-PR-A-11 Gestión de
-                                gastos</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-12" onclick="mostrarPDF('QB-PR-A-12')">QB-PR-A-12
-                                Tecnologías de la información</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-13" onclick="mostrarPDF('QB-PR-A-13')">QB-PR-A-13 Control de
-                                Presupuesto</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-14" onclick="mostrarPDF('QB-PR-A-14')">QB-PR-A-14 No
-                                conformidad y acción correctiva general</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-15" onclick="mostrarPDF('QB-PR-A-15')">QB-PR-A-15 Compras y
-                                control de inventarios</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-16" onclick="mostrarPDF('QB-PR-A-16')">QB-PR-A-16 Proporción
-                                y mantenimiento de la infraestructura</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-17" onclick="mostrarPDF('QB-PR-A-17')">QB-PR-A-17
-                                Determinación, evaluación y rentabilidad del servicio</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-18" onclick="mostrarPDF('QB-PR-A-18')">QB-PR-A-18 Retención
-                                de talento</a></li>
-                        <li><a href="#embedpdf" id="QB-PR-A-19" onclick="mostrarPDF('QB-PR-A-19')">QB-PR-A-19 Planeación
-                                y dirección estratégica</a></li>
-                    </ul>
-                </details>
-                <!-- <hr> -->
-                </section>
-            </details>
-            <details class="detailContenedor">
-                <summary></summary> <!-- El summary puede estar vacío si solo deseas la imagen -->
-                <p>Contenido dentro del details.</p>
-            </details>
-            <details class="detailContenedor">
-                <summary></summary> <!-- El summary puede estar vacío si solo deseas la imagen -->
-                <p>Contenido dentro del details.</p>
-            </details>
-            <details class="detailContenedor">
-                <summary></summary> <!-- El summary puede estar vacío si solo deseas la imagen -->
-                <p>Contenido dentro del details.</p>
-            </details>
+      <div class="file-explorer">
+        <!-- Encabezado -->
+        <div class="header">
+          <h1 class="title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+              <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+            </svg>
+            Documentos Controlados Publicos
+          </h1>
+          <div class="breadcrumb">
+            <span id="level1-name">Quality Bolca</span>
+            <span id="level2-path" class="hidden">
+              <span class="separator">›</span>
+              <span id="level2-name"></span>
+            </span>
+            <span id="level3-path" class="hidden">
+              <span class="separator">›</span>
+              <span id="level3-name"></span>
+            </span>
+          </div>
         </div>
+
+        <div class="panels">
+          <!-- Panel de navegación nivel 1 -->
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Nivel 1</h2>
+            </div>
+            <div class="panel-content" id="level1-folders">
+              <!-- Se llenará con JavaScript -->
+            </div>
+          </div>
+
+          <!-- Panel de navegación nivel 2 -->
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Nivel 2</h2>
+            </div>
+            <div class="panel-content" id="level2-folders">
+              <div class="empty-message">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+                  <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+                </svg>
+                <p>Selecciona una carpeta del primer nivel</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel de navegación nivel 3 -->
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Nivel 3</h2>
+            </div>
+            <div class="panel-content" id="level3-folders">
+              <div class="empty-message">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+                  <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+                </svg>
+                <p>Selecciona una carpeta del segundo nivel</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Área de resultado -->
+        <div class="result-area">
+          <div class="result-header">
+            <h2 class="panel-title">Resultado</h2>
+          </div>
+          <div class="result-content" id="result-container">
+            <div class="empty-message">
+              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+                <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+              </svg>
+              <p>Selecciona un archivo PDF para visualizarlo aquí</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </main>
 
-
-    <section id="contenedorPDF" class="contenedorPDFID2">
-        <embed id="embedpdf" src="" type="application/pdf">
-    </section>
-
-
-
+  <script src="script.js"></script>
 </body>
 
+<script>
+// Datos de ejemplo para el explorador de archivos
+const folders = [
+    {
+      id: "folder1",
+      name: "Certificado ISO 9001 2015",
+      type: "folder",
+      children: [
+      {
+          id: "subfolder2-1",
+          name: "Vacaciones",
+          type: "folder",
+          children: [
+            {
+              id: "img2-1-1",
+              name: "Foto Playa",
+              type: "pdf",
+              url: "https://www.africau.edu/images/default/sample.pdf",
+            },
+          ],
+        },
+        {
+          id: "img1-1",
+          name: "Certificado ISO9001 2015",
+          type: "pdf",
+          url: "https://www.africau.edu/images/default/sample.pdf",
+        }
+      ],
+    },
+    {
+      id: "folder2",
+      name: "Imágenes",
+      type: "folder",
+      children: [
+        {
+          id: "subfolder2-1",
+          name: "Vacaciones",
+          type: "folder",
+          children: [
+            {
+              id: "img2-1-1",
+              name: "Foto Playa",
+              type: "pdf",
+              url: "https://www.africau.edu/images/default/sample.pdf",
+            },
+          ],
+        },
+        {
+          id: "subfolder2-2",
+          name: "Trabajo",
+          type: "folder",
+          children: [],
+        },
+      ],
+    },
+    {
+      id: "folder3",
+      name: "Proyectos",
+      type: "folder",
+      children: [
+        {
+          id: "subfolder3-1",
+          name: "Proyecto A",
+          type: "folder",
+          children: [
+            {
+              id: "doc3-1-1",
+              name: "Informe Final",
+              type: "pdf",
+              url: "https://www.africau.edu/images/default/sample.pdf",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "folder4",
+      name: "Personal",
+      type: "folder",
+      children: [
+        {
+          id: "subfolder4-1",
+          name: "Salud",
+          type: "folder",
+          children: [
+            {
+              id: "doc4-1-1",
+              name: "Análisis",
+              type: "pdf",
+              url: "https://www.africau.edu/images/default/sample.pdf",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "folder5",
+      name: "Finanzas",
+      type: "folder",
+      children: [
+        {
+          id: "subfolder5-1",
+          name: "Inversiones",
+          type: "folder",
+          children: [
+            {
+              id: "doc5-1-1",
+              name: "Reporte Anual",
+              type: "pdf",
+              url: "https://www.africau.edu/images/default/sample.pdf",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "folder6",
+      name: "Música",
+      type: "folder",
+      children: [
+        {
+          id: "subfolder6-1",
+          name: "Rock",
+          type: "folder",
+          children: [],
+        },
+      ],
+    },
+  ];
+
+// Estado de la aplicación
+let state = {
+  selectedLevel1: null,
+  selectedLevel2: null,
+  selectedLevel3: null,
+  pdfUrl: null,
+};
+
+// Elementos del DOM
+const level1FoldersEl = document.getElementById('level1-folders');
+const level2FoldersEl = document.getElementById('level2-folders');
+const level3FoldersEl = document.getElementById('level3-folders');
+const resultContainerEl = document.getElementById('result-container');
+const level1NameEl = document.getElementById('level1-name');
+const level2PathEl = document.getElementById('level2-path');
+const level2NameEl = document.getElementById('level2-name');
+const level3PathEl = document.getElementById('level3-path');
+const level3NameEl = document.getElementById('level3-name');
+
+
+// Renderizar carpetas de nivel 1
+function renderLevel1Folders() {
+  level1FoldersEl.innerHTML = '';
+  
+  const ul = document.createElement('ul');
+  ul.className = 'folder-list';
+  
+  folders.forEach(folder => {
+    const li = document.createElement('li');
+    li.className = 'folder-item';
+    
+    const button = document.createElement('button');
+    button.className = `folder-button ${state.selectedLevel1 === folder.id ? 'selected' : ''}`;
+    button.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon">
+        <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+      </svg>
+      ${folder.name}
+    `;
+    
+    button.addEventListener('click', () => {
+      selectLevel1Folder(folder.id);
+    });
+    
+    li.appendChild(button);
+    ul.appendChild(li);
+  });
+  
+  level1FoldersEl.appendChild(ul);
+}
+
+// Renderizar carpetas de nivel 2
+function renderLevel2Folders() {
+  level2FoldersEl.innerHTML = '';
+  
+  if (!state.selectedLevel1) {
+    level2FoldersEl.innerHTML = `
+      <div class="empty-message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+        </svg>
+        <p>Selecciona una carpeta del primer nivel</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const level2Folders = folders.find(f => f.id === state.selectedLevel1)?.children || [];
+  
+  if (level2Folders.length === 0) {
+    level2FoldersEl.innerHTML = `
+      <div class="empty-message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+        </svg>
+        <p>Esta carpeta está vacía</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const ul = document.createElement('ul');
+  ul.className = 'folder-list';
+  
+  level2Folders.forEach(folder => {
+    const li = document.createElement('li');
+    li.className = 'folder-item';
+    
+    const button = document.createElement('button');
+    button.className = `folder-button ${state.selectedLevel2 === folder.id ? 'selected' : ''}`;
+    button.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon">
+        <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+      </svg>
+      ${folder.name}
+    `;
+    
+    button.addEventListener('click', () => {
+      selectLevel2Folder(folder.id);
+    });
+    
+    li.appendChild(button);
+    ul.appendChild(li);
+  });
+  
+  level2FoldersEl.appendChild(ul);
+}
+
+// Renderizar carpetas de nivel 3
+function renderLevel3Folders() {
+  level3FoldersEl.innerHTML = '';
+  
+  if (!state.selectedLevel2) {
+    level3FoldersEl.innerHTML = `
+      <div class="empty-message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+        </svg>
+        <p>Selecciona una carpeta del segundo nivel</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const level2Folders = folders.find(f => f.id === state.selectedLevel1)?.children || [];
+  const level3Folders = level2Folders.find(f => f.id === state.selectedLevel2)?.children || [];
+  
+  if (level3Folders.length === 0) {
+    level3FoldersEl.innerHTML = `
+      <div class="empty-message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+        </svg>
+        <p>Esta carpeta está vacía</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const div = document.createElement('div');
+  div.className = 'folder-grid';
+  
+  level3Folders.forEach(item => {
+    const card = document.createElement('div');
+    card.className = `folder-card ${state.selectedLevel3 === item.id ? 'selected' : ''}`;
+    
+    if (item.type === 'folder') {
+      card.innerHTML = `
+        <div class="folder-icon-container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon">
+            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+          </svg>
+        </div>
+        <span class="folder-name">${item.name}</span>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="file-icon-container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="file-icon">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <line x1="10" y1="9" x2="8" y2="9"></line>
+          </svg>
+        </div>
+        <span class="folder-name">${item.name}</span>
+      `;
+    }
+    
+    card.addEventListener('click', () => {
+      selectLevel3Item(item.id, item.type === 'pdf', item.url || null);
+    });
+    
+    div.appendChild(card);
+  });
+  
+  level3FoldersEl.appendChild(div);
+}
+
+// Renderizar área de resultado
+function renderResult() {
+  if (state.pdfUrl) {
+    resultContainerEl.innerHTML = `
+      <iframe src="${state.pdfUrl}" class="pdf-viewer" title="PDF Viewer"></iframe>
+    `;
+  } else {
+    resultContainerEl.innerHTML = `
+      <div class="empty-message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
+        </svg>
+        <p>Selecciona un archivo PDF para visualizarlo aquí</p>
+      </div>
+    `;
+  }
+}
+
+// Actualizar la ruta de navegación
+function updateBreadcrumb() {
+  // Nivel 1
+  if (state.selectedLevel1) {
+    const folder = folders.find(f => f.id === state.selectedLevel1);
+    if (folder) {
+      level1NameEl.textContent = folder.name;
+    }
+  } else {
+    level1NameEl.textContent = 'Explorador de Archivos';
+  }
+  
+  // Nivel 2
+  if (state.selectedLevel2) {
+    const level2Folders = folders.find(f => f.id === state.selectedLevel1)?.children || [];
+    const folder = level2Folders.find(f => f.id === state.selectedLevel2);
+    if (folder) {
+      level2NameEl.textContent = folder.name;
+      level2PathEl.classList.remove('hidden');
+    }
+  
+  } else {
+    level2PathEl.classList.add('hidden');
+  }
+  
+  // Nivel 3
+  if (state.selectedLevel3) {
+    const level2Folders = folders.find(f => f.id === state.selectedLevel1)?.children || [];
+    const level3Folders = level2Folders.find(f => f.id === state.selectedLevel2)?.children || [];
+    const item = level3Folders.find(f => f.id === state.selectedLevel3);
+    if (item) {
+      level3NameEl.textContent = item.name;
+      level3PathEl.classList.remove('hidden');
+    }
+  } else {
+    level3PathEl.classList.add('hidden');
+  }
+}
+
+// Seleccionar carpeta de nivel 1
+function selectLevel1Folder(folderId) {
+  state.selectedLevel1 = folderId;
+  state.selectedLevel2 = null;
+  state.selectedLevel3 = null;
+  state.pdfUrl = null;
+  
+  renderLevel1Folders();
+  renderLevel2Folders();
+  renderLevel3Folders();
+  renderResult();
+  updateBreadcrumb();
+}
+
+// Seleccionar carpeta de nivel 2
+function selectLevel2Folder(folderId) {
+  state.selectedLevel2 = folderId;
+  state.selectedLevel3 = null;
+  state.pdfUrl = null;
+  
+  renderLevel2Folders();
+  renderLevel3Folders();
+  renderResult();
+  updateBreadcrumb();
+}
+
+// Seleccionar item de nivel 3
+function selectLevel3Item(itemId, isPdf, url) {
+  state.selectedLevel3 = itemId;
+  
+  if (isPdf && url) {
+    state.pdfUrl = url;
+  } else {
+    state.pdfUrl = null;
+  }
+  
+  renderLevel3Folders();
+  renderResult();
+  updateBreadcrumb();
+}
+
+// Inicializar la aplicación
+function init() {
+  renderLevel1Folders();
+  renderLevel2Folders();
+  renderLevel3Folders();
+  renderResult();
+  updateBreadcrumb();
+}
+
+// Iniciar la aplicación cuando el DOM esté cargado
+document.addEventListener('DOMContentLoaded', init);
+</script>
 </html>

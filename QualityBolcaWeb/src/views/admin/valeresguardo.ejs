@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%=csrfToken%>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+    <link rel="stylesheet" , href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <title>Asignación de Equipo</title>
     <style>
         :root {
@@ -17,14 +20,14 @@
             --danger-color: #dc2626;
             --success-color: #16a34a;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             color: var(--text-color);
             line-height: 1.6;
@@ -32,7 +35,7 @@
             max-width: 1000px;
             margin: 0 auto;
         }
-        
+
         .document {
             border: 1px solid var(--border-color);
             padding: 30px;
@@ -40,7 +43,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             background-color: white;
         }
-        
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -49,12 +52,12 @@
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .logo {
             width: 150px;
             height: auto;
         }
-        
+
         .document-title {
             text-align: center;
             margin: 20px 0;
@@ -62,11 +65,11 @@
             font-size: 24px;
             font-weight: bold;
         }
-        
+
         .section {
             margin-bottom: 25px;
         }
-        
+
         .section-title {
             font-size: 18px;
             font-weight: bold;
@@ -76,67 +79,67 @@
             padding-bottom: 5px;
             display: inline-block;
         }
-        
+
         .equipment-details {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
-        
+
         .detail-item {
             background-color: var(--light-gray);
             padding: 10px 15px;
             border-radius: 5px;
         }
-        
+
         .detail-label {
             font-weight: bold;
             margin-right: 5px;
         }
-        
+
         .terms {
             background-color: var(--light-gray);
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 25px;
         }
-        
+
         .terms ul {
             padding-left: 20px;
             margin-top: 10px;
         }
-        
+
         .terms li {
             margin-bottom: 5px;
         }
-        
+
         .signatures {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-top: 40px;
         }
-        
+
         .signature-box {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
+
         .signature-line {
             width: 100%;
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 10px;
-            height: 50px;
+            height: 100px;
         }
-        
+
         .date {
             text-align: right;
             margin: 20px 0;
             font-style: italic;
         }
-        
+
         /* Buttons styles */
         .action-buttons {
             display: flex;
@@ -146,7 +149,7 @@
             padding-top: 20px;
             border-top: 1px solid var(--border-color);
         }
-        
+
         .btn {
             padding: 12px 30px;
             border: none;
@@ -156,25 +159,25 @@
             transition: all 0.3s ease;
             font-size: 16px;
         }
-        
+
         .btn-accept {
             background-color: var(--success-color);
             color: white;
         }
-        
+
         .btn-accept:hover {
             background-color: #15803d;
         }
-        
+
         .btn-reject {
             background-color: var(--danger-color);
             color: white;
         }
-        
+
         .btn-reject:hover {
             background-color: #b91c1c;
         }
-        
+
         /* Modal styles */
         .modal-overlay {
             position: fixed;
@@ -191,12 +194,12 @@
             opacity: 0;
             transition: all 0.3s ease;
         }
-        
+
         .modal-overlay.active {
             visibility: visible;
             opacity: 1;
         }
-        
+
         .modal {
             background-color: white;
             border-radius: 8px;
@@ -207,11 +210,11 @@
             transform: translateY(-20px);
             transition: all 0.3s ease;
         }
-        
+
         .modal-overlay.active .modal {
             transform: translateY(0);
         }
-        
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -220,12 +223,12 @@
             padding-bottom: 10px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .modal-title {
             font-size: 20px;
             color: var(--primary-color);
         }
-        
+
         .modal-close {
             background: none;
             border: none;
@@ -233,21 +236,21 @@
             cursor: pointer;
             color: var(--text-color);
         }
-        
+
         .modal-body {
             margin-bottom: 20px;
         }
-        
+
         .form-group {
             margin-bottom: 15px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
-        
+
         .form-control {
             width: 100%;
             padding: 10px;
@@ -255,55 +258,55 @@
             border-radius: 5px;
             font-size: 16px;
         }
-        
+
         textarea.form-control {
             min-height: 120px;
             resize: vertical;
         }
-        
+
         .modal-footer {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
         }
-        
+
         /* Canvas styles */
         #signatureCanvas {
             border: 1px solid var(--border-color);
             border-radius: 5px;
         }
-        
+
         .canvas-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
         }
-        
+
         .canvas-actions {
             display: flex;
             gap: 10px;
         }
-        
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             .signatures {
                 grid-template-columns: 1fr;
             }
-            
+
             .document {
                 padding: 15px;
             }
-            
+
             .action-buttons {
                 flex-direction: column;
                 align-items: center;
             }
-            
+
             .btn {
                 width: 100%;
                 max-width: 250px;
@@ -311,6 +314,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="document">
         <!-- ... (previous content remains the same) ... -->
@@ -319,65 +323,89 @@
             <div>
                 <h2>Carta de asignación de equipo de computo</h2>
                 <p>Documento de entrega y responsabilidad</p>
+                <p>Folio: <span><%=valeasignacion[0].folio%></span></p>
             </div>
         </div>
-        
+
         <div class="section">
             <h3 class="section-title">Información del Equipo</h3>
+
+
+            
             <div class="equipment-details">
-                <div class="detail-item">
-                    <span class="detail-label">Tipo de Equipo:</span>
-                    <span class="detail-value">Laptop HP EliteBook</span>
+                    <% for (const [key, datos] of Object.entries(valeasignacion)) { %>
+                    <div class="detail-item">
+                        <p><span class="detail-label">Tipo de Equipo:</span>
+                        <span class="detail-value">
+                            <%=datos.tipo%>
+                        </span></p>
+                        <p><span class="detail-label">Número de Serie:</span>
+                        <span class="detail-value">
+                            <%=datos.serie%>
+                        </span></p>
+                        <p><span class="detail-label">Marca:</span>
+                        <span class="detail-value">
+                            <%=datos.marca%>
+                        </span></p>
+                        <p><span class="detail-label">Código de Inventario:</span>
+                        <span class="detail-value">
+                            <%=datos.idInventario%>
+                        </span></p>
+                        <p><span class="detail-label">Estado:</span>
+                        <% if (datos.estado=='1' ) { %>
+                            <% var estado2='Nuevo' %>
+                                <% }else{ %>
+                                    <% var estado2='Usado' %>
+                                        <% } %>
+                                            <span class="detail-value">
+                                                <%= estado2 %>
+                                            </span>
+                                            <span class="detail-label">Accesorios:</span>
+                                            <span class="detail-value">
+                                                <%=datos.accesorios%>
+                                            </span></p>
+                    </div>
+                    <% } %>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">Número de Serie:</span>
-                    <span class="detail-value">SN12345678</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Modelo:</span>
-                    <span class="detail-value">840 G5</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Código de Inventario:</span>
-                    <span class="detail-value">INV-2023-0042</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Estado:</span>
-                    <span class="detail-value">Nuevo</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Accesorios:</span>
-                    <span class="detail-value">Cargador, Mouse, Maletín</span>
-                </div>
-            </div>
+
         </div>
-        
+
         <div class="section">
             <h3 class="section-title">Información del Colaborador</h3>
             <div class="equipment-details">
                 <div class="detail-item">
                     <span class="detail-label">Nombre:</span>
-                    <span class="detail-value">Juan Pérez González</span>
+                    <span class="detail-value">
+                        <%=valeasignacion[0].nombrelargo%>
+                    </span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Departamento:</span>
-                    <span class="detail-value">Tecnología</span>
+                    <span class="detail-value">
+                        <%=valeasignacion[0].usoExclusivo%>
+                    </span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Cargo:</span>
-                    <span class="detail-value">Desarrollador Senior</span>
+                    <span class="detail-value">
+                        <%=valeasignacion[0].descripcion%>
+                    </span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">ID Empleado:</span>
-                    <span class="detail-value">EMP-2023-0123</span>
+                    <span class="detail-value" id="idEmpleado">
+                        <%=valeasignacion[0].numeroEmpleado%>
+                    </span>
                 </div>
             </div>
         </div>
-        
+
         <div class="date">
-            <p><strong>Fecha de Entrega:</strong> 3 de marzo de 2025</p>
+            <p><strong>Fecha de Entrega:</strong>
+                <%=valeasignacion[0].fechaFolio%>
+            </p>
         </div>
-        
+
         <div class="section">
             <h3 class="section-title">Condiciones de Uso</h3>
             <div class="terms">
@@ -393,28 +421,40 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="signatures">
             <div class="signature-box">
-                <div class="signature-line"></div>
+                <div class="signature-line" style="text-align: center;">
+                    <% if (valeasignacion[0].Firma) { %>
+                    <img src="../firmas/618818.webp" style="max-width: 150px;" alt="" srcset="">
+                    <% } %>
+                </div>
                 <p><strong>Firma del Responsable de TI</strong></p>
-                <p>Nombre: Ana Martínez Soto</p>
-                <p>Cargo: Gerente de TI</p>
+                <p>Nombre: Oscar Arturo De luna Lujan</p>
+                <p>Cargo: Analista de TI</p>
             </div>
             <div class="signature-box">
-                <div class="signature-line"></div>
+                <div class="signature-line" style="text-align: center;">
+                    <% if (valeasignacion[0].Firma) { %>
+                    <img src="../firmas/<%=valeasignacion[0].Firma%>" style="max-width: 150px;" alt="" srcset="">
+                    <% } %>
+                </div>
                 <p><strong>Firma del Colaborador</strong></p>
-                <p>Nombre: Juan Pérez González</p>
-                <p>Fecha: 3 de marzo de 2025</p>
+                <p>Nombre: <%=valeasignacion[0].nombrelargo%>
+                </p>
+                <p>Fecha: <%=valeasignacion[0].fechaFolio%>
+                </p>
             </div>
         </div>
         <!-- Action Buttons -->
+        <% if (!valeasignacion[0].Firma) { %>
         <div class="action-buttons">
             <button class="btn btn-accept" id="acceptBtn">Aceptar</button>
             <button class="btn btn-reject" id="rejectBtn">Rechazar</button>
         </div>
+        <% } %>
     </div>
-    
+
     <!-- Modal for rejection comments -->
     <div class="modal-overlay" id="rejectModal">
         <div class="modal">
@@ -425,7 +465,8 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="rejectComments">Por favor, indique el motivo del rechazo:</label>
-                    <textarea class="form-control" id="rejectComments" placeholder="Escriba sus comentarios aquí..."></textarea>
+                    <textarea class="form-control" id="rejectComments"
+                        placeholder="Escriba sus comentarios aquí..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -434,7 +475,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Modal for signature -->
     <div class="modal-overlay" id="signatureModal">
         <div class="modal">
@@ -442,6 +483,7 @@
                 <h3 class="modal-title">Firma de Aceptación</h3>
                 <button class="modal-close" id="closeSignatureModal">&times;</button>
             </div>
+            <h4><a href="/admin/generarfirma/<%=valeasignacion[0].numeroEmpleado%>" target="_blank">Si no cuentas con firma haz click aquí</a></h4>
             <div class="modal-body">
                 <!-- <div class="canvas-container">
                     <canvas id="signatureCanvas" width="400" height="200"></canvas>
@@ -449,16 +491,22 @@
                         <button class="btn" id="clearSignature">Limpiar</button>
                     </div>
                 </div> -->
-                <form action="/upload" class="dropzone" id="myDropzone"></form>
-            <canvas id="signatureCanvas" width="400" height="200"></canvas>
+
+                <canvas id="signatureCanvas" width="0" height="0">
+                </canvas>
+                <form action="/admin/subirfirma" class="dropzone" method="post" id="myDropzone"
+                    enctype="multipart/form-data">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                </form>
             </div>
             <div class="modal-footer">
                 <button class="btn" id="cancelSignature">Cancelar</button>
-                <button class="btn btn-accept" id="sendSignature">Enviar</button>
+                <button class="btn btn-accept" id="sendSignature2">Enviar</button>
             </div>
         </div>
     </div>
-    
+    <script src="./../js/valeresguardo.js"></script>
+
     <script>
         // Get DOM elements
         const rejectBtn = document.getElementById('rejectBtn');
@@ -470,20 +518,20 @@
         const cancelReject = document.getElementById('cancelReject');
         const cancelSignature = document.getElementById('cancelSignature');
         const sendReject = document.getElementById('sendReject');
-        const sendSignature = document.getElementById('sendSignature');
+        // const sendSignature = document.getElementById('sendSignature');
         const rejectComments = document.getElementById('rejectComments');
         const signatureCanvas = document.getElementById('signatureCanvas');
         const clearSignature = document.getElementById('clearSignature');
-        
+
         const ctx = signatureCanvas.getContext('2d');
         let isDrawing = false;
-        
+
         // Function to open modal
         function openModal(modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
-        
+
         // Function to close modal
         function closeModal(modal) {
             modal.classList.remove('active');
@@ -494,39 +542,40 @@
                 clearSignatureCanvas();
             }
         }
-        
+
         // Event listeners for reject modal
         rejectBtn.addEventListener('click', () => openModal(rejectModal));
         closeRejectModal.addEventListener('click', () => closeModal(rejectModal));
         cancelReject.addEventListener('click', () => closeModal(rejectModal));
-        
+
         // Event listeners for signature modal
         acceptBtn.addEventListener('click', () => openModal(signatureModal));
         closeSignatureModal.addEventListener('click', () => closeModal(signatureModal));
         cancelSignature.addEventListener('click', () => closeModal(signatureModal));
-        
+
         // Close modals when clicking outside
         [rejectModal, signatureModal].forEach(modal => {
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
                 if (e.target === modal) {
                     closeModal(modal);
                 }
             });
         });
-        
+
         // Handle send rejection button click
-        sendReject.addEventListener('click', function() {
+        sendReject.addEventListener('click', function () {
             const comments = rejectComments.value.trim();
             if (comments === '') {
                 alert('Por favor, indique el motivo del rechazo.');
                 return;
             }
-            
+
             alert('Rechazo enviado con éxito. Comentarios: ' + comments);
             closeModal(rejectModal);
             // Here you would typically send the rejection data to a server
         });
     </script>
-</body>
-</html>
 
+</body>
+
+</html>
