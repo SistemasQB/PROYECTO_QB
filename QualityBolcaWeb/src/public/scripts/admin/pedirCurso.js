@@ -49,7 +49,7 @@ const campo3 = document.getElementById('floatingTextarea')
 }
 
 btnEnviar.addEventListener('click', (e)=>{
-    console.log(typeof datosCurso);
+    // console.log(typeof datosCurso);
     
     e.preventDefault()
     const formData = new FormData(formSolicitarC)

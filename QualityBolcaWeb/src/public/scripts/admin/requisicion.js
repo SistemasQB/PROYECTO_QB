@@ -17,7 +17,7 @@ var vTotal = 0
 
 selDep.addEventListener('change', () => {
     limpiar();
-    console.log('Boton presionado');
+    // console.log('Boton presionado');
     var selectedOption = selDep.selectedIndex;
     switch (selectedOption) {
         case 1:

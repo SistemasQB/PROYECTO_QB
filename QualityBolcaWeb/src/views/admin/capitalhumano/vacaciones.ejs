@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <title>Calendario de Vacaciones</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Añadimos jsPDF para generar PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <style>
@@ -108,13 +110,13 @@ body {
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(8, 1fr); /* Añadimos una columna extra para el botón de PDF */
     gap: 4px;
 }
 
 .calendar-header {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(8, 1fr); /* Añadimos una columna extra para el encabezado de PDF */
     gap: 4px;
     margin-bottom: 8px;
 }
@@ -138,6 +140,25 @@ body {
 .calendar-day.selected {
     background-color: #2563eb;
     color: white;
+}
+
+.pdf-button {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    margin: auto;
+}
+
+.pdf-button:hover {
+    background-color: #dc2626;
 }
 
 .details-button {
@@ -331,11 +352,8 @@ body {
         </div>
     </div>
 
-    <form id="formVacaciones">
-        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-    </form>
     <!-- Modal de detalles -->
-    <!-- <div id="details-modal" class="modal hidden">
+    <div id="details-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-title">Detalles de Vacaciones</h2>
@@ -343,7 +361,7 @@ body {
             </div>
             <div id="modal-body" class="modal-body"></div>
         </div>
-    </div> -->
+    </div>
 
     <!-- Modal para mostrar el array de fechas -->
     <div id="array-modal" class="modal hidden">
@@ -358,6 +376,8 @@ body {
             </div>
         </div>
     </div>
+
+    <script src="script.js"></script>
 </body>
 
 <script>
@@ -434,7 +454,6 @@ const closeModalButton = document.getElementById('close-modal');
 const arrayModal = document.getElementById('array-modal');
 const datesArrayElement = document.getElementById('dates-array');
 const closeArrayModalButton = document.getElementById('close-array-modal');
-const formVacaciones = document.getElementById('formVacaciones');
 
 // Inicializar la aplicación
 document.addEventListener('DOMContentLoaded', () => {
@@ -494,8 +513,10 @@ function renderCalendars() {
                 <div>J</div>
                 <div>V</div>
                 <div>S</div>
+                <div>PDF</div>
             </div>
             <div class="calendar-grid" id="grid-${monthName}-${year}"></div>
+            <button class="details-button" data-month="${month}">Ver detalles</button>
         `;
 
         calendarContainer.appendChild(calendarMonth);
@@ -517,11 +538,21 @@ function generateCalendarGrid(monthName, monthIndex, year) {
     let firstDayOfWeek = firstDay.getDay() - 1;
     if (firstDayOfWeek === -1) firstDayOfWeek = 6; // Si es domingo (0), convertir a 6
 
+    let currentWeek = [];
+    let weekNumber = 0;
+    let currentRow = document.createElement('div');
+    currentRow.className = 'calendar-week';
+    currentRow.style.display = 'contents';
+    currentRow.dataset.weekNumber = weekNumber;
+    currentRow.dataset.month = monthName;
+    currentRow.dataset.year = year;
+
     // Agregar días vacíos al principio
     for (let i = 0; i < firstDayOfWeek; i++) {
         const emptyDay = document.createElement('div');
         emptyDay.className = 'calendar-day empty';
-        gridElement.appendChild(emptyDay);
+        currentRow.appendChild(emptyDay);
+        currentWeek.push(null);
     }
 
     // Agregar los días del mes
@@ -542,8 +573,134 @@ function generateCalendarGrid(monthName, monthIndex, year) {
         // Agregar evento de clic
         dayElement.addEventListener('click', () => handleDateClick(day, monthName, year));
 
-        gridElement.appendChild(dayElement);
+        currentRow.appendChild(dayElement);
+        currentWeek.push(day);
+
+        // Si es sábado o el último día del mes, añadir botón de PDF y comenzar nueva semana
+        if ((currentWeek.length === 7) || (day === daysInMonth)) {
+            // Añadir botón de PDF para esta semana
+            const pdfButton = document.createElement('button');
+            pdfButton.className = 'pdf-button';
+            pdfButton.innerHTML = 'PDF';
+            pdfButton.dataset.weekNumber = weekNumber;
+            pdfButton.dataset.month = monthName;
+            pdfButton.dataset.year = year;
+            pdfButton.dataset.startDay = currentWeek.filter(d => d !== null)[0];
+            pdfButton.dataset.endDay = currentWeek.filter(d => d !== null).pop();
+            
+            pdfButton.addEventListener('click', () => {
+                generateWeeklyPDF(
+                    currentWeek.filter(d => d !== null),
+                    monthName,
+                    year,
+                    weekNumber
+                );
+            });
+            
+            currentRow.appendChild(pdfButton);
+            
+            // Añadir la fila actual al grid
+            gridElement.appendChild(currentRow);
+            
+            // Preparar para la siguiente semana
+            currentWeek = [];
+            weekNumber++;
+            
+            if (day < daysInMonth) {
+                currentRow = document.createElement('div');
+                currentRow.className = 'calendar-week';
+                currentRow.style.display = 'contents';
+                currentRow.dataset.weekNumber = weekNumber;
+                currentRow.dataset.month = monthName;
+                currentRow.dataset.year = year;
+            }
+        }
     }
+
+    // Si la última semana no está completa, añadir celdas vacías
+    if (currentWeek.length > 0 && currentWeek.length < 7) {
+        const remainingDays = 7 - currentWeek.length;
+        for (let i = 0; i < remainingDays; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day empty';
+            currentRow.appendChild(emptyDay);
+        }
+    }
+}
+
+// Función para generar PDF de la semana
+function generateWeeklyPDF(days, monthName, year, weekNumber) {
+    // Importar jsPDF desde la variable global
+    const { jsPDF } = window.jspdf;
+    
+    // Crear un nuevo documento PDF
+    const doc = new jsPDF();
+    
+    // Título del documento
+    doc.setFontSize(18);
+    doc.text(`Vacaciones: Semana ${weekNumber + 1} de ${monthName} ${year}`, 14, 20);
+    
+    // Subtítulo con el rango de días
+    doc.setFontSize(12);
+    doc.text(`Días: ${days[0]} al ${days[days.length - 1]} de ${monthName}`, 14, 30);
+    
+    // Buscar colaboradores que tienen vacaciones en esta semana
+    const colaboradoresEnSemana = getColaboradoresEnSemana(days, monthName, year);
+    
+    if (colaboradoresEnSemana.length === 0) {
+        doc.text("No hay solicitudes de vacaciones para esta semana.", 14, 40);
+    } else {
+        // Crear tabla con los datos
+        const tableColumn = ["Nombre", "Días solicitados"];
+        const tableRows = [];
+        
+        colaboradoresEnSemana.forEach(colaborador => {
+            tableRows.push([
+                colaborador.nombre,
+                colaborador.diasEnSemana.join(", ")
+            ]);
+        });
+        
+        // Generar la tabla
+        doc.autoTable({
+            startY: 40,
+            head: [tableColumn],
+            body: tableRows,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [37, 99, 235],
+                textColor: 255,
+                fontStyle: 'bold'
+            },
+            styles: {
+                fontSize: 10,
+                cellPadding: 3
+            }
+        });
+    }
+    
+    // Guardar el PDF
+    doc.save(`vacaciones_semana_${weekNumber + 1}_${monthName}_${year}.pdf`);
+}
+
+// Función para obtener colaboradores con vacaciones en una semana específica
+function getColaboradoresEnSemana(days, monthName, year) {
+    const monthData = colaboradores[`${monthName} ${year}`] || [];
+    const colaboradoresEnSemana = [];
+    
+    monthData.forEach(colaborador => {
+        // Filtrar los días que están en la semana actual
+        const diasEnSemana = colaborador.dias.filter(dia => days.includes(parseInt(dia)));
+        
+        if (diasEnSemana.length > 0) {
+            colaboradoresEnSemana.push({
+                nombre: colaborador.nombre,
+                diasEnSemana: diasEnSemana
+            });
+        }
+    });
+    
+    return colaboradoresEnSemana;
 }
 
 // Función para manejar el clic en una fecha
@@ -647,17 +804,17 @@ function setupEventListeners() {
     });
 
     // Event delegation para los botones de ver detalles
-    // calendarContainer.addEventListener('click', (e) => {
-    //     if (e.target.classList.contains('details-button')) {
-    //         const month = e.target.dataset.month;
-    //         showDetailsModal(month);
-    //     }
-    // });
+    calendarContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('details-button')) {
+            const month = e.target.dataset.month;
+            showDetailsModal(month);
+        }
+    });
 
     // Cerrar modal de detalles
-    // closeModalButton.addEventListener('click', () => {
-    //     detailsModal.classList.add('hidden');
-    // });
+    closeModalButton.addEventListener('click', () => {
+        detailsModal.classList.add('hidden');
+    });
 
     // Cerrar modal de array
     closeArrayModalButton.addEventListener('click', () => {
@@ -665,55 +822,8 @@ function setupEventListeners() {
     });
 
     // Botón de enviar solicitud
-    submitButton.addEventListener('click', (e) => {
-        // showArrayModal();
-
-        e.preventDefault();
-
-        diasSolicitados = JSON.stringify(selectedDatesArray)
-        let resultado = diasSolicitados.replace(/[\[\]"]/g, '');
-
-        const formData = new FormData(formVacaciones)
-        
-        formData.append('dias', resultado);
-        const urlEncoded = new URLSearchParams(formData).toString();
-        // console.log(urlEncoded);
-
-        fetch(`vacaciones`, {
-            method: 'POST',
-            body: urlEncoded,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }
-        })
-            .then(response => response.json())
-            .then(res => {
-                console.log(res);
-                if (res.ok) {
-                    Swal.fire({
-                        title: res.msg,
-                        text: "Vacaciones enviadas",
-                        icon: "success",
-                        allowOutsideClick: false,
-                        button: "OK"
-                    }).then((value) => {
-                        if (value) {
-                            window.location.href = "vacaciones"
-                        }
-                    });;
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        icon: "error",
-                        text: res.msg,
-                        allowOutsideClick: false,
-                        button: "OK"
-                    });
-                }
-            })
-
-
-
+    submitButton.addEventListener('click', () => {
+        showArrayModal();
     });
 
     // Cerrar modales al hacer clic fuera de ellos
@@ -756,7 +866,5 @@ function showArrayModal() {
     datesArrayElement.textContent = JSON.stringify(selectedDatesArray, null, 2);
     arrayModal.classList.remove('hidden');
 }
-
-
 </script>
 </html>

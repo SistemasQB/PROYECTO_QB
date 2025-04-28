@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Mantenimiento Autónomo</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     /* Estilos generales */
     * {
@@ -48,7 +50,7 @@
     .logo-title {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1.75rem;
     }
 
     .logo {
@@ -57,7 +59,7 @@
     }
 
     .title {
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 700;
     }
 
@@ -98,7 +100,9 @@
       font-weight: 500;
     }
 
-    input, button {
+    input,
+    button,
+    select {
       width: 100%;
       padding: 0.75rem;
       border: 1px solid #cbd5e1;
@@ -134,7 +138,8 @@
       }
     }
 
-    .checklist-item {
+    .checklist-item,
+    textarea {
       display: flex;
       align-items: flex-start;
       gap: 0.5rem;
@@ -144,7 +149,8 @@
       transition: background-color 0.2s;
     }
 
-    .checklist-item:hover {
+    .checklist-item:hover,
+    textarea:hover {
       background-color: #f8fafc;
     }
 
@@ -317,24 +323,21 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="card">
       <div class="card-header">
         <div class="header-content">
           <div class="logo-title">
-            <svg class="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 30C20 25.5817 23.5817 22 28 22H72C76.4183 22 80 25.5817 80 30V70C80 74.4183 76.4183 78 72 78H28C23.5817 78 20 74.4183 20 70V30Z" fill="#0078D4"/>
-              <path d="M35 40C35 37.7909 36.7909 36 39 36H61C63.2091 36 65 37.7909 65 40V60C65 62.2091 63.2091 64 61 64H39C36.7909 64 35 62.2091 35 60V40Z" fill="white"/>
-              <path d="M30 50L45 65L70 40" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <img src="../img/Quality-BOLCA.png" style="width: 15%; height: 15%;" alt="" srcset="">
             <h1 class="title">REGISTRO DE MANTENIMIENTO AUTÓNOMO</h1>
-          </div>
-          <div class="document-info">
-            <div>Código: QS-FR-A-16-01</div>
-            <div>Rev.: 00</div>
-            <div>Fecha de emisión: 10-04-2023</div>
-            <div>Fecha de revisión: N/A</div>
+            <div class="document-info">
+              <div>Código: QS-FR-A-16-01</div>
+              <div>Rev.: 00</div>
+              <div>Fecha de emisión: 10-04-2023</div>
+              <div>Fecha de revisión: N/A</div>
+            </div>
           </div>
         </div>
       </div>
@@ -344,7 +347,8 @@
             <label for="date">Fecha:</label>
             <div class="date-picker">
               <div class="date-input" id="dateInput">
-                <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
                   <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -355,13 +359,15 @@
               <div class="calendar" id="calendar">
                 <div class="calendar-header">
                   <button class="calendar-nav" id="prevMonth">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
                   </button>
                   <div class="calendar-month" id="currentMonth">Abril 2023</div>
                   <button class="calendar-nav" id="nextMonth">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                   </button>
@@ -382,80 +388,95 @@
           </div>
           <div class="form-field">
             <label for="name">Nombre quien realiza:</label>
-            <input type="text" id="name" placeholder="Ingrese su nombre completo">
+            <h3 id="nameH3">
+              <%= obtenerNombre.nombrelargo %>
+            </h3>
+            <!-- <input type="text" id="name" placeholder="Ingrese su nombre completo"> -->
           </div>
         </div>
 
         <div class="form-group">
           <label for="equipment">Tipo de Equipo:</label>
-          <input type="text" id="equipment" placeholder="Ingrese el tipo de equipo">
+          <!-- <input type="text" id="equipment" placeholder="Ingrese el tipo de equipo"> -->
+          <select name="tipo" id="tipoequipo">
+            <option value="laptop">Laptop</option>
+            <option value="Escritorio">Escritorio</option>
+          </select>
         </div>
 
         <div class="form-group">
           <div class="checklist-header">Checklist</div>
           <div class="checklist-grid">
             <div class="checklist-item">
-              <div class="checkbox" data-id="speakers" onclick="toggleCheckbox(this)"></div>
-              <label class="checkbox-label" onclick="toggleCheckbox(document.querySelector('[data-id=\'speakers\']'))">
+              <div class="checkbox" data-id="speakers" onclick="arrayChecks(0)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(0)">
                 Funcionamiento de altavoces
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="usb" onclick="toggleCheckbox(this)"></div>
-              <label class="checkbox-label" onclick="toggleCheckbox(document.querySelector('[data-id=\'usb\']'))">
+              <div class="checkbox" data-id="usb" onclick="arrayChecks(1)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(1)">
                 Funcionamiento puertos USB
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="network" onclick="toggleCheckbox(this)"></div>
-              <label class="checkbox-label" onclick="toggleCheckbox(document.querySelector('[data-id=\'network\']'))">
+              <div class="checkbox" data-id="network" onclick="arrayChecks(2)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(2)">
                 Funcionamiento adaptador de red
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="cleaning" onclick="toggleCheckbox(this)"></div>
-              <label class="checkbox-label" onclick="toggleCheckbox(document.querySelector('[data-id=\'cleaning\']'))">
+              <div class="checkbox" data-id="cleaning" onclick="arrayChecks(3)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(3)">
                 Limpieza general del equipo
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="camera" onclick="toggleCheckbox(this)"></div>
-              <label class="checkbox-label" onclick="toggleCheckbox(document.querySelector('[data-id=\'camera\']'))">
+              <div class="checkbox" data-id="camera" onclick="arrayChecks(4)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(4)">
                 Funcionamiento de cámara y micrófono
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="keyboard" onclick="toggleCheckbox(this)"></div>
-              <label class="checkbox-label" onclick="toggleCheckbox(document.querySelector('[data-id=\'keyboard\']'))">
+              <div class="checkbox" data-id="keyboard" onclick="arrayChecks(5)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(5)">
                 Funcionamiento y limpieza de teclado y mouse
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="charger" onclick="toggleCheckbox(this)"></div>
-              <label class="checkbox-label" onclick="toggleCheckbox(document.querySelector('[data-id=\'charger\']'))">
+              <div class="checkbox" data-id="charger" onclick="arrayChecks(6)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(6)">
                 Funcionamiento cargador y centro de carga
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="charger" onclick="toggleCheckbox(this)"></div>
-              <label class="checkbox-label" onclick="toggleCheckbox(document.querySelector('[data-id=\'charger\']'))">
-                Estado de la pantalla
+              <div class="checkbox" id="pantalla" onclick="arrayChecks(7)"></div>
+              <label class="checkbox-label" for="pantalla" onclick="arrayChecks(7)">
+                <!-- onclick="arrayChecks()"" -->
+                Funcionamiento y limpieza de la pantalla
               </label>
             </div>
           </div>
         </div>
+        <form action="" id="formComentarios">
+          <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+          <label for="comentariosText">Comentarios</label>
+          <textarea name="comentarios" id="comentariosText"
+            style="width: 100%; height: 100px; resize: none;"></textarea>
+        </form>
       </div>
       <div class="card-footer">
-        <button class="btn btn-outline">
+        <!-- <button class="btn btn-outline">
           <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 6 2 18 2 18 9"></polyline>
             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
             <rect x="6" y="14" width="12" height="8"></rect>
           </svg>
           Imprimir
-        </button>
+        </button> -->
         <button class="btn btn-primary">
-          <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
@@ -467,137 +488,66 @@
   </div>
 
   <script>
-    // Funcionalidad para los checkboxes
-    function toggleCheckbox(checkbox) {
-      checkbox.classList.toggle('checked');
+  const formComentarios = document.getElementById('formComentarios');    
+  const tipoequipo = document.getElementById('tipoequipo').value;
+  const nameH3 = document.getElementById('nameH3').innerText;
+  // Funcionalidad para los checkboxes
+    const checkboxes = document.querySelectorAll('.checkbox');
+    var arrayChecks2 = [false, false, false, false, false, false, false, false];
+    function arrayChecks(numeroA) {
+      checkboxes[numeroA].classList.toggle('checked');
+      arrayChecks2[numeroA] = !arrayChecks2[numeroA];
+      console.log(arrayChecks2);
+
     }
-
-    // Funcionalidad para el calendario
-    document.addEventListener('DOMContentLoaded', function() {
-      const dateInput = document.getElementById('dateInput');
-      const calendar = document.getElementById('calendar');
-      const calendarGrid = document.getElementById('calendarGrid');
-      const currentMonthElement = document.getElementById('currentMonth');
-      const prevMonthButton = document.getElementById('prevMonth');
-      const nextMonthButton = document.getElementById('nextMonth');
-      const selectedDateElement = document.getElementById('selectedDate');
-      
-      let currentDate = new Date();
-      let selectedDate = new Date();
-      
-      // Nombres de los meses en español
-      const monthNames = [
-        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-      ];
-      
-      // Mostrar/ocultar el calendario al hacer clic en el input
-      dateInput.addEventListener('click', function() {
-        calendar.classList.toggle('show');
-        renderCalendar();
-      });
-      
-      // Cerrar el calendario al hacer clic fuera de él
-      document.addEventListener('click', function(event) {
-        if (!dateInput.contains(event.target) && !calendar.contains(event.target)) {
-          calendar.classList.remove('show');
-        }
-      });
-      
-      // Navegar al mes anterior
-      prevMonthButton.addEventListener('click', function() {
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar();
-      });
-      
-      // Navegar al mes siguiente
-      nextMonthButton.addEventListener('click', function() {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        renderCalendar();
-      });
-      
-      // Renderizar el calendario
-      function renderCalendar() {
-        // Actualizar el título del mes
-        currentMonthElement.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-        
-        // Limpiar los días existentes
-        const dayElements = calendarGrid.querySelectorAll('.calendar-day');
-        dayElements.forEach(day => day.remove());
-        
-        // Obtener el primer día del mes
-        const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        // Obtener el último día del mes
-        const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-        
-        // Ajustar para que la semana comience en lunes (0 = lunes, 6 = domingo)
-        let firstDayIndex = firstDay.getDay() - 1;
-        if (firstDayIndex < 0) firstDayIndex = 6; // Si es domingo (0), convertir a 6
-        
-        // Días del mes anterior
-        for (let i = firstDayIndex; i > 0; i--) {
-          const prevDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1 - i);
-          const dayElement = document.createElement('div');
-          dayElement.classList.add('calendar-day', 'other-month');
-          dayElement.textContent = prevDate.getDate();
-          calendarGrid.appendChild(dayElement);
-        }
-        
-        // Días del mes actual
-        for (let i = 1; i <= lastDay.getDate(); i++) {
-          const dayElement = document.createElement('div');
-          dayElement.classList.add('calendar-day');
-          dayElement.textContent = i;
-          
-          // Marcar el día seleccionado
-          if (
-            selectedDate.getDate() === i &&
-            selectedDate.getMonth() === currentDate.getMonth() &&
-            selectedDate.getFullYear() === currentDate.getFullYear()
-          ) {
-            dayElement.classList.add('selected');
-          }
-          
-          // Seleccionar día al hacer clic
-          dayElement.addEventListener('click', function() {
-            selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
-            selectedDateElement.textContent = formatDate(selectedDate);
-            calendar.classList.remove('show');
-            renderCalendar();
-          });
-          
-          calendarGrid.appendChild(dayElement);
-        }
-        
-        // Calcular cuántos días del mes siguiente necesitamos
-        const daysFromNextMonth = 42 - (firstDayIndex + lastDay.getDate());
-        
-        // Días del mes siguiente
-        for (let i = 1; i <= daysFromNextMonth; i++) {
-          const dayElement = document.createElement('div');
-          dayElement.classList.add('calendar-day', 'other-month');
-          dayElement.textContent = i;
-          calendarGrid.appendChild(dayElement);
-        }
-      }
-      
-      // Formatear fecha como "DD de Mes de YYYY"
-      function formatDate(date) {
-        return `${date.getDate()} de ${monthNames[date.getMonth()]} de ${date.getFullYear()}`;
-      }
-      
-      // Inicializar con la fecha actual
-      selectedDateElement.textContent = formatDate(selectedDate);
-    });
-
     // Funcionalidad para los botones
-    document.querySelector('.btn-primary').addEventListener('click', function() {
-      alert('Formulario guardado correctamente');
+    document.querySelector('.btn-primary').addEventListener('click', function (e) {
+      e.preventDefault();
+      const formData = new FormData(formComentarios)
+      formData.append('respuestas', arrayChecks2);
+      formData.append('tipo', tipoequipo);
+      formData.append('nombre', nameH3);
+      const urlEncoded = new URLSearchParams(formData).toString();
+      //tipoequipo
+
+      fetch(`mantenimientoautonomo`, {
+        method: 'POST',
+        body: urlEncoded,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      })
+        .then(response => response.json())
+        .then(res => {
+          console.log(res);
+          if (res.ok) {
+            Swal.fire({
+              title: res.msg,
+              text: "Mantenimiento enviados",
+              icon: "success",
+              allowOutsideClick: false,
+              button: "OK"
+            }).then((value) => {
+              if (value) {
+                window.location.href = "mantenimientoautonomo"
+              }
+            });;
+          } else {
+            Swal.fire({
+              title: res.msg,
+              icon: "error",
+              text: "Error al enviar el mantenimiento",
+              allowOutsideClick: false,
+              button: "OK"
+            });
+          }
+        })
     });
 
-    document.querySelector('.btn-outline').addEventListener('click', function() {
-      window.print();
-    });
+    // document.querySelector('.btn-outline').addEventListener('click', function() {
+    //   window.print();
+    // });
   </script>
 </body>
+
 </html>

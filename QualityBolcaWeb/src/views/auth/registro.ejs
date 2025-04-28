@@ -27,10 +27,10 @@
                     <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                     <div class="form-group">
                         <label for="codigoempleado">Numero de empleado</label>
-                        <input type="string" id="codigoempleado" name="codigoempleado" placeholder="12345" required>
+                        <input type="text" id="codigoempleado" name="codigoempleado" placeholder="12345" maxlength="5" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">Contraseña</label>
+                        <label for="password">Contraseña (minimo 6 caracteres)</label>
                         <input type="password" id="password" name="password" required>
                     </div>
                     <div class="form-group">
@@ -75,7 +75,7 @@
                 if (res.ok) {
                     Swal.fire({
                         title: res.msg,
-                        text: "Recibiras un correo para validar tu cuenta",
+                        text: "Recibiras un correo a la siguiente dirección: " + res.correo + "para validar tu cuenta",
                         icon: "success",
                         allowOutsideClick: false,
                         button: "OK"

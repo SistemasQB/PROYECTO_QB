@@ -366,10 +366,11 @@
                                                 <span class="detail-value">
                                                     <%= estado2 %>
                                                 </span>
-                                                <span class="detail-label">Accesorios:</span>
-                                                <span class="detail-value">
-                                                    <%=datos.accesorios%>
-                                                </span>
+                        </p>
+                        <p><span class="detail-label">Accesorios:</span>
+                            <span class="detail-value">
+                                <%=datos.accesorios%>
+                            </span>
                         </p>
                     </div>
                     <% } %>
@@ -445,10 +446,12 @@
                     <% if (valeasignacion[0].Firma) { %>
                         <img src="../firmas/<%=valeasignacion[0].Firma%>" style="max-width: 150px;" alt="" srcset="">
                         <% } %>
-                        <% if (valeasignacion[0].comentarios) { %>
-                            <p>Se rechazo por el siguiente motivo:</p>
-                            <p style="color: red;"><%=valeasignacion[0].comentarios%></p>
-                        <% } %>
+                            <% if (valeasignacion[0].comentarios) { %>
+                                <p>Se rechazo por el siguiente motivo:</p>
+                                <p style="color: red;">
+                                    <%=valeasignacion[0].comentarios%>
+                                </p>
+                                <% } %>
                 </div>
                 <p><strong>Firma del Colaborador</strong></p>
                 <p>Nombre: <%=valeasignacion[0].nombrelargo%>
@@ -484,8 +487,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" id="cancelReject">Cancelar</button>
-                    <button type="submit" class="btn btn-danger" id="btnEnviarC">Enviar</button>
+                    <button type="button" class="btn" id="cancelReject">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnEnviarC">Enviar</button>
                 </div>
             </form>
         </div>
@@ -523,32 +526,42 @@
     </div>
     <script src="./../js/valeresguardo.js"></script>
 
-    <script>
-        // Get DOM elements
-        const rejectBtn = document.getElementById('rejectBtn');
-        const acceptBtn = document.getElementById('acceptBtn');
-        const rejectModal = document.getElementById('rejectModal');
-        const signatureModal = document.getElementById('signatureModal');
-        const closeRejectModal = document.getElementById('closeRejectModal');
-        const closeSignatureModal = document.getElementById('closeSignatureModal');
-        const cancelReject = document.getElementById('cancelReject');
-        const cancelSignature = document.getElementById('cancelSignature');
-        const sendReject = document.getElementById('sendReject');
-        // const sendSignature = document.getElementById('sendSignature');
-        const rejectComments = document.getElementById('rejectComments');
-        const signatureCanvas = document.getElementById('signatureCanvas');
-        const clearSignature = document.getElementById('clearSignature');
-        const formComentarios = document.getElementById('formComentarios')
-        const ctx = signatureCanvas.getContext('2d');
-        let isDrawing = false;
 
 
-        formComentarios.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(formComentarios)
-            const urlEncoded = new URLSearchParams(formData).toString();
-            console.log(urlEncoded);
+</body>
 
+<script>
+    // Get DOM elements
+    const rejectBtn = document.getElementById('rejectBtn');
+    const acceptBtn = document.getElementById('acceptBtn');
+    const rejectModal = document.getElementById('rejectModal');
+    const signatureModal = document.getElementById('signatureModal');
+    const closeRejectModal = document.getElementById('closeRejectModal');
+    const closeSignatureModal = document.getElementById('closeSignatureModal');
+    const cancelReject = document.getElementById('cancelReject');
+    const cancelSignature = document.getElementById('cancelSignature');
+    const sendReject = document.getElementById('sendReject');
+    // const sendSignature = document.getElementById('sendSignature');
+    const rejectComments = document.getElementById('rejectComments');
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    const clearSignature = document.getElementById('clearSignature');
+    const formComentarios = document.getElementById('formComentarios')
+    const btnEnviarC = document.getElementById('btnEnviarC')
+    const ctx = signatureCanvas.getContext('2d');
+    let isDrawing = false;
+
+
+    btnEnviarC.addEventListener('click', function (e) {
+        e.preventDefault();
+        const formData = new FormData(formComentarios)
+        const urlEncoded = new URLSearchParams(formData).toString();
+        // console.log(urlEncoded);
+
+        const comments = rejectComments.value.trim();
+        if (comments === '') {
+            alert('Por favor, indique el motivo del rechazo.');
+            return;
+        } else {
             fetch(`valeresguardo`, {
                 method: 'POST',
                 body: urlEncoded,
@@ -581,59 +594,57 @@
                         });
                     }
                 })
-        });
-
-
-        // Function to open modal
-        function openModal(modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
         }
+    });
 
-        // Function to close modal
-        function closeModal(modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            if (modal === rejectModal) {
-                rejectComments.value = '';
-            } else if (modal === signatureModal) {
-                clearSignatureCanvas();
-            }
+
+    // Function to open modal
+    function openModal(modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Function to close modal
+    function closeModal(modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        if (modal === rejectModal) {
+            rejectComments.value = '';
+        } else if (modal === signatureModal) {
+            clearSignatureCanvas();
         }
+    }
 
-        // Event listeners for reject modal
-        rejectBtn.addEventListener('click', () => openModal(rejectModal));
-        closeRejectModal.addEventListener('click', () => closeModal(rejectModal));
-        cancelReject.addEventListener('click', () => closeModal(rejectModal));
+    // Event listeners for reject modal
+    rejectBtn.addEventListener('click', () => openModal(rejectModal));
+    closeRejectModal.addEventListener('click', () => closeModal(rejectModal));
+    cancelReject.addEventListener('click', () => closeModal(rejectModal));
 
-        // Event listeners for signature modal
-        acceptBtn.addEventListener('click', () => openModal(signatureModal));
-        closeSignatureModal.addEventListener('click', () => closeModal(signatureModal));
-        cancelSignature.addEventListener('click', () => closeModal(signatureModal));
+    // Event listeners for signature modal
+    acceptBtn.addEventListener('click', () => openModal(signatureModal));
+    closeSignatureModal.addEventListener('click', () => closeModal(signatureModal));
+    cancelSignature.addEventListener('click', () => closeModal(signatureModal));
 
-        // Close modals when clicking outside
-        [rejectModal, signatureModal].forEach(modal => {
-            modal.addEventListener('click', function (e) {
-                if (e.target === modal) {
-                    closeModal(modal);
-                }
-            });
-        });
-
-        // Handle send rejection button click
-        sendReject.addEventListener('click', function () {
-            const comments = rejectComments.value.trim();
-            if (comments === '') {
-                alert('Por favor, indique el motivo del rechazo.');
-                return;
+    // Close modals when clicking outside
+    [rejectModal, signatureModal].forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                closeModal(modal);
             }
-
-            alert('Rechazo enviado con éxito. Comentarios: ' + comments);
-            closeModal(rejectModal);
-            // Here you would typically send the rejection data to a server
         });
-    </script>
+    });
 
-</body>
+    // Handle send rejection button click
+    // sendReject.addEventListener('click', function () {
+    //     const comments = rejectComments.value.trim();
+    //     if (comments === '') {
+    //         alert('Por favor, indique el motivo del rechazo.');
+    //         return;
+    //     }
+
+    //     alert('Rechazo enviado con éxito. Comentarios: ' + comments);
+    //     closeModal(rejectModal);
+    // });
+</script>
 
 </html>

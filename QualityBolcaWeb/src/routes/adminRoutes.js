@@ -13,7 +13,7 @@ router.post('/requisicion', adminController.requisicion2);
 router.post('/requisicionImg', upload.single('imagen'));
 // router.post('/requisicionImg', adminController.requisicion3);
 router.get('/requisicionA', adminController.requisicionA);
-router.get('/directorio', adminController.directorio);
+router.get('/directorio',protegetRuta ,adminController.directorio);
 router.post('/requisicionA', adminController.requisicionA2);
 router.get('/cursos', adminController.cursos);
 router.post('/cursos', adminController.cursos2);
@@ -25,8 +25,8 @@ router.get('/pedirCurso', adminController.pedirCurso);
 router.post('/pedirCurso', adminController.pedirCurso2);
 router.get('/solicitudesCursos', adminController.solicitudesCursos);
 router.post('/solicitudesCursos', adminController.solicitudesCursos2);
-router.get('/vacaciones', adminController.vacaciones);
-router.post('/vacaciones', adminController.vacaciones2);
+router.get('/vacaciones',protegetRuta, adminController.vacaciones);
+router.post('/vacaciones', protegetRuta, adminController.vacaciones2);
 router.get('/registroma', protegetRuta, adminController.registroma);
 router.post('/registroma', protegetRuta, adminController.registroma2);
 router.get('/mapa', adminController.mapa);
@@ -44,7 +44,12 @@ router.get('/valeresguardo',protegetRuta, adminController.valeresguardo);
 router.post('/valeresguardo', protegetRuta, adminController.valeresguardo3);
 router.post('/subirfirma',protegetRuta, upload2.single('firmaFile'),adminController.valeresguardo2);
 router.get('/generarfirma/:codigo', adminController.generarfirma);
-router.get('/mantenimientoautonomo', adminController.mantenimientoautonomo);
+router.get('/mantenimientoautonomo', protegetRuta, adminController.mantenimientoautonomo);
+router.post('/mantenimientoautonomo', protegetRuta, adminController.mantenimientoautonomo2);
+router.get('/buzonquejas',protegetRuta ,adminController.buzonquejas);
+router.post('/buzonquejas',protegetRuta ,adminController.buzonquejas2);
+router.get('/publicarEvento',protegetRuta ,adminController.publicarEvento);
+router.post('/publicarEvento',protegetRuta ,adminController.publicarEvento2);
 
 
 

@@ -30,12 +30,14 @@ import {
     RegistroCursos,
     Comunicacion,
     Usuario,
-    Gch_Alta,
+    // Gch_Alta,
     informaciongch,
     informacionpuesto,
     Glosario,
     Vales,
-    Inventario
+    Inventario,
+    BuzonQuejas,
+    Vacaciones
 } from "../models/index.js";
 // import InformacionpuestoM from "../models/informacionpuesto.js"
 
@@ -49,6 +51,7 @@ import { emailRequisicion, registroCursos } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
+import RegistroMa from "../models/registroma.js";
 
 // Comunicacion.belongsTo(Gch_alta, { foreignKey: 'id', targetKey: 'curp'  });
 // Gch_alta.hasOne(Comunicacion, { foreignKey: 'curp', targetKey: 'id'  })
@@ -73,46 +76,24 @@ controller.crear = (req, res) => {
 }
 
 controller.directorio = async (req, res) => {
-    let vCrup;
-
-    const bGch_alta = await informaciongch.findAll({
-        attributes: ['idpuesto', 'nombre', 'apellidopaterno', 'apellidomaterno', 'fechanacimiento', 'fechaalta', 'sexo', 'numerosegurosocial', 'codigoempleado'],
-        where: {
-            [Op.or]:
-                [
-                    {
-                        fechaalta: { [Op.gt]: Sequelize.col('fechabaja') }
-                    },
-                    {
-                        fechareingreso: { [Op.gt]: Sequelize.col('fechabaja') }
-                    },
-                ],
-            [Op.and]:
-                [
-                    {
-                        idpuesto: { [Op.ne]: 45 },
-                    }
-                ]
-        },
+    let Rcomunicacion2;
 
 
-        include: [{
-            model: informacionpuesto,
-            attributes: ['descripcion'],
-            on: {
-                idpuesto: Sequelize.where(Sequelize.col('nom10001.idpuesto'), '=', Sequelize.col('nom10006.idpuesto'))
-            }
-        }],
-        order: [[Sequelize.literal('nombre'), 'ASC']],
-    }
-    )
-        .then(resultado => {
-            vCrup = resultado
-        });
-
+    const Rcomunicacion = await db.query(
+        `SELECT c.*, n1.nombrelargo, n6.descripcion
+         FROM comunicacions c
+         INNER JOIN nom10001 n1 ON c.id = n1.codigoempleado
+         INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+         order by nombrelargo asc;`,
+        {
+            type: QueryTypes.SELECT // Tipo de consulta: SELECT
+        }
+    ).then((resultados) => {
+        Rcomunicacion2 = resultados;
+    });
 
     res.render('admin/directorio', {
-        vCrup
+        Rcomunicacion2
     })
 }
 
@@ -384,11 +365,30 @@ controller.registroma2 = async (req, res) => {
 }
 
 controller.vacaciones = (req, res) => {
-    res.render('admin/vacaciones')
+    res.render('admin/vacaciones',{
+        csrfToken: req.csrfToken()
+    })
 }
 
-controller.vacaciones2 = (req, res) => {
-    res.render('admin/vacaciones')
+controller.vacaciones2 = async(req, res) => {
+
+    const { codigoempleado } = req.usuario
+    
+    const { dias } = req.body
+
+    try {
+        // BuzonQuejas.comentarios = comentarios
+        await Vacaciones.create({ dias: dias, numeroEmpleado: codigoempleado})
+        // next()
+        res.status(200).send({ msg: 'Enviado', ok: true });
+        return
+    } catch (error) {
+        res.status(400).send({ msg: error, ok: false });
+        // console.log(error);
+        
+        return
+    }
+
 }
 
 controller.voz = (req, res) => {
@@ -553,8 +553,80 @@ controller.generarfirma = (req, res) => {
     })
 }
 
-controller.mantenimientoautonomo = (req, res) => {
-    res.render('admin/mantenimientoautonomo')
+controller.mantenimientoautonomo =  async(req, res) => {
+
+    const { codigoempleado } = req.usuario
+
+    const obtenerNombre = await informaciongch.findOne({  attributes: ['nombrelargo'], where: { codigoempleado: codigoempleado } });
+    // console.log(req.usuario);
+
+    res.render('admin/mantenimientoautonomo',{
+        csrfToken: req.csrfToken(),
+        obtenerNombre
+    })
 }
+
+controller.mantenimientoautonomo2 = async(req, res) => {
+
+
+    const { nombre, tipo, respuestas, comentarios } = req.body
+
+    try {
+        // BuzonQuejas.comentarios = comentarios
+        await registroma.create({  nombre, tipo, respuestas, comentarios })
+        // next()
+        res.status(200).send({ msg: 'Mantenimiento enviada', ok: true });
+        return
+    } catch (error) {
+        res.status(400).send({ msg: error, ok: false });
+        // console.log(error);
+        
+        return
+    }
+}
+
+controller.buzonquejas = (req, res) => {
+    res.render('admin/buzonquejas',{
+        csrfToken: req.csrfToken()
+    })
+}
+
+controller.buzonquejas2 = async (req, res) => {
+    
+    const { codigoempleado } = req.usuario
+
+    const { fechaIncidente, descripcion, region } = req.body
+
+    console.log(req.body);
+    
+
+    const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } });
+
+    // console.log(obtenerFolio, req.file.filename);
+
+    try {
+        // BuzonQuejas.comentarios = comentarios
+        await BuzonQuejas.create({ nombreEmpleado: obtenerNombre.nombrelargo, fechaIncidente, descripcion, region })
+        // next()
+        res.status(200).send({ msg: 'Queja enviada', ok: true });
+        return
+    } catch (error) {
+        res.status(400).send({ msg: error, ok: false });
+        // console.log(error);
+        
+        return
+    }
+
+
+}
+
+controller.publicarEvento = (req, res) => {
+    res.render('admin/publicarevento')
+}
+
+controller.publicarEvento2 = (req, res) => {
+    res.render('admin/publicarevento')
+}
+
 
 export default controller;

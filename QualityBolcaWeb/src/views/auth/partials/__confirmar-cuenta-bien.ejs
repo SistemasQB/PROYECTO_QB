@@ -3,24 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./../styles/pina.css">
+    <!-- <script src="https://unpkg.com/lucide@latest"></script> -->
+    <title>Cuenta confirmada</title>
 </head>
 <body>
-    <div class="pineapple">
-        <div class="leaf middle"></div>
-        <div class="leaf left"></div>
-        <div class="leaf right"></div>
-        <div class="shadow"></div>
-        <div class="body">
-          <div class="eye left"></div>
-          <div class="eye right"></div>
-          <div class="mouth"></div>
-          <div class="arm left"></div>
-          <div class="arm right"></div>
-          <div class="leg left"></div>
-          <div class="leg right"></div>
+    <div class="container">
+        <div class="logo-container">
+            <img src="../img/Quality-BOLCA.png" alt="Quality BOLCA Logo" class="logo">
         </div>
-      </div>
+        <header>
+            <h1>cuenta confirmada con exito</h1>
+            <a href="/login">Iniciar sesion</a>
+        </header>
+    </div>
 </body>
 </html>
+
+<style>
+    :root {
+    --primary-color: #0099dd; /* Adjusted to match logo blue */
+    --secondary-color: #50e3c2;
+    --accent-color: #f5a623;
+    --background-color: #f0f4f8;
+    --card-color: #ffffff;
+    --text-color: #333333;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo {
+    max-width: 200px;
+    height: auto;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+
+
+@media (max-width: 768px) {
+    .logo {
+        max-width: 150px;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+
+</style>

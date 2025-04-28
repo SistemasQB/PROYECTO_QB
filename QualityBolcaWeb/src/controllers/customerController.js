@@ -25,7 +25,7 @@ import {
     RegistroCursos,
     Comunicacion,
     Usuario,
-    Gch_Alta,
+    // Gch_Alta,
     informaciongch,
     informacionpuesto,
     Glosario
@@ -246,7 +246,7 @@ controller.registrar = async (req, res) => {
         return
     }
 
-    console.log('nose2', codigoempleado);
+    // console.log('nose2', codigoempleado);
     //Verificar que el usuario existe
     const existeUsuario = await Usuario.findOne({ where: { codigoempleado } })
     console.log(existeUsuario);
@@ -278,7 +278,7 @@ controller.registrar = async (req, res) => {
 
     //Mostrando al usuario que confirme correo
 
-    res.status(200).send({ ok: true });
+    res.status(200).send({ ok: true, correo:gchUsuario.CorreoElectronico });
     return
 
 }
@@ -494,21 +494,23 @@ controller.asistencia = async (req, res) => {
 }
 
 controller.asistencia2 = async (req, res) => {
-    const { plantaA } = req.params
-    const planta = await Listas.findAll();
-    const resultadoPlanta = JSON.parse(JSON.stringify(planta, null, 2));
-    const gch_alta = await Gch_Alta.findAll({
-        // atributes: ['id', 'apellidoPaterno', 'apellidoMaterno', 'nombre', 'planta'],
-        where: {
-            planta: plantaA,
-        },
-    });
-    const resultadoGch = JSON.parse(JSON.stringify(gch_alta, null, 2));
+    // const { plantaA } = req.params
+    // const planta = await Listas.findAll();
+    // const resultadoPlanta = JSON.parse(JSON.stringify(planta, null, 2));
+    // const gch_alta = await Gch_Alta.findAll({
+    //     // atributes: ['id', 'apellidoPaterno', 'apellidoMaterno', 'nombre', 'planta'],
+    //     where: {
+    //         planta: plantaA,
+    //     },
+    // });
+    // const resultadoGch = JSON.parse(JSON.stringify(gch_alta, null, 2));
 
-    res.render('todos/asistencia', {
-        resultadoGch,
-        resultadoPlanta
-    })
+    // res.render('todos/asistencia', {
+    //     resultadoGch,
+    //     resultadoPlanta
+    // })
+
+    res.send('sin terminar asistencia')
 }
 
 controller.asistencia3 = (req, res) => {
@@ -698,13 +700,15 @@ controller.uploads = (req, res) => {
 }
 
 controller.paginaDirectorio = async (req, res) => {
-    const directorio = await Gch_Alta.findAll({
-        attributes: ['NOMBRE', 'PUESTO', 'REGION']
-    });
-    const resultadoGch = JSON.parse(JSON.stringify(directorio, null, 2));
-    res.render('auth/directorio', {
-        resultadoGch
-    })
+    // const directorio = await Gch_Alta.findAll({
+    //     attributes: ['NOMBRE', 'PUESTO', 'REGION']
+    // });
+    // const resultadoGch = JSON.parse(JSON.stringify(directorio, null, 2));
+    // res.render('auth/directorio', {
+    //     resultadoGch
+    // })
+
+    res.send('sin terminar directorio')
 }
 
 controller.paginaMantenimiento = (req, res) => {

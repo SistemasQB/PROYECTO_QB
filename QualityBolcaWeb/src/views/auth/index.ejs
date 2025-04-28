@@ -16,17 +16,20 @@
             <p>Elige una categoría para comenzar tus actividades diarias de trabajo</p>
         </header>
         <main class="grid">
-            <a href="/admin/vacaciones" class="card">
+            <a href="/admin/vacaciones" class="card"style="pointer-events: none;">
                 <i data-lucide="briefcase"></i>
                 <h2>Vacaciones</h2>
+                <p class="carddisable">Proximamente</p>
             </a>
-            <a href="/admin/requisicion" class="card">
+            <a href="/admin/requisicion" class="card" style="pointer-events: none;">
                 <i data-lucide="file-text"></i>
                 <h2>Requisiciones</h2>
+                <p class="carddisable">Proximamente</p>
             </a>
-            <a href="/admin/cursos" class="card">
+            <a href="/admin/cursos" class="card"style="pointer-events: none;">
                 <i data-lucide="users"></i>
                 <h2>Cursos</h2>
+                <p class="carddisable">Proximamente</p>
             </a>
             <a href="/documentosControlados" class="card">
                 <i data-lucide="calendar"></i>
@@ -40,25 +43,34 @@
                 <i data-lucide="settings"></i>
                 <h2>Buzon de Quejas</h2>
             </a>
-            <a href="admin/mejoracontinua" class="card">
+            <a href="admin/mejoracontinua" class="card"style="pointer-events: none;">
                 <i data-lucide="circle-fading-arrow-up"></i>
                 <h2>Mejora Continua</h2>
+                <p class="carddisable">Proximamente</p>
             </a>
-            <a href="admin/reuniones" class="card">
+            <a href="admin/reuniones" class="card"style="pointer-events: none;">
                 <i data-lucide="presentation"></i>
                 <h2>Reuniones</h2>
+                <p class="carddisable">Proximamente</p>
             </a>
-            <a href="admin/glosario" class="card">
+            <a href="admin/glosario" class="card"style="pointer-events: none;">
                 <i data-lucide="book-a"></i>
                 <h2>Glosario</h2>
+                <p class="carddisable">Proximamente</p>
             </a>
-            <a href="admin/organigrama" class="card">
+            <a href="admin/organigrama" class="card" style="pointer-events: none;">
                 <i data-lucide="user-search"></i>
                 <h2>Organigrama</h2>
+                <p class="carddisable">Proximamente</p>
             </a>
             <a href="admin/valeResguardo" class="card">
                 <i data-lucide="laptop-minimal-check"></i>
                 <h2>Vale de resguardo</h2>
+            </a>
+            <a href="admin/publicarEvento" class="card" style="pointer-events: none;">
+                <i data-lucide="calendar-1"></i>
+                <h2>Publicar Evento</h2>
+                <p class="carddisable">Proximamente</p>
             </a>
         </main>
     </div>
@@ -161,6 +173,15 @@ header p {
 .card h2 {
     margin: 0;
     font-size: 1.25rem;
+}
+
+.carddisable {
+    /* transform: rotate(330deg); */
+    /* position: absolute; */
+    /* text-align: center; */
+    /* font-size: 150%; */
+    margin: 0;
+    background-color: #f5a623;
 }
 
 @media (max-width: 768px) {

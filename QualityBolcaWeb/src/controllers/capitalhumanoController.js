@@ -4,8 +4,9 @@ import express from "express";
 import {
     informaciongch,
     informacionpuesto,
+    BuzonQuejas
 } from "../models/index.js";
-import Sequelize from 'sequelize'
+import Sequelize, { where } from 'sequelize'
 import { Op } from 'sequelize'
 
 
@@ -116,6 +117,57 @@ controller.subirfoto2 = async (req, res, next) => {
     // res.render('admin/capitalhumano/subirfoto',{
     //     csrfToken: req.csrfToken()
     // })
+}
+
+controller.buzonquejas = async (req, res) => {
+    const resultadoQuejas = await BuzonQuejas.findAll();
+    const resultadoQuejas2 = JSON.stringify(resultadoQuejas, null, 2);
+
+    res.render('admin/capitalhumano/buzonQuejas', {
+        csrfToken: req.csrfToken(),
+        resultadoQuejas,
+        resultadoQuejas2
+    })
+}
+
+controller.buzonquejas2 = async (req, res, next) => {
+    const { acciones, idQR } = req.body
+    const informacionR = await BuzonQuejas.findOne( { where: { id: idQR } })
+
+    // console.log(informacionR);
+
+    try {
+        // console.log('nombre de la imagen', req.file.filename);
+
+        //almacenar el pdf
+        informacionR.estado = 'Resuelta'
+        informacionR.acciones = acciones
+        await informacionR.save();
+        // next()
+        res.status(200).send({ msg: 'Acciones enviadas', ok: true });
+        return
+    } catch (error) {
+        res.status(400).send({ msg: 'Acciones no enviadas', ok: false });
+        return
+    }
+
+    // res.render('admin/capitalhumano/subirfoto',{
+    //     csrfToken: req.csrfToken()
+    // })
+}
+
+controller.vacaciones = async (req, res) => {
+    res.render('admin/capitalhumano/vacaciones')
+}
+
+controller.altagch = async (req, res) => {
+
+    
+
+
+    res.render('admin/capitalhumano/altagch',{
+        csrfToken: req.csrfToken()
+    })
 }
 
 export default controller;

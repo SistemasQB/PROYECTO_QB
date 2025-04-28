@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <title>Lista de Quejas - Buzón de Quejas</title>
+    <style>
+        /* Estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 3rem 1rem;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+
+        /* Cabecera */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            height: 96px;
+            width: auto;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .title {
+            margin-top: 1.5rem;
+            font-size: 1.875rem;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .subtitle {
+            margin-top: 0.5rem;
+            font-size: 1.125rem;
+            color: #4b5563;
+        }
+
+        /* Navegación */
+        .nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .nav-link:not(.active) {
+            background-color: white;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
+        .nav-link:not(.active):hover {
+            background-color: #f9fafb;
+        }
+
+        /* Tarjeta */
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Filtros */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .filters {
+                margin-top: 0;
+                width: auto;
+            }
+        }
+
+        .search-input {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            font-size: 0.875rem;
+            min-width: 250px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .select-filter {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            font-size: 0.875rem;
+            background-color: white;
+        }
+
+        .select-filter:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Tabla de quejas */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #4b5563;
+            background-color: #f9fafb;
+            font-size: 0.875rem;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover td {
+            background-color: #f9fafb;
+        }
+
+        .table .status {
+            display: inline-block;
+            /* padding: 0.25rem 0.5rem; */
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-pendiente {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-en-proceso {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .status-resuelta {
+            background-color: #c7f3d6;
+            color: #166534;
+        }
+
+        /* Botones */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .button-primary {
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            text-decoration: none;
+        }
+
+        .button-primary:hover {
+            background-color: #4338ca;
+        }
+
+        .button-outline {
+            background-color: transparent;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }
+
+        .button-outline:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Paginación */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+            gap: 0.25rem;
+        }
+
+        .pagination-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .pagination-item.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        /* Detalles de queja */
+        .detail-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #4b5563;
+            font-size: 0.875rem;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+        }
+
+        /* Estado vacío */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+
+        .empty-description {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- Logo de la empresa -->
+            <img src="../img/Quality-BOLCA.png" alt="" srcset="" width="20%" height="20%">
+            <h1 class="title">Buzón de Quejas</h1>
+            <p class="subtitle">Administración de quejas recibidas</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Quejas Recibidas</h2>
+                <div class="filters">
+                    <input type="text" class="search-input" placeholder="Buscar por nombre o descripción..."
+                        id="search-input">
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-container">
+                    <table class="table" id="quejas-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Los datos se cargarán dinámicamente con JavaScript -->
+                            <% for (const [key, datos] of Object.entries(resultadoQuejas)) { %>
+                                <tr>
+                                    <th>
+                                        <%=datos.id%>
+                                    </th>
+                                    <td>
+                                        <%=datos.fechaIncidente%>
+                                    </td>
+                                    <td>
+                                        <%=datos.nombreEmpleado%>
+                                    </td>
+                                    <td>
+                                        <%=datos.descripcion%>
+                                    </td>
+                                    <td class="status tdEstado">
+                                        <%=datos.estado%>
+                                    </td>
+                                    <% if (datos.estado==='Pendiente' ) { %>
+                                        <td><button class="button button-primary" id=""
+                                                onclick="finalizarQueja('<%=datos.id%>')">Finalizar</button></td>
+                                        <% } else { %>
+                                            <td>
+                                                <%=datos.acciones%>
+                                            </td>
+                                            <% } %>
+                                                <td>
+                                                    <button class="button button-primary" id=""
+                                                        onclick="verDetalle('<%=JSON.stringify(datos)%>')">Ver
+                                                        Detalles</button>
+                                                </td>
+                                </tr>
+                                <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📭</div>
+                    <h3 class="empty-title">No hay quejas</h3>
+                    <p class="empty-description">No se encontraron quejas que coincidan con los criterios de búsqueda.
+                    </p>
+                    <a href="index.html" class="button button-primary">Crear nueva queja</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de detalle de queja -->
+    <form id="formAcciones">
+        <div class="modal fade " id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Enviar Acciones</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                        <textarea name="acciones" class="form-control" id="" placeholder="Escriba sus acciones..."
+                            rows="5" required></textarea>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" id="btnEnviar" class="btn btn-primary">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Modal de ver los detalles -->
+
+    <div class="modal fade " id="modalDetalles" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Detalles</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="display: grid; grid-template-columns: 1fr 2fr;">
+                    <p style="font-weight: bold;">ID de la Queja:</p><span class="spanD"></span>
+                    <p style="font-weight: bold;">Nombre Empleado:</p><span class="spanD"></span>
+                    <p style="font-weight: bold;">Fecha Incidente:</p><span class="spanD"></span>
+                    <p style="font-weight: bold;">Descripcion:</p><span class="spanD"></span>
+                    <p style="font-weight: bold;">Region:</p><span class="spanD"></span>
+                    <!-- <p>Region:</p> <span class="spanD" ></span>-->
+                    <p style="font-weight: bold;">Estado:</p><span class="spanD"></span>
+                    <p style="font-weight: bold;">Acciones:</p><span class="spanD"></span>
+                    <p style="font-weight: bold;">Fecha Cierre:</p><span class="spanD"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnImprimir" class="btn btn-primary" onclick = "generarPDF()">Imprimir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+
+    const tdEstado = document.getElementsByClassName('tdEstado');
+
+    for (let index = 0; index < tdEstado.length; index++) {
+        if (tdEstado[index].textContent.trim() === 'Pendiente') {
+            // tdEstado.style.backgroundColor = 'yellow';
+            tdEstado[index].style.backgroundcolor = '#fef3c7';
+            tdEstado[index].style.color = '#92400e';
+        } else {
+            // tdEstado.style.backgroundColor = 'green';
+            tdEstado[index].style.backgroundcolor = '#c7f3d6';
+            tdEstado[index].style.color = '#166534';
+        }
+    };
+
+    let vId = 0;
+    function finalizarQueja(id) {
+        // const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'), options)
+        const myModal = new bootstrap.Modal('#staticBackdrop')
+        vId = id
+        console.log(vId);
+
+        myModal.show()
+    }
+
+
+    function verDetalle(id2) {
+        const quejasR = JSON.parse(id2)
+        // console.log();
+
+        const myModal2 = new bootstrap.Modal('#modalDetalles')
+        const spanD = document.getElementsByClassName('spanD');
+        spanD[0].textContent = quejasR.id;
+        spanD[2].textContent = quejasR.fechaIncidente;
+        spanD[1].textContent = quejasR.nombreEmpleado;
+        spanD[3].textContent = quejasR.descripcion;
+        spanD[4].textContent = quejasR.region;
+        spanD[5].textContent = quejasR.estado;
+        spanD[6].textContent = quejasR.acciones;
+        spanD[7].textContent = quejasR.updatedAt;
+        // spanD[8].textContent = quejasR[8];
+        myModal2.show()
+    }
+
+
+    const formAcciones = document.getElementById('formAcciones');
+    formAcciones.addEventListener('submit', (event) => {
+
+        event.preventDefault();
+        console.log('Boton presionado');
+        const formData = new FormData(formAcciones)
+        formData.append('idQR', vId);
+        const urlEncoded = new URLSearchParams(formData).toString();
+        fetch(`buzonquejas`, {
+            method: 'POST',
+            body: urlEncoded,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
+            .then(response => response.json())
+            .then(res => {
+                console.log(res);
+                if (res.ok) {
+                    Swal.fire({
+                        title: res.msg,
+                        text: "Acciones enviadas",
+                        icon: "success",
+                        allowOutsideClick: false,
+                        button: "OK"
+                    }).then((value) => {
+                        if (value) {
+                            window.location.href = "buzonquejas"
+                        }
+                    });;
+                } else {
+                    Swal.fire({
+                        title: res.msg,
+                        icon: "error",
+                        text: "Error al enviar las acciones",
+                        allowOutsideClick: false,
+                        button: "OK"
+                    });
+                }
+            })
+    });
+
+
+
+    function generarPDF() {
+    // Obtén una instancia de jsPDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Extrae los datos del modal
+    const modal = document.querySelector("#modalDetalles .modal-body");
+    const spans = modal.querySelectorAll(".spanD");
+
+    const datos = [];
+    spans.forEach((span, index) => {
+        const key = modal.children[index * 2]?.innerText.trim(); // Obtén el nombre del campo
+        const value = span.innerText.trim();                     // Obtén el valor del campo
+        datos.push(`${key} ${value}`);
+    });
+
+    // Añade los datos al PDF
+    datos.forEach((linea, i) => {
+        doc.text(linea, 30, 10 + i * 10); // Posición: x=10, y ajustada por línea
+    });
+
+    console.log(datos);
+    // Descarga el PDF
+    doc.save("Detalles-" + spans[0].textContent + ".pdf");
+}
+</script>
+
+<!-- Resuelta -->

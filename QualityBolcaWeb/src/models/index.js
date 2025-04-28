@@ -20,7 +20,7 @@ import { default as Curso } from './cursos.js';
 import { default as RegistroCursos } from './registroCursos.js';
 import { default as Comunicacion } from './comunicacion.js';
 import { default as Usuario } from './Usuario.js';
-import { default as Gch_Alta } from './gch_alta.js';
+// import { default as Gch_Alta } from './gch_alta.js';
 import { default as informaciongch } from './informaciongch.js';
 import { default as informacionpuesto } from './informacionpuesto.js';
 import { default as Glosario } from './glosario.js';
@@ -29,6 +29,8 @@ import { default as Inventario } from './inventario.js';
 import { default as Mantenimiento } from './mantenimiento.js';
 import { default as Vales } from './vales.js';
 import { default as Testcleaver } from './atraccion/testcleaver.js';
+import { default as BuzonQuejas } from './buzonQuejas.js';
+import { default as Vacaciones } from './vacaciones.js';
 
 // Configuración de Sequelize
 const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
@@ -37,8 +39,8 @@ const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
 });
 
 // Definir asociaciones
-Comunicacion.belongsTo(Gch_Alta, { foreignKey: 'curp', targetKey: 'id' });
-Gch_Alta.hasOne(Comunicacion, { foreignKey: 'curp', sourceKey: 'id' });
+// Comunicacion.belongsTo(Gch_Alta, { foreignKey: 'curp', targetKey: 'id' });
+// Gch_Alta.hasOne(Comunicacion, { foreignKey: 'curp', sourceKey: 'id' });
 
 // informacionpuesto.belongsTo(informaciongch, { foreignKey: 'idpuesto', targetKey: 'idpuesto' });
 // informaciongch.hasOne(informacionpuesto, { foreignKey: 'idpuesto', sourceKey: 'idpuesto' });
@@ -93,7 +95,7 @@ export {
   RegistroCursos,
   Comunicacion,
   Usuario,
-  Gch_Alta,
+  // Gch_Alta,
   informaciongch,
   informacionpuesto,
   Glosario,
@@ -101,5 +103,7 @@ export {
   Inventario,
   Mantenimiento,
   Vales,
-  Testcleaver
+  Testcleaver,
+  BuzonQuejas,
+  Vacaciones
 };

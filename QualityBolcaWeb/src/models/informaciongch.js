@@ -9,131 +9,132 @@ const Informaciongch = db.define('nom10001', {
     },
     iddepartamento:{
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     idpuesto:{
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     idtipoperiodo:{
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     idturno:{
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     codigoempleado:{
         type: DataTypes.CHAR(10),
-        allowNull: false
+        allowNull: true
     },
     nombre:{
         type: DataTypes.CHAR(50),
-        allowNull: false
+        allowNull: true
     },
     fotografia:{
         type: DataTypes.CHAR(100),
-        allowNull: false
+        allowNull: true
     },
     apellidopaterno:{
         type: DataTypes.CHAR(84),
-        allowNull: false
+        allowNull: true
     },
     apellidomaterno:{
         type: DataTypes.CHAR(84),
-        allowNull: false
+        allowNull: true
     },
     nombrelargo:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     fechanacimiento:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     lugarnacimiento:{
         type: DataTypes.CHAR(40),
-        allowNull: false
+        allowNull: true
     },
     estadocivil:{
-        type: DataTypes.TINYINT,
-        allowNull: false
+        type: DataTypes.CHAR(1),
+        allowNull: true,
+        defaultValue: 'S'
     },
     sexo:{
-        type: DataTypes.TINYINT,
-        allowNull: false
+        type: DataTypes.CHAR(1),
+        allowNull: true
     },
     curpi:{
         type: DataTypes.CHAR(6),
-        allowNull: false
+        allowNull: true
     },
     curpf:{
         type: DataTypes.CHAR(8),
-        allowNull: false
+        allowNull: true
     },
     numerosegurosocial:{
         type: DataTypes.CHAR(15),
-        allowNull: false
+        allowNull: true
     },
     umf:{
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     rfc:{
         type: DataTypes.CHAR(4),
-        allowNull: false
+        allowNull: true
     },
     homoclave:{
         type: DataTypes.CHAR(4),
-        allowNull: false
+        allowNull: true
     },
     cuentapagoelectronico:{
         type: DataTypes.CHAR(20),
-        allowNull: false
+        allowNull: true
     },
     sucursalpagoelectronico:{
         type: DataTypes.CHAR(50),
-        allowNull: false
+        allowNull: true
     },
     bancopagoelectronico:{
         type: DataTypes.CHAR(3),
-        allowNull: false
+        allowNull: true
     },
     estadoempleado:{
         type: DataTypes.CHAR(1),
-        allowNull: false
+        allowNull: true
     },
     sueldodiario:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     fechasueldodiario:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     sueldovariable:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     fechasueldovariable:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     sueldopromedio:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     fechasueldopromedio:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     sueldointegrado:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     fechasueldointegrado:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     calculado:{
         type: DataTypes.TINYINT,
@@ -149,7 +150,7 @@ const Informaciongch = db.define('nom10001', {
     },
     afectadoextraordinario:{
         type: DataTypes.TINYINT,
-        allowNull: false
+        allowNull: true
     },
     interfazcheqpaqw:{
         type: DataTypes.TINYINT,
@@ -161,35 +162,35 @@ const Informaciongch = db.define('nom10001', {
     },
     fechaalta:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     cuentacw:{
         type: DataTypes.CHAR(31),
-        allowNull: false
+        allowNull: true
     },
     tipocontrato:{
         type: DataTypes.CHAR(2),
-        allowNull: false
+        allowNull: true
     },
     basecotizacionimss:{
         type: DataTypes.CHAR(1),
-        allowNull: false
+        allowNull: true
     },
     tipoempleado:{
         type: DataTypes.CHAR(1),
-        allowNull: false
+        allowNull: true
     },
     basepago:{
         type: DataTypes.CHAR(1),
-        allowNull: false
+        allowNull: true
     },
     formapago:{
         type: DataTypes.CHAR(3),
-        allowNull: false
+        allowNull: true
     },
     zonasalario:{
         type: DataTypes.CHAR(1),
-        allowNull: false
+        allowNull: true
     },
     calculoptu:{
         type: DataTypes.TINYINT,
@@ -217,39 +218,39 @@ const Informaciongch = db.define('nom10001', {
     },
     expediente:{
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true
     },
     telefono:{
         type: DataTypes.CHAR(20),
-        allowNull: false
+        allowNull: true
     },
     codigopostal:{
         type: DataTypes.CHAR(5),
-        allowNull: false
+        allowNull: true
     },
     direccion:{
         type: DataTypes.CHAR(60),
-        allowNull: false
+        allowNull: true
     },
     poblacion:{
         type: DataTypes.CHAR(60),
-        allowNull: false
+        allowNull: true
     },
     estado:{
         type: DataTypes.CHAR(3),
-        allowNull: false
+        allowNull: true
     },
     nombrepadre:{
         type: DataTypes.CHAR(60),
-        allowNull: false
+        allowNull: true
     },
     nombremadre:{
         type: DataTypes.CHAR(60),
-        allowNull: false
+        allowNull: true
     },
     numeroafore:{
         type: DataTypes.CHAR(50),
-        allowNull: false
+        allowNull: true
     },
     fechabaja:{
         type: DataTypes.DATE,
@@ -265,83 +266,83 @@ const Informaciongch = db.define('nom10001', {
     },
     campoextra1:{
         type: DataTypes.CHAR(40),
-        allowNull: false
+        allowNull: true
     },
     campoextra2:{
         type: DataTypes.CHAR(40),
-        allowNull: false
+        allowNull: true
     },
     campoextra3:{
         type: DataTypes.CHAR(40),
-        allowNull: false
+        allowNull: true
     },
     fechareingreso:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     ajustealneto:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     timestamp:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     cidregistropatronal:{
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     ccampoextranumerico1:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     ccampoextranumerico2:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     ccampoextranumerico3:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     ccampoextranumerico4:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     ccampoextranumerico5:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     cestadoempleadoperiodo:{
         type: DataTypes.CHAR(4),
-        allowNull: false
+        allowNull: true
     },
     cfechasueldomixto:{
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     csueldomixto:{
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: true
     },
     NumeroFonacot:{
         type: DataTypes.CHAR(20),
-        allowNull: false
+        allowNull: true
     },
     CorreoElectronico:{
         type: DataTypes.CHAR(60),
-        allowNull: false
+        allowNull: true
     },
     TipoRegimen:{
         type: DataTypes.CHAR(2),
-        allowNull: false
+        allowNull: true
     },
     ClabeInterbancaria:{
         type: DataTypes.CHAR(30),
-        allowNull: false
+        allowNull: true
     },
     EntidadFederativa:{
         type: DataTypes.CHAR(2),
-        allowNull: false
+        allowNull: true
     },
     Subcontratacion:{
         type: DataTypes.TINYINT,
@@ -381,7 +382,7 @@ const Informaciongch = db.define('nom10001', {
     },
     DireccionTeletrabajo:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     idLider:{
         type: DataTypes.INTEGER,
