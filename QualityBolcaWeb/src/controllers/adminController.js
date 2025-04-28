@@ -328,7 +328,7 @@ controller.solicitudesCursos2 = async (req, res) => {
 
 controller.registroma = async (req, res) => {
     const vRegistro = await RegistroMa.findAll();
-    res.render('admin/registroma', {
+    res.render('admin/registroMA', {
         vRegistro,
         csrfToken: req.csrfToken()
     })
