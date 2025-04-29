@@ -586,7 +586,7 @@ controller.mantenimientoautonomo2 = async(req, res) => {
 }
 
 controller.buzonquejas = (req, res) => {
-    res.render('admin/buzonquejas',{
+    res.render('admin/buzonQuejas',{
         csrfToken: req.csrfToken()
     })
 }

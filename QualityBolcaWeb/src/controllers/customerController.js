@@ -860,7 +860,7 @@ controller.juegos2 = async (req, res) => {
 }
 
 controller.documentosControlados = (req, res) => {
-    res.render('auth/documentosControlados', {
+    res.render('auth/documentoscontrolados', {
         
     })
 }
