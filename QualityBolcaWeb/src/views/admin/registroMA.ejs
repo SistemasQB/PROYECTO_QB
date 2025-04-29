@@ -21,7 +21,7 @@
         <h1 class="titulo">REGISTRO DE MANTENIMIENTO AUTONOMO</h1>
         <div class="informacion">
             <p>Código: QB-FR-A-16-01</p>
-            <p>Rev.: 00</p>
+            <p>Rev.: 01</p>
             <p>Fecha de emisión: 10-04-2023</p>
             <p>Fecha de revisión: N/A</p>
         </div>
@@ -41,22 +41,6 @@
                     <option value="Laptop">Laptop</option>
                     <option value="Ensamblado">Ensamblado</option>
                 </select>
-            </div>
-            <div class="col-md-4">
-                <input class="form-check-input" name="c1" type="checkbox" id="flexCheck1">
-                <label class="form-check-label" for="flexCheck1">Desinstalar Programas</label>
-            </div>
-            <div class="col-md-4">
-                <input class="form-check-input" name="c2" type="checkbox" id="flexCheck2">
-                <label class="form-check-label" for="flexCheck2">Quitar Archivos</label>
-            </div>
-            <div class="col-md-4">
-                <input class="form-check-input" name="c3" type="checkbox" id="flexCheck3">
-                <label class="form-check-label" for="flexCheck3">Borrar Temporales</label>
-            </div>
-            <div class="col-md-4">
-                <input class="form-check-input" name="c4" type="checkbox" id="flexCheck4">
-                <label class="form-check-label" for="flexCheck4">Borrar Cookies</label>
             </div>
             <div class="col-md-4">
                 <input class="form-check-input" name="c5" type="checkbox" id="flexCheck5">
@@ -90,6 +74,10 @@
                 <input class="form-check-input" name="c12" type="checkbox" id="flexCheck12">
                 <label class="form-check-label" for="flexCheck12">Funcionamiento Cargador y Centro de Carga</label>
             </div>
+            <div class="form-floating">
+                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" name="comentarios" style="height: 100px"></textarea>
+                <label for="floatingTextarea2">Comentarios</label>
+              </div>
             <div class="d-grid gap-2 mt-5 col-6 mx-auto">
                 <button class="btn btn-primary" id="btnRegistroma" type="submit">Enviar</button>
             </div>
@@ -170,22 +158,24 @@
     const flexCheck11 = document.getElementById('flexCheck11')
     const flexCheck12 = document.getElementById('flexCheck12')
 
-    flexCheck1.value = flexCheck1.checked
-    flexCheck2.value = flexCheck2.checked
-    flexCheck3.value = flexCheck3.checked
-    flexCheck4.value = flexCheck4.checked
-    flexCheck5.value = flexCheck5.checked
-    flexCheck6.value = flexCheck6.checked
-    flexCheck7.value = flexCheck7.checked
-    flexCheck8.value = flexCheck8.checked
-    flexCheck9.value = flexCheck9.checked
-    flexCheck10.value = flexCheck10.checked
-    flexCheck11.value = flexCheck11.checked
-    flexCheck12.value = flexCheck12.checked
+    // flexCheck1.value = flexCheck1.checked
+    // flexCheck2.value = flexCheck2.checked
+    // flexCheck3.value = flexCheck3.checked
+    // flexCheck4.value = flexCheck4.checked
+    // flexCheck5.value = flexCheck5.checked
+    // flexCheck6.value = flexCheck6.checked
+    // flexCheck7.value = flexCheck7.checked
+    // flexCheck8.value = flexCheck8.checked
+    // flexCheck9.value = flexCheck9.checked
+    // flexCheck10.value = flexCheck10.checked
+    // flexCheck11.value = flexCheck11.checked
+    // flexCheck12.value = flexCheck12.checked
 
         const formData = new FormData(registroForm)
         const urlEncoded = new URLSearchParams(formData).toString();
 
+        console.log(urlEncoded);
+        
 
         fetch('./registroma', {
             method: 'POST',

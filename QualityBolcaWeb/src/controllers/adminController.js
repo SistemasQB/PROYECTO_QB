@@ -80,10 +80,11 @@ controller.directorio = async (req, res) => {
 
 
     const Rcomunicacion = await db.query(
-        `SELECT c.*, n1.nombrelargo, n6.descripcion
+        `SELECT c.*, n1.nombrelargo, n6.descripcion, u.fotografia
          FROM comunicacions c
          INNER JOIN nom10001 n1 ON c.id = n1.codigoempleado
          INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+         LEFT JOIN usuarios u on c.id = u.codigoempleado
          order by nombrelargo asc;`,
         {
             type: QueryTypes.SELECT // Tipo de consulta: SELECT
@@ -569,11 +570,11 @@ controller.mantenimientoautonomo =  async(req, res) => {
 controller.mantenimientoautonomo2 = async(req, res) => {
 
 
-    const { nombre, tipo, respuestas, comentarios } = req.body
+    const { nombre, tipo, region, respuestas, comentarios } = req.body
 
     try {
         // BuzonQuejas.comentarios = comentarios
-        await registroma.create({  nombre, tipo, respuestas, comentarios })
+        await registroma.create({  nombre, tipo, region, respuestas, comentarios })
         // next()
         res.status(200).send({ msg: 'Mantenimiento enviada', ok: true });
         return

@@ -10,6 +10,10 @@ const RegistroMa = db.define('registroMa', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    region:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     respuestas:{
         type: DataTypes.STRING,
         allowNull: false

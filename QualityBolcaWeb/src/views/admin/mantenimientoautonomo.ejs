@@ -343,49 +343,7 @@
       </div>
       <div class="card-content">
         <div class="form-row">
-          <div class="form-field">
-            <label for="date">Fecha:</label>
-            <div class="date-picker">
-              <div class="date-input" id="dateInput">
-                <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                <span id="selectedDate">Seleccionar fecha</span>
-              </div>
-              <div class="calendar" id="calendar">
-                <div class="calendar-header">
-                  <button class="calendar-nav" id="prevMonth">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                  </button>
-                  <div class="calendar-month" id="currentMonth">Abril 2023</div>
-                  <button class="calendar-nav" id="nextMonth">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </button>
-                </div>
-                <div class="calendar-grid" id="calendarGrid">
-                  <!-- Días de la semana -->
-                  <div class="calendar-day-header">Lu</div>
-                  <div class="calendar-day-header">Ma</div>
-                  <div class="calendar-day-header">Mi</div>
-                  <div class="calendar-day-header">Ju</div>
-                  <div class="calendar-day-header">Vi</div>
-                  <div class="calendar-day-header">Sa</div>
-                  <div class="calendar-day-header">Do</div>
-                  <!-- Los días se generarán con JavaScript -->
-                </div>
-              </div>
-            </div>
-          </div>
+
           <div class="form-field">
             <label for="name">Nombre quien realiza:</label>
             <h3 id="nameH3">
@@ -402,6 +360,11 @@
             <option value="laptop">Laptop</option>
             <option value="Escritorio">Escritorio</option>
           </select>
+        </div>
+        <div class="form-group">
+          <label for="equipment">Region:</label>
+          <!-- <input type="text" id="equipment" placeholder="Ingrese el tipo de equipo"> -->
+          <input type="text" id="regioninput" required>
         </div>
 
         <div class="form-group">
@@ -489,27 +452,30 @@
 
   <script>
   const formComentarios = document.getElementById('formComentarios');    
-  const tipoequipo = document.getElementById('tipoequipo').value;
+  
   const nameH3 = document.getElementById('nameH3').innerText;
   // Funcionalidad para los checkboxes
-    const checkboxes = document.querySelectorAll('.checkbox');
+  const checkboxes = document.querySelectorAll('.checkbox');
     var arrayChecks2 = [false, false, false, false, false, false, false, false];
     function arrayChecks(numeroA) {
       checkboxes[numeroA].classList.toggle('checked');
       arrayChecks2[numeroA] = !arrayChecks2[numeroA];
-      console.log(arrayChecks2);
-
+      // console.log(arrayChecks2);
+      
     }
     // Funcionalidad para los botones
     document.querySelector('.btn-primary').addEventListener('click', function (e) {
+      const tipoequipo = document.getElementById('tipoequipo').value;
+      const region2 = document.getElementById('regioninput').value;
       e.preventDefault();
       const formData = new FormData(formComentarios)
+
+      formData.append('region', region2);
       formData.append('respuestas', arrayChecks2);
       formData.append('tipo', tipoequipo);
       formData.append('nombre', nameH3);
       const urlEncoded = new URLSearchParams(formData).toString();
       //tipoequipo
-
       fetch(`mantenimientoautonomo`, {
         method: 'POST',
         body: urlEncoded,

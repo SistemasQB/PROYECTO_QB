@@ -15,6 +15,10 @@ const Usuario = db.define('usuario', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    fotografia:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     token: DataTypes.STRING,
     confirmado: {
         type: DataTypes.BOOLEAN,

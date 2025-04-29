@@ -228,12 +228,12 @@
 
                 <%let nombreCompleto=datos.nombrelargo%>
                     <div class="card">
-                        <% //if (datos.fotografia != '') { %>
+                        <%if (datos.fotografia != null) { %>
                             <% let Rfoto ='../fotos/'+ datos.fotografia%>
-                        <!-- <img src="<%=Rfoto%>" alt="" style="aspect-ratio: 1/1; width: 30%; height: 20%;" srcset=""> -->
-                        <%// } else { %>
-                        <!-- <img src="../img/favicon.png" alt="" style="aspect-ratio: 1/1; width: 30%; height: 20%;" srcset=""> -->
-                        <%// } %>
+                        <img src="<%=Rfoto%>" alt="" style="aspect-ratio: 1/1; width: 30%; height: 20%;" srcset="">
+                        <% } else { %>
+                        <img src="../img/favicon.png" alt="" style="aspect-ratio: 1/1; width: 30%; height: 20%;" srcset="">
+                        <%} %>
                         <div class="card-header">
                             <h3 class="card-name">
                                 <%= nombreCompleto %>

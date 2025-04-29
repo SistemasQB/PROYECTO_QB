@@ -145,6 +145,37 @@ const registroCursos = async (datos) =>{
     })
 }
 
+
+const enviarQueja = async (datos) =>{
+    const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: {
+            user: process.env.EMAILBQ_USER,
+            pass: process.env.EMAILBQ_PASS
+        }
+    });
+
+    const {nombreCurso, asistenciaNombres, correo, fecha, horario, ubicacion, correoDestino, nombreContacto} = datos
+
+
+    //Enviar el email
+    await transport.sendMail({
+        from: process.env.EMAILBQ_USER,
+        to: 'capitalhumano@qualitybolca.com.mx',
+        subject: 'Buzon de quejas',
+        text: 'Buzon de quejas',
+        html: `
+            <p>Hola equipo de capital humano, tienen una nueva notificacion de queja</p>
+            <p>para el dia ${fecha}, en el siguiente horario ${horario}, en la ubicacion de ${ubicacion}
+            si te es posible realizarlo puedes confirmar que aceptas impartir tu curso al siguiente correo: ${correo}
+            </p>
+            <p> A la cual asistiran las siguientes personas:</p>
+            <p>${asistenciaNombres}</p>
+        `
+    })
+}
+
 export {
     emailRegistro,
     emailOlvidePassword,
