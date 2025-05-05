@@ -6,6 +6,7 @@ console.log('middlerare subir imagen');
 
 
 const imagenes = multer.diskStorage({
+
     destination: function (req, file, cb) {
         cb(null, './src/public/fotos/')
     },

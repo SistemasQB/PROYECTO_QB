@@ -47,7 +47,7 @@ import db from "../config/db.js";
 
 import on from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
-import { emailRequisicion, registroCursos } from "../helpers/emails.js";
+import { emailRequisicion, registroCursos, emailMantenimientoA } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
@@ -80,7 +80,7 @@ controller.directorio = async (req, res) => {
 
 
     const Rcomunicacion = await db.query(
-        `SELECT c.*, n1.nombrelargo, n6.descripcion, u.fotografia
+        `SELECT c.*, n1.nombrelargo, n1.codigoempleado, n6.descripcion, u.fotografia
          FROM comunicacions c
          INNER JOIN nom10001 n1 ON c.id = n1.codigoempleado
          INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
@@ -366,27 +366,27 @@ controller.registroma2 = async (req, res) => {
 }
 
 controller.vacaciones = (req, res) => {
-    res.render('admin/vacaciones',{
+    res.render('admin/vacaciones', {
         csrfToken: req.csrfToken()
     })
 }
 
-controller.vacaciones2 = async(req, res) => {
+controller.vacaciones2 = async (req, res) => {
 
     const { codigoempleado } = req.usuario
-    
+
     const { dias } = req.body
 
     try {
         // BuzonQuejas.comentarios = comentarios
-        await Vacaciones.create({ dias: dias, numeroEmpleado: codigoempleado})
+        await Vacaciones.create({ dias: dias, numeroEmpleado: codigoempleado })
         // next()
         res.status(200).send({ msg: 'Enviado', ok: true });
         return
     } catch (error) {
         res.status(400).send({ msg: error, ok: false });
         // console.log(error);
-        
+
         return
     }
 
@@ -484,9 +484,9 @@ controller.valeresguardo = async (req, res) => {
     const resultado = await db.query(
         `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
          FROM inventario i
-         INNER JOIN vales v ON i.folio = v.idfolio
-         INNER JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
-         INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+         left JOIN vales v ON i.folio = v.idfolio
+         left JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
+         left JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
          WHERE i.folio = :nfolio;`,
         {
             replacements: { nfolio: obtenerFolio.idFolio }, // Sustituir parámetros
@@ -554,80 +554,78 @@ controller.generarfirma = (req, res) => {
     })
 }
 
-controller.mantenimientoautonomo =  async(req, res) => {
+controller.mantenimientoautonomo = async (req, res) => {
 
     const { codigoempleado } = req.usuario
 
-    const obtenerNombre = await informaciongch.findOne({  attributes: ['nombrelargo'], where: { codigoempleado: codigoempleado } });
+    const obtenerNombre = await informaciongch.findOne({ attributes: ['nombrelargo'], where: { codigoempleado: codigoempleado } });
     // console.log(req.usuario);
 
-    res.render('admin/mantenimientoautonomo',{
+    res.render('admin/mantenimientoautonomo', {
         csrfToken: req.csrfToken(),
         obtenerNombre
     })
 }
 
-controller.mantenimientoautonomo2 = async(req, res) => {
-
+controller.mantenimientoautonomo2 = async (req, res) => {
 
     const { nombre, tipo, region, respuestas, comentarios } = req.body
 
     try {
-        // BuzonQuejas.comentarios = comentarios
-        await registroma.create({  nombre, tipo, region, respuestas, comentarios })
-        // next()
+
+        // Enviar email de confirmacion
+        await emailMantenimientoA({ region, respuestas, tipo, nombre })
         res.status(200).send({ msg: 'Mantenimiento enviada', ok: true });
         return
     } catch (error) {
+        console.error("Error al enviar correo o guardar datos:", error);
         res.status(400).send({ msg: error, ok: false });
-        // console.log(error);
-        
         return
     }
 }
 
-controller.buzonquejas = (req, res) => {
-    res.render('admin/buzonQuejas',{
-        csrfToken: req.csrfToken()
-    })
-}
+    controller.buzonquejas = (req, res) => {
+        res.render('admin/buzonQuejas', {
+            csrfToken: req.csrfToken()
+        })
+    }
 
-controller.buzonquejas2 = async (req, res) => {
-    
-    const { codigoempleado } = req.usuario
+    controller.buzonquejas2 = async (req, res) => {
 
-    const { fechaIncidente, descripcion, region } = req.body
+        const { codigoempleado } = req.usuario
 
-    console.log(req.body);
-    
+        const { fechaIncidente, descripcion, region } = req.body
 
-    const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } });
+        console.log(req.body);
 
-    // console.log(obtenerFolio, req.file.filename);
 
-    try {
-        // BuzonQuejas.comentarios = comentarios
-        await BuzonQuejas.create({ nombreEmpleado: obtenerNombre.nombrelargo, fechaIncidente, descripcion, region })
-        // next()
-        res.status(200).send({ msg: 'Queja enviada', ok: true });
-        return
-    } catch (error) {
-        res.status(400).send({ msg: error, ok: false });
-        // console.log(error);
-        
-        return
+        const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } });
+
+        // console.log(obtenerFolio, req.file.filename);
+
+        try {
+            // BuzonQuejas.comentarios = comentarios
+            await BuzonQuejas.create({ nombreEmpleado: obtenerNombre.nombrelargo, fechaIncidente, descripcion, region })
+            // next()
+            res.status(200).send({ msg: 'Queja enviada', ok: true });
+            return
+        } catch (error) {
+            res.status(400).send({ msg: error, ok: false });
+            // console.log(error);
+
+            return
+        }
+
+
+    }
+
+    controller.publicarEvento = (req, res) => {
+        res.render('admin/publicarevento')
+    }
+
+    controller.publicarEvento2 = (req, res) => {
+        res.render('admin/publicarevento')
     }
 
 
-}
-
-controller.publicarEvento = (req, res) => {
-    res.render('admin/publicarevento')
-}
-
-controller.publicarEvento2 = (req, res) => {
-    res.render('admin/publicarevento')
-}
-
-
-export default controller;
+    export default controller;

@@ -11,7 +11,7 @@ import myConnection from "express-myconnection";
 import mysql from "mysql2";
 import cors from "cors";
 
-// import multer from "multer";
+import multer from "multer";
 
 import Swal from 'sweetalert2'
 // import mariadb from "mariadb";
@@ -39,8 +39,13 @@ import fs from 'fs';
 const app = express();
 
 app.use(cors());
-// export const upload = multer({ dest: 'uploads2/'})
 
+// Configurar almacenamiento de archivos con Multer
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
+
+
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const __filename = fileURLToPath(import.meta.url);
@@ -88,6 +93,8 @@ export function alerta( tipoA, mensaje) {
     icon: "success"
   });
 }
+
+// export default upload
 
 app.use(express.static('./src/public'));
 

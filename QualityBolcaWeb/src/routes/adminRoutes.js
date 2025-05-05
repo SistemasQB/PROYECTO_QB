@@ -1,10 +1,18 @@
 import express from "express";
 import { default as adminController } from './../controllers/adminController.js';
+import multer from "multer";
 import protegetRuta from "../middleware/protegetRuta.js";
 import upload from "../middleware/subirImagen.js";
 import upload2 from "../middleware/valeresguardo.js";
+// import upload3 from "../middleware/subirmantenimientoA.js";
+// import {default as imagenEnviar} from "../../index.js";
 
 const router = express.Router();
+
+// Configurar Multer (para almacenar imagen en memoria)
+const storage = multer.memoryStorage();
+const uploadmantenimiento = multer({ storage: storage });
+
 
 router.get('/inicio', protegetRuta, adminController.inicio);
 router.get('/enviarfoto', adminController.enviar);
@@ -45,7 +53,7 @@ router.post('/valeresguardo', protegetRuta, adminController.valeresguardo3);
 router.post('/subirfirma',protegetRuta, upload2.single('firmaFile'),adminController.valeresguardo2);
 router.get('/generarfirma/:codigo', adminController.generarfirma);
 router.get('/mantenimientoautonomo', protegetRuta, adminController.mantenimientoautonomo);
-router.post('/mantenimientoautonomo', protegetRuta, adminController.mantenimientoautonomo2);
+router.post('/mantenimientoautonomo', protegetRuta, uploadmantenimiento.single("imagen"), adminController.mantenimientoautonomo2);
 router.get('/buzonquejas',protegetRuta ,adminController.buzonquejas);
 router.post('/buzonquejas',protegetRuta ,adminController.buzonquejas2);
 router.get('/publicarEvento',protegetRuta ,adminController.publicarEvento);

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Mantenimiento Autónomo</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     /* Estilos generales */
     * {
@@ -325,7 +326,7 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="container" id="container">
     <div class="card">
       <div class="card-header">
         <div class="header-content">
@@ -421,11 +422,12 @@
             </div>
           </div>
         </div>
-        <form action="" id="formComentarios">
+        <form action="" id="formComentarios" enctype="multipart/form-data">
           <input type="hidden" name="_csrf" value="<%=csrfToken%>">
           <!-- <label for="comentariosText">Comentarios</label>
           <textarea name="comentarios" id="comentariosText"
             style="width: 100%; height: 100px; resize: none;"></textarea> -->
+            <!-- <input type="text" id="imagen" name="imagen" required> -->
         </form>
       </div>
       <div class="card-footer">
@@ -465,6 +467,7 @@
     }
     // Funcionalidad para los botones
     document.querySelector('.btn-primary').addEventListener('click', function (e) {
+
       const tipoequipo = document.getElementById('tipoequipo').value;
       const region2 = document.getElementById('regioninput').value;
       e.preventDefault();
@@ -476,6 +479,9 @@
       formData.append('nombre', nameH3);
       const urlEncoded = new URLSearchParams(formData).toString();
       //tipoequipo
+      
+      console.log(urlEncoded);
+      
       fetch(`mantenimientoautonomo`, {
         method: 'POST',
         body: urlEncoded,
@@ -497,7 +503,7 @@
               if (value) {
                 window.location.href = "mantenimientoautonomo"
               }
-            });;
+            });
           } else {
             Swal.fire({
               title: res.msg,
@@ -507,12 +513,9 @@
               button: "OK"
             });
           }
-        })
-    });
-
-    // document.querySelector('.btn-outline').addEventListener('click', function() {
-    //   window.print();
-    // });
+  })
+})
+  // });
   </script>
 </body>
 

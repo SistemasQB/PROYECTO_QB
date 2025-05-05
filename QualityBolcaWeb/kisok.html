@@ -1,54 +1,492 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tomar Foto</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Registro de Mantenimiento Autónomo</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <style>
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #334155;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        /* Encabezado */
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+        }
+
+        .title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .document-info {
+            text-align: right;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        /* Contenido del formulario */
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-field {
+            margin-bottom: 0.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input,
+        button,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+        }
+
+        /* Sección de checklist */
+        .checklist-header {
+            background-color: #1e293b;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .checklist-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .checklist-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .checklist-item,
+        textarea {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+
+        .checklist-item:hover,
+        textarea:hover {
+            background-color: #f8fafc;
+        }
+
+        .checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            min-width: 1.25rem;
+            border: 1.5px solid #64748b;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            position: relative;
+            margin-top: 0.125rem;
+        }
+
+        .checkbox.checked {
+            background-color: #0ea5e9;
+            border-color: #0ea5e9;
+        }
+
+        .checkbox.checked::after {
+            content: '';
+            position: absolute;
+            top: 0.25rem;
+            left: 0.4rem;
+            width: 0.3rem;
+            height: 0.6rem;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox-label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Pie del formulario */
+        .card-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background-color: white;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        .btn-outline:hover {
+            background-color: #f8fafc;
+        }
+
+        .btn-primary {
+            background-color: #0ea5e9;
+            color: white;
+            border: 1px solid #0ea5e9;
+        }
+
+        .btn-primary:hover {
+            background-color: #0284c7;
+        }
+
+        /* Calendario */
+        .date-picker {
+            position: relative;
+        }
+
+        .date-input {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .calendar-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .calendar {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 10;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            margin-top: 0.5rem;
+            width: 300px;
+        }
+
+        .calendar.show {
+            display: block;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: auto;
+            padding: 0.25rem;
+        }
+
+        .calendar-month {
+            font-weight: 500;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #64748b;
+            padding: 0.25rem;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .calendar-day:hover {
+            background-color: #f1f5f9;
+        }
+
+        .calendar-day.selected {
+            background-color: #0ea5e9;
+            color: white;
+        }
+
+        .calendar-day.other-month {
+            color: #cbd5e1;
+        }
+
+        /* Iconos */
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
 </head>
-<style>
-    .container {
-    text-align: center;
-    margin-top: 20px;
-}
 
-video, canvas {
-    border: 2px solid #ccc;
-    margin-bottom: 10px;
-    width: 300px;
-    height: 200px;
-}
-</style>
 <body>
-    <div class="container">
-        <video id="video" autoplay></video>
-        <button id="capture">Tomar Foto</button>
-        <canvas id="canvas"></canvas>
+    <div class="container" id="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="header-content">
+                    <div class="logo-title">
+                        <img src="https://images.unsplash.com/photo-1559583985-c80d8ad9b29f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MXwxMDY1OTc2fHxlbnwwfHx8fHw%3D"
+                            style="width: 15%; height: 15%;" alt="" srcset="">
+                        <h1 class="title">REGISTRO DE MANTENIMIENTO AUTÓNOMO</h1>
+                        <div class="document-info">
+                            <div>Código: QS-FR-A-16-01</div>
+                            <div>Rev.: 00</div>
+                            <div>Fecha de emisión: 10-04-2023</div>
+                            <div>Fecha de revisión: N/A</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="name">Nombre quien realiza:</label>
+                        <h3 id="nameH3">
+                            <%= obtenerNombre.nombrelargo %>
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="equipment">Tipo de Equipo:</label>
+                    <select name="tipo" id="tipoequipo">
+                        <option value="laptop">Laptop</option>
+                        <option value="Escritorio">Escritorio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="equipment">Region:</label>
+                    <input type="text" id="regioninput" required>
+                </div>
+
+                <div class="form-group">
+                    <div class="checklist-header">Checklist</div>
+                    <div class="checklist-grid">
+                        <div class="checklist-item">
+                            <div class="checkbox" data-id="speakers" onclick="arrayChecks(0)"></div>
+                            <label class="checkbox-label" onclick="arrayChecks(0)">
+                                Funcionamiento de altavoces
+                            </label>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" data-id="usb" onclick="arrayChecks(1)"></div>
+                            <label class="checkbox-label" onclick="arrayChecks(1)">
+                                Funcionamiento puertos USB
+                            </label>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" data-id="network" onclick="arrayChecks(2)"></div>
+                            <label class="checkbox-label" onclick="arrayChecks(2)">
+                                Funcionamiento adaptador de red
+                            </label>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" data-id="cleaning" onclick="arrayChecks(3)"></div>
+                            <label class="checkbox-label" onclick="arrayChecks(3)">
+                                Limpieza general del equipo
+                            </label>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" data-id="camera" onclick="arrayChecks(4)"></div>
+                            <label class="checkbox-label" onclick="arrayChecks(4)">
+                                Funcionamiento de cámara y micrófono
+                            </label>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" data-id="keyboard" onclick="arrayChecks(5)"></div>
+                            <label class="checkbox-label" onclick="arrayChecks(5)">
+                                Funcionamiento y limpieza de teclado y mouse
+                            </label>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" data-id="charger" onclick="arrayChecks(6)"></div>
+                            <label class="checkbox-label" onclick="arrayChecks(6)">
+                                Funcionamiento cargador y centro de carga
+                            </label>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" id="pantalla" onclick="arrayChecks(7)"></div>
+                            <label class="checkbox-label" for="pantalla" onclick="arrayChecks(7)">
+                                <!-- onclick="arrayChecks()"" -->
+                                Funcionamiento y limpieza de la pantalla
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+            </div>
+            <div class="card-footer">
+                <!-- <button class="btn btn-outline">
+                  <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                  </svg>
+                  Imprimir
+                </button> -->
+                <button class="btn btn-primary" onclick="capturarImagen()">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Guardar
+                </button>
+            </div>
+        </div>
     </div>
-    <script src="script.js"></script>
 </body>
+
 <script>
-    const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const captureButton = document.getElementById('capture');
-const ctx = canvas.getContext('2d');
+    function capturarImagen() {
+        const elemento = document.getElementById('container');
 
-// Acceder a la cámara
-navigator.mediaDevices.getUserMedia({ video: true })
-    .then((stream) => {
-        video.srcObject = stream;
-    })
-    .catch((err) => {
-        console.error('Error al acceder a la cámara:', err);
-    });
+        html2canvas(elemento).then(canvas => {
+            let enlace = document.createElement('a');
+            enlace.href = canvas.toDataURL('image/png');
+            enlace.download = 'registro_mantenimiento.png';
+            enlace.click();
+        });
 
-// Tomar una foto al presionar el botón
-captureButton.addEventListener('click', () => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/png');
-    console.log('Foto tomada:', imageData); // Aquí puedes enviar la imagen al servidor si lo deseas
-});
+
+        html2canvas(document.getElementById('container')).then(canvas => {
+            let imageData = canvas.toDataURL('image/png'); // Convertir a base64
+
+
+            Email.send({
+                Host: "smtp.hostinger.com",
+                Port: "465",
+                Username: "mantenimiento.autonomo@qualitybolca.net",
+                Password: "Man.2024Aut",
+                to: 'mantenimiento.autonomo@qualitybolca.net',
+                // from: 'itzel.reyes@qualitybolca.net',
+                from: 'ockapapyr99@gmail.com',
+                cc: 'info.sistemas@qualitybolca.com',
+                subject: 'Mantenimiento Autonomo',
+                Body: "Adjunto el registro de mantenimiento."
+                // Attachments: [
+                //     {
+                //         name: "registro_mantenimiento.png",
+                //         data: imageData
+                //     }
+                // ],
+            })
+                .then(function (message) {
+                    alert("email successfully sent")
+                }).catch(error => {
+                    console.error("Error al enviar correo:", error);
+                })
+        })
+    }
 </script>
+
 </html>
