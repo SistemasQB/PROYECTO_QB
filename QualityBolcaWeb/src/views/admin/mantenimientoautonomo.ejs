@@ -344,16 +344,22 @@
       </div>
       <div class="card-content">
         <div class="form-row">
-
-          <div class="form-field">
-            <label for="name">Nombre quien realiza:</label>
-            <h3 id="nameH3">
-              <%= obtenerNombre.nombrelargo %>
-            </h3>
-            <!-- <input type="text" id="name" placeholder="Ingrese su nombre completo"> -->
+          <div class="form-group">
+            <label for="fecha">fecha:</label>
+            <input type="date" id="fecha" required disabled>
+          </div>
+          <div class="form-group">
+            <label for="regioninput">Region:</label>
+            <input type="text" id="regioninput" required>
           </div>
         </div>
-
+        <div class="form-field">
+          <label for="name">Nombre quien realiza:</label>
+          <h3 id="nameH3">
+            <%= obtenerNombre.nombrelargo %>
+          </h3>
+          <!-- <input type="text" id="name" placeholder="Ingrese su nombre completo"> -->
+        </div>
         <div class="form-group">
           <label for="equipment">Tipo de Equipo:</label>
           <!-- <input type="text" id="equipment" placeholder="Ingrese el tipo de equipo"> -->
@@ -362,62 +368,57 @@
             <option value="Escritorio">Escritorio</option>
           </select>
         </div>
-        <div class="form-group">
-          <label for="equipment">Region:</label>
-          <!-- <input type="text" id="equipment" placeholder="Ingrese el tipo de equipo"> -->
-          <input type="text" id="regioninput" required>
-        </div>
 
         <div class="form-group">
           <div class="checklist-header">Checklist</div>
           <div class="checklist-grid">
             <div class="checklist-item">
-              <div class="checkbox" data-id="speakers" onclick="arrayChecks(0)"></div>
-              <label class="checkbox-label" onclick="arrayChecks(0)">
-                Funcionamiento de altavoces
+              <div class="checkbox" id="actualizaciones" onclick="arrayChecks(0)"></div>
+              <label class="checkbox-label" for="actualizaciones" onclick="arrayChecks(0)">
+                Realizar actualizaciones
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="usb" onclick="arrayChecks(1)"></div>
+              <div class="checkbox" data-id="speakers" onclick="arrayChecks(1)"></div>
               <label class="checkbox-label" onclick="arrayChecks(1)">
+                Funcionamiento de altavoces <p>(solo si aplica)</p>
+              </label>
+            </div>
+            <div class="checklist-item">
+              <div class="checkbox" data-id="usb" onclick="arrayChecks(2)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(2)">
                 Funcionamiento puertos USB
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="network" onclick="arrayChecks(2)"></div>
-              <label class="checkbox-label" onclick="arrayChecks(2)">
+              <div class="checkbox" data-id="network" onclick="arrayChecks(3)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(3)">
                 Funcionamiento adaptador de red
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="cleaning" onclick="arrayChecks(3)"></div>
-              <label class="checkbox-label" onclick="arrayChecks(3)">
+              <div class="checkbox" data-id="cleaning" onclick="arrayChecks(4)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(4)">
                 Limpieza general del equipo
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="camera" onclick="arrayChecks(4)"></div>
-              <label class="checkbox-label" onclick="arrayChecks(4)">
+              <div class="checkbox" data-id="camera" onclick="arrayChecks(5)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(5)">
                 Funcionamiento de cámara y micrófono
+                <p>(solo si aplica)</p>
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="keyboard" onclick="arrayChecks(5)"></div>
-              <label class="checkbox-label" onclick="arrayChecks(5)">
+              <div class="checkbox" data-id="keyboard" onclick="arrayChecks(6)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(6)">
                 Funcionamiento y limpieza de teclado y mouse
               </label>
             </div>
             <div class="checklist-item">
-              <div class="checkbox" data-id="charger" onclick="arrayChecks(6)"></div>
-              <label class="checkbox-label" onclick="arrayChecks(6)">
+              <div class="checkbox" data-id="charger" onclick="arrayChecks(7)"></div>
+              <label class="checkbox-label" onclick="arrayChecks(7)">
                 Funcionamiento cargador y centro de carga
-              </label>
-            </div>
-            <div class="checklist-item">
-              <div class="checkbox" id="pantalla" onclick="arrayChecks(7)"></div>
-              <label class="checkbox-label" for="pantalla" onclick="arrayChecks(7)">
-                <!-- onclick="arrayChecks()"" -->
-                Funcionamiento y limpieza de la pantalla
               </label>
             </div>
           </div>
@@ -456,6 +457,10 @@
   const formComentarios = document.getElementById('formComentarios');    
   
   const nameH3 = document.getElementById('nameH3').innerText;
+
+  const fecha = document.getElementById('fecha');
+
+  fecha.valueAsDate = new Date();
   // Funcionalidad para los checkboxes
   const checkboxes = document.querySelectorAll('.checkbox');
     var arrayChecks2 = [false, false, false, false, false, false, false, false];

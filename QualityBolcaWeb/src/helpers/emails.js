@@ -184,6 +184,14 @@ const emailMantenimientoA = async (data) => {
 
     const { region, respuestas, tipo, nombre } = data
 
+    console.log(data);
+
+    let respuestas2 = respuestas.split(',')
+
+    console.log(respuestas2);
+    
+    
+
     const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
@@ -196,8 +204,8 @@ const emailMantenimientoA = async (data) => {
     //Enviar el email
     await transport.sendMail({
         from: process.env.EMAILMA_USER,
-        to: 'info.sistemas@qualitybolca.com',
-        // cc: 'itzel.reyes@qualitybolca.net',
+        to: 'itzel.reyes@qualitybolca.net',
+        cc: 'info.sistemas@qualitybolca.com',
         subject: 'Mantenimiento Autonomo',
         text: 'Mantenimiento Autonomo',
         html: `
@@ -208,61 +216,77 @@ const emailMantenimientoA = async (data) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Registro de Mantenimiento Autónomo</title>
 <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 0;
-      border-bottom: 1px solid #ddd;
-    }
-    .logo {
-      color: #0066cc;
-      font-weight: bold;
-      font-size: 24px;
-    }
-    .logo span {
-      color: #333;
-    }
-    .document-info {
-      text-align: right;
-      font-size: 14px;
-    }
-    .main-content {
-      padding: 20px 0;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-    }
-    .form-value {
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background-color: #f9f9f9;
-    }
-    .checklist-title {
-      background-color: #2c3e50;
-      color: white;
-      padding: 10px;
-      margin-top: 20px;
-      margin-bottom: 15px;
-      border-radius: 4px;
-    }
-    .checkbox {
-      margin-right: 10px;
-    }
-  </style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+          }
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+          }
+          .logo {
+            color: #0066cc;
+            font-weight: bold;
+            font-size: 24px;
+          }
+          .logo span {
+            color: #333;
+          }
+          .document-info {
+            text-align: right;
+            font-size: 14px;
+          }
+          .main-content {
+            padding: 20px 0;
+          }
+          .form-group {
+            margin-bottom: 15px;
+          }
+          .form-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+          }
+          .form-value {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+          }
+          .checklist-title {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+          }
+          .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+          }
+          .checklist-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+          }
+          .checkbox {
+            margin-right: 10px;
+          }
+          @media (max-width: 600px) {
+            .checklist-grid {
+              grid-template-columns: 1fr;
+            }
+          }
+        </style>
+
       </head>
       <body>
         <div class="header">
@@ -296,37 +320,37 @@ const emailMantenimientoA = async (data) => {
           <div class="checklist-title">Checklist</div>
           
           <div class="checklist-grid">
-            <div class="checklist-item">
-              <input type="checkbox" class="checkbox" ${data.respuestas[0] ? "checked" : ""} disabled>
-              Funcionamiento de altavoces
+          <div class="checklist-item">
+              <input type="checkbox" class="checkbox" ${respuestas2[0] == "true" ? "checked" : ""} disabled>
+              Realizar actualizaciones
             </div>
             <div class="checklist-item">
-              <input type="checkbox" class="checkbox" ${data.respuestas[1] ? "checked" : ""} disabled>
+              <input type="checkbox" class="checkbox" ${respuestas2[1] == "true" ? "checked" : ""} disabled>
+              Funcionamiento de altavoces(solo si aplica)
+            </div>
+            <div class="checklist-item">
+              <input type="checkbox" class="checkbox" ${respuestas2[2] == "true" ? "checked" : ""} disabled>
               Funcionamiento puertos USB
             </div>
             <div class="checklist-item">
-              <input type="checkbox" class="checkbox" ${data.respuestas[2] ? "checked" : ""} disabled>
+              <input type="checkbox" class="checkbox" ${respuestas2[3] == "true" ? "checked" : ""} disabled>
               Funcionamiento adaptador de red
             </div>
             <div class="checklist-item">
-              <input type="checkbox" class="checkbox" ${data.respuestas[3] ? "checked" : ""} disabled>
+              <input type="checkbox" class="checkbox" ${respuestas2[4] == "true" ? "checked" : ""} disabled>
               Limpieza general del equipo
             </div>
             <div class="checklist-item">
-              <input type="checkbox" class="checkbox" ${data.respuestas[4] ? "checked" : ""} disabled>
-              Funcionamiento de cámara y micrófono
+              <input type="checkbox" class="checkbox" ${respuestas2[5] == "true" ? "checked" : ""} disabled>
+              Funcionamiento de cámara y micrófono(solo si aplica)
             </div>
             <div class="checklist-item">
-              <input type="checkbox" class="checkbox" ${data.respuestas[5] ? "checked" : ""} disabled>
+              <input type="checkbox" class="checkbox" ${respuestas2[6] == "true" ? "checked" : ""} disabled>
               Funcionamiento y limpieza de teclado y mouse
             </div>
             <div class="checklist-item">
-              <input type="checkbox" class="checkbox" ${data.respuestas[6] ? "checked" : ""} disabled>
+              <input type="checkbox" class="checkbox" ${respuestas2[7] == "true" ? "checked" : ""} disabled>
               Funcionamiento cargador y centro de carga
-            </div>
-            <div class="checklist-item">
-              <input type="checkbox" class="checkbox" ${data.respuestas[7] ? "checked" : ""} disabled>
-              Funcionamiento y limpieza de la pantalla
             </div>
           </div>
         </div>
