@@ -5,515 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Personal</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles/capitalhumano/altagch.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
-<style>
-    /* Estilos generales */
-
-
-    :root {
-        --color-primary: #1e293b;
-        --color-primary-hover: #334155;
-        --color-background: #f8fafc;
-        --color-card: #ffffff;
-        --color-border: #e2e8f0;
-        --color-text: #1e293b;
-        --color-text-light: #64748b;
-        --color-input-bg: #ffffff;
-        --color-input-border: #cbd5e1;
-        --color-input-focus: #94a3b8;
-        --color-header-bg: #1e293b;
-        --color-header-text: #ffffff;
-        --color-footer-bg: #f1f5f9;
-        --color-danger: #dc2626;
-        --color-danger-hover: #b91c1c;
-        --border-radius: 0.5rem;
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
-        color: var(--color-text);
-        line-height: 1.5;
-        min-height: 100vh;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1rem;
-    }
-
-    /* Header principal */
-    .main-header {
-        background-color: var(--color-header-bg);
-        color: var(--color-header-text);
-        padding: 1rem 0;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .main-header .container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .site-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-    }
-
-    /* Navegación y pestañas */
-    .main-nav {
-        background-color: #fff;
-        border-bottom: 1px solid var(--color-border);
-        margin-bottom: 2rem;
-    }
-
-    .nav-tabs {
-        display: flex;
-        list-style: none;
-        overflow-x: auto;
-    }
-
-    .nav-item {
-        flex: 0 0 auto;
-    }
-
-    .nav-link {
-        display: block;
-        padding: 1rem 1.5rem;
-        color: var(--color-text-light);
-        text-decoration: none;
-        font-weight: 500;
-        border-bottom: 2px solid transparent;
-        transition: all 0.2s;
-        white-space: nowrap;
-    }
-
-    .nav-link:hover {
-        color: var(--color-primary);
-    }
-
-    .nav-link.active {
-        color: var(--color-primary);
-        border-bottom-color: var(--color-primary);
-    }
-
-    /* Contenido de las pestañas */
-    main {
-        padding-bottom: 2rem;
-    }
-
-    .tab-content {
-        display: none;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    /* Estilos de la tarjeta */
-    .card {
-        background-color: var(--color-card);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        margin-bottom: 2rem;
-    }
-
-    .card-header {
-        background-color: var(--color-header-bg);
-        color: var(--color-header-text);
-        padding: 1.5rem 2rem;
-    }
-
-    .card-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .card-description {
-        color: #cbd5e1;
-        font-size: 0.875rem;
-    }
-
-    .card-content {
-        padding: 2rem;
-    }
-
-    .card-footer {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1.5rem 2rem;
-        background-color: var(--color-footer-bg);
-        border-top: 1px solid var(--color-border);
-    }
-
-    @media (min-width: 640px) {
-        .card-footer {
-            flex-direction: row;
-            justify-content: space-between;
-        }
-    }
-
-    /* Estilos de secciones del formulario */
-    .form-sections {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
-
-    .form-section {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .section-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--color-text);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .icon {
-        display: inline-block;
-        vertical-align: middle;
-    }
-
-    /* Estilos de la cuadrícula del formulario */
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    @media (min-width: 640px) {
-        .form-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .form-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .form-group-wide {
-        grid-column: 1 / -1;
-    }
-
-    @media (min-width: 640px) {
-        .form-group-wide {
-            grid-column: span 2;
-        }
-    }
-
-    /* Estilos de los elementos del formulario */
-    label {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--color-text);
-    }
-
-    input,
-    select,
-    textarea {
-        padding: 0.625rem;
-        border: 1px solid var(--color-input-border);
-        border-radius: 0.375rem;
-        background-color: var(--color-input-bg);
-        font-size: 0.875rem;
-        color: var(--color-text);
-        width: 100%;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-        outline: none;
-        border-color: var(--color-input-focus);
-        box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2);
-    }
-
-    textarea {
-        resize: vertical;
-        min-height: 80px;
-    }
-
-    /* Estilos para los inputs de fecha */
-    .date-input {
-        cursor: pointer;
-        /* background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E"); */
-        /* background-repeat: no-repeat; */
-        /* background-position: right 0.625rem center; */
-        /* padding-right: 2.5rem; */
-    }
-
-    /* Estilos para los radio buttons */
-    .radio-group {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .radio-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .radio-item input[type="radio"] {
-        width: 1rem;
-        height: 1rem;
-        margin: 0;
-    }
-
-    /* Estilos de botones */
-    .btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.625rem 1.25rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        transition: background-color 0.2s, border-color 0.2s;
-        width: 100%;
-        border: 1px solid transparent;
-    }
-
-    @media (min-width: 640px) {
-        .btn {
-            width: auto;
-        }
-    }
-
-    .btn-primary {
-        background-color: var(--color-primary);
-        color: white;
-        border-color: var(--color-primary);
-    }
-
-    .btn-primary:hover {
-        background-color: var(--color-primary-hover);
-        border-color: var(--color-primary-hover);
-    }
-
-    .btn-outline {
-        background-color: transparent;
-        color: var(--color-text);
-        border-color: var(--color-input-border);
-    }
-
-    .btn-outline:hover {
-        background-color: var(--color-background);
-    }
-
-    .btn-danger {
-        background-color: var(--color-danger);
-        color: white;
-        border-color: var(--color-danger);
-    }
-
-    .btn-danger:hover {
-        background-color: var(--color-danger-hover);
-        border-color: var(--color-danger-hover);
-    }
-
-    .btn-sm {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.75rem;
-    }
-
-    .btn-search {
-        background-color: transparent;
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-search:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .btn-search-inline {
-        background-color: var(--color-primary);
-        color: white;
-    }
-
-    /* Estilos para la búsqueda */
-    .search-container {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .search-input {
-        flex: 1;
-    }
-
-    /* Estilos para tablas */
-    .table-container {
-        overflow-x: auto;
-        margin-bottom: 1rem;
-    }
-
-    .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.875rem;
-    }
-
-    .data-table th,
-    .data-table td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid var(--color-border);
-    }
-
-    .data-table th {
-        background-color: var(--color-footer-bg);
-        font-weight: 600;
-        color: var(--color-text);
-    }
-
-    .data-table:hover {
-        background-color: var(--color-background);
-    }
-
-    /* tr:hover {
-        background-color: var(--color-background);
-    } */
-
-    /* Estilos para modales */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        overflow-y: auto;
-        padding: 1rem;
-    }
-
-    .modal.active {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-content {
-        background-color: white;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        width: 100%;
-        max-width: 500px;
-        margin: auto;
-        animation: modalFadeIn 0.3s;
-    }
-
-    .modal-lg {
-        max-width: 800px;
-    }
-
-    @keyframes modalFadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid var(--color-border);
-    }
-
-    .modal-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--color-text);
-    }
-
-    .modal-close {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: var(--color-text-light);
-    }
-
-    .modal-body {
-        padding: 1.5rem;
-    }
-
-    .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        padding: 1.25rem 1.5rem;
-        border-top: 1px solid var(--color-border);
-    }
-
-    /* Estilos para detalles de empleado */
-    .employee-details {
-        display: grid;
-        gap: 0.75rem;
-    }
-
-    .detail-row {
-        display: grid;
-        grid-template-columns: 150px 1fr;
-        gap: 1rem;
-        align-items: baseline;
-    }
-
-    .detail-label {
-        font-weight: 600;
-        color: var(--color-text-light);
-    }
-
-    .detail-value {
-        color: var(--color-text);
-    }
-</style>
 
 <body>
     <header class="main-header">
@@ -551,12 +46,13 @@
             <!-- Tab 1: Registro de Personal -->
             <div id="tab-registro" class="tab-content active">
                 <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Formulario de Registro de Personal</h2>
-                        <p class="card-description">Complete todos los campos con la información solicitada</p>
-                    </div>
-                    <div class="card-content">
-                        <form id="registrationForm">
+                    <form id="registrationForm">
+                        <div class="card-header">
+                            <h2 class="card-title">Formulario de Registro de Personal</h2>
+                            <p class="card-description">Complete todos los campos con la información solicitada</p>
+                        </div>
+                        <div class="card-content">
+                            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                             <div class="form-sections">
                                 <!-- Sección de Información Personal -->
                                 <div class="form-section">
@@ -573,69 +69,70 @@
                                     <div class="form-grid">
                                         <div class="form-group">
                                             <label for="curp">CURP</label>
-                                            <input type="text" id="curp" required>
+                                            <input type="text" id="curp" name="curp" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="numeroSeguro">Numero de Seguro Social</label>
-                                            <input type="text" id="numeroSeguro" placeholder="12345678901" maxlength="11"
-                                                required minlength="11">
+                                            <input type="text" id="numeroSeguro" name="nss" placeholder="12345678901"
+                                                maxlength="11" required minlength="11">
                                         </div>
                                         <div class="form-group">
                                             <label for="cp_domicilio">CP (domicilio)</label>
-                                            <input type="text" id="cp_domicilio" placeholder="20000" maxlength="5"
-                                                required minlength="5">
+                                            <input type="text" id="cp_domicilio" placeholder="20000" name="cp"
+                                                maxlength="5" required minlength="5">
                                         </div>
                                         <div class="form-group">
                                             <label for="estado_nacimiento">Estado Nacimiento</label>
-                                            <input type="text" id="estado_nacimiento" value="VERACRUZ" required>
+                                            <input type="text" id="estado_nacimiento" value="VERACRUZ"
+                                                name="estadoNacimiento" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="fecha_nacimiento">Fecha Nacimiento</label>
                                             <input type="date" id="fecha_nacimiento" class="date-input"
-                                                value="1993-06-25">
+                                                name="fechanacimiento" value="1993-06-25" required>
                                         </div>
                                         <div class="form-group">
                                             <label>Género</label>
                                             <div class="radio-group">
                                                 <div class="radio-item">
-                                                    <input type="radio" id="masculino" name="genero" value="masculino"
-                                                        checked>
+                                                    <input type="radio" id="masculino" name="genero" value="1" required>
                                                     <label for="masculino">Masculino</label>
                                                 </div>
                                                 <div class="radio-item">
-                                                    <input type="radio" id="femenino" name="genero" value="femenino">
+                                                    <input type="radio" id="femenino" name="genero" value="2" required>
                                                     <label for="femenino">Femenino</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="fecha_alta">Fecha de Alta</label>
-                                            <input type="text" id="fecha_alta" class="date-input"
-                                                value="viernes, 13 de diciembre de 2024" readonly>
+                                            <input type="date" id="fecha_alta" class="date-input" name="fechaAlta"
+                                                required>
+                                                <span id="mensajeError" style="color: red; display: none;">Fecha fuera del rango permitido.</span>
                                         </div>
                                         <div class="form-group">
                                             <label for="nombre">Nombre(s)</label>
-                                            <input type="text" id="nombre">
+                                            <input type="text" id="nombre" name="nombre">
                                         </div>
                                         <div class="form-group">
                                             <label for="apellido_paterno">Apellido Paterno</label>
-                                            <input type="text" id="apellido_paterno">
+                                            <input type="text" id="apellido_paterno" name="apellidoPaterno">
                                         </div>
                                         <div class="form-group">
                                             <label for="apellido_materno">Apellido Materno</label>
-                                            <input type="text" id="apellido_materno">
+                                            <input type="text" id="apellido_materno" name="apellidoMaterno">
                                         </div>
                                         <div class="form-group form-group-wide">
                                             <label for="direccion">Dirección (calle y número)</label>
-                                            <input type="text" id="direccion">
+                                            <input type="text" id="direccion" name="direccion">
                                         </div>
                                         <div class="form-group">
                                             <label for="municipio">Municipio</label>
-                                            <input type="text" id="municipio">
+                                            <input type="text" id="municipio" name="municipio">
                                         </div>
                                         <div class="form-group">
                                             <label for="colonia">Colonia</label>
-                                            <select id="colonia">
+                                            <select id="colonia" name="colonia">
                                                 <option value="" selected disabled>Seleccionar colonia</option>
                                                 <!-- <option value="centro">Centro</option>
                                                 <option value="reforma">Reforma</option>
@@ -645,20 +142,24 @@
                                         <!-- Resto de los campos del formulario original... -->
                                         <div class="form-group">
                                             <label for="telefono">Teléfono</label>
-                                            <input type="tel" id="telefono">
+                                            <input type="tel" id="telefono" name="telefono">
                                         </div>
                                         <div class="form-group">
                                             <label for="estado_domicilio">Estado del Domicilio</label>
-                                            <input type="text" id="estado_domicilio">
+                                            <input type="text" id="estado_domicilio" name="estadoDomicilio">
                                         </div>
                                         <div class="form-group">
                                             <label for="edo_civil">Edo. Civil</label>
-                                            <select id="edo_civil">
+                                            <select id="edo_civil" name="estadoCivil">
                                                 <option value="soltero" selected>SOLTERO</option>
                                                 <option value="casado">CASADO</option>
                                                 <option value="divorciado">DIVORCIADO</option>
                                                 <option value="viudo">VIUDO</option>
                                             </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="correo">Correo Electronico</label>
+                                            <input type="email" id="correo" name="correo">
                                         </div>
                                     </div>
                                 </div>
@@ -679,7 +180,7 @@
                                     <div class="form-grid">
                                         <div class="form-group">
                                             <label for="dropdown1">Proceso</label>
-                                            <select id="dropdown1" required>
+                                            <select id="dropdown1" required name="proceso">
                                                 <option value="" disabled selected>Seleccione una opción</option>
                                                 <option value="ADMINISTRACION Y FINANZAS">ADMINISTRACION Y FINANZAS
                                                 </option>
@@ -702,7 +203,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="dropdown2">Departamento</label>
-                                            <select id="dropdown2" disabled>
+                                            <select id="dropdown2" disabled name="departamento">
                                             </select>
                                         </div>
                                         <div class="form-group">
@@ -742,30 +243,56 @@
                                             </select>
                                         </div>
                                         <!-- Más campos laborales... -->
+                                        <div class="form-group">
+                                            <label for="reclutador">Reclutador</label>
+                                            <select id="reclutador" required name="reclutador">
+                                                <option value="" disabled selected>Seleccione una opción</option>
+                                                <option value="DELGADO PATIÑO LESLI ESTEFANIA">DELGADO PATIÑO LESLI
+                                                    ESTEFANIA</option>
+                                                <option value="LAGUNA BECERRA CARLOS DANIEL">LAGUNA BECERRA CARLOS
+                                                    DANIEL</option>
+                                                <option value="MACIAS RAMIREZ LAURA CECILIA">MACIAS RAMIREZ LAURA
+                                                    CECILIA</option>
+                                                <option value="MARTINEZ HERNANDEZ JOSE JAVIER">MARTINEZ HERNANDEZ JOSE
+                                                    JAVIER</option>
+                                                <option value="ROCHA CASTILLO PATRICIA MARIA">ROCHA CASTILLO PATRICIA
+                                                    MARIA</option>
+                                                <option value="RODRIGUEZ PALACIOS MONICA YOVANA">RODRIGUEZ PALACIOS
+                                                    MONICA YOVANA</option>
+                                                <option value="ROMERO SANCHEZ ULISES ARTURO">ROMERO SANCHEZ ULISES
+                                                    ARTURO</option>
+                                                <option value="TENORIO GONZALEZ CAROLA MARILU">TENORIO GONZALEZ CAROLA
+                                                    MARILU</option>
+                                                <option value="GUZMAN ALONZO MARIA FERNANDA">GUZMAN ALONZO MARIA
+                                                    FERNANDA</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- Sección de Observaciones -->
                                 <div class="form-section">
                                     <h2 class="section-title">Observaciones</h2>
-                                    <textarea id="observaciones" rows="4"
+                                    <textarea id="observaciones" rows="4" name="observaciones"
                                         placeholder="Ingrese cualquier observación adicional aquí..."></textarea>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                    <div class="card-footer">
-                        <button type="button" class="btn btn-outline">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="icon">
-                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                            </svg>
-                            Adjuntar Expediente
-                        </button>
-                        <button type="button" class="btn btn-primary">Guardar Registro</button>
-                    </div>
+                        </div>
+                        <div class="card-footer" style="justify-content: center;">
+                            <!-- <button type="button" class="btn btn-outline">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="icon">
+                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z">
+                                    </path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                                Adjuntar Expediente
+                            </button> -->
+                            <button type="submit" id="btnGuardarRegistro" class="btn btn-primary">Guardar
+                                Registro</button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -1102,12 +629,15 @@
 
     // const apikey = process.env.API_KEY
     // process.env.BD_USER
-
+    const btnGuardarRegistro = document.getElementById('btnGuardarRegistro')
     const selDep = document.getElementById('dropdown1')
     const listaProcesos = document.getElementById('dropdown2')
     const inpPU = document.getElementById('dropdown3')
     const cpdomicilio = document.getElementById('cp_domicilio')
+    const registrationForm = document.getElementById('registrationForm')
     var option1, option2, option3, option4, c1
+
+    const fechaAlta = document.getElementById('fecha_alta')
 
     function limpiar() {
         while (listaProcesos.firstChild) {
@@ -1120,6 +650,43 @@
         }
     }
     var puestoV = ""
+
+    fechaAlta.addEventListener('change', () => {
+        const fechaAlta2 = document.getElementById('fecha_alta')
+        const btnGuardarRegistro2 = document.getElementById('btnGuardarRegistro')
+        const fechaSeleccionada = new Date(fechaAlta2.value);
+        const fechaActual = new Date();
+        const mensajeError = document.getElementById("mensajeError");
+
+
+        // Normaliza las horas para evitar problemas con la zona horaria
+        fechaSeleccionada.setHours(0, 0, 0, 0);
+        fechaActual.setHours(0, 0, 0, 0);
+
+
+
+
+
+
+        // Calcular los límites de comparación
+        const tresDiasAntes = new Date(fechaActual);
+        tresDiasAntes.setDate(fechaActual.getDate() - 3);
+
+        const tresDiasDespues = new Date(fechaActual);
+        tresDiasDespues.setDate(fechaActual.getDate() + 3);
+
+        if (fechaSeleccionada < tresDiasAntes || fechaSeleccionada > tresDiasDespues) {
+        mensajeError.style.display = "inline";
+        fechaAlta2.classList.add("error"); 
+        event.preventDefault(); // Evita el envío del formulario
+    } else {
+        mensajeError.style.display = "none";
+        fechaAlta2.classList.remove("error");
+    }
+
+
+        // btnGuardarRegistro
+    })
 
     cpdomicilio.addEventListener('focusout', async () => {
         limpiar2()
@@ -1141,13 +708,13 @@
                 const colonia = document.getElementById('colonia')
                 const municipio = document.getElementById('municipio')
                 municipio.value = result.municipio
-                console.log(result.municipio);
-                
+                // console.log(result.municipio);
+
                 const estado = document.getElementById('estado_domicilio')
                 estado.value = result.estado
-                console.log(result.estado);
+                // console.log(result.estado);
                 for (let index = 0; index < result.colonias.length; index++) {
-                    
+
                     option1 = document.createElement('option')
                     option1.textContent = result.colonias[index]
                     option1.value = result.colonias[index]
@@ -1429,6 +996,90 @@
             }
         });
     });
+
+    registrationForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const inpPuesto = document.getElementById('dropdown3')
+        const listaProcesos2 = document.getElementById('dropdown2')
+        const formData = new FormData(registrationForm)
+        let vPuesto = ''
+
+        if (inpPuesto.selectedIndex > 4) {
+            vPuesto = inpPuesto.value
+        } else {
+            vPuesto = inpPuesto.value + ' ' + listaProcesos2.value
+        }
+
+        formData.append('puesto', vPuesto);
+        const urlEncoded = new URLSearchParams(formData).toString();
+        // console.log(urlEncoded);
+
+        Swal.fire({
+            title: 'Enviando Datos',
+            allowOutsideClick: false,
+            html: `
+                <div class="container" style='display: flex; justify-content: space-around;'>
+      <div class="circle"></div>
+    </div>
+
+    <style>
+.circle {
+margin-top: 20px;
+margin-bottom: 20px;
+  box-sizing: border-box;
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  border: 10px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ff0000;
+  animation: spin 1s infinite linear;
+}
+@keyframes spin { 
+  100% { 
+    transform: rotate(360deg); 
+  } 
+} 
+</style>
+            `,
+            showConfirmButton: false
+
+        })
+
+        fetch(`altagch`, {
+            method: 'POST',
+            body: urlEncoded,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
+            .then(response => response.json())
+            .then(res => {
+                Swal.close()
+                // console.log(res);
+                if (res.ok) {
+                    Swal.fire({
+                        title: res.msg,
+                        text: "Registro Guardado",
+                        icon: "success",
+                        allowOutsideClick: false,
+                        button: "OK"
+                    }).then((value) => {
+                        if (value) {
+                            window.location.href = "altagch"
+                        }
+                    });;
+                } else {
+                    Swal.fire({
+                        title: res.msg,
+                        icon: "error",
+                        text: "Error al guardar el registro",
+                        allowOutsideClick: false,
+                        button: "OK"
+                    });
+                }
+            })
+    })
+
 </script>
 
 </html>

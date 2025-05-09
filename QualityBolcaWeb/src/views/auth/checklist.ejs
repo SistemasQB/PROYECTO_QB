@@ -18,16 +18,21 @@
             })
         </script>
         <% }%>
-            <div>
+            <div style="text-align: center;">
+                <img src="../img/unidad1.jpg" id="imgUnidad" style="max-width: 250px; margin-top: 3%;" alt="" srcset="">
                 <form action="/checklist" method="post">
                     <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                     <div class="cuadricula btn btn-secondary" id="inspeccion-Visual"> <!-- col-md-6 -->
                         <!-- <details> -->
                         <!-- <summary>INSPECCION DEL VEHICULO</summary> -->
                         <div class="">
-                            <label for="unidad" class="form-label titulo">UNIDAD</label>
-                            <input type="text" class="form-control cajas" id="UNIDAD" placeholder="Vehiculo" required
-                                name="unidad">
+                            <label for="unidad" class="form-label titulo" style="display: flex;">UNIDAD</label>
+                            <!-- <input type="text" class="form-control cajas" id="UNIDAD" placeholder="Vehiculo" required name="unidad"> -->
+                            <select name="unidad" id="UNIDAD" style="display: flex; width: 100%; height: 50%; border-radius: 5px;">
+                                <option value="KIA ROJO">KIA ROJO</option>
+                                <option value="STACAS">STACAS</option>
+                                <option value="AVANZA">AVANZA</option>
+                            </select>
                         </div>
                         <div class="">
                             <label for="exampleFormControlInput1" class="form-label titulo">PLACAS</label>

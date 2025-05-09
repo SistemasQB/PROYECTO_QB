@@ -4,7 +4,8 @@ import express from "express";
 import {
     informaciongch,
     informacionpuesto,
-    BuzonQuejas
+    BuzonQuejas,
+    Gch_Alta
 } from "../models/index.js";
 import Sequelize, { where } from 'sequelize'
 import { Op } from 'sequelize'
@@ -161,13 +162,88 @@ controller.vacaciones = async (req, res) => {
 }
 
 controller.altagch = async (req, res) => {
-
-    
-
-
     res.render('admin/capitalhumano/altagch',{
         csrfToken: req.csrfToken()
     })
 }
 
+controller.altagch2 = async (req, res) => {
+
+    const { codigoempleado } = req.usuario
+
+    const NombreV = await informaciongch.findOne({ attributes: ['nombrelargo'], where: { codigoempleado: codigoempleado } });
+
+    const {     
+        // codigoempleado,
+        curp,
+        nss,
+        cp,
+        estadoNacimiento,
+        fechanacimiento,
+        genero,
+        fechaAlta,
+        nombre,
+        apellidoPaterno,
+        apellidoMaterno,
+        direccion,
+        municipio,
+        colonia,
+        telefono,
+        estadoDomicilio,
+        estadoCivil,
+        correo,
+        proceso,
+        departamento,
+        puesto,
+        reclutador,
+        observaciones
+     } = req.body
+
+    
+
+    // console.log(informacionR);
+
+    try {
+        // console.log('nombre de la imagen', req.file.filename);
+        const RGch_Alta = await Gch_Alta.create( {
+            curp,
+            nss,
+            cp,
+            estadoNacimiento,
+            fechanacimiento,
+            genero,
+            fechaAlta,
+            nombre,
+            apellidoPaterno,
+            apellidoMaterno,
+            direccion,
+            municipio,
+            colonia,
+            telefono,
+            estadoDomicilio,
+            estadoCivil,
+            correo,
+            proceso,
+            departamento,
+            puesto,
+            reclutador,
+            observaciones,
+            capturo: NombreV.nombrelargo
+        })
+        res.status(200).send({ msg: 'Guardado', ok: true });
+        console.log(RGch_Alta.codigoempleado);
+        
+        return
+    } catch (error) {
+        res.status(400).send({ msg: 'Registro no enviado', ok: false });
+        console.log(error);
+        
+        return
+    }
+
+
+}
+
 export default controller;
+
+

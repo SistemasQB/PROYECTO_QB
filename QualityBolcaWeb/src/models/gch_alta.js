@@ -1,11 +1,12 @@
-import { DataTypes } from 'sequelize'
+import { DataTypes, Sequelize } from "sequelize";
+const sequelize = new Sequelize('sqlite::memory:');
 import db from "../config/db.js";
 
 const Gch_Alta = db.define('gch_alta2', {
     codigoempleado: {
-        type: DataTypes.STRING(30),
-        primaryKey: true,
-        autoincrement: true
+        type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
     estatus: {
         type: DataTypes.TINYINT,
@@ -28,7 +29,7 @@ const Gch_Alta = db.define('gch_alta2', {
         defaultValue: 'null'
     },
     fechanacimiento: {
-        type: DataTypes.dateonly,
+        type: DataTypes.DATEONLY,
         allowNull: false
     },
     genero: {
@@ -36,8 +37,8 @@ const Gch_Alta = db.define('gch_alta2', {
         allowNull: false
     },
     fechaAlta: {
-        type: DataTypes.STRING,
-        defaultValue: 'null'
+        type: DataTypes.DATEONLY,
+        allowNull: false
     },
     nombre: {
         type: DataTypes.STRING(50),
@@ -75,6 +76,10 @@ const Gch_Alta = db.define('gch_alta2', {
         type: DataTypes.STRING(30),
         defaultValue: 'null'
     },
+    correo: {
+        type: DataTypes.STRING(50),
+        defaultValue: 'null'
+    },
     proceso: {
         type: DataTypes.STRING(50),
         defaultValue: 'null'
@@ -91,23 +96,22 @@ const Gch_Alta = db.define('gch_alta2', {
         type: DataTypes.STRING(50),
         defaultValue: 'null'
     },
-    correo: {
-        type: DataTypes.STRING(50),
+    observaciones: {
+        type: DataTypes.STRING,
         defaultValue: 'null'
     },
-    rfc: {
-        type: DataTypes.STRING(30),
+    expediente: {
+        type: DataTypes.STRING,
         defaultValue: 'null'
     },
-
-
+    capturo:{
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+},{
+    tableName: 'gch_alta2',
+    sequelize,
+    freezeTableName: true, // Desactiva la pluralización automática
 })
-
-// Gch_Alta.associate = models => {
-//     Gch_Alta.hasMany(models.comunicacion)
-// }
-
-
-
 
 export default Gch_Alta;

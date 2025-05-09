@@ -20,7 +20,7 @@ import { default as Curso } from './cursos.js';
 import { default as RegistroCursos } from './registroCursos.js';
 import { default as Comunicacion } from './comunicacion.js';
 import { default as Usuario } from './Usuario.js';
-// import { default as Gch_Alta } from './gch_alta.js';
+import { default as Gch_Alta } from './gch_alta.js';
 import { default as informaciongch } from './informaciongch.js';
 import { default as informacionpuesto } from './informacionpuesto.js';
 import { default as Glosario } from './glosario.js';
@@ -95,7 +95,7 @@ export {
   RegistroCursos,
   Comunicacion,
   Usuario,
-  // Gch_Alta,
+  Gch_Alta,
   informaciongch,
   informacionpuesto,
   Glosario,

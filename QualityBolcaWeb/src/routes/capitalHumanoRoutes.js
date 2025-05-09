@@ -9,7 +9,8 @@ const router = express.Router();
 
 router.get('/directorio',capitalhumanoController.directorioGCH);
 router.get('/vacaciones',capitalhumanoController.vacaciones);
-router.get('/altagch',capitalhumanoController.altagch);
+router.get('/altagch', protegetRuta, capitalhumanoController.altagch);
+router.post('/altagch', protegetRuta, capitalhumanoController.altagch2);
 router.get('/buzonquejas',capitalhumanoController.buzonquejas);
 router.post('/buzonquejas',capitalhumanoController.buzonquejas2);
 // router.post('/directorio',capitalhumanoController.directorioGCH2);

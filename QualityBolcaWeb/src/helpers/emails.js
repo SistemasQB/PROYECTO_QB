@@ -184,12 +184,9 @@ const emailMantenimientoA = async (data) => {
 
     const { region, respuestas, tipo, nombre } = data
 
-    console.log(data);
 
     let respuestas2 = respuestas.split(',')
 
-    console.log(respuestas2);
-    
     
 
     const transport = nodemailer.createTransport({
@@ -353,6 +350,9 @@ const emailMantenimientoA = async (data) => {
               Funcionamiento cargador y centro de carga
             </div>
           </div>
+          <br>
+          <p style="text-align: center;">${data.nombre}</p>
+          <p style="text-align: center; text-decoration: overline;">NOMBRE / FIRMA QUIEN REALIZA</p>
         </div>
       </body>
       </html>
