@@ -131,5 +131,32 @@ controller.addvales2 = async (req, res) => {
     res.status(200).send({ ok: true });
     return
 }
+controller.registromantenimiento = async (req, res) => {
+let valeasignacion;
+
+const resultado = await db.query(
+        `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
+         FROM inventario i
+         
+         left JOIN vales v ON i.folio = v.idfolio
+         left JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
+         left JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+         where tipo = 'Laptop' or tipo = 'Ensamblado'
+         order by idInventario asc;`,
+        {
+            type: QueryTypes.SELECT // Tipo de consulta: SELECT
+        }
+    ).then((resultados) => {
+        valeasignacion = resultados;
+    });
+
+    // res.send({valeasignacion});
+
+    res.render('admin/sistemas/registromantenimiento', {
+        csrfToken: req.csrfToken(),
+        valeasignacion,
+        resultado
+    })
+}
 
 export default controller;

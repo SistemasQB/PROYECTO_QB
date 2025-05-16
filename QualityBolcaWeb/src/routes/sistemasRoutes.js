@@ -12,5 +12,6 @@ router.get('/addvales',adminController.addvales);
 router.post('/addvales',adminController.addvales2);
 router.get('/tablainventario',adminController.tablainventario);
 router.get('/api/:query2',adminController.api);
+router.get('/registromantenimiento',adminController.registromantenimiento);
 
 export default router;

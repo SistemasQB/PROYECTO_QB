@@ -1,0 +1,234 @@
+<link rel="stylesheet" href="../styles/capitalhumano/altagch.css">
+
+<header class="main-header">
+    <div class="container">
+        <h1 class="site-title">Sistema de Gestión de Personal</h1>
+        <button id="btnBuscarEmpleado" class="btn btn-search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Buscar Empleado
+        </button>
+    </div>
+</header>
+
+<!-- Modal para Buscar Empleado -->
+<div id="modalBuscarEmpleado" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h2 class="modal-title">Buscar Empleado</h2>
+            <button type="button" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="search-container">
+                <input type="text" id="empleado_search" placeholder="Buscar empleado por nombre o ID..."
+                    class="search-input">
+                <button type="button" class="btn btn-search-inline">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Buscar
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Puesto</th>
+                            <th>Departamento</th>
+                            <th>Fecha Alta</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>EMP001</td>
+                            <td>Juan Pérez González</td>
+                            <td>INSPECTOR DE CALIDAD</td>
+                            <td>AGUASCALIENTES</td>
+                            <td>01/06/2023</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-employee="EMP001"
+                                    data-action="ver">
+                                    Ver Detalles
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EMP002</td>
+                            <td>María Rodríguez López</td>
+                            <td>GERENTE</td>
+                            <td>RECURSOS HUMANOS</td>
+                            <td>15/03/2022</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-employee="EMP002"
+                                    data-action="ver">
+                                    Ver Detalles
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EMP003</td>
+                            <td>Carlos Sánchez Martínez</td>
+                            <td>SUPERVISOR</td>
+                            <td>FINANZAS</td>
+                            <td>10/09/2023</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-employee="EMP003"
+                                    data-action="ver">
+                                    Ver Detalles
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EMP004</td>
+                            <td>Ana López Torres</td>
+                            <td>INSPECTOR DE CALIDAD</td>
+                            <td>AGUASCALIENTES</td>
+                            <td>22/11/2023</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-employee="EMP004"
+                                    data-action="ver">
+                                    Ver Detalles
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EMP005</td>
+                            <td>Roberto Gómez Bolaños</td>
+                            <td>SUPERVISOR</td>
+                            <td>RECURSOS HUMANOS</td>
+                            <td>05/02/2024</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-employee="EMP005"
+                                    data-action="ver">
+                                    Ver Detalles
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="cerrarBusqueda">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Ver Detalles de Empleado -->
+<div id="modalDetallesEmpleado" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Detalles del Empleado</h2>
+            <button type="button" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="employee-details">
+                <div class="detail-row">
+                    <div class="detail-label">ID:</div>
+                    <div class="detail-value" id="detalle_id">EMP001</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Nombre:</div>
+                    <div class="detail-value" id="detalle_nombre">Juan Pérez González</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">CURP:</div>
+                    <div class="detail-value" id="detalle_curp">PEGJ850101HDFRNL09</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Fecha Nacimiento:</div>
+                    <div class="detail-value" id="detalle_fecha_nac">01/01/1985</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Puesto:</div>
+                    <div class="detail-value" id="detalle_puesto">INSPECTOR DE CALIDAD</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Departamento:</div>
+                    <div class="detail-value" id="detalle_departamento">AGUASCALIENTES</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Fecha Alta:</div>
+                    <div class="detail-value" id="detalle_fecha_alta">01/06/2023</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Teléfono:</div>
+                    <div class="detail-value" id="detalle_telefono">449-123-4567</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Correo:</div>
+                    <div class="detail-value" id="detalle_correo">juan.perez@empresa.com</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Dirección:</div>
+                    <div class="detail-value" id="detalle_direccion">Calle Principal #123, Centro, Aguascalientes
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="cerrarDetalles">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Manejo del modal de búsqueda de empleado
+    const btnBuscarEmpleado = document.getElementById('btnBuscarEmpleado');
+    const modalBuscarEmpleado = document.getElementById('modalBuscarEmpleado');
+    const btnCerrarBusqueda = document.getElementById('cerrarBusqueda');
+    const modalCloseBusqueda = modalBuscarEmpleado.querySelector('.modal-close');
+
+
+    btnBuscarEmpleado.addEventListener('click', function () {
+        modalBuscarEmpleado.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    function cerrarModalBusqueda() {
+        modalBuscarEmpleado.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    btnCerrarBusqueda.addEventListener('click', cerrarModalBusqueda);
+    modalCloseBusqueda.addEventListener('click', cerrarModalBusqueda);
+
+    // Manejo del modal de detalles de empleado
+        const btnsVerDetalles = document.querySelectorAll('[data-action="ver"]');
+        const modalDetallesEmpleado = document.getElementById('modalDetallesEmpleado');
+        const btnCerrarDetalles = document.getElementById('cerrarDetalles');
+        const modalCloseDetalles = modalDetallesEmpleado.querySelector('.modal-close');
+
+        btnsVerDetalles.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const employeeId = this.getAttribute('data-employee');
+                // En una implementación real, aquí se cargarían los datos del empleado desde una base de datos
+                // Para este ejemplo, usamos datos estáticos
+
+                // Simulamos la carga de datos
+                setTimeout(() => {
+                    modalDetallesEmpleado.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }, 300);
+            });
+        });
+
+        function cerrarModalDetalles() {
+            modalDetallesEmpleado.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        btnCerrarDetalles.addEventListener('click', cerrarModalDetalles);
+        modalCloseDetalles.addEventListener('click', cerrarModalDetalles);
+
+</script>

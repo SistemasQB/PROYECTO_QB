@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Mantenimiento Preventivo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 15px;
+    }
+
+    .logo {
+        width: 80px;
+        margin-right: 20px;
+    }
+
+    .logo img {
+        width: 100%;
+        height: auto;
+    }
+
+    .title {
+        flex: 1;
+    }
+
+    .title h1 {
+        margin: 0;
+        font-size: 22px;
+        color: #333;
+    }
+
+    .title h2 {
+        margin: 5px 0 0 0;
+        font-size: 18px;
+        color: #666;
+    }
+
+    .search-bar {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+    .search-bar input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px 0 0 4px;
+        font-size: 14px;
+    }
+
+    .search-bar button {
+        padding: 8px 15px;
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .search-bar button:hover {
+        background-color: #003d7a;
+    }
+
+    .records-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+
+    .records-table th,
+    .records-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .records-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .records-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .records-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .action-button {
+        padding: 6px 12px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .action-button:hover {
+        background-color: #218838;
+    }
+
+    /* Estilos para el modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 5px;
+        width: 80%;
+        max-width: 800px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close-button:hover {
+        color: #333;
+    }
+
+    /* Estilos para el detalle del registro (formulario) */
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+
+    .detail-title {
+        text-align: center;
+        flex: 1;
+    }
+
+    .detail-title h2 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .detail-info {
+        text-align: right;
+        font-size: 14px;
+    }
+
+    .detail-info p {
+        margin: 3px 0;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
+    .detail-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .detail-table td,
+    .detail-table th {
+        border: 1px solid #000;
+        padding: 8px;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .notes-box {
+        border: 1px solid #000;
+        height: 100px;
+        margin-bottom: 30px;
+    }
+
+    .signature {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .signature-line {
+        display: inline-block;
+        border-top: 1px solid #000;
+        padding-top: 8px;
+        width: 250px;
+    }
+
+    .signature-line p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    /* Estilos responsive */
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo {
+            margin-bottom: 15px;
+            margin-right: 0;
+        }
+
+        .search-bar {
+            flex-direction: column;
+        }
+
+        .search-bar input {
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .search-bar button {
+            border-radius: 4px;
+        }
+
+        .records-table {
+            font-size: 14px;
+        }
+
+        .records-table th,
+        .records-table td {
+            padding: 6px;
+        }
+
+        .modal-content {
+            width: 95%;
+            margin: 10% auto;
+            padding: 15px;
+        }
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="../img/Quality-BOLCA.png" alt="BOLCA Logo">
+            </div>
+            <div class="title">
+                <h1>SISTEMA DE MANTENIMIENTO PREVENTIVO</h1>
+                <h2>EQUIPOS DE CÓMPUTO</h2>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Buscar por ID o usuario...">
+            <button id="searchButton">Buscar</button>
+        </div>
+
+        <table class="records-table">
+            <thead>
+                <tr>
+                    <th>ID EQUIPO</th>
+                    <th>USUARIO</th>
+                    <th>DEPARTAMENTO</th>
+                    <th>ÚLTIMA FECHA</th>
+                    <th>ACCIÓN</th>
+                </tr>
+            </thead>
+            <tbody id="recordsList">
+                <!-- Los registros se cargarán dinámicamente con JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para mostrar el detalle del registro -->
+    <div id="recordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="recordDetail">
+                <!-- Aquí se cargará el detalle del registro -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+<script>
+    // Datos de ejemplo para los registros
+
+    '<% console.log(JSON.stringify(valeasignacion, null, 2)); %>'
+    const registros =
+    [{"idInventario":208,"tipo":"Laptop","marca":"lenovo pf1rynpp","serie":"0","folio":37,"estado":2,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"SORTEO","accesorios":"cargador ","codigoResguardo":82,"ultimoMantenimiento":"","idFolio":37,"numeroEmpleado":"04570","fechaFolio":"2025-07-01","Firma":"1iq3ol6ot6809443714812236.webp","comentarios":null,"nombrelargo":"CORTEZ FERNANDEZ MARIA DE JESUS","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":61,"tipo":"Laptop","marca":"hp","serie":"0","folio":44,"estado":1,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"sorteo","accesorios":"cargador","codigoResguardo":100,"ultimoMantenimiento":"","idFolio":44,"numeroEmpleado":"01864","fechaFolio":"2025-07-01","Firma":"1iq4gsp4q9878592622743327.webp","comentarios":null,"nombrelargo":"WONG CASTAÑEDA JOSE ARTURO","descripcion":"Dirección Administrativa"},
+    {"idInventario":13,"tipo":"Ensamblado","marca":"na","serie":"na","folio":5,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-12-04","usoExclusivo":"capital humano","accesorios":"teclado y mouse","codigoResguardo":8,"ultimoMantenimiento":"2024-06-18","idFolio":5,"numeroEmpleado":"13758","fechaFolio":"2025-07-01","Firma":"1iqlgs218897804666700283.webp","comentarios":null,"nombrelargo":"MORONES LOPEZ JORGE DANIEL","descripcion":"Analista de Gestión de Capital Humano"},
+    {"idInventario":120,"tipo":"Laptop","marca":"acer aspire 15","serie":"NXABDAL00212209E333400","folio":56,"estado":1,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"ceo","accesorios":"cargador","codigoResguardo":122,"ultimoMantenimiento":"","idFolio":56,"numeroEmpleado":"00174","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"WONG LOPEZ RUBEN OMAR","descripcion":"Otros"},
+    {"idInventario":156,"tipo":"Laptop","marca":"lenovo thinkpad ","serie":"0","folio":79,"estado":1,"precio":"6590","fechaCompra":"2023-09-19","fechaEntrega":"2023-09-20","usoExclusivo":"sorteo","accesorios":"cargador","codigoResguardo":259,"ultimoMantenimiento":"","idFolio":79,"numeroEmpleado":"00173","fechaFolio":"2025-07-01","Firma":"1iq9eua9e45880504712241965.webp","comentarios":null,"nombrelargo":"CASTILLO LOPEZ DAVID","descripcion":"Gerente Regional de Sorteo"},
+    {"idInventario":194,"tipo":"Laptop","marca":"hp","serie":"0","folio":66,"estado":2,"precio":"3500","fechaCompra":"2023-01-10","fechaEntrega":"2023-03-10","usoExclusivo":"SORTEO","accesorios":"cargador","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":66,"numeroEmpleado":"00192","fechaFolio":"2025-07-01","Firma":"1iq9vbssj8436454254158463.webp","comentarios":null,"nombrelargo":"ZAMORA BARAJAS YULIANA GUADALUPE","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":45,"tipo":"Laptop","marca":"dell","serie":"0","folio":24,"estado":1,"precio":"6000","fechaCompra":"2024-03-01","fechaEntrega":"2024-03-01","usoExclusivo":"comercializacion y ventas","accesorios":"cargador","codigoResguardo":45,"ultimoMantenimiento":"","idFolio":24,"numeroEmpleado":"00497","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"HONG MERINO GABRIEL","descripcion":"Gerencia de Comercialización y Ventas"},
+    {"idInventario":128,"tipo":"Laptop","marca":"HP ELITEBOOK","serie":"0","folio":61,"estado":1,"precio":"4700","fechaCompra":"2025-02-12","fechaEntrega":"2025-02-17","usoExclusivo":"dierccion de sorteo","accesorios":"cargador ","codigoResguardo":120,"ultimoMantenimiento":"","idFolio":61,"numeroEmpleado":"00144","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"WONG LOPEZ LIZETTE","descripcion":"Dirección de Capital Humano"},
+    {"idInventario":119,"tipo":"Laptop","marca":"ACER ASPIRE 14","serie":"NXA24AL0021500CE583400","folio":55,"estado":1,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"direccion de capital humano","accesorios":"cargador ","codigoResguardo":121,"ultimoMantenimiento":"2024-12-18","idFolio":55,"numeroEmpleado":"00239","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"WONG LOPEZ MYRNA IVETTE","descripcion":"Dirección de Capital Humano"},
+    {"idInventario":38,"tipo":"Ensamblado","marca":"na","serie":"na","folio":14,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-12-08","usoExclusivo":"gestion de gastos","accesorios":"teclado y mouse","codigoResguardo":27,"ultimoMantenimiento":"2024-12-18","idFolio":14,"numeroEmpleado":"04711","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"SANCHEZ LOPEZ JOSAFAT EDUARDO","descripcion":"Analista de Gestion de Gastos"},
+    {"idInventario":3,"tipo":"Laptop","marca":"dell latitude 5490","serie":"0","folio":2,"estado":2,"precio":"3000","fechaCompra":"2025-01-30","fechaEntrega":"2025-02-06","usoExclusivo":"Atraccion","accesorios":"cargador, mouse y mousepad","codigoResguardo":0,"ultimoMantenimiento":"2024-12-25","idFolio":2,"numeroEmpleado":"15185","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"ROMERO SANCHEZ ULISES ARTURO","descripcion":"Auxiliar de Atracción de Capital Humano"},
+    {"idInventario":65,"tipo":"Ensamblado","marca":"na","serie":"na","folio":20,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"captura","accesorios":"teclado y mouse","codigoResguardo":34,"ultimoMantenimiento":"2024-12-18","idFolio":20,"numeroEmpleado":"01913","fechaFolio":"2025-07-01","Firma":"1ipudfn8111063095969811165.webp","comentarios":null,"nombrelargo":"PEREZ SALAS VERONICA","descripcion":"Analista de Captura"},
+    {"idInventario":16,"tipo":"Laptop","marca":"hp","serie":"0","folio":6,"estado":1,"precio":"5895.23","fechaCompra":"2024-07-05","fechaEntrega":"2024-07-05","usoExclusivo":"capital humano","accesorios":"cargador","codigoResguardo":0,"ultimoMantenimiento":"2024-06-18","idFolio":6,"numeroEmpleado":"00600","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"VALDEZ MONTAÑEZ JORGE ENRIQUE","descripcion":"Jefe de Gestión de Capital Humano"},
+    {"idInventario":11,"tipo":"Ensamblado","marca":"na","serie":"na","folio":4,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"Nominas","accesorios":"teclado y mouse","codigoResguardo":7,"ultimoMantenimiento":"2025-03-05","idFolio":4,"numeroEmpleado":"09151","fechaFolio":"2025-07-01","Firma":"1iotrndd475007502747628.webp","comentarios":null,"nombrelargo":"MUÑOZ COLIS KAREN GUADALUPE","descripcion":"Analista de Nómina"},
+    {"idInventario":42,"tipo":"Laptop","marca":"dell","serie":"0","folio":16,"estado":2,"precio":"4368","fechaCompra":"2024-04-27","fechaEntrega":"2024-05-18","usoExclusivo":"gestion de la calidad","accesorios":"mouse y mousepad","codigoResguardo":108,"ultimoMantenimiento":"2024-12-12","idFolio":16,"numeroEmpleado":"13861","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"RODRIGUEZ DE JESUS ANA KELLY","descripcion":"Analista De Gestión De La Calidad"},
+    {"idInventario":53,"tipo":"Laptop","marca":"lenovo","serie":"0","folio":35,"estado":2,"precio":"3500","fechaCompra":"2024-05-28","fechaEntrega":"2024-05-28","usoExclusivo":"atraccion de capital humano","accesorios":"mousepad","codigoResguardo":316,"ultimoMantenimiento":"2024-12-18","idFolio":35,"numeroEmpleado":"11510","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"RODRIGUEZ PALACIOS MONICA YOVANA","descripcion":"Analista de Atracción de Capital Humano"},
+    {"idInventario":68,"tipo":"Ensamblado","marca":"na","serie":"0","folio":21,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"captura","accesorios":"teclado y mouse","codigoResguardo":36,"ultimoMantenimiento":"2024-12-18","idFolio":21,"numeroEmpleado":"14060","fechaFolio":"2025-07-01","Firma":"1ipucoujs9834397183365693.webp","comentarios":null,"nombrelargo":"MARTINEZ HERRERA MARTHA FERNANDA","descripcion":"Auxiliar de Captura de Datos"},
+    {"idInventario":26,"tipo":"Ensamblado","marca":"na","serie":"na","folio":10,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"servicio a cliente","accesorios":"teclado y mouse","codigoResguardo":18,"ultimoMantenimiento":"2024-06-18","idFolio":10,"numeroEmpleado":"13283","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"MAGDALENO GARCIA EVA NIDIA","descripcion":"ANALISTA DE SERVICIO AL CLIENTE"},
+    {"idInventario":83,"tipo":"Ensamblado","marca":"na","serie":"0","folio":36,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2024-03-15","usoExclusivo":"servicio al cliente","accesorios":"teclado y mouse","codigoResguardo":80,"ultimoMantenimiento":"2024-07-31","idFolio":36,"numeroEmpleado":"11044","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"REYNA RODRIGUEZ DIVANI LUCERO","descripcion":"ANALISTA DE SERVICIO AL CLIENTE"},
+    {"idInventario":41,"tipo":"Laptop","marca":"dell","serie":"DQZGHM3","folio":15,"estado":2,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"gestion de gastos","accesorios":"cargador, mouse y mousepad","codigoResguardo":29,"ultimoMantenimiento":"2024-12-18","idFolio":15,"numeroEmpleado":"00176","fechaFolio":"2025-07-01","Firma":"1ipv69s1j4682844534459949.webp","comentarios":null,"nombrelargo":"CADENA MENDOZA EVA GABRIELA","descripcion":"Jefe de Compras y Suministros"},
+    {"idInventario":23,"tipo":"Laptop","marca":"hp","serie":"0","folio":9,"estado":1,"precio":"4800","fechaCompra":"2024-08-15","fechaEntrega":"2024-08-16","usoExclusivo":"servicio a cliente","accesorios":"cargador, teclado numerico y mouse","codigoResguardo":0,"ultimoMantenimiento":"2024-06-18","idFolio":9,"numeroEmpleado":"10617","fechaFolio":"2025-07-01","Firma":"1iq1e53m644294160834353624.webp","comentarios":null,"nombrelargo":"MEDINA ECHEVARRIA LIDIA NOEMI","descripcion":"Jefe de Servicio al Cliente"},
+    {"idInventario":75,"tipo":"Ensamblado","marca":"na","serie":"0","folio":28,"estado":1,"precio":"4500","fechaCompra":"2025-02-10","fechaEntrega":"2025-02-10","usoExclusivo":"servicio a cliente","accesorios":"teclado y mouse","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":28,"numeroEmpleado":"11536","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"CASILLAS MARTINEZ BRENDA GUADALUPE","descripcion":"ANALISTA DE SERVICIO AL CLIENTE"},
+    {"idInventario":124,"tipo":"Laptop","marca":"LENOVO IDEAPAD ","serie":"0","folio":60,"estado":1,"precio":"3500","fechaCompra":"2023-06-10","fechaEntrega":"2023-06-17","usoExclusivo":"SO","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":60,"numeroEmpleado":"03637","fechaFolio":"2025-07-01","Firma":"1iq9c7ckl03543947437124051.webp","comentarios":null,"nombrelargo":"ESPARZA LUCIO JOSE ISABEL","descripcion":"SUPERVISOR REGIONAL DE SORTEO"},
+    {"idInventario":48,"tipo":"Ensamblado","marca":"na","serie":"na","folio":29,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"facturacion y cobranza","accesorios":"teclado y mouse","codigoResguardo":74,"ultimoMantenimiento":"2024-12-18","idFolio":29,"numeroEmpleado":"01184","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"CASTRO ESQUIVEL MONICA ISABEL","descripcion":"Jefe de Facturación y Cobranza"},
+    {"idInventario":30,"tipo":"Ensamblado","marca":"NA","serie":"NA","folio":11,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"servicio a cliente","accesorios":"teclado y mouse","codigoResguardo":20,"ultimoMantenimiento":"2024-06-18","idFolio":11,"numeroEmpleado":"05839","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"RODRIGUEZ SARABIA LESLYE FABIOLA","descripcion":"ANALISTA DE SERVICIO AL CLIENTE"},
+    {"idInventario":136,"tipo":"Laptop","marca":"ASUS","serie":"0","folio":69,"estado":1,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2024-06-06","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":322,"ultimoMantenimiento":"","idFolio":69,"numeroEmpleado":"11522","fechaFolio":"2025-07-01","Firma":"1iqj7sad039424211374501583.webp","comentarios":null,"nombrelargo":"LEZAMA GALVAN AARON","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":70,"tipo":"Ensamblado","marca":"NA","serie":"0","folio":23,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"facturacion y cobranza","accesorios":"teclado y mouse","codigoResguardo":40,"ultimoMantenimiento":"2024-12-18","idFolio":23,"numeroEmpleado":"03473","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"SANCHEZ VAZQUEZ FABIOLA ELIZABETH","descripcion":"Auxiliar de Facturación y Cobranza"},
+    {"idInventario":110,"tipo":"Laptop","marca":"hp elitebook ","serie":"0","folio":54,"estado":1,"precio":"5500","fechaCompra":"2025-02-06","fechaEntrega":"2025-02-21","usoExclusivo":"sorteo ","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":54,"numeroEmpleado":"03184","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"LOPEZ TORRES FRANCISCO DE JESUS","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":161,"tipo":"Laptop","marca":"hp240","serie":"5cd8138gfy","folio":84,"estado":2,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-06-09","usoExclusivo":"sorteo","accesorios":"cargador ","codigoResguardo":212,"ultimoMantenimiento":"","idFolio":84,"numeroEmpleado":"14453","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"ARIAS SORIA LINDA LIZBETH","descripcion":"Líder de Sorteo"},
+    {"idInventario":139,"tipo":"Laptop","marca":"dell 3160","serie":"4dvvvb2","folio":72,"estado":1,"precio":"4644","fechaCompra":"2023-01-09","fechaEntrega":"2023-04-09","usoExclusivo":"sorteo","accesorios":"cargador ","codigoResguardo":0,"ultimoMantenimiento":"2025-02-21","idFolio":72,"numeroEmpleado":"14570","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"VEGA JIMENEZ JONATHAN","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":33,"tipo":"Ensamblado","marca":"NA","serie":"NA","folio":12,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"RENTABILIDAD","accesorios":"teclado y mouse","codigoResguardo":22,"ultimoMantenimiento":"2024-06-18","idFolio":12,"numeroEmpleado":"12011","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"VIEYRA GONZALEZ ANA ISABEL","descripcion":"ANALISTA DE RENTABILIDAD"},
+    {"idInventario":169,"tipo":"Laptop","marca":"dell","serie":"0","folio":117,"estado":1,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-01-01","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":117,"numeroEmpleado":"02088","fechaFolio":"2025-07-01","Firma":"1iq1s09gr2419057111558054.webp","comentarios":null,"nombrelargo":"VARGAS VALLES ELISEO","descripcion":"SUPERVISOR REGIONAL DE SORTEO"},
+    {"idInventario":96,"tipo":"Ensamblado","marca":"na","serie":"0","folio":40,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"gestion de la calidad","accesorios":"teclado y mouse","codigoResguardo":88,"ultimoMantenimiento":"2024-12-18","idFolio":40,"numeroEmpleado":"11379","fechaFolio":"2025-07-01","Firma":"","comentarios":"porque es bien chismoso el de sistemas","nombrelargo":"REYES SANDOVAL GUILLERMO","descripcion":"Analista de Mejora Continua"},
+    {"idInventario":130,"tipo":"Laptop","marca":"acer ","serie":"0","folio":67,"estado":2,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":160,"ultimoMantenimiento":"","idFolio":67,"numeroEmpleado":"01911","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"DE LA TORRE SERRANO CARLOS MANUEL","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":20,"tipo":"Ensamblado","marca":"na","serie":"0","folio":8,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"captura","accesorios":"teclado y mouse","codigoResguardo":14,"ultimoMantenimiento":"2024-06-18","idFolio":8,"numeroEmpleado":"15565","fechaFolio":"2025-07-01","Firma":"1ipnmcuin09268747604759864.webp","comentarios":null,"nombrelargo":"GONZALEZ GUTIERREZ MARIA GUADALUPE","descripcion":"Auxiliar de Captura de Datos"},
+    {"idInventario":98,"tipo":"Laptop","marca":"ACER ","serie":"0","folio":41,"estado":1,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"DIRECCION ADMINISTRATIVA","accesorios":"NA","codigoResguardo":99,"ultimoMantenimiento":"","idFolio":41,"numeroEmpleado":"00338","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"VIEYRA GONZALEZ LAURA SUSANA","descripcion":"Gerencia de Administración"},
+    {"idInventario":121,"tipo":"Laptop","marca":"lenovo desktop 22h2","serie":"K90NK6X0","folio":58,"estado":2,"precio":"2300","fechaCompra":"2023-01-01","fechaEntrega":"2025-01-27","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":2,"ultimoMantenimiento":"","idFolio":58,"numeroEmpleado":"15829","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"SOTO REYES JANETTE","descripcion":"Líder de Sorteo"},
+    {"idInventario":87,"tipo":"Ensamblado","marca":"NA","serie":"0","folio":38,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"TECNOLOGIAS DE LA INFORMACION","accesorios":"teclado y mouse","codigoResguardo":89,"ultimoMantenimiento":"2024-12-18","idFolio":38,"numeroEmpleado":"15996","fechaFolio":"2025-07-01","Firma":"1iq461hkk9328011309371491.webp","comentarios":"","nombrelargo":"DE LUNA LUJAN OSCAR ARTURO","descripcion":"Analista de Tecnologías de la Informació"},
+    {"idInventario":93,"tipo":"Ensamblado","marca":"na","serie":"0","folio":38,"estado":2,"precio":"4500","fechaCompra":"2024-02-10","fechaEntrega":"2024-02-10","usoExclusivo":"TECNOLOGIAS DE LA INFORMACION","accesorios":"teclado y mouse","codigoResguardo":101,"ultimoMantenimiento":"2024-12-18","idFolio":38,"numeroEmpleado":"15996","fechaFolio":"2025-07-01","Firma":"1iq461hkk9328011309371491.webp","comentarios":"","nombrelargo":"DE LUNA LUJAN OSCAR ARTURO","descripcion":"Analista de Tecnologías de la Informació"},
+    {"idInventario":105,"tipo":"Laptop","marca":"HP ","serie":"5CG10514KS","folio":50,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-09","usoExclusivo":"SORTEO","accesorios":"MOUSE","codigoResguardo":115,"ultimoMantenimiento":"","idFolio":50,"numeroEmpleado":"16081","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"BEGINES OROZCO EDUARDO","descripcion":"Gerente Nacional de Sorteo"},
+    {"idInventario":183,"tipo":"Laptop","marca":"DELL 7480","serie":"0","folio":91,"estado":1,"precio":"4700","fechaCompra":"2025-02-14","fechaEntrega":"2025-03-12","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":91,"numeroEmpleado":"16168","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"DAMIAN HERRERA NAYELI MARISOL","descripcion":"Líder de Sorteo"},
+    {"idInventario":206,"tipo":"Laptop","marca":"dell latitude 5490","serie":"0","folio":1,"estado":1,"precio":"4500","fechaCompra":"2025-03-01","fechaEntrega":"2025-04-21","usoExclusivo":"Atraccion","accesorios":"mouse , mousepad, cargador ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":1,"numeroEmpleado":"16377","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"MACIAS RAMIREZ LAURA CECILIA","descripcion":"Auxiliar de Atracción de Capital Humano"},
+    {"idInventario":134,"tipo":"Laptop","marca":"dell latitude 5490","serie":"0","folio":68,"estado":2,"precio":"4700","fechaCompra":"2024-01-01","fechaEntrega":"2024-04-24","usoExclusivo":"sorteo","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":68,"numeroEmpleado":"16435","fechaFolio":"2025-07-01","Firma":"1iqji8pgm11322530463923819.webp","comentarios":null,"nombrelargo":"RIVERA GARCIA EDUARDO","descripcion":"Líder de Sorteo"},
+    {"idInventario":155,"tipo":"Laptop","marca":"dell 5490","serie":"BM6VVVB2","folio":78,"estado":1,"precio":"4644","fechaCompra":"2024-01-09","fechaEntrega":"2024-02-21","usoExclusivo":"sorteo","accesorios":"cargador ","codigoResguardo":0,"ultimoMantenimiento":"2025-02-21","idFolio":78,"numeroEmpleado":"16657","fechaFolio":"2025-07-01","Firma":"1iq1rhobq5229108226758894.webp","comentarios":null,"nombrelargo":"MIRANDA VELAZQUEZ MIZAEL","descripcion":"SUPERVISOR REGIONAL DE SORTEO"},
+    {"idInventario":77,"tipo":"Laptop","marca":"hp","serie":"5CD1354G83","folio":30,"estado":2,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2023-11-21","usoExclusivo":"facturacion y cobranza","accesorios":"cargador","codigoResguardo":187,"ultimoMantenimiento":"2024-12-18","idFolio":30,"numeroEmpleado":"16871","fechaFolio":"2025-07-01","Firma":"1iovnj5d09166169483663902.webp","comentarios":null,"nombrelargo":"HERNANDEZ RODRIGUEZ ITZEL DANIELA","descripcion":"Auxiliar de Facturación y Cobranza"},
+    {"idInventario":173,"tipo":"Laptop","marca":"HP ELITEBOOK","serie":"0","folio":119,"estado":2,"precio":"4699","fechaCompra":"2025-01-15","fechaEntrega":"2025-03-20","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":119,"numeroEmpleado":"16900","fechaFolio":"2025-07-01","Firma":"1iq8n4r0b5215988343169473.webp","comentarios":null,"nombrelargo":"ULLOA CHAVEZ BRUNO","descripcion":"INSPECTOR"},
+    {"idInventario":56,"tipo":"Ensamblado","marca":"na","serie":"0","folio":53,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-12-04","usoExclusivo":"capital humano","accesorios":"teclado y mouse","codigoResguardo":12,"ultimoMantenimiento":"2024-12-18","idFolio":53,"numeroEmpleado":"16901","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"MARTINEZ PLASCENCIA JANINE","descripcion":"Auxiliar de Gestión de Capital Humano"},
+    {"idInventario":164,"tipo":"Laptop","marca":"dell latitude","serie":"0","folio":114,"estado":1,"precio":"4900","fechaCompra":"2025-02-25","fechaEntrega":"2025-03-13","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":114,"numeroEmpleado":"17040","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"RUBIO JAIME LINA","descripcion":"INSPECTOR"},
+    {"idInventario":6,"tipo":"Ensamblado","marca":"na","serie":"na","folio":3,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2024-02-06","usoExclusivo":"capital humano","accesorios":"teclado y mouse","codigoResguardo":3,"ultimoMantenimiento":"2024-12-18","idFolio":3,"numeroEmpleado":"17051","fechaFolio":"2025-07-01","Firma":"1iqk0mmis17203943069698546.webp","comentarios":null,"nombrelargo":"VELAZQUEZ FLORES EDITH","descripcion":"Auxiliar de Gestión de Capital Humano"},
+    {"idInventario":8,"tipo":"Laptop","marca":"hp","serie":"NXGFUAL001712089763400","folio":3,"estado":2,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2024-02-06","usoExclusivo":"capital humano","accesorios":"cargador","codigoResguardo":118,"ultimoMantenimiento":"","idFolio":3,"numeroEmpleado":"17051","fechaFolio":"2025-07-01","Firma":"1iqk0mmis17203943069698546.webp","comentarios":null,"nombrelargo":"VELAZQUEZ FLORES EDITH","descripcion":"Auxiliar de Gestión de Capital Humano"},
+    {"idInventario":175,"tipo":"Laptop","marca":"hp245","serie":"5CG31027PY","folio":86,"estado":2,"precio":"6812","fechaCompra":"2023-01-09","fechaEntrega":"2024-03-05","usoExclusivo":"sorteo","accesorios":"cargador ","codigoResguardo":229,"ultimoMantenimiento":"2025-02-21","idFolio":86,"numeroEmpleado":"17056","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"GRIMALDO BARRERA GIOVANNI DANIEL","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":182,"tipo":"Laptop","marca":"hp15ef","serie":"5CD3065BQ7","folio":88,"estado":2,"precio":"6795","fechaCompra":"2023-08-28","fechaEntrega":"2024-03-25","usoExclusivo":"logistica vehicular ","accesorios":"cargador , teclado, mouse mousepad","codigoResguardo":226,"ultimoMantenimiento":"","idFolio":88,"numeroEmpleado":"17193","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"MORALES RUBALCAVA LUIS GERARDO","descripcion":"Analista de Logistica Vehicular"},
+    {"idInventario":185,"tipo":"Laptop","marca":"LENOVO ","serie":"0","folio":97,"estado":2,"precio":"5999","fechaCompra":"2023-10-16","fechaEntrega":"2024-04-03","usoExclusivo":"facturacion y cobranza","accesorios":"cargador ","codigoResguardo":252,"ultimoMantenimiento":"2024-12-18","idFolio":97,"numeroEmpleado":"17210","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"DE LA ROSA TORRES KARLA YAMEL","descripcion":"Auxiliar de Facturación y Cobranza"},
+    {"idInventario":158,"tipo":"Laptop","marca":"HP ELITEBOOK","serie":"0","folio":81,"estado":1,"precio":"4700","fechaCompra":"2025-02-10","fechaEntrega":"2025-02-14","usoExclusivo":"sorteo","accesorios":"cargador ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":81,"numeroEmpleado":"17228","fechaFolio":"2025-07-01","Firma":"1ipv4fqep8454899964861395.webp","comentarios":null,"nombrelargo":"LUEVANO CEDILLO FRANCISCO JAVIER","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":148,"tipo":"Laptop","marca":"HP ELITEBOOK","serie":"0","folio":73,"estado":1,"precio":"4700","fechaCompra":"2024-12-11","fechaEntrega":"2025-01-23","usoExclusivo":"sorteo","accesorios":"cargador y mochila vorago ","codigoResguardo":300,"ultimoMantenimiento":"","idFolio":73,"numeroEmpleado":"17258","fechaFolio":"2025-07-01","Firma":"1iqgm1o997298142347705832.webp","comentarios":"","nombrelargo":"HERNANDEZ LARA JOSE ENRIQUE","descripcion":"SUPERVISOR REGIONAL DE SORTEO"},
+    {"idInventario":195,"tipo":"Laptop","marca":"hp","serie":"0","folio":96,"estado":2,"precio":"3500","fechaCompra":"2024-06-01","fechaEntrega":"2024-06-03","usoExclusivo":"atraccion de capital humano","accesorios":"cargador","codigoResguardo":0,"ultimoMantenimiento":"2025-04-08","idFolio":96,"numeroEmpleado":"17477","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"TENORIO GONZALEZ CAROLA MARILU","descripcion":"Auxiliar de Atracción de Capital Humano"},
+    {"idInventario":157,"tipo":"Laptop","marca":"dell latitude","serie":"0","folio":109,"estado":1,"precio":"4700","fechaCompra":"2025-03-04","fechaEntrega":"2025-03-10","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":109,"numeroEmpleado":"17529","fechaFolio":"2025-07-01","Firma":"1iq3hk9574595470992809567.webp","comentarios":null,"nombrelargo":"LOPE LOERA DAVID ASAF","descripcion":"TECNICO DE CALIDAD"},
+    {"idInventario":63,"tipo":"Laptop","marca":"hp","serie":"0","folio":17,"estado":2,"precio":"3500","fechaCompra":"2024-06-18","fechaEntrega":"2024-06-18","usoExclusivo":"gestion de la calidad","accesorios":"mousepad y mouse","codigoResguardo":306,"ultimoMantenimiento":"","idFolio":17,"numeroEmpleado":"17618","fechaFolio":"2025-07-01","Firma":null,"comentarios":"Porque no esta especificado que no funciona el touchpad","nombrelargo":"JUAREZ MONTAÑEZ PAULINA","descripcion":"Auxiliar de Gestión de la Calidad"},
+    {"idInventario":52,"tipo":"Laptop","marca":"lenovo","serie":"0","folio":102,"estado":2,"precio":"3500","fechaCompra":"2024-08-24","fechaEntrega":"2024-08-24","usoExclusivo":"atraccion de capital humano","accesorios":"cargador","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":102,"numeroEmpleado":"17649","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"MARTINEZ HERNANDEZ JOSE JAVIER","descripcion":"Auxiliar de Atracción de Capital Humano"},
+    {"idInventario":190,"tipo":"Laptop","marca":"lenovo thinkpad ","serie":"0","folio":102,"estado":2,"precio":"6590","fechaCompra":"2023-01-01","fechaEntrega":"2024-08-24","usoExclusivo":"atraccion de capital humano","accesorios":"cargador ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":102,"numeroEmpleado":"17649","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"MARTINEZ HERNANDEZ JOSE JAVIER","descripcion":"Auxiliar de Atracción de Capital Humano"},
+    {"idInventario":147,"tipo":"Ensamblado","marca":"na","serie":"na","folio":103,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2024-09-20","usoExclusivo":"captura","accesorios":"teclado y mouse","codigoResguardo":18,"ultimoMantenimiento":"2024-12-18","idFolio":103,"numeroEmpleado":"17715","fechaFolio":"2025-07-01","Firma":"1ipnm5c379293551928839303.webp","comentarios":null,"nombrelargo":"GONZALEZ ROMERO JOHANA JAZMIN","descripcion":"Auxiliar de Captura de Datos"},
+    {"idInventario":152,"tipo":"Laptop","marca":"dell","serie":"0","folio":106,"estado":1,"precio":"3500","fechaCompra":"2025-03-04","fechaEntrega":"2025-03-10","usoExclusivo":"atraccion de capital humano","accesorios":"cargador, mouse y mousepad","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":106,"numeroEmpleado":"17738","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"LUNA MONTAÑEZ BEATRIS","descripcion":"ANALISTA DE SERVICIO AL CLIENTE"},
+    {"idInventario":221,"tipo":"Laptop","marca":"Lenovo V14","serie":"PF4LZWF5","folio":124,"estado":2,"precio":"4700","fechaCompra":"2024-01-01","fechaEntrega":"2024-12-02","usoExclusivo":"SORTEO","accesorios":"CARGADOR","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":124,"numeroEmpleado":"17835","fechaFolio":"2025-07-01","Firma":"1iqha0puc9523607778816607.webp","comentarios":"","nombrelargo":"ALMARAZ ESTRADA CLAUDIA PATRICIA","descripcion":"Líder de Sorteo"},
+    {"idInventario":187,"tipo":"Ensamblado","marca":"NA","serie":"0","folio":100,"estado":2,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2024-12-09","usoExclusivo":"tecnologias de informacion ","accesorios":"teclado , mouse y mousepad","codigoResguardo":0,"ultimoMantenimiento":"2024-12-18","idFolio":100,"numeroEmpleado":"17934","fechaFolio":"2025-07-01","Firma":"1iq101ako6920828154156926.webp","comentarios":null,"nombrelargo":"VAZQUEZ REYES KAREN ITZEL","descripcion":"Auxiliar de técnologias de la informació"},
+    {"idInventario":191,"tipo":"Laptop","marca":"HP","serie":"0","folio":22,"estado":1,"precio":"4700","fechaCompra":"2025-02-18","fechaEntrega":"2025-02-21","usoExclusivo":"servicio a cliente","accesorios":"cargador","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":22,"numeroEmpleado":"17990","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"ZARATE FLORES LUIS ANGEL","descripcion":"AUXILIAR DE SERVICIO AL CLIENTE"},
+    {"idInventario":198,"tipo":"Laptop","marca":"hp","serie":"0","folio":105,"estado":2,"precio":"3700","fechaCompra":"2023-01-01","fechaEntrega":"2025-02-24","usoExclusivo":"SORTEO","accesorios":"cargador","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":105,"numeroEmpleado":"18051","fechaFolio":"2025-07-01","Firma":"1iq47qb6k044377496004769146.webp","comentarios":null,"nombrelargo":"RAMIREZ OLMEDO CHRISTIAN ISAAC","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":165,"tipo":"Laptop","marca":"HP ELITEBOOK","serie":"0","folio":115,"estado":1,"precio":"4699","fechaCompra":"2025-02-06","fechaEntrega":"2025-02-26","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":115,"numeroEmpleado":"18117","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"ALFARO GODINEZ PILAR ANDREA","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":101,"tipo":"Ensamblado","marca":"NA","serie":"0","folio":48,"estado":2,"precio":"4500","fechaCompra":"2024-01-01","fechaEntrega":"2025-03-03","usoExclusivo":"COMPRAS Y SUMINISTROS ","accesorios":"NA","codigoResguardo":85,"ultimoMantenimiento":"2024-12-18","idFolio":48,"numeroEmpleado":"18183","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"REYES NICASIO LESLIE CECILIA","descripcion":"Auxiliar de Compras y Suministros"},
+    {"idInventario":82,"tipo":"Laptop","marca":"DELL LATITUDE 5490","serie":"0","folio":32,"estado":1,"precio":"3500","fechaCompra":"2025-03-12","fechaEntrega":"2025-03-19","usoExclusivo":"comercializacion y ventas","accesorios":"na","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":32,"numeroEmpleado":"18224","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"ANDRADE MONTAÑEZ DANIELA LIZETH","descripcion":"Auxiliar de comercialización y ventas"},
+    {"idInventario":99,"tipo":"Ensamblado","marca":"na","serie":"0","folio":47,"estado":2,"precio":"4500","fechaCompra":"2024-01-01","fechaEntrega":"2024-08-26","usoExclusivo":"captura ","accesorios":"na","codigoResguardo":38,"ultimoMantenimiento":"2024-12-18","idFolio":47,"numeroEmpleado":"18254","fechaFolio":"2025-07-01","Firma":"1ipv4lsci2888379058385846.webp","comentarios":null,"nombrelargo":"GONZALEZ TORRES ANA CAROLINA","descripcion":"INSPECTOR"},
+    {"idInventario":225,"tipo":"Laptop","marca":"LAPTOP DELL LATITUDE E5550","serie":"72gtc72","folio":126,"estado":1,"precio":"4700","fechaCompra":"2025-04-10","fechaEntrega":"2025-04-21","usoExclusivo":"SORTEO","accesorios":"cargador ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":126,"numeroEmpleado":"18309","fechaFolio":"2025-07-01","Firma":"1iqhak81g8224268777508854.webp","comentarios":null,"nombrelargo":"RIVERA SEGOVIA EFRAIN","descripcion":"Supervisor de Proyecto"},
+    {"idInventario":18,"tipo":"Ensamblado","marca":"na","serie":"0","folio":7,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-12-29","usoExclusivo":"capital humano","accesorios":"teclado y mouse","codigoResguardo":43,"ultimoMantenimiento":"2024-06-18","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"LOPEZ MUÑOZ LIZBETH GUADALUPE","descripcion":null},
+    {"idInventario":35,"tipo":"Ensamblado","marca":"na","serie":"na","folio":13,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-06-05","usoExclusivo":"facturacion y cobranza","accesorios":"teclado y mouse","codigoResguardo":24,"ultimoMantenimiento":"2024-06-18","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"MORENO ESQUIVEL JACQUELINE","descripcion":null},
+    {"idInventario":44,"tipo":"Laptop","marca":"hp","serie":"5CD225655P","folio":0,"estado":2,"precio":"3500","fechaCompra":"2023-01-01","fechaEntrega":"2025-03-27","usoExclusivo":"gestion de la calidad","accesorios":"carga","codigoResguardo":50,"ultimoMantenimiento":"2024-12-18","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"resguardo","descripcion":null},
+    {"idInventario":58,"tipo":"Ensamblado","marca":"na","serie":"0","folio":25,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2023-05-03","usoExclusivo":"gestion de gastos","accesorios":"teclado y mouse","codigoResguardo":46,"ultimoMantenimiento":"2024-12-18","idFolio":25,"numeroEmpleado":"139","fechaFolio":"2025-07-01","Firma":null,"comentarios":null,"nombrelargo":"GONZALEZ DANIELA ALICIA","descripcion":null},
+    {"idInventario":64,"tipo":"Laptop","marca":"lenovo","serie":"0","folio":19,"estado":2,"precio":"3500","fechaCompra":"2025-01-06","fechaEntrega":"2025-01-06","usoExclusivo":"gestion de la calidad","accesorios":"mousepad y mouse","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"LEONARDO GARCIA GUZMAN","descripcion":null},
+    {"idInventario":73,"tipo":"Laptop","marca":"ghia","serie":"0","folio":26,"estado":2,"precio":"2500","fechaCompra":"2023-01-01","fechaEntrega":"2025-01-13","usoExclusivo":"gestion de la calidad","accesorios":"mousepad y mouse","codigoResguardo":304,"ultimoMantenimiento":"","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"Helen Valeria Escobedo Marquez","descripcion":null},
+    {"idInventario":104,"tipo":"Laptop","marca":"ACER","serie":"R912H3QM","folio":49,"estado":2,"precio":"3500","fechaCompra":"2024-01-01","fechaEntrega":"2024-12-16","usoExclusivo":"ATRACCION DE CAPITAL HUMANO","accesorios":"MOUSE Y MOUSEPAD","codigoResguardo":81,"ultimoMantenimiento":"2024-12-18","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"MARIA FERNANDA GUZMAN ALONZO","descripcion":null},
+    {"idInventario":171,"tipo":"Ensamblado","marca":"na","serie":"na","folio":118,"estado":2,"precio":"4500","fechaCompra":"2023-01-01","fechaEntrega":"2025-03-18","usoExclusivo":"logistica vehicular ","accesorios":"teclado y mouse","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"AMELIA GARCIA CHAVEZ","descripcion":null},
+    {"idInventario":230,"tipo":"Laptop","marca":"DELL LATITUDE E7450","serie":"0","folio":127,"estado":1,"precio":"4600","fechaCompra":"2025-04-25","fechaEntrega":"2025-05-05","usoExclusivo":"SORTEO","accesorios":"CARGADOR ","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"ERVIN OSVALDO GONZALEZ TOVAR","descripcion":null},
+    {"idInventario":233,"tipo":"Laptop","marca":"DELL LATITUDE 5591","serie":"3MD2ZW2","folio":129,"estado":1,"precio":"4500","fechaCompra":"2025-05-02","fechaEntrega":"2025-05-12","usoExclusivo":"SORTEO","accesorios":"CARGADOR","codigoResguardo":0,"ultimoMantenimiento":"","idFolio":null,"numeroEmpleado":null,"fechaFolio":null,"Firma":null,"comentarios":null,"nombrelargo":"LUCERO REYNA CAZARES","descripcion":null}]
+    // Reemplazar con los datos reales de la variable valeasignacion %>';
+
+    console.log(registros);
+
+    // Función para cargar los registros en la tabla
+    function cargarRegistros(registrosFiltrados = null) {
+        const listaRegistros = document.getElementById('recordsList');
+        listaRegistros.innerHTML = '';
+
+        const registrosAMostrar = registrosFiltrados || registros;
+
+        if (registrosAMostrar.length === 0) {
+            listaRegistros.innerHTML = '<tr><td colspan="5" class="center">No se encontraron registros</td></tr>';
+            return;
+        }
+
+        registrosAMostrar.forEach((registro, index) => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+            <td>${registro.idInventario}</td>
+            <td>${registro.nombrelargo}</td>
+            <td>${registro.usoExclusivo}</td>
+            <td>${registro.ultimoMantenimiento}</td>
+            <td><button class="action-button" data-index="${index}">Mostrar registro</button></td>
+        `;
+            listaRegistros.appendChild(fila);
+        });
+
+        // Agregar eventos a los botones
+        document.querySelectorAll('.action-button').forEach(button => {
+            button.addEventListener('click', function () {
+                const index = this.getAttribute('data-index');
+                mostrarDetalle(registrosAMostrar[index]);
+            });
+        });
+    }
+
+    // Función para mostrar el detalle del registro en el modal
+    function mostrarDetalle(registro) {
+        const modal = document.getElementById('recordModal');
+        const detalleContenido = document.getElementById('recordDetail');
+
+        // Crear el contenido del detalle
+        detalleContenido.innerHTML = `
+        <div class="detail-header">
+            <div class="logo">
+                <img src="../img/Quality-BOLCA.png" alt="BOLCA Logo">
+            </div>
+            <div class="detail-title">
+                <h2>MANTENIMIENTO PREVENTIVO DE</h2>
+                <h2>EQUIPO DE CÓMPUTO</h2>
+            </div>
+            <div class="detail-info">
+                <p><span class="bold">Código: </span>OP-FI-A-26</p>
+                <p><span class="bold">Rev: </span>03</p>
+                <p><span class="bold">Fecha de emisión: </span>03/01/2015</p>
+                <p><span class="bold">Fecha de Rev: </span>03/03/2023</p>
+            </div>
+        </div>
+
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td class="bold">ID EQUIPO</td>
+                    <td class="bold">MARCA</td>
+                    <td class="bold">MODELO</td>
+                    <td class="bold">SERIAL</td>
+                    <td class="bold">PÁGINA</td>
+                </tr>
+                <tr>
+                    <td>${registro.idInventario}</td>
+                    <td>${registro.marca}</td>
+                    <td>${registro.tipo}</td>
+                    <td>${registro.serie}</td>
+                    <td>1/1</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td class="bold">DEPARTAMENTO</td>
+                    <td class="bold">USUARIO</td>
+                    <td class="bold">FECHA DE MTO.:</td>
+                    <td class="bold">PRÓXIMA FECHA</td>
+                </tr>
+                <tr>
+                    <td>${registro.usoExclusivo}</td>
+                    <td>${registro.nombrelargo}</td>
+                    <td>${registro.ultimoMantenimiento}</td>
+                    <td>${registro.fechaFolio}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td class="bold">REALIZÓ EL MANTENIMIENTO</td>
+                </tr>
+                <tr>
+                    <td>Oscar De luna</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th colspan="3" class="center bold">ACCIONES REALIZADAS EN EL MANTENIMIENTO</th>
+                </tr>
+                <tr>
+                    <th class="bold">MANTENIMIENTO A HARDWARE</th>
+                    <th class="bold"></th>
+                    <th class="bold">OBSERVACIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Soplado</td>
+                    <td class="center">x</td>
+                    <td rowspan="10"></td>
+                </tr>
+                <tr>
+                    <td>Ventilador</td>
+                    <td class="center">x</td>
+                </tr>
+                <tr>
+                    <td>Disipador de procesador</td>
+                    <td class="center">x</td>
+                </tr>
+                <tr>
+                    <td>Tarjetas de memoria</td>
+                    <td class="center">x</td>
+                </tr>
+                <tr>
+                    <td>Fuentes de poder</td>
+                    <td class="center">x</td>
+                </tr>
+                <tr>
+                    <td>Puertos USB/SD</td>
+                    <td class="center">x</td>
+                </tr>
+                <tr>
+                    <td>Lector de CD/DVD</td>
+                    <td class="center">N/A</td>
+                </tr>
+                <tr>
+                    <td>Monitor</td>
+                    <td class="center">x</td>
+                </tr>
+                <tr>
+                    <td>Teclado</td>
+                    <td class="center">x</td>
+                </tr>
+                <tr>
+                    <td>Mouse</td>
+                    <td class="center">x</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="notes-box"></div>
+
+        <div class="signature">
+            <div class="signature-line">
+                <p>Firma de quien realizó el mtto.</p>
+            </div>
+        </div>
+    `;
+
+        // Mostrar el modal
+        modal.style.display = 'block';
+    }
+
+    // Función para buscar registros
+    function buscarRegistros(termino) {
+        if (!termino) {
+            cargarRegistros();
+            return;
+        }
+
+        termino = termino.toLowerCase();
+        const resultados = registros.filter(registro =>
+            registro.id.toLowerCase().includes(termino) ||
+            registro.usuario.toLowerCase().includes(termino)
+        );
+
+        cargarRegistros(resultados);
+    }
+
+    // Inicializar la página
+    document.addEventListener('DOMContentLoaded', function () {
+        // Cargar los registros iniciales
+        cargarRegistros();
+
+        // Configurar el botón de búsqueda
+        document.getElementById('searchButton').addEventListener('click', function () {
+            const termino = document.getElementById('searchInput').value;
+            buscarRegistros(termino);
+        });
+
+        // Permitir búsqueda al presionar Enter
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const termino = this.value;
+                buscarRegistros(termino);
+            }
+        });
+
+        // Configurar el cierre del modal
+        document.querySelector('.close-button').addEventListener('click', function () {
+            document.getElementById('recordModal').style.display = 'none';
+        });
+
+        // Cerrar el modal al hacer clic fuera del contenido
+        window.addEventListener('click', function (event) {
+            const modal = document.getElementById('recordModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+</html>

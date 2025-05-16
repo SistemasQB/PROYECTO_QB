@@ -1,0 +1,683 @@
+
+<style>
+    /* Variables */
+:root {
+    --color-background: linear-gradient(to bottom right, #f9fafb, #f3f4f6);
+    --color-card: #ffffff;
+    --color-text: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-primary: #14b8a6;
+    --color-primary-dark: #0d9488;
+    --color-primary-gradient: linear-gradient(to right, #14b8a6, #10b981);
+    --color-primary-hover: linear-gradient(to right, #0d9488, #059669);
+    --color-primary-light: #f0fdfa;
+    --color-accent: #f3f4f6;
+    --color-accent-hover: #e5e7eb;
+    --border-radius: 0.5rem;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --transition: all 0.2s ease;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Header */
+header {
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    background: var(--color-primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Card */
+.card {
+    background-color: var(--color-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.tab-button {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    transition: var(--transition);
+    position: relative;
+}
+
+.tab-button.active {
+    color: var(--color-primary);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+}
+
+.tab-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tab-button .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    padding: 1.5rem;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.content-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.record-count {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+/* Textarea */
+.textarea-container {
+    background-color: var(--color-accent);
+    border-radius: var(--border-radius);
+    padding: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+textarea {
+    width: 100%;
+    height: 16rem;
+    padding: 1rem;
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    resize: vertical;
+    font-family: inherit;
+    font-size: 0.875rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+}
+
+/* Buttons */
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.primary-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+    background: var(--color-primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.primary-button:hover {
+    background: var(--color-primary-hover);
+    box-shadow: var(--shadow);
+}
+
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.secondary-button:hover {
+    background-color: var(--color-primary-light);
+}
+
+.button-container .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+tbody tr {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+tbody tr:hover {
+    background-color: var(--color-accent);
+}
+
+tbody tr.selected {
+    background-color: var(--color-primary-light);
+    border-left: 4px solid var(--color-primary);
+}
+
+tbody tr:first-child td {
+    background-color: var(--color-accent);
+    font-weight: 500;
+}
+
+td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.875rem;
+}
+
+/* Form */
+.form-container {
+    background-color: var(--color-accent);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+}
+
+.data-form {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    transition: var(--transition);
+}
+
+.form-group:hover .form-label {
+    color: var(--color-primary);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+}
+
+/* Toast */
+.toast-container {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 50;
+}
+
+.toast {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: var(--shadow);
+    max-width: 20rem;
+    animation: slideIn 0.3s ease;
+}
+
+.toast-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.toast-description {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .data-form {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .data-form {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+</style>
+
+<body>
+    <main class="container">
+        <header>
+            <h1 class="title">Alta de personal</h1>
+            <!-- <p class="subtitle">Visualiza, edita y analiza tus datos de Excel de forma sencilla</p> -->
+        </header>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab-button active" data-tab="paste">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18 2h-5a2 2 0 0 0-2 2v4"></path>
+                        <path d="M11 12H9"></path>
+                        <path d="M16 12h-1"></path>
+                        <path d="M12 16h-3"></path>
+                        <path d="M11 8h10v10H11z"></path>
+                    </svg>
+                    <span>Pegar Datos</span>
+                </button>
+                <button class="tab-button" data-tab="data" disabled>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3h18v18H3z"></path>
+                        <path d="M3 9h18"></path>
+                        <path d="M3 15h18"></path>
+                        <path d="M9 3v18"></path>
+                        <path d="M15 3v18"></path>
+                    </svg>
+                    <span>Ver Tabla</span>
+                </button>
+                <button class="tab-button" data-tab="details" disabled>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                        <path d="M7 7h10"></path>
+                        <path d="M7 12h10"></path>
+                        <path d="M7 17h5"></path>
+                    </svg>
+                    <span>Detalles</span>
+                </button>
+            </div>
+
+            <div class="tab-content active" id="paste-content">
+                <div class="content-header">
+                    <h2>Pegar Datos de Excel</h2>
+                    <p>Copia los datos de Excel y pégalos en el área de texto a continuación.</p>
+                </div>
+                <div class="textarea-container">
+                    <textarea id="data-textarea" placeholder="Pega aquí los datos copiados de Excel..."></textarea>
+                </div>
+                <div class="button-container">
+                    <button id="process-button" class="primary-button">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18 2h-5a2 2 0 0 0-2 2v4"></path>
+                            <path d="M11 12H9"></path>
+                            <path d="M16 12h-1"></path>
+                            <path d="M12 16h-3"></path>
+                            <path d="M11 8h10v10H11z"></path>
+                        </svg>
+                        Procesar Datos
+                    </button>
+                </div>
+            </div>
+
+            <div class="tab-content" id="data-content">
+                <div class="content-header">
+                    <h2>Tabla de Datos</h2>
+                    <span id="record-count" class="record-count">0 registros</span>
+                </div>
+                <div class="table-container">
+                    <table id="data-table">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="details-content">
+                <div class="content-header">
+                    <h2 id="details-title">Editar Registro #0</h2>
+                    <button id="back-to-table" class="secondary-button">
+                        Volver a la Tabla
+                    </button>
+                </div>
+                <div class="form-container">
+                    <div id="data-form" class="data-form"></div>
+                    <div class="button-container">
+                        <button id="save-button" class="primary-button">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            Aceptar Cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container" class="toast-container"></div>
+
+</body>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const dataTextarea = document.getElementById('data-textarea');
+    const processButton = document.getElementById('process-button');
+    const dataTable = document.getElementById('data-table').querySelector('tbody');
+    const dataForm = document.getElementById('data-form');
+    const saveButton = document.getElementById('save-button');
+    const backToTableButton = document.getElementById('back-to-table');
+    const recordCount = document.getElementById('record-count');
+    const detailsTitle = document.getElementById('details-title');
+
+    // State
+    let data = [];
+    let selectedRow = 0;
+    let editedData = [];
+
+    // Tab switching
+    function switchTab(tabId) {
+        tabButtons.forEach(button => {
+            button.classList.remove('active');
+            if (button.dataset.tab === tabId) {
+                button.classList.add('active');
+            }
+        });
+
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+            if (content.id === `${tabId}-content`) {
+                content.classList.add('active');
+            }
+        });
+    }
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (!button.disabled) {
+                switchTab(button.dataset.tab);
+            }
+        });
+    });
+
+    // Process data from textarea
+    processButton.addEventListener('click', () => {
+        const text = dataTextarea.value.trim();
+        if (!text) return;
+
+        const rows = text.split('\n').filter(row => row.trim() !== '');
+        data = rows.map(row => row.split('\t'));
+
+        if (data.length > 0) {
+            // Enable tabs
+            tabButtons.forEach(button => {
+                button.disabled = false;
+            });
+
+            // Update record count
+            recordCount.textContent = `${data.length} registros`;
+
+            // Render table
+            renderTable();
+
+            // Switch to data tab
+            switchTab('data');
+
+            // Clear textarea
+            dataTextarea.value = '';
+        }
+    });
+
+    // Render table
+    function renderTable() {
+        dataTable.innerHTML = '';
+
+        data.forEach((row, rowIndex) => {
+            const tr = document.createElement('tr');
+            tr.className = rowIndex === selectedRow ? 'selected' : '';
+            
+            tr.addEventListener('click', () => {
+                handleRowClick(rowIndex);
+            });
+
+            row.forEach((cell) => {
+                const td = document.createElement('td');
+                td.textContent = cell;
+                tr.appendChild(td);
+            });
+
+            // Fill empty cells if needed
+            const maxColumns = 25;
+            if (row.length < maxColumns) {
+                for (let i = 0; i < maxColumns - row.length; i++) {
+                    const td = document.createElement('td');
+                    tr.appendChild(td);
+                }
+            }
+
+            dataTable.appendChild(tr);
+        });
+    }
+
+    // Handle row click
+    function handleRowClick(rowIndex) {
+        selectedRow = rowIndex;
+        editedData = [...data[rowIndex]];
+        
+        // Update selected row in table
+        const rows = dataTable.querySelectorAll('tr');
+        rows.forEach((row, index) => {
+            row.classList.toggle('selected', index === rowIndex);
+        });
+
+        // Update details title
+        detailsTitle.textContent = `Editar Registro #${rowIndex}`;
+
+        // Render form
+        renderForm();
+
+        // Switch to details tab
+        switchTab('details');
+    }
+
+    // Render form
+    function renderForm() {
+        dataForm.innerHTML = '';
+
+        // Generate up to 25 fields
+        for (let i = 0; i < 25; i++) {
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
+
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.htmlFor = `field-${i}`;
+            label.textContent = `Dato ${i + 1}`;
+
+            const input = document.createElement('input');
+            input.className = 'form-input';
+            input.id = `field-${i}`;
+            input.value = editedData[i] || '';
+            input.addEventListener('input', (e) => {
+                editedData[i] = e.target.value;
+            });
+
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+            dataForm.appendChild(formGroup);
+        }
+    }
+
+    // Save changes
+    saveButton.addEventListener('click', () => {
+        if (data.length === 0 || selectedRow === undefined) return;
+
+        // Remove the selected row from data
+        data.splice(selectedRow, 1);
+
+        // Update record count
+        recordCount.textContent = `${data.length} registros`;
+
+        // Show toast notification
+        showToast('Registro eliminado', 'El registro ha sido eliminado correctamente.');
+
+        // Render updated table
+        renderTable();
+
+        // Switch back to data tab
+        switchTab('data');
+    });
+
+    // Back to table button
+    backToTableButton.addEventListener('click', () => {
+        switchTab('data');
+    });
+
+    // Toast notification
+    function showToast(title, description = '', duration = 3000) {
+        const toastContainer = document.getElementById('toast-container');
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        
+        const toastTitle = document.createElement('div');
+        toastTitle.className = 'toast-title';
+        toastTitle.textContent = title;
+        
+        toast.appendChild(toastTitle);
+        
+        if (description) {
+            const toastDescription = document.createElement('div');
+            toastDescription.className = 'toast-description';
+            toastDescription.textContent = description;
+            toast.appendChild(toastDescription);
+        }
+        
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(() => {
+                toastContainer.removeChild(toast);
+            }, 300);
+        }, duration);
+    }
+});
+</script>
