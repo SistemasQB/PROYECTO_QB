@@ -1,0 +1,60 @@
+    <div class="container">
+        <div class="form-container">
+            <div class="header">
+                <div class="logo">
+                    <img src="../img/Quality-BOLCA.png" alt="Logo BOLCA" width="150">
+                </div>
+                <div class="title">
+                    <h1>SOLICITUD DE SERVICIO</h1>
+                </div>
+                <div class="code-info">
+                    <p>Código: QB-FR-A-16-03</p>
+                    <p>Rev: 00</p>
+                    <p>Fecha de emisión: 10-04-2023</p>
+                    <p>Fecha de revisión: N/A</p>
+                </div>
+            </div>
+            
+            <form id="formSolicitud">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            <div class="folio">
+                <!-- <p>Folio:<span style="color: red;" id="idFolio"><%= // obtenerFolio%></span></p> -->
+            </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fecha">Fecha:</label>
+                        <input type="text" id="fecha" name="fecha" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="region">Región:</label>
+                        <input type="text" id="region" name="region" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre Solicitante:</label>
+                    <input type="text" id="nombre" name="solcitante" value="<%=obtenerNombre.nombrelargo%>" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">e-mail Solicitante:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="equipo">Tipo de Equipo:</label>
+                    <input type="text" id="equipo" name="tipo" required>
+                </div>
+
+                <div class="form-group">
+                    <div class="description-header">Descripción del problema</div>
+                    <textarea id="descripcion" name="descripcion" rows="10" required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">Enviar Solicitud</button>
+                </div>
+            </form>
+        </div>
+    </div>

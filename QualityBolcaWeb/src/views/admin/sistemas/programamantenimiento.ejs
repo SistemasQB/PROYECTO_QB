@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programa de Mantenimiento de Equipo de Cómputo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<style>
+    /* Reset y estilos generales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #000;
+  font-size: 14px;
+}
+
+.container {
+  min-height: 100vh;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.maintenance-card {
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Estilos del encabezado */
+.header {
+  border-bottom: 1px solid #ccc;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .logo-container {
+    margin-bottom: 0;
+  }
+}
+
+.logo {
+  width: 64px;
+  height: 64px;
+  margin-right: 1rem;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-size: 12px;
+}
+
+.logo-quality {
+  font-weight: bold;
+}
+
+.logo-bolca {
+  font-weight: bold;
+  color: #0066cc;
+  font-size: 20px;
+}
+
+.title-container {
+  flex: 1;
+  text-align: center;
+}
+
+.main-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .main-title {
+    font-size: 24px;
+  }
+}
+
+.document-info {
+  font-size: 12px;
+  text-align: right;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .document-info {
+    margin-top: 0;
+  }
+}
+
+.update-date {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem;
+  border-top: 1px solid #ccc;
+  font-size: 12px;
+}
+
+/* Estilos de la tabla */
+.table-container {
+  overflow-x: auto;
+}
+
+.maintenance-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  font-size: 12px;
+}
+
+.maintenance-table th,
+.maintenance-table td {
+  border: 1px solid #ccc;
+  padding: 4px;
+}
+
+.maintenance-table th {
+  background-color: #f5f5f5;
+  font-weight: 500;
+}
+
+.maintenance-table td.type {
+  text-align: center;
+  font-weight: 500;
+}
+
+.maintenance-table td.green {
+  background-color: #4ade80;
+}
+
+.maintenance-table td.blue {
+  background-color: #3b82f6;
+}
+
+/* Estilos del pie de página */
+.footer {
+  padding: 1rem;
+  font-size: 12px;
+}
+
+.legend-signatures {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .legend-signatures {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.legend {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+}
+
+.legend p {
+  margin-bottom: 0.25rem;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.signatures {
+  display: flex;
+}
+
+.signature-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 50%;
+}
+
+.signature-title {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.signature-box {
+  border: 1px solid #ccc;
+  width: 100%;
+  height: 80px;
+}
+
+.signature-label {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.color-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.color-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-box {
+  width: 16px;
+  height: 16px;
+}
+
+.color-box.green {
+  background-color: #4ade80;
+}
+
+.color-box.blue {
+  background-color: #3b82f6;
+}
+
+/* Estilos para impresión */
+@media print {
+  body {
+    background-color: white;
+  }
+  
+  .container {
+    padding: 0;
+  }
+  
+  .maintenance-card {
+    box-shadow: none;
+  }
+  
+  .maintenance-table td.green {
+    background-color: #4ade80 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .maintenance-table td.blue {
+    background-color: #3b82f6 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .color-box.green {
+    background-color: #4ade80 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .color-box.blue {
+    background-color: #3b82f6 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+</style>
+
+<body>
+  <main class="container">
+    <div class="maintenance-card">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-content">
+          <div class="logo-container">
+            <div class="logo">
+              <img src="https://via.placeholder.com/64" alt="Logo BOLCA">
+            </div>
+            <div class="logo-text">
+              <p class="logo-quality">Quality</p>
+              <p class="logo-bolca">BOLCA</p>
+            </div>
+          </div>
+
+          <div class="title-container">
+            <h1 class="main-title">PROGRAMA DE MANTENIMIENTO DE EQUIPO DE CÓMPUTO</h1>
+          </div>
+
+          <div class="document-info">
+            <p>Código: QB-FI-A-06</p>
+            <p>Rev.03</p>
+            <p>Fecha de emisión: 13-01-2012</p>
+            <p>Fecha de revisión: 01-03-2023</p>
+          </div>
+        </div>
+
+        <div class="update-date">
+          <p>Fecha de actualización: _____________</p>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container">
+        <table class="maintenance-table">
+          <thead>
+            <tr>
+              <th rowspan="2">ID DE EQUIPO</th>
+              <th rowspan="2">NOMBRE DEL USUARIO</th>
+              <th rowspan="2">MARCA</th>
+              <th rowspan="2">DEPARTAMENTO</th>
+              <th rowspan="2">REGIÓN</th>
+              <th rowspan="2">FECHA DE COMPRA</th>
+              <th rowspan="2" colspan="2">TÉCNICO RESPONSABLE</th>
+              <!-- <th rowspan="2"></th> -->
+              <th colspan="12">MES</th>
+            </tr>
+            <tr>
+              <th>ENE</th>
+              <th>FEB</th>
+              <th>MAR</th>
+              <th>ABR</th>
+              <th>MAY</th>
+              <th>JUN</th>
+              <th>JUL</th>
+              <th>AGO</th>
+              <th>SEP</th>
+              <th>OCT</th>
+              <th>NOV</th>
+              <th>DIC</th>
+            </tr>
+          </thead>
+          <tbody id="maintenance-data">
+            <!-- JavaScript llenará esta sección -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <div class="legend-signatures">
+          <div class="legend">
+            <p><span class="bold">HP:</span> Hardware programado</p>
+            <p><span class="bold">HR:</span> Hardware realizado</p>
+            <p><span class="bold">SP:</span> Software programado</p>
+            <p><span class="bold">SR:</span> Software realizado</p>
+          </div>
+          <div class="signatures">
+            <div class="signature-block">
+              <div class="signature-title">ELABORÓ</div>
+              <div class="signature-box"></div>
+              <div class="signature-label">FIRMA</div>
+            </div>
+            <div class="signature-block">
+              <div class="signature-title">REVISÓ Y APROBÓ</div>
+              <div class="signature-box"></div>
+              <div class="signature-label">FIRMA</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="color-legend">
+          <div class="color-item">
+            <div class="color-box green"></div>
+            <span>Programado</span>
+          </div>
+          <div class="color-item">
+            <div class="color-box blue"></div>
+            <span>Realizado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+<script>
+    // Datos de ejemplo
+const sampleData = [
+  {
+    id: "EQ-001",
+    nombre: "PC Desktop Dell",
+    marca: "Dell",
+    departamento: "Contabilidad",
+    region: "Norte",
+    fecha: "15-01-2023",
+    tecnico: "Juan Pérez",
+    mantenimientos: {
+      ene: { hp: true, hr: false, sp: false, sr: false },
+      feb: { hp: false, hr: false, sp: true, sr: false },
+      mar: { hp: false, hr: false, sp: false, sr: false },
+      abr: { hp: false, hr: false, sp: false, sr: false },
+      may: { hp: false, hr: true, sp: false, sr: false },
+      jun: { hp: false, hr: false, sp: false, sr: true },
+      jul: { hp: true, hr: false, sp: false, sr: false },
+      ago: { hp: false, hr: false, sp: false, sr: false },
+      sep: { hp: false, hr: false, sp: false, sr: false },
+      oct: { hp: false, hr: false, sp: true, sr: false },
+      nov: { hp: false, hr: false, sp: false, sr: false },
+      dic: { hp: false, hr: false, sp: false, sr: false },
+    },
+  },
+  {
+    id: "EQ-002",
+    nombre: "Laptop HP",
+    marca: "HP",
+    departamento: "Ventas",
+    region: "Sur",
+    fecha: "20-02-2023",
+    tecnico: "María González",
+    mantenimientos: {
+      ene: { hp: false, hr: false, sp: false, sr: false },
+      feb: { hp: true, hr: false, sp: false, sr: false },
+      mar: { hp: false, hr: true, sp: false, sr: false },
+      abr: { hp: false, hr: false, sp: true, sr: false },
+      may: { hp: false, hr: false, sp: false, sr: true },
+      jun: { hp: false, hr: false, sp: false, sr: false },
+      jul: { hp: false, hr: false, sp: false, sr: false },
+      ago: { hp: true, hr: false, sp: false, sr: false },
+      sep: { hp: false, hr: true, sp: false, sr: false },
+      oct: { hp: false, hr: false, sp: false, sr: false },
+      nov: { hp: false, hr: false, sp: true, sr: false },
+      dic: { hp: false, hr: false, sp: false, sr: true },
+    },
+  },
+  {
+    id: "EQ-003",
+    nombre: "Impresora Láser",
+    marca: "Epson",
+    departamento: "Administración",
+    region: "Centro",
+    fecha: "05-03-2023",
+    tecnico: "Carlos Ramírez",
+    mantenimientos: {
+      ene: { hp: false, hr: false, sp: true, sr: false },
+      feb: { hp: false, hr: false, sp: false, sr: true },
+      mar: { hp: true, hr: false, sp: false, sr: false },
+      abr: { hp: false, hr: true, sp: false, sr: false },
+      may: { hp: false, hr: false, sp: false, sr: false },
+      jun: { hp: false, hr: false, sp: true, sr: false },
+      jul: { hp: false, hr: false, sp: false, sr: true },
+      ago: { hp: false, hr: false, sp: false, sr: false },
+      sep: { hp: true, hr: false, sp: false, sr: false },
+      oct: { hp: false, hr: true, sp: false, sr: false },
+      nov: { hp: false, hr: false, sp: true, sr: false },
+      dic: { hp: false, hr: false, sp: false, sr: false },
+    },
+  },
+  {
+    id: "EQ-004",
+    nombre: "Servidor Principal",
+    marca: "IBM",
+    departamento: "TI",
+    region: "Norte",
+    fecha: "10-04-2023",
+    tecnico: "Roberto Sánchez",
+    mantenimientos: {
+      ene: { hp: true, hr: false, sp: true, sr: false },
+      feb: { hp: false, hr: true, sp: false, sr: true },
+      mar: { hp: false, hr: false, sp: false, sr: false },
+      abr: { hp: false, hr: false, sp: false, sr: false },
+      may: { hp: true, hr: false, sp: true, sr: false },
+      jun: { hp: false, hr: true, sp: false, sr: true },
+      jul: { hp: false, hr: false, sp: false, sr: false },
+      ago: { hp: false, hr: false, sp: false, sr: false },
+      sep: { hp: true, hr: false, sp: true, sr: false },
+      oct: { hp: false, hr: true, sp: false, sr: true },
+      nov: { hp: false, hr: false, sp: false, sr: false },
+      dic: { hp: false, hr: false, sp: false, sr: false },
+    },
+  },
+  {
+    id: "EQ-005",
+    nombre: "Monitor LG",
+    marca: "LG",
+    departamento: "Diseño",
+    region: "Sur",
+    fecha: "15-05-2023",
+    tecnico: "Ana López",
+    mantenimientos: {
+      ene: { hp: false, hr: false, sp: false, sr: false },
+      feb: { hp: false, hr: false, sp: false, sr: false },
+      mar: { hp: true, hr: false, sp: false, sr: false },
+      abr: { hp: false, hr: true, sp: false, sr: false },
+      may: { hp: false, hr: false, sp: true, sr: false },
+      jun: { hp: false, hr: false, sp: false, sr: true },
+      jul: { hp: false, hr: false, sp: false, sr: false },
+      ago: { hp: false, hr: false, sp: false, sr: false },
+      sep: { hp: true, hr: false, sp: false, sr: false },
+      oct: { hp: false, hr: true, sp: false, sr: false },
+      nov: { hp: false, hr: false, sp: true, sr: false },
+      dic: { hp: false, hr: false, sp: false, sr: true },
+    },
+  },
+];
+
+const months = [
+  "ene", "feb", "mar", "abr", "may", "jun", 
+  "jul", "ago", "sep", "oct", "nov", "dic"
+];
+
+const maintenanceTypes = [
+  { id: "hp", name: "HP", color: "green" },
+  { id: "hr", name: "HR", color: "blue" },
+  { id: "sp", name: "SP", color: "green" },
+  { id: "sr", name: "SR", color: "blue" },
+];
+
+// Función para llenar la tabla con datos
+function populateTable() {
+  const tableBody = document.getElementById('maintenance-data');
+  let tableContent = '';
+
+  // Agregar filas con datos
+  sampleData.forEach(equipment => {
+    maintenanceTypes.forEach((type, typeIndex) => {
+      tableContent += '<tr>';
+      
+      // Solo agregar las celdas de información del equipo en la primera fila de cada equipo
+      if (typeIndex === 0) {
+        tableContent += `
+          <td rowspan="4">${equipment.id}</td>
+          <td rowspan="4">${equipment.nombre}</td>
+          <td rowspan="4">${equipment.marca}</td>
+          <td rowspan="4">${equipment.departamento}</td>
+          <td rowspan="4">${equipment.region}</td>
+          <td rowspan="4">${equipment.fecha}</td>
+          <td rowspan="4">${equipment.tecnico}</td>
+        `;
+      }
+      
+      // Agregar el tipo de mantenimiento
+      tableContent += `<td class="type">${type.name}</td>`;
+      
+      // Agregar las celdas de los meses
+      months.forEach(month => {
+        const hasMaintenanceClass = equipment.mantenimientos[month][type.id] ? type.color : '';
+        tableContent += `<td class="${hasMaintenanceClass}"></td>`;
+      });
+      
+      tableContent += '</tr>';
+    });
+  });
+  
+  // Agregar filas vacías adicionales
+  for (let i = 0; i < 2; i++) {
+    maintenanceTypes.forEach((type, typeIndex) => {
+      tableContent += '<tr>';
+      
+      if (typeIndex === 0) {
+        tableContent += `
+          <td rowspan="4"></td>
+          <td rowspan="4"></td>
+          <td rowspan="4"></td>
+          <td rowspan="4"></td>
+          <td rowspan="4"></td>
+          <td rowspan="4"></td>
+          <td rowspan="4"></td>
+        `;
+      }
+      
+      tableContent += `<td class="type">${type.name}</td>`;
+      
+      months.forEach(month => {
+        tableContent += '<td></td>';
+      });
+      
+      tableContent += '</tr>';
+    });
+  }
+  
+  tableBody.innerHTML = tableContent;
+}
+
+// Inicializar la tabla cuando se cargue la página
+document.addEventListener('DOMContentLoaded', populateTable);
+</script>
+
+</html>

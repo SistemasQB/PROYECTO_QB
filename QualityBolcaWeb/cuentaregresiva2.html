@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,286 +9,287 @@
 </head>
 <style>
     /* Base styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-    background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-header {
-    background-color: #1f2937;
-    color: white;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 2rem;
-}
-
-.config-link {
-    color: white;
-    text-decoration: none;
-    padding: 8px 16px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-.config-link:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.container {
-    max-width: 1000px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-    flex: 1;
-}
-
-footer {
-    background-color: #1f2937;
-    color: white;
-    text-align: center;
-    padding: 15px;
-    font-size: 0.875rem;
-}
-
-/* Countdown styles */
-.countdown-container {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    padding: 30px;
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.countdown-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.countdown-item {
-    background-color: #f9fafb;
-    border-radius: 8px;
-    padding: 20px 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.countdown-value {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #1f2937;
-}
-
-.countdown-label {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-top: 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.note {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-top: 10px;
-}
-
-/* Content section styles */
-.content-section {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.tabs {
-    display: flex;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.tab-btn {
-    padding: 15px 20px;
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #6b7280;
-    cursor: pointer;
-    transition: all 0.2s;
-    flex: 1;
-    text-align: center;
-}
-
-.tab-btn:hover {
-    background-color: #f9fafb;
-}
-
-.tab-btn.active {
-    color: #3b82f6;
-    border-bottom: 2px solid #3b82f6;
-}
-
-.tab-content {
-    padding: 20px;
-}
-
-.tab-pane {
-    display: none;
-}
-
-.tab-pane.active {
-    display: block;
-}
-
-/* News styles */
-.news-item {
-    margin-bottom: 25px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.news-item:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
-}
-
-.news-item h3 {
-    font-size: 1.25rem;
-    color: #1f2937;
-    margin-bottom: 5px;
-}
-
-.news-date {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-bottom: 10px;
-}
-
-/* Game styles */
-.game-instructions {
-    margin-bottom: 20px;
-    color: #4b5563;
-}
-
-.memory-game {
-    margin-top: 20px;
-}
-
-#game-board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.card {
-    aspect-ratio: 1;
-    background-color: #3b82f6;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.3s, background-color 0.3s;
-    transform-style: preserve-3d;
-}
-
-.card.flipped {
-    transform: rotateY(180deg);
-    background-color: #f9fafb;
-    color: #1f2937;
-}
-
-.card.matched {
-    background-color: #10b981;
-    transform: rotateY(180deg);
-}
-
-.game-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-}
-
-.button {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.button:hover {
-    background-color: #2563eb;
-}
-
-#game-stats {
-    display: flex;
-    gap: 20px;
-    font-size: 0.875rem;
-    color: #4b5563;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-    .countdown-grid {
-        grid-template-columns: repeat(2, 1fr);
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
-    #game-board {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .game-controls {
+
+    body {
+        background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+        min-height: 100vh;
+        display: flex;
         flex-direction: column;
-        gap: 15px;
     }
-    
-    #game-stats {
-        width: 100%;
-        justify-content: space-between;
-    }
-}
 
-@media (max-width: 480px) {
-    .countdown-value {
+    header {
+        background-color: #1f2937;
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    header h1 {
+        margin: 0;
         font-size: 2rem;
     }
-    
-    #game-board {
-        grid-template-columns: repeat(2, 1fr);
+
+    .config-link {
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        transition: background-color 0.2s;
     }
-}
+
+    .config-link:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .container {
+        max-width: 1000px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        flex: 1;
+    }
+
+    footer {
+        background-color: #1f2937;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 0.875rem;
+    }
+
+    /* Countdown styles */
+    .countdown-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .countdown-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .countdown-item {
+        background-color: #f9fafb;
+        border-radius: 8px;
+        padding: 20px 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .countdown-value {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .countdown-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 5px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .note {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 10px;
+    }
+
+    /* Content section styles */
+    .content-section {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .tab-btn {
+        padding: 15px 20px;
+        background: none;
+        border: none;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex: 1;
+        text-align: center;
+    }
+
+    .tab-btn:hover {
+        background-color: #f9fafb;
+    }
+
+    .tab-btn.active {
+        color: #3b82f6;
+        border-bottom: 2px solid #3b82f6;
+    }
+
+    .tab-content {
+        padding: 20px;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    /* News styles */
+    .news-item {
+        margin-bottom: 25px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .news-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .news-item h3 {
+        font-size: 1.25rem;
+        color: #1f2937;
+        margin-bottom: 5px;
+    }
+
+    .news-date {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+
+    /* Game styles */
+    .game-instructions {
+        margin-bottom: 20px;
+        color: #4b5563;
+    }
+
+    .memory-game {
+        margin-top: 20px;
+    }
+
+    #game-board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        aspect-ratio: 1;
+        background-color: #3b82f6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.3s, background-color 0.3s;
+        transform-style: preserve-3d;
+    }
+
+    .card.flipped {
+        transform: rotateY(180deg);
+        background-color: #f9fafb;
+        color: #1f2937;
+    }
+
+    .card.matched {
+        background-color: #10b981;
+        transform: rotateY(180deg);
+    }
+
+    .game-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .button {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .button:hover {
+        background-color: #2563eb;
+    }
+
+    #game-stats {
+        display: flex;
+        gap: 20px;
+        font-size: 0.875rem;
+        color: #4b5563;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .countdown-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        #game-board {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .game-controls {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #game-stats {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .countdown-value {
+            font-size: 2rem;
+        }
+
+        #game-board {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
 </style>
+
 <body>
     <header>
         <h1>Auditoria 2025</h1>
-        <a href="index.html" class="config-link">Configuración</a>
+        <!-- <a href="index.html" class="config-link">Configuración</a> -->
     </header>
 
     <main class="container">
@@ -310,7 +312,7 @@ footer {
                     <div class="countdown-label">Segundos</div>
                 </div>
             </div>
-            <p class="note">Solo se cuentan días laborables (Lunes a Viernes)</p>
+            <!-- <p class="note">Solo se cuentan días laborables (Lunes a Viernes)</p> -->
         </div>
 
         <div class="content-section">
@@ -318,27 +320,36 @@ footer {
                 <button class="tab-btn active" data-tab="news">Noticias</button>
                 <button class="tab-btn" data-tab="game">Juego</button>
             </div>
-            
+
             <div class="tab-content">
                 <div id="news" class="tab-pane active">
                     <h2>Últimas Noticias</h2>
                     <div class="news-item">
                         <h3>Preparativos para la Auditoría 2025</h3>
-                        <p class="news-date">Publicado: 3 de abril, 2025</p>
-                        <p>El equipo de auditoría ha comenzado los preparativos para la próxima revisión anual. Se espera que este año el proceso sea más eficiente gracias a las nuevas herramientas implementadas.</p>
+                        <p class="news-date">Publicado: 19 de mayo, 2025</p>
+                        <p>Como ya saben se aproxima la Auditoría Externa de Seguimiento, continuamos con la cuenta
+                            regresiva recordándoles que se llevará a cabo del 30 Junio al 04 de Julio 2025</p>
                     </div>
                     <div class="news-item">
-                        <h3>Nuevos Estándares de Cumplimiento</h3>
+                        <h3>Convocatoria de Mejora continua </h3>
                         <p class="news-date">Publicado: 28 de marzo, 2025</p>
-                        <p>Se han publicado nuevos estándares de cumplimiento que entrarán en vigor antes de la auditoría. Todos los departamentos deben familiarizarse con estos cambios.</p>
-                    </div>
-                    <div class="news-item">
-                        <h3>Sesiones de Capacitación Programadas</h3>
-                        <p class="news-date">Publicado: 15 de marzo, 2025</p>
-                        <p>Se han programado sesiones de capacitación para todo el personal. Estas sesiones cubrirán los nuevos procedimientos y requisitos para la auditoría de 2025.</p>
+                        <p>• Si tu propuesta de mejora involucra a otro proceso o departamento deberás notificarle antes de
+                        registrarla para que esté de acuerdo, de igual manera si la mejora implica cambios en algún
+                        formato o actividad de la cual no seas responsable, deberás revisarlo y confirmar la aprobación
+                        de quien si es responsable de ello.</p>
+                        <p>• Si la propuesta implica cambios en la información documentada que forma parte del sistema de
+                        gestión de calidad, primero se deberá revisar con el departamento de calidad para verificar que
+                        no se incumpla con algún punto de la norma ISO 9001:2015.</p>
+                        <p>• Utilizar la app Mejora Continua que tienen instalada en sus computadores (Verificar que los
+                        datos que colocan sean correctos ya que esa información quedará registrada y no se podrá
+                        modificar).</p>
+                        <p>• Adjuntar el análisis de su propuesta en formato PDF(En dicho análisis se deberá exponer todos
+                        los beneficios que se van a obtener con su implementación, apoyarse del check list que se les
+                        compartió).</p>
+
                     </div>
                 </div>
-                
+
                 <div id="game" class="tab-pane">
                     <h2>Juego de Memoria</h2>
                     <p class="game-instructions">Encuentra todas las parejas de cartas. ¡Pon a prueba tu memoria!</p>
@@ -364,210 +375,179 @@ footer {
     <script src="display-script.js"></script>
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // DOM elements for countdown
-    const daysElement = document.getElementById('days');
-    const hoursElement = document.getElementById('hours');
-    const minutesElement = document.getElementById('minutes');
-    const secondsElement = document.getElementById('seconds');
-    
-    // DOM elements for tabs
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabPanes = document.querySelectorAll('.tab-pane');
-    
-    // DOM elements for game
-    const gameBoard = document.getElementById('game-board');
-    const startGameButton = document.getElementById('start-game');
-    const attemptsElement = document.getElementById('attempts');
-    const pairsElement = document.getElementById('pairs');
-    
-    // Load data from localStorage
-    let targetDate = loadTargetDate() || new Date('2025-12-31');
-    let excludedDates = loadExcludedDates() || [];
-    
-    // Game variables
-    let cards = [];
-    let flippedCards = [];
-    let matchedPairs = 0;
-    let attempts = 0;
-    let gameStarted = false;
-    
-    // Tab functionality
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const tabId = this.getAttribute('data-tab');
-            
-            // Remove active class from all buttons and panes
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabPanes.forEach(pane => pane.classList.remove('active'));
-            
-            // Add active class to current button and pane
-            this.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+    document.addEventListener('DOMContentLoaded', function () {
+        // DOM elements for countdown
+        const daysElement = document.getElementById('days');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+
+        // DOM elements for tabs
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        // DOM elements for game
+        const gameBoard = document.getElementById('game-board');
+        const startGameButton = document.getElementById('start-game');
+        const attemptsElement = document.getElementById('attempts');
+        const pairsElement = document.getElementById('pairs');
+
+        // Load data from localStorage
+        let targetDate = new Date('2025-06-30');
+        // let excludedDates = loadExcludedDates() || [];
+
+        // Game variables
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let attempts = 0;
+        let gameStarted = false;
+
+
+
+        // Tab functionality
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const tabId = this.getAttribute('data-tab');
+
+                // Remove active class from all buttons and panes
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                // Add active class to current button and pane
+                this.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
         });
-    });
-    
-    // Game functionality
-    startGameButton.addEventListener('click', startGame);
-    
-    function startGame() {
-        // Reset game state
-        gameBoard.innerHTML = '';
-        flippedCards = [];
-        matchedPairs = 0;
-        attempts = 0;
-        gameStarted = true;
-        
-        // Update UI
-        attemptsElement.textContent = attempts;
-        pairsElement.textContent = matchedPairs;
-        
-        // Create cards
-        const symbols = ['🚀', '🌟', '🎮', '🎯', '🎨', '🎭', '🎬', '🎵'];
-        cards = [...symbols, ...symbols]; // Duplicate symbols to create pairs
-        
-        // Shuffle cards
-        shuffleArray(cards);
-        
-        // Create card elements
-        cards.forEach((symbol, index) => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.dataset.index = index;
-            card.dataset.symbol = symbol;
-            card.addEventListener('click', flipCard);
-            gameBoard.appendChild(card);
-        });
-    }
-    
-    function flipCard() {
-        if (!gameStarted || flippedCards.length >= 2 || this.classList.contains('flipped') || this.classList.contains('matched')) {
-            return;
-        }
-        
-        // Flip the card
-        this.classList.add('flipped');
-        this.textContent = this.dataset.symbol;
-        flippedCards.push(this);
-        
-        // Check if two cards are flipped
-        if (flippedCards.length === 2) {
-            attempts++;
+
+        // Game functionality
+        startGameButton.addEventListener('click', startGame);
+
+        function startGame() {
+            // Reset game state
+            gameBoard.innerHTML = '';
+            flippedCards = [];
+            matchedPairs = 0;
+            attempts = 0;
+            gameStarted = true;
+
+            // Update UI
             attemptsElement.textContent = attempts;
-            
-            // Check if the cards match
-            if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
-                // Match found
-                flippedCards.forEach(card => card.classList.add('matched'));
-                flippedCards = [];
-                matchedPairs++;
-                pairsElement.textContent = matchedPairs;
-                
-                // Check if all pairs are found
-                if (matchedPairs === 8) {
-                    setTimeout(() => {
-                        alert(`¡Felicidades! Has completado el juego en ${attempts} intentos.`);
-                        gameStarted = false;
-                    }, 500);
-                }
-            } else {
-                // No match
-                setTimeout(() => {
-                    flippedCards.forEach(card => {
-                        card.classList.remove('flipped');
-                        card.textContent = '';
-                    });
+            pairsElement.textContent = matchedPairs;
+
+            // Create cards
+            const symbols = ['🚀', '🌟', '🎮', '🎯', '🎨', '🎭', '🎬', '🎵'];
+            cards = [...symbols, ...symbols]; // Duplicate symbols to create pairs
+
+            // Shuffle cards
+            shuffleArray(cards);
+
+            // Create card elements
+            cards.forEach((symbol, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.index = index;
+                card.dataset.symbol = symbol;
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (!gameStarted || flippedCards.length >= 2 || this.classList.contains('flipped') || this.classList.contains('matched')) {
+                return;
+            }
+
+            // Flip the card
+            this.classList.add('flipped');
+            this.textContent = this.dataset.symbol;
+            flippedCards.push(this);
+
+            // Check if two cards are flipped
+            if (flippedCards.length === 2) {
+                attempts++;
+                attemptsElement.textContent = attempts;
+
+                // Check if the cards match
+                if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
+                    // Match found
+                    flippedCards.forEach(card => card.classList.add('matched'));
                     flippedCards = [];
-                }, 1000);
+                    matchedPairs++;
+                    pairsElement.textContent = matchedPairs;
+
+                    // Check if all pairs are found
+                    if (matchedPairs === 8) {
+                        setTimeout(() => {
+                            alert(`¡Felicidades! Has completado el juego en ${attempts} intentos.`);
+                            gameStarted = false;
+                        }, 500);
+                    }
+                } else {
+                    // No match
+                    setTimeout(() => {
+                        flippedCards.forEach(card => {
+                            card.classList.remove('flipped');
+                            card.textContent = '';
+                        });
+                        flippedCards = [];
+                    }, 1000);
+                }
             }
         }
-    }
-    
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-    
-    // Helper functions for countdown
-    function isWeekend(date) {
-        const day = date.getDay();
-        return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
-    }
 
-    function isExcludedDate(date) {
-        return excludedDates.some(excludedDate => 
-            new Date(excludedDate).toDateString() === date.toDateString()
-        );
-    }
-
-    function calculateBusinessDays(startDate, endDate) {
-        let count = 0;
-        const currentDate = new Date(startDate);
-        
-        while (currentDate <= endDate) {
-            // Skip weekends and excluded dates
-            if (!isWeekend(currentDate) && !isExcludedDate(currentDate)) {
-                count++;
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
-            
-            // Move to the next day
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        
-        return count;
-    }
-
-    function calculateTimeRemaining() {
-        const now = new Date();
-        
-        // If target date is in the past, return zeros
-        if (targetDate < now) {
-            return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+            return array;
         }
 
-        // Calculate business days
-        const businessDays = calculateBusinessDays(now, targetDate);
-        
-        // Calculate remaining time for the current day
-        const totalSeconds = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
-        const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = Math.floor(totalSeconds % 60);
 
-        return {
-            days: businessDays,
-            hours,
-            minutes,
-            seconds
-        };
-    }
+        function calculateTimeRemaining() {
+            const now = new Date();
 
-    function updateCountdown() {
-        const timeRemaining = calculateTimeRemaining();
-        
-        daysElement.textContent = timeRemaining.days;
-        hoursElement.textContent = timeRemaining.hours;
-        minutesElement.textContent = timeRemaining.minutes;
-        secondsElement.textContent = timeRemaining.seconds;
-    }
-    
-    // LocalStorage functions
-    function loadTargetDate() {
-        const savedDate = localStorage.getItem('auditoria2025_targetDate');
-        return savedDate ? new Date(savedDate) : null;
-    }
+            const diasRestantes = Math.floor((targetDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-    function loadExcludedDates() {
-        const savedDates = localStorage.getItem('auditoria2025_excludedDates');
-        return savedDates ? JSON.parse(savedDates).map(dateStr => new Date(dateStr)) : [];
-    }
-    
-    // Start countdown
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-});
+            // If target date is in the past, return zeros
+            if (targetDate < now) {
+                return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+            }
+
+            console.log(now);
+
+            const totalSeconds = Math.floor((now.getTime() - diasRestantes) / 1000);
+            // console.log(totalSeconds);
+            const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600) - 11;
+            const minutes = Math.floor((totalSeconds % 3600) / 60) - 59;
+            const seconds = Math.floor(totalSeconds % 60) - 60;
+
+            console.log(hours, minutes, seconds);
+
+
+            return {
+                days: diasRestantes,
+                hours,
+                minutes,
+                seconds
+            };
+        }
+
+        function updateCountdown() {
+            const timeRemaining = calculateTimeRemaining();
+
+            daysElement.textContent = timeRemaining.days;
+            hoursElement.textContent = Math.abs(timeRemaining.hours);
+            minutesElement.textContent = Math.abs(timeRemaining.minutes);
+            secondsElement.textContent = Math.abs(timeRemaining.seconds);
+        }
+
+
+        // Start countdown
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    });
 </script>
+
 </html>

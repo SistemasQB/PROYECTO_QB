@@ -597,6 +597,10 @@ td {
         switchTab('details');
     }
 
+    nombreColumnas = ['RECLUTADOR','NOMBRE','NSS','FECHA','DEPARTAMENTO','CORREO ELECTRONICO','ESTADO CIVIL','CURP','RFC','DOMICILIO','MUNICIPIO','ESTADO','C.P','TELEFONO','FONACOT','INFONAVIT','OBSERVACIONES','TARJETA','NIVEL ESTUDIOS',
+    'VISA/PASAPORTE','NIVEL DE INGLES','NOMBRE','NOMBRE (CONTACTO DE EMERGENCIAS)','TELEFONO (CONTACTO DE EMERGENCIAS)','FOLIO','QUIEN RECOMIENDA'
+    ]
+
     // Render form
     function renderForm() {
         dataForm.innerHTML = '';
@@ -609,12 +613,13 @@ td {
             const label = document.createElement('label');
             label.className = 'form-label';
             label.htmlFor = `field-${i}`;
-            label.textContent = `Dato ${i + 1}`;
-
+            label.textContent = nombreColumnas[i];
+            
             const input = document.createElement('input');
             input.className = 'form-input';
             input.id = `field-${i}`;
             input.value = editedData[i] || '';
+            input.setAttribute('required', 'required');
             input.addEventListener('input', (e) => {
                 editedData[i] = e.target.value;
             });
@@ -623,6 +628,22 @@ td {
             formGroup.appendChild(input);
             dataForm.appendChild(formGroup);
         }
+        const Lpuesto = document.createElement('label')
+        Lpuesto.className = 'form-label'
+        Lpuesto.htmlFor = `field-${25}`;
+        Lpuesto.textContent = 'PUESTO';
+        const Ipuesto = document.createElement('input')
+        Ipuesto.classList = 'form-input'
+        Ipuesto.id = `field-${25}`;
+        Ipuesto.setAttribute('required', 'required');
+        Ipuesto.addEventListener('input', (e) => {
+                editedData[i] = e.target.value;
+            });
+
+            const formGroup = document.createElement('div');
+            formGroup.appendChild(Lpuesto);
+            formGroup.appendChild(Ipuesto);
+            dataForm.appendChild(formGroup);
     }
 
     // Save changes

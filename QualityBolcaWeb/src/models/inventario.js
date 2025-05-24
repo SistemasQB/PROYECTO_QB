@@ -48,6 +48,10 @@ const Inventario = db.define('inventario', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    comentarios:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     codigoResguardo:{
         type: DataTypes.INTEGER(5).ZEROFILL,
         allowNull: true

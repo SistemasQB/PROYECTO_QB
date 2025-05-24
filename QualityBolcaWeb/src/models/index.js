@@ -31,6 +31,7 @@ import { default as Vales } from './vales.js';
 import { default as Testcleaver } from './atraccion/testcleaver.js';
 import { default as BuzonQuejas } from './buzonQuejas.js';
 import { default as Vacaciones } from './vacaciones.js';
+import { default as Solicitudservicio } from './solicitudservicio.js';
 
 // Configuración de Sequelize
 const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
@@ -105,5 +106,6 @@ export {
   Vales,
   Testcleaver,
   BuzonQuejas,
-  Vacaciones
+  Vacaciones,
+  Solicitudservicio
 };

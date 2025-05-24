@@ -41,6 +41,7 @@ controller.addinventario2 = async (req, res) => {
         fechaEntrega,
         usoExclusivo,
         accesorios,
+        comentarios,
         codigoResguardo,
         ultimoMantenimiento
     } = req.body
@@ -57,6 +58,7 @@ controller.addinventario2 = async (req, res) => {
         fechaEntrega,
         usoExclusivo,
         accesorios,
+        comentarios,
         codigoResguardo,
         ultimoMantenimiento
     })
@@ -157,6 +159,11 @@ const resultado = await db.query(
         valeasignacion,
         resultado
     })
+}
+
+controller.programamantenimiento = async (req, res) => {
+
+    res.render('admin/sistemas/programamantenimiento');
 }
 
 export default controller;

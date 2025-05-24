@@ -37,7 +37,8 @@ import {
     Vales,
     Inventario,
     BuzonQuejas,
-    Vacaciones
+    Vacaciones,
+    Solicitudservicio
 } from "../models/index.js";
 // import InformacionpuestoM from "../models/informacionpuesto.js"
 
@@ -235,36 +236,46 @@ controller.subirCurso2 = async (req, res) => {
     })
 }
 
-controller.solicitudServicio = (req, res) => {
+controller.solicitudServicio = async(req, res) => {
+    const { codigoempleado } = req.usuario
+    
+    const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado }, attributes: ['nombrelargo'] });
+    
+    const obtenerFolio = await Solicitudservicio.count() + 1;
+
+    console.log(obtenerFolio);
+    
+
     res.render('admin/solicitudServicio', {
-        mensaje: false,
+        obtenerFolio,
+        obtenerNombre,
         csrfToken: req.csrfToken()
     })
 }
 
 controller.solicitudServicio2 = async (req, res) => {
-    const { nombreCurso, descripcion, capacitador, duracion, correoContacto, disponible, fechaInicio, fechaFinal, horarioInicio, horarioFinal, ubicacion } = req.body
+    const { idFolio, solcitante, fecha, region, email, tipo, descripcion, solucion, fechaSolucion } = req.body
 
-    const cursoDatos = await Curso.create({
-        nombreCurso,
+    try {
+    const cursoDatos = await Solicitudservicio.create({
+        idFolio,
+        solcitante,
+        fecha,
+        region,
+        email,
+        tipo,
         descripcion,
-        capacitador,
-        duracion,
-        correoContacto,
-        disponible,
-        fechaInicio,
-        fechaFinal,
-        horarioInicio,
-        horarioFinal,
-        ubicacion
+        solucion,
+        fechaSolucion
     });
+        res.status(200).send({ msg: 'Solicitud enviada', ok: true, folio: cursoDatos.idFolio });
+        return
+    } catch (error) {
+        // res.status(400).send({ msg: 'Error al enviar la solicitud', ok: false });
+        res.status(400).send({ msg: error, ok: false });
+        return
+    }
 
-
-
-    res.render('admin/solicitudServicio', {
-        mensaje: true,
-        csrfToken: req.csrfToken()
-    })
 }
 
 controller.pedirCurso = async (req, res) => {
@@ -584,48 +595,48 @@ controller.mantenimientoautonomo2 = async (req, res) => {
     }
 }
 
-    controller.buzonquejas = (req, res) => {
-        res.render('admin/buzonQuejas', {
-            csrfToken: req.csrfToken()
-        })
-    }
+controller.buzonquejas = (req, res) => {
+    res.render('admin/buzonQuejas', {
+        csrfToken: req.csrfToken()
+    })
+}
 
-    controller.buzonquejas2 = async (req, res) => {
+controller.buzonquejas2 = async (req, res) => {
 
-        const { codigoempleado } = req.usuario
+    const { codigoempleado } = req.usuario
 
-        const { fechaIncidente, descripcion, region } = req.body
+    const { fechaIncidente, descripcion, region } = req.body
 
-        console.log(req.body);
-
-
-        const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } });
-
-        // console.log(obtenerFolio, req.file.filename);
-
-        try {
-            // BuzonQuejas.comentarios = comentarios
-            await BuzonQuejas.create({ nombreEmpleado: obtenerNombre.nombrelargo, fechaIncidente, descripcion, region })
-            // next()
-            res.status(200).send({ msg: 'Queja enviada', ok: true });
-            return
-        } catch (error) {
-            res.status(400).send({ msg: error, ok: false });
-            // console.log(error);
-
-            return
-        }
+    console.log(req.body);
 
 
-    }
+    const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } });
 
-    controller.publicarEvento = (req, res) => {
-        res.render('admin/publicarevento')
-    }
+    // console.log(obtenerFolio, req.file.filename);
 
-    controller.publicarEvento2 = (req, res) => {
-        res.render('admin/publicarevento')
+    try {
+        // BuzonQuejas.comentarios = comentarios
+        await BuzonQuejas.create({ nombreEmpleado: obtenerNombre.nombrelargo, fechaIncidente, descripcion, region })
+        // next()
+        res.status(200).send({ msg: 'Queja enviada', ok: true });
+        return
+    } catch (error) {
+        res.status(400).send({ msg: error, ok: false });
+        // console.log(error);
+
+        return
     }
 
 
-    export default controller;
+}
+
+controller.publicarEvento = (req, res) => {
+    res.render('admin/publicarevento')
+}
+
+controller.publicarEvento2 = (req, res) => {
+    res.render('admin/publicarevento')
+}
+
+
+export default controller;
