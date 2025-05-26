@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitud de Servicio - BOLCA</title>
+    <title>Dashboard - BOLCA</title>
     <!-- <link rel="stylesheet" href="styles.css"> -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-            <script src="https://unpkg.com/lucide@latest"></script>
-
-
 </head>
 
 <style>
@@ -21,44 +17,234 @@
 
 body {
     background-color: #f5f5f5;
-    padding: 20px;
 }
 
-    header {
-        background-color: #1f2937;
-        color: white;
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2%;
-    }
-
-    header h1 {
-        margin: 0;
-        font-size: 2rem;
-    }
-
-#imgsvg:hover {
-    background-color: #223863;
-    transform: scale(1.15);
-    cursor: pointer;
+/* Estilos para la página de inicio */
+.home-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+.home-content {
+    text-align: center;
+    background: white;
+    padding: 60px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+}
 
-.navbaroptions:hover{
-    background-color: #223863;
-    transform: scale(1.15);
+.logo-section h1 {
+    margin: 20px 0 10px;
+    color: #333;
+    font-size: 28px;
+}
+
+.logo-section p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0f4c81, #1a5fa0);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    text-decoration: underline;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(15, 76, 129, 0.3);
+}
+
+/* Navbar */
+.navbar {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 70px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.nav-btn.active {
+    background-color: #0f4c81;
     color: white;
 }
 
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
+.btn-home {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
 }
 
+.btn-home:hover {
+    background-color: #5a6268;
+}
+
+/* Contenido principal */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    color: #333;
+    font-size: 24px;
+}
+
+.btn-refresh {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-refresh:hover {
+    background-color: #218838;
+}
+
+/* Lista de solicitudes */
+.solicitudes-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.solicitud-item {
+    border-bottom: 1px solid #eee;
+    padding: 20px;
+    transition: background-color 0.2s;
+}
+
+.solicitud-item:hover {
+    background-color: #f8f9fa;
+}
+
+.solicitud-item:last-child {
+    border-bottom: none;
+}
+
+.solicitud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.solicitud-folio {
+    font-weight: bold;
+    color: #0f4c81;
+    font-size: 18px;
+}
+
+.solicitud-fecha {
+    color: #666;
+    font-size: 14px;
+}
+
+.solicitud-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.solicitud-field {
+    font-size: 14px;
+}
+
+.solicitud-field strong {
+    color: #333;
+}
+
+.solicitud-descripcion {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.solicitud-descripcion strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #0f4c81;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Estilos del formulario (reutilizados) */
 .form-container {
     background-color: white;
     padding: 24px;
@@ -153,7 +339,7 @@ textarea {
     margin-top: 24px;
 }
 
-button {
+button[type="submit"] {
     background-color: #0f4c81;
     color: white;
     border: none;
@@ -163,12 +349,22 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+button[type="submit"]:hover {
     background-color: #0a3b64;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 20px;
+    }
+    
+    .nav-menu {
+        margin: 10px 0;
+    }
+    
     .header {
         flex-direction: column;
         align-items: center;
@@ -189,76 +385,290 @@ button:hover {
         text-align: center;
         margin-bottom: 16px;
     }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .solicitud-info {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 
-<head>
-    <header>
-        <a href="/inicio"><img id="imgsvg" src="../svg/return.svg" alt="" srcset=""></a>
-        <h3 class="navbaroptions">Mis Solicitudes</h3>
-        <h3 class="navbaroptions">Nueva Solicitud</h3>
-        <!-- <a href="index.html" class="config-link">Configuración</a> -->
-    </header>
-</head>
-
 <body>
-    <%- inlcude('partials/_solicitudServicio1') %>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="../img/Quality-BOLCA.png" alt="Logo BOLCA" width="70">
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn active" onclick="showSection('solicitudes')">
+                    Mis Solicitudes
+                </button>
+                <button class="nav-btn" onclick="showSection('nueva')">
+                    Nueva Solicitud
+                </button>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-home" onclick="window.location.href='index.html'">
+                    ← Inicio
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <!-- Sección de Lista de Solicitudes -->
+        <div id="solicitudes-section" class="section active">
+            <div class="section-header">
+                <h2>Mis Solicitudes de Servicio</h2>
+                <button class="btn-refresh" onclick="loadSolicitudes()">
+                    Actualizar
+                </button>
+            </div>
+            
+            <div class="solicitudes-container">
+                <div id="solicitudes-list">
+                    <!-- Las solicitudes se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Nueva Solicitud -->
+        <div id="nueva-section" class="section">
+            <div class="section-header">
+                <h2>Nueva Solicitud de Servicio</h2>
+            </div>
+            
+                <div class="container">
+        <div class="form-container">
+            <div class="header">
+                <div class="logo">
+                    <img src="../img/Quality-BOLCA.png" alt="Logo BOLCA" width="150">
+                </div>
+                <div class="title">
+                    <h1>SOLICITUD DE SERVICIO</h1>
+                </div>
+                <div class="code-info">
+                    <p>Código: QB-FR-A-16-03</p>
+                    <p>Rev: 00</p>
+                    <p>Fecha de emisión: 10-04-2023</p>
+                    <p>Fecha de revisión: N/A</p>
+                </div>
+            </div>
+            
+            <form id="formSolicitud">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            <div class="folio">
+                <!-- <p>Folio:<span style="color: red;" id="idFolio"><%= // obtenerFolio%></span></p> -->
+            </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fecha">Fecha:</label>
+                        <input type="text" id="fecha" name="fecha" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="region">Región:</label>
+                        <input type="text" id="region" name="region" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre Solicitante:</label>
+                    <input type="text" id="nombre" name="solcitante" value="<%=obtenerNombre.nombrelargo%>" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">e-mail Solicitante:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="equipo">Tipo de Equipo:</label>
+                    <input type="text" id="equipo" name="tipo" required>
+                </div>
+
+                <div class="form-group">
+                    <div class="description-header">Descripción del problema</div>
+                    <textarea id="descripcion" name="descripcion" rows="10" required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit">Enviar Solicitud</button>
+                </div>
+            </form>
+        </div>
+    </div>
+        </div>
+    </div>
+
+    <!-- <script src="script.js"></script> -->
 </body>
 
 <script>
+    // Variables globales
+let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+let folioCounter = parseInt(localStorage.getItem('folioCounter')) || 1;
 
-    lucide.createIcons();
-    const fecha = document.getElementById('fecha');
-
-    fecha.value = new Date().toLocaleDateString();
-
-    // const idFolio = document.getElementById('idFolio').innerText;
-
-    const formSolicitud = document.getElementById('formSolicitud')
-
-    formSolicitud.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const formData = new FormData(formSolicitud)
-        // formData.append('idFolio', idFolio);
-        const urlEncoded = new URLSearchParams(formData).toString();
-        // console.log(urlEncoded);
-
-            fetch(`solicitudServicio`, {
-                method: 'POST',
-                body: urlEncoded,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                }
-            })
-                .then(response => response.json())
-                .then(res => {
-                    console.log(res);
-                    if (res.ok) {
-                        Swal.fire({
-                            title: res.msg,
-                            text: "Tu numero de folio es: " + res.folio,
-                            icon: "success",
-                            allowOutsideClick: false,
-                            button: "OK"
-                        }).then((value) => {
-                            if (value) {
-                                window.location.href = "solicitudServicio"
-                            }
-                        });;
-                    } else {
-                        Swal.fire({
-                            title: res.msg,
-                            icon: "error",
-                            text: "Error al enviar la solicitud",
-                            allowOutsideClick: false,
-                            button: "OK"
-                        });
-                    }
-                })
+// Función para mostrar secciones
+function showSection(sectionName) {
+    // Ocultar todas las secciones
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
     });
+    
+    // Remover clase active de todos los botones
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Mostrar la sección seleccionada
+    document.getElementById(sectionName + '-section').classList.add('active');
+    
+    // Activar el botón correspondiente
+    event.target.classList.add('active');
+    
+    // Cargar datos según la sección
+    if (sectionName === 'solicitudes') {
+        loadSolicitudes();
+    } else if (sectionName === 'nueva') {
+        generateFolio();
+        setCurrentDate();
+    }
+}
 
+// Función para generar número de folio
+function generateFolio() {
+    const folioElement = document.getElementById('folio-number');
+    if (folioElement) {
+        folioElement.textContent = String(folioCounter).padStart(6, '0');
+    }
+}
 
+// Función para establecer la fecha actual
+function setCurrentDate() {
+    const fechaInput = document.getElementById('fecha');
+    if (fechaInput) {
+        const today = new Date().toISOString().split('T')[0];
+        fechaInput.value = today;
+    }
+}
 
+// Función para cargar solicitudes
+function loadSolicitudes() {
+    const container = document.getElementById('solicitudes-list');
+    
+    if (solicitudes.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>No hay solicitudes registradas</h3>
+                <p>Crea tu primera solicitud usando el botón "Nueva Solicitud"</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = solicitudes.map(solicitud => `
+        <div class="solicitud-item">
+            <div class="solicitud-header">
+                <div class="solicitud-folio">Folio: ${solicitud.folio}</div>
+                <div class="solicitud-fecha">${formatDate(solicitud.fechaCreacion)}</div>
+            </div>
+            <div class="solicitud-info">
+                <div class="solicitud-field">
+                    <strong>Fecha:</strong> ${solicitud.fecha}
+                </div>
+                <div class="solicitud-field">
+                    <strong>Región:</strong> ${solicitud.region}
+                </div>
+                <div class="solicitud-field">
+                    <strong>Solicitante:</strong> ${solicitud.nombre}
+                </div>
+                <div class="solicitud-field">
+                    <strong>Email:</strong> ${solicitud.email}
+                </div>
+                <div class="solicitud-field">
+                    <strong>Tipo de Equipo:</strong> ${solicitud.equipo}
+                </div>
+            </div>
+            <div class="solicitud-descripcion">
+                <strong>Descripción del problema:</strong>
+                ${solicitud.descripcion}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Función para formatear fecha
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Función para manejar el envío del formulario
+function handleFormSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const solicitud = {
+        folio: String(folioCounter).padStart(6, '0'),
+        fecha: formData.get('fecha'),
+        region: formData.get('region'),
+        nombre: formData.get('nombre'),
+        email: formData.get('email'),
+        equipo: formData.get('equipo'),
+        descripcion: formData.get('descripcion'),
+        fechaCreacion: new Date().toISOString()
+    };
+    
+    // Agregar solicitud al array
+    solicitudes.unshift(solicitud); // unshift para que aparezca al principio
+    
+    // Incrementar contador de folio
+    folioCounter++;
+    
+    // Guardar en localStorage
+    localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+    localStorage.setItem('folioCounter', folioCounter.toString());
+    
+    // Mostrar mensaje de éxito
+    alert(`Solicitud enviada exitosamente!\nFolio: ${solicitud.folio}`);
+    
+    // Limpiar formulario
+    event.target.reset();
+    
+    // Cambiar a la sección de solicitudes
+    showSection('solicitudes');
+    
+    // Actualizar el botón activo manualmente
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.nav-btn').classList.add('active');
+}
+
+// Inicialización cuando se carga la página
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar el formulario
+    const form = document.getElementById('solicitud-form');
+    if (form) {
+        form.addEventListener('submit', handleFormSubmit);
+    }
+    
+    // Cargar solicitudes por defecto
+    loadSolicitudes();
+    generateFolio();
+    setCurrentDate();
+});
 </script>
+
 
 </html>
