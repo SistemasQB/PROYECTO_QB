@@ -43,7 +43,7 @@ import {
 // import InformacionpuestoM from "../models/informacionpuesto.js"
 
 // import Gch_alta from "../models/gch_alta.js"
-import Sequelize from 'sequelize'
+import Sequelize, { where } from 'sequelize'
 import db from "../config/db.js";
 
 import on from 'sequelize'
@@ -237,10 +237,11 @@ controller.subirCurso2 = async (req, res) => {
 }
 
 controller.solicitudServicio = async(req, res) => {
+
     const { codigoempleado } = req.usuario
     
     const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado }, attributes: ['nombrelargo'] });
-    
+    const obtenerValores = await Solicitudservicio.findAll({ where: { solcitante: obtenerNombre.nombrelargo }, order: [[Sequelize.literal('fecha'), 'DESC']], });
     const obtenerFolio = await Solicitudservicio.count() + 1;
 
     console.log(obtenerFolio);
@@ -249,6 +250,7 @@ controller.solicitudServicio = async(req, res) => {
     res.render('admin/solicitudServicio', {
         obtenerFolio,
         obtenerNombre,
+        obtenerValores,
         csrfToken: req.csrfToken()
     })
 }
