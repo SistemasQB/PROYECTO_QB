@@ -408,13 +408,15 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="../img/Quality-BOLCA.png" alt="Logo BOLCA" width="70">
+                <a href="/inicio">
+                    <img src="../img/Quality-BOLCA.png" alt="Logo BOLCA" width="70">
+                </a>
             </div>
             <div class="nav-menu">
-                <button class="nav-btn active" onclick="showSection('solicitudes')">
+                <button class="nav-btn active" onclick="showSection('solicitudes')" style="text-decoration: underline;">
                     Mis Solicitudes
                 </button>
-                <button class="nav-btn" onclick="showSection('nueva')">
+                <button class="nav-btn" onclick="showSection('nueva')" style="text-decoration: underline;">
                     Nueva Solicitud
                 </button>
             </div>
@@ -440,7 +442,7 @@
                 <div id="solicitudes-list">
                     <!-- Las solicitudes se cargarán aquí dinámicamente -->
 
-                    <% if (obtenerValores) { %>
+                    <% if (obtenerValores==[]) { %>
                         <% for (const [key, datos] of Object.entries(obtenerValores)) { %>
                             <div class="solicitud-item">
                                 <div class="solicitud-header">
@@ -582,28 +584,25 @@
 
     fecha.value = new Date().toLocaleDateString();
 
-    // Variables globales
-    let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
-    let folioCounter = parseInt(localStorage.getItem('folioCounter')) || 1;
 
     let formSolicitud = document.getElementById('formSolicitud');
 
     formSolicitud.addEventListener('submit', function (e) {
         e.preventDefault();
 
-          Swal.fire({
-                title: 'Procesando...',
-                html: '<div class="spinner"></div>',
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                // timer: 5000,
-                // didOpen: () => {
-                //     Swal.showLoading(); // Muestra el icono de carga de SweetAlert2
-                // }
-            })
-            // .then(() => {
-            //     Swal.fire('¡Completado!', 'Tu proceso ha terminado.', 'success');
-            // });
+        Swal.fire({
+            title: 'Procesando...',
+            html: '<div class="spinner"></div>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            // timer: 5000,
+            // didOpen: () => {
+            //     Swal.showLoading(); // Muestra el icono de carga de SweetAlert2
+            // }
+        })
+        // .then(() => {
+        //     Swal.fire('¡Completado!', 'Tu proceso ha terminado.', 'success');
+        // });
 
 
 
@@ -674,15 +673,6 @@
     }
 
 
-    // Función para establecer la fecha actual
-    function setCurrentDate() {
-        const fechaInput = document.getElementById('fecha');
-        if (fechaInput) {
-            const today = new Date().toISOString().split('T')[0];
-            fechaInput.value = today;
-        }
-    }
-
     // Función para formatear fecha
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -733,10 +723,6 @@
             form.addEventListener('submit', handleFormSubmit);
         }
 
-        // Cargar solicitudes por defecto
-        loadSolicitudes();
-        // generateFolio();
-        setCurrentDate();
     });
 </script>
 
