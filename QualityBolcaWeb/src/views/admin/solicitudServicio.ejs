@@ -591,6 +591,22 @@
     formSolicitud.addEventListener('submit', function (e) {
         e.preventDefault();
 
+          Swal.fire({
+                title: 'Procesando...',
+                html: '<div class="spinner"></div>',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                // timer: 5000,
+                // didOpen: () => {
+                //     Swal.showLoading(); // Muestra el icono de carga de SweetAlert2
+                // }
+            })
+            // .then(() => {
+            //     Swal.fire('¡Completado!', 'Tu proceso ha terminado.', 'success');
+            // });
+
+
+
         const formData = new FormData(formSolicitud);
         const urlEncoded = new URLSearchParams(formData).toString();
 
@@ -605,6 +621,7 @@
             .then(res => {
                 console.log(res);
                 if (res.ok) {
+                    Swal.close();
                     Swal.fire({
                         title: res.msg,
                         text: "Solicitud enviada",
@@ -617,6 +634,7 @@
                         }
                     });;
                 } else {
+                    Swal.close();
                     Swal.fire({
                         title: res.msg,
                         icon: "error",

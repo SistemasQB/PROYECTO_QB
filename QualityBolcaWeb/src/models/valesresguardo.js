@@ -23,7 +23,7 @@ const ValesResguardo = db.define('valesresguardo', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    comentarios:{
+    detalles:{
         type: DataTypes.STRING,
         allowNull: true
     }

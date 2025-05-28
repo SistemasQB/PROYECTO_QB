@@ -149,7 +149,6 @@ const registroCursos = async (datos) => {
     })
 }
 
-
 const enviarQueja = async (datos) => {
     const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
@@ -360,6 +359,34 @@ const emailMantenimientoA = async (data) => {
     })
 }
 
+const emailSolicitud = async (datos) => {
+    const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: {
+            user: process.env.EMAILMS_USER,
+            pass: process.env.EMAILMS_PASS
+        }
+    });
+
+    const { idFolio, solcitante } = datos
+
+    //Enviar el email
+    await transport.sendMail({
+        from: process.env.EMAILMS_USER,
+        to: 'itzel.reyes@qualitybolca.net',
+        cc: 'info.sistemas@qualitybolca.com',
+        subject: 'Solicitud de Servicio',
+        text: 'Solicitud de Servicio',
+        html: `
+            <p>Hola Equipo de sistemas, Tienen una solicitud por parte de ${solcitante}</p>
+            <p>con numero de folio ${idFolio} puedes acceder desde la pagina WEB
+            <a href="www.qualitybolca.net">Pagina Web</a>
+            </p>
+        `
+    })
+}
+
 export {
     emailRegistro,
     emailOlvidePassword,
@@ -367,5 +394,6 @@ export {
     emailCursos,
     registroCursos,
     emailMantenimientoA,
-    enviarQueja
+    enviarQueja,
+    emailSolicitud
 }

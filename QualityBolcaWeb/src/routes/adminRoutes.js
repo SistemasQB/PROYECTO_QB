@@ -53,7 +53,7 @@ router.post('/valeresguardo', protegetRuta, adminController.valeresguardo3);
 router.post('/subirfirma',protegetRuta, upload2.single('firmaFile'),adminController.valeresguardo2);
 router.get('/generarfirma/:codigo', adminController.generarfirma);
 router.get('/mantenimientoautonomo', protegetRuta, adminController.mantenimientoautonomo);
-router.post('/mantenimientoautonomo', protegetRuta, uploadmantenimiento.single("imagen"), adminController.mantenimientoautonomo2);
+router.post('/mantenimientoautonomo', protegetRuta, adminController.mantenimientoautonomo2);
 router.get('/buzonquejas',protegetRuta ,adminController.buzonquejas);
 router.post('/buzonquejas',protegetRuta ,adminController.buzonquejas2);
 router.get('/publicarEvento',protegetRuta ,adminController.publicarEvento);

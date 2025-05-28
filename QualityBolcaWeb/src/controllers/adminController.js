@@ -48,7 +48,7 @@ import db from "../config/db.js";
 
 import on from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
-import { emailRequisicion, registroCursos, emailMantenimientoA } from "../helpers/emails.js";
+import { emailRequisicion, registroCursos, emailMantenimientoA,emailSolicitud } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
@@ -236,16 +236,16 @@ controller.subirCurso2 = async (req, res) => {
     })
 }
 
-controller.solicitudServicio = async(req, res) => {
+controller.solicitudServicio = async (req, res) => {
 
     const { codigoempleado } = req.usuario
-    
+
     const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado }, attributes: ['nombrelargo'] });
     const obtenerValores = await Solicitudservicio.findAll({ where: { solcitante: obtenerNombre.nombrelargo }, order: [[Sequelize.literal('fecha'), 'DESC']], });
     const obtenerFolio = await Solicitudservicio.count() + 1;
 
-    console.log(obtenerFolio);
-    
+    // console.log(obtenerFolio);
+
 
     res.render('admin/solicitudServicio', {
         obtenerFolio,
@@ -259,17 +259,22 @@ controller.solicitudServicio2 = async (req, res) => {
     const { idFolio, solcitante, fecha, region, email, tipo, descripcion, solucion, fechaSolucion } = req.body
 
     try {
-    const cursoDatos = await Solicitudservicio.create({
-        idFolio,
-        solcitante,
-        fecha,
-        region,
-        email,
-        tipo,
-        descripcion,
-        solucion,
-        fechaSolucion
-    });
+        const cursoDatos = await Solicitudservicio.create({
+            idFolio,
+            solcitante,
+            fecha,
+            region,
+            email,
+            tipo,
+            descripcion,
+            solucion,
+            fechaSolucion
+        });
+
+        console.log( cursoDatos.idFolio, solcitante);
+        
+
+        await emailSolicitud({ idFolio:cursoDatos.idFolio, solcitante:cursoDatos.solcitante})
         res.status(200).send({ msg: 'Solicitud enviada', ok: true, folio: cursoDatos.idFolio });
         return
     } catch (error) {
@@ -446,6 +451,7 @@ controller.api2 = async (req, res) => {
     res.json(JSON.stringify(glosario, null, 2));
     // res.j
 }
+
 controller.api = async (req, res) => {
     let vCrup;
 
@@ -585,9 +591,12 @@ controller.mantenimientoautonomo2 = async (req, res) => {
     const { nombre, tipo, region, respuestas, comentarios } = req.body
 
     try {
-
+        const Resregistroma = await registroma.create(
+            { nombre, tipo, region, respuestas, comentarios }
+        )
         // Enviar email de confirmacion
         await emailMantenimientoA({ region, respuestas, tipo, nombre })
+        
         res.status(200).send({ msg: 'Mantenimiento enviada', ok: true });
         return
     } catch (error) {
