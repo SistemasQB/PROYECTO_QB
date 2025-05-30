@@ -603,21 +603,21 @@ body {
                                 <line x1="10" y1="3" x2="8" y2="21"></line>
                                 <line x1="16" y1="3" x2="14" y2="21"></line>
                             </svg>
-                            Código de Referencia (20 dígitos)
+                            Código de Referencia
                         </label>
                         <input 
                             type="text" 
                             id="referenceCode" 
-                            maxlength="20" 
-                            placeholder="Ingrese el código de 20 dígitos"
+                            maxlength="" 
+                            placeholder="Ingrese el código de etiqueta"
                             class="input-field mono-font"
                         >
-                        <div class="input-footer">
+                        <!-- <div class="input-footer">
                             <span id="charCount" class="char-count">Caracteres: 0/20</span>
                             <div class="progress-bar">
                                 <div id="charProgress" class="progress-fill"></div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="input-group">
@@ -807,7 +807,7 @@ body {
 
     bindEvents() {
         // Setup events
-        this.referenceCodeInput.addEventListener('input', (e) => this.updateCharCount(e.target.value));
+        // this.referenceCodeInput.addEventListener('input', (e) => this.updateCharCount(e.target.value));
         this.startBtn.addEventListener('click', () => this.handleSetup());
         this.resetBtn.addEventListener('click', () => this.resetForm());
         
@@ -826,20 +826,20 @@ body {
         });
     }
 
-    updateCharCount(value) {
-        const length = value.length;
-        this.charCount.textContent = `Caracteres: ${length}/20`;
-        this.charProgress.style.width = `${(length / 20) * 100}%`;
-    }
+    // updateCharCount(value) {
+    //     const length = value.length;
+    //     this.charCount.textContent = `Caracteres: ${length}/20`;
+    //     this.charProgress.style.width = `${(length / 20) * 100}%`;
+    // }
 
     handleSetup() {
         const referenceCode = this.referenceCodeInput.value.trim();
         const pieceCount = parseInt(this.pieceCountInput.value);
 
-        if (referenceCode.length !== 20) {
-            alert('El código debe tener exactamente 20 dígitos');
-            return;
-        }
+        // if (referenceCode.length !== 20) {
+        //     alert('El código debe tener exactamente 20 dígitos');
+        //     return;
+        // }
 
         if (!pieceCount || pieceCount <= 0) {
             alert('La cantidad de piezas debe ser mayor a 0');
@@ -903,12 +903,14 @@ body {
                 const code = line.trim();
                 this.pieceCodes[index].code = code;
                 
-                if (code.length === 20 && !this.pieceCodes[index].isFinished) {
+                // if (code.length === 20 && !this.pieceCodes[index].isFinished) {
+                if ( !this.pieceCodes[index].isFinished) {
                     this.validateCode(index, code);
-                } else if (code.length !== 20) {
-                    this.pieceCodes[index].isFinished = false;
-                    this.pieceCodes[index].isValid = false;
                 }
+                //  else if (code.length !== 20) {
+                //     this.pieceCodes[index].isFinished = false;
+                //     this.pieceCodes[index].isValid = false;
+                // }
             }
         });
 
@@ -924,7 +926,7 @@ body {
     }
 
     validateCode(index, code) {
-        if (code.length !== 20) return;
+        // if (code.length !== 20) return;
 
         if (code === this.referenceCode) {
             this.pieceCodes[index].isValid = true;
@@ -1038,11 +1040,11 @@ body {
                 <div class="result-content">
                     <div class="result-code">${piece.code || 'Pendiente...'}</div>
                     <div class="result-status">
-                        ${piece.code ? `${piece.code.length}/20 caracteres` : 'Esperando código'}
+                        ${piece.code ? `${piece.code.length} caracteres` : 'Esperando código'}
                     </div>
                 </div>
                 <div class="result-indicator ${statusClass}">
-                    ${piece.isFinished || (piece.code && piece.code.length === 20) ? 
+                    ${piece.isFinished || (piece.code) ? 
                         `${statusIcon}<span>${statusText}</span>` : 
                         '<div class="loading-placeholder"></div>'
                     }
@@ -1063,7 +1065,7 @@ body {
         this.referenceCodeInput.value = '';
         this.pieceCountInput.value = '';
         this.codesInput.value = '';
-        this.updateCharCount('');
+        // this.updateCharCount('');
 
         this.setupCard.classList.remove('hidden');
         this.validationPanel.classList.add('hidden');
