@@ -7,4 +7,7 @@ const router = express.Router();
 
 router.get('/kiosk',sorteoController.kiosk);
 router.post('/kiosk',sorteoController.kiosk2);
+router.get('/etiquetado',sorteoController.etiquetado);
+router.post('/etiquetado',sorteoController.etiquetado2);
+
 export default router;

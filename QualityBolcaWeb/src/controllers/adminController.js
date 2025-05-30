@@ -244,7 +244,7 @@ controller.solicitudServicio = async (req, res) => {
     const obtenerValores = await Solicitudservicio.findAll({ where: { solcitante: obtenerNombre.nombrelargo }, order: [[Sequelize.literal('fecha'), 'DESC']], });
     const obtenerFolio = await Solicitudservicio.count() + 1;
 
-    // console.log(obtenerFolio);
+    // console.log(obtenerValores);
 
 
     res.render('admin/solicitudServicio', {

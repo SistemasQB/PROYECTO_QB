@@ -47,4 +47,12 @@ controller.kiosk2 =  (req, res) => {
     res.render('admin/sorteo/kiosk');
 }
 
+controller.etiquetado =  (req, res) => {
+    res.render('admin/sorteo/etiquetado');
+}
+
+controller.etiquetado2 =  (req, res) => {
+    res.render('admin/sorteo/etiquetado');
+}
+
 export default controller;

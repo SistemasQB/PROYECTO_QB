@@ -37,7 +37,7 @@ const Solicitudservicio = db.define('solicitudservicio', {
         allowNull: true
     },
     fechaSolucion:{
-        type: DataTypes.DATE,
+        type: DataTypes.STRING(10),
         allowNull: true
     }
 },{

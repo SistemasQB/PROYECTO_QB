@@ -442,64 +442,68 @@
                 <div id="solicitudes-list">
                     <!-- Las solicitudes se cargarán aquí dinámicamente -->
 
-                    <% if (obtenerValores==[]) { %>
-                        <% for (const [key, datos] of Object.entries(obtenerValores)) { %>
-                            <div class="solicitud-item">
-                                <div class="solicitud-header">
-                                    <div class="solicitud-folio">
-                                        <%= datos.folio %>
-                                    </div>
-                                    <div class="solicitud-fecha">
-                                        <%= datos.fecha %>
-                                    </div>
-                                </div>
-                                <div class="solicitud-info">
-                                    <div class="solicitud-field">
-                                        <strong>Fecha:</strong>
-                                        <%= datos.fecha %>
-                                    </div>
-                                    <div class="solicitud-field">
-                                        <strong>Región:</strong>
-                                        <%= datos.region %>
-                                    </div>
+                    <% console.log(obtenerValores.length); %>
 
-                                    <div class="solicitud-field">
-                                        <strong>Email:</strong>
-                                        <%= datos.email %>
+                        <% if (obtenerValores.length !=0) { %>
+                            <% for (const [key, datos] of Object.entries(obtenerValores)) { %>
+                                <div class="solicitud-item">
+                                    <div class="solicitud-header">
+                                        <div class="solicitud-folio">
+                                            <%= datos.folio %>
+                                        </div>
+                                        <div class="solicitud-fecha">
+                                            <%= datos.fecha %>
+                                        </div>
                                     </div>
-                                    <div class="solicitud-field">
-                                        <strong>Tipo de Equipo:</strong>
-                                        <%= datos.tipo %>
-                                    </div>
-                                    <div class="solicitud-field">
-                                        <strong>Estatus:</strong>
-                                        <% if (!datos.solucion) { %>
-                                            <span style="color: red;">Pendiente</span>
-                                            <% } else { %>
-                                                <span style="color: green;">Completado <%= datos.fechaSolucion %></span>
-                                                <% } %>
+                                    <div class="solicitud-info">
+                                        <div class="solicitud-field">
+                                            <strong>Fecha:</strong>
+                                            <%= datos.fecha %>
+                                        </div>
+                                        <div class="solicitud-field">
+                                            <strong>Región:</strong>
+                                            <%= datos.region %>
+                                        </div>
+
+                                        <div class="solicitud-field">
+                                            <strong>Email:</strong>
+                                            <%= datos.email %>
+                                        </div>
+                                        <div class="solicitud-field">
+                                            <strong>Tipo de Equipo:</strong>
+                                            <%= datos.tipo %>
+                                        </div>
+                                        <div class="solicitud-field">
+                                            <strong>Estatus:</strong>
+                                            <% if (!datos.solucion) { %>
+                                                <span style="color: red;">Pendiente</span>
+                                                <% } else { %>
+                                                    <span style="color: green;">Completado <%= datos.fechaSolucion %>
+                                                    </span>
+                                                    <% } %>
 
 
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="solicitud-descripcion">
-                                    <strong>Descripción del problema:</strong>
-                                    <%= datos.descripcion %>
-                                </div>
-                                <% if (datos.solucion) { %>
                                     <div class="solicitud-descripcion">
-                                        <strong>Solucion del problema:</strong>
-                                        <%= datos.solucion %>
+                                        <strong>Descripción del problema:</strong>
+                                        <%= datos.descripcion %>
                                     </div>
+                                    <% if (datos.solucion) { %>
+                                        <div class="solicitud-descripcion">
+                                            <strong>Solucion del problema:</strong>
+                                            <%= datos.solucion %>
+                                        </div>
+                                        <% } %>
+                                </div>
+                                <% } %>
                                     <% } %>
-                            </div>
-                            <% } %>
-                                <% } else { %>
-                                    <div class="empty-state">
-                                        <h3>No hay solicitudes registradas</h3>
-                                        <p>Crea tu primera solicitud usando el botón "Nueva Solicitud"</p>
-                                    </div>
-                                    <% } %>
+                                        <% if (obtenerValores.length==0) { %>
+                                            <div class="empty-state">
+                                                <h3>No hay solicitudes registradas</h3>
+                                                <p>Crea tu primera solicitud usando el botón "Nueva Solicitud"</p>
+                                            </div>
+                                            <% } %>
 
                 </div>
             </div>
@@ -575,74 +579,68 @@
         </div>
     </div>
 
-    <!-- <script src="script.js"></script> -->
+    <script src="../scripts/all/alertas.js"></script>
+
 </body>
 
 <script>
 
+
     let fecha = document.getElementById('fecha');
 
     fecha.value = new Date().toLocaleDateString();
-
 
     let formSolicitud = document.getElementById('formSolicitud');
 
     formSolicitud.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        Swal.fire({
-            title: 'Procesando...',
-            html: '<div class="spinner"></div>',
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            // timer: 5000,
-            // didOpen: () => {
-            //     Swal.showLoading(); // Muestra el icono de carga de SweetAlert2
-            // }
-        })
-        // .then(() => {
-        //     Swal.fire('¡Completado!', 'Tu proceso ha terminado.', 'success');
-        // });
-
-
+        // Swal.fire({
+        //     title: 'Procesando...',
+        //     html: '<div class="spinner"></div>',
+        //     showConfirmButton: false,
+        //     allowOutsideClick: false,
+        // })
 
         const formData = new FormData(formSolicitud);
         const urlEncoded = new URLSearchParams(formData).toString();
 
-        fetch(`solicitudServicio`, {
-            method: 'POST',
-            body: urlEncoded,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }
-        })
-            .then(response => response.json())
-            .then(res => {
-                console.log(res);
-                if (res.ok) {
-                    Swal.close();
-                    Swal.fire({
-                        title: res.msg,
-                        text: "Solicitud enviada",
-                        icon: "success",
-                        allowOutsideClick: false,
-                        button: "OK"
-                    }).then((value) => {
-                        if (value) {
-                            window.location.href = "solicitudServicio"
-                        }
-                    });;
-                } else {
-                    Swal.close();
-                    Swal.fire({
-                        title: res.msg,
-                        icon: "error",
-                        text: "Error al enviar la solicitud",
-                        allowOutsideClick: false,
-                        button: "OK"
-                    });
-                }
-            })
+        alertaFetch(urlEncoded, 'solicitudServicio');
+
+        // fetch(`solicitudServicio`, {
+        //     method: 'POST',
+        //     body: urlEncoded,
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //     }
+        // })
+        //     .then(response => response.json())
+        //     .then(res => {
+        //         console.log(res);
+        //         if (res.ok) {
+        //             Swal.close();
+        //             Swal.fire({
+        //                 title: res.msg,
+        //                 text: "Solicitud enviada",
+        //                 icon: "success",
+        //                 allowOutsideClick: false,
+        //                 button: "OK"
+        //             }).then((value) => {
+        //                 if (value) {
+        //                     window.location.href = "solicitudServicio"
+        //                 }
+        //             });;
+        //         } else {
+        //             Swal.close();
+        //             Swal.fire({
+        //                 title: res.msg,
+        //                 icon: "error",
+        //                 text: "Error al enviar la solicitud",
+        //                 allowOutsideClick: false,
+        //                 button: "OK"
+        //             });
+        //         }
+        //     })
     })
 
     // Función para mostrar secciones
