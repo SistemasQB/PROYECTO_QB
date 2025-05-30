@@ -145,6 +145,16 @@ body {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.code-input {
+    border-color: #10b981 !important;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5) !important;
+}
+
+.code-input:focus {
+    border-color: #059669 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+}
+
 .mono-font {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
 }
@@ -301,13 +311,13 @@ body {
     font-size: 0.875rem;
     resize: vertical;
     transition: all 0.2s ease;
-    background: white;
+    background: #f9fafb;
+    color: #6b7280;
 }
 
 .textarea:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #6b7280;
 }
 
 .results-panel {
@@ -572,6 +582,17 @@ body {
 .results-container::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
+
+/* Highlight current piece input */
+#inputStatus {
+    color: #059669;
+    font-weight: 600;
+}
+
+#currentPieceNumber {
+    color: #dc2626;
+    font-weight: 700;
+}
 </style>
 
 <body>
@@ -608,16 +629,12 @@ body {
                         <input 
                             type="text" 
                             id="referenceCode" 
-                            maxlength="" 
-                            placeholder="Ingrese el código de etiqueta"
+                            placeholder="Ingrese el código de referencia"
                             class="input-field mono-font"
                         >
-                        <!-- <div class="input-footer">
-                            <span id="charCount" class="char-count">Caracteres: 0/20</span>
-                            <div class="progress-bar">
-                                <div id="charProgress" class="progress-fill"></div>
-                            </div>
-                        </div> -->
+                        <div class="input-footer">
+                            <span id="charCount" class="char-count">Caracteres: 0</span>
+                        </div>
                     </div>
 
                     <div class="input-group">
@@ -682,15 +699,33 @@ body {
                             </div>
                             <div class="card-content">
                                 <div class="input-group">
-                                    <label for="codesInput" class="label">
-                                        Ingrese todos los códigos (uno por línea)
+                                    <label for="codeInput" class="label">
+                                        <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 20h9"></path>
+                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                        </svg>
+                                        Ingrese código y presione Enter
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="codeInput" 
+                                        placeholder="Escriba el código aquí..."
+                                        class="input-field mono-font code-input"
+                                    >
+                                    <p id="inputStatus" class="char-count">Esperando código para pieza #<span id="currentPieceNumber">1</span></p>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="codesDisplay" class="label">
+                                        Códigos Ingresados
                                     </label>
                                     <textarea 
-                                        id="codesInput" 
-                                        placeholder="Código 1 (20 dígitos)&#10;Código 2 (20 dígitos)&#10;Código 3 (20 dígitos)&#10;..."
+                                        id="codesDisplay" 
+                                        placeholder="Los códigos aparecerán aquí conforme los ingrese..."
                                         class="textarea mono-font"
+                                        readonly
                                     ></textarea>
-                                    <p id="linesCount" class="char-count">Líneas ingresadas: 0/0</p>
+                                    <p id="linesCount" class="char-count">Códigos ingresados: 0/0</p>
                                 </div>
                             </div>
                         </div>
@@ -767,6 +802,7 @@ body {
         this.referenceCode = '';
         this.pieceCount = 0;
         this.pieceCodes = [];
+        this.currentPieceIndex = 0;
         this.currentValidatingIndex = null;
         this.invalidCode = '';
         
@@ -783,18 +819,20 @@ body {
         // Input elements
         this.referenceCodeInput = document.getElementById('referenceCode');
         this.pieceCountInput = document.getElementById('pieceCount');
-        this.codesInput = document.getElementById('codesInput');
+        this.codeInput = document.getElementById('codeInput');
+        this.codesDisplay = document.getElementById('codesDisplay');
         this.startBtn = document.getElementById('startBtn');
         
         // Display elements
         this.charCount = document.getElementById('charCount');
-        this.charProgress = document.getElementById('charProgress');
         this.currentReference = document.getElementById('currentReference');
         this.progressBadge = document.getElementById('progressBadge');
         this.validBadge = document.getElementById('validBadge');
         this.validationProgress = document.getElementById('validationProgress');
         this.progressText = document.getElementById('progressText');
         this.linesCount = document.getElementById('linesCount');
+        this.inputStatus = document.getElementById('inputStatus');
+        this.currentPieceNumber = document.getElementById('currentPieceNumber');
         this.resultsContainer = document.getElementById('resultsContainer');
         
         // Modal elements
@@ -807,12 +845,16 @@ body {
 
     bindEvents() {
         // Setup events
-        // this.referenceCodeInput.addEventListener('input', (e) => this.updateCharCount(e.target.value));
+        this.referenceCodeInput.addEventListener('input', (e) => this.updateCharCount(e.target.value));
         this.startBtn.addEventListener('click', () => this.handleSetup());
         this.resetBtn.addEventListener('click', () => this.resetForm());
         
-        // Validation events
-        this.codesInput.addEventListener('input', (e) => this.handleCodesInput(e.target.value));
+        // Code input events
+        this.codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.handleCodeSubmit();
+            }
+        });
         
         // Modal events
         this.changeReferenceBtn.addEventListener('click', () => this.handleChangeReference());
@@ -826,20 +868,19 @@ body {
         });
     }
 
-    // updateCharCount(value) {
-    //     const length = value.length;
-    //     this.charCount.textContent = `Caracteres: ${length}/20`;
-    //     this.charProgress.style.width = `${(length / 20) * 100}%`;
-    // }
+    updateCharCount(value) {
+        const length = value.length;
+        this.charCount.textContent = `Caracteres: ${length}`;
+    }
 
     handleSetup() {
         const referenceCode = this.referenceCodeInput.value.trim();
         const pieceCount = parseInt(this.pieceCountInput.value);
 
-        // if (referenceCode.length !== 20) {
-        //     alert('El código debe tener exactamente 20 dígitos');
-        //     return;
-        // }
+        if (!referenceCode) {
+            alert('Debe ingresar un código de referencia');
+            return;
+        }
 
         if (!pieceCount || pieceCount <= 0) {
             alert('La cantidad de piezas debe ser mayor a 0');
@@ -848,6 +889,7 @@ body {
 
         this.referenceCode = referenceCode;
         this.pieceCount = pieceCount;
+        this.currentPieceIndex = 0;
         this.initializePieces();
         this.showValidationPanel();
     }
@@ -862,13 +904,8 @@ body {
 
         this.updateDisplay();
         this.renderResults();
-        this.updateTextareaRows();
-    }
-
-    updateTextareaRows() {
-        // Limitar el número de filas del textarea al número de piezas
-        this.codesInput.rows = Math.max(8, this.pieceCount);
-        this.linesCount.textContent = `Líneas ingresadas: 0/${this.pieceCount}`;
+        this.updateInputStatus();
+        this.updateCodesDisplay();
     }
 
     showValidationPanel() {
@@ -877,65 +914,79 @@ body {
         this.resetBtn.classList.remove('hidden');
         
         this.currentReference.textContent = this.referenceCode;
+        this.codeInput.focus();
     }
 
-    handleCodesInput(input) {
-        const lines = input.split('\n');
+    handleCodeSubmit() {
+        const code = this.codeInput.value.trim();
         
-        // Limitar el número de líneas al número de piezas configuradas
-        if (lines.length > this.pieceCount) {
-            const limitedLines = lines.slice(0, this.pieceCount);
-            this.codesInput.value = limitedLines.join('\n');
+        if (!code) {
+            alert('Debe ingresar un código');
             return;
         }
 
-        this.processCodesInput(input);
-    }
-
-    processCodesInput(input) {
-        const lines = input.split('\n').filter(line => line.trim() !== '');
-        const validLines = lines.filter(line => line.trim() !== '');
-        
-        this.linesCount.textContent = `Líneas ingresadas: ${validLines.length}/${this.pieceCount}`;
-
-        lines.forEach((line, index) => {
-            if (index < this.pieceCodes.length) {
-                const code = line.trim();
-                this.pieceCodes[index].code = code;
-                
-                // if (code.length === 20 && !this.pieceCodes[index].isFinished) {
-                if ( !this.pieceCodes[index].isFinished) {
-                    this.validateCode(index, code);
-                }
-                //  else if (code.length !== 20) {
-                //     this.pieceCodes[index].isFinished = false;
-                //     this.pieceCodes[index].isValid = false;
-                // }
-            }
-        });
-
-        // Limpiar códigos de piezas que no tienen línea correspondiente
-        for (let i = lines.length; i < this.pieceCodes.length; i++) {
-            this.pieceCodes[i].code = '';
-            this.pieceCodes[i].isFinished = false;
-            this.pieceCodes[i].isValid = false;
+        if (this.currentPieceIndex >= this.pieceCount) {
+            alert('Ya se han ingresado todos los códigos');
+            return;
         }
 
+        // Asignar el código a la pieza actual
+        this.pieceCodes[this.currentPieceIndex].code = code;
+        
+        // Validar el código
+        this.validateCode(this.currentPieceIndex, code);
+        
+        // Limpiar el input
+        this.codeInput.value = '';
+        
+        // Actualizar displays
+        this.updateCodesDisplay();
         this.updateDisplay();
         this.renderResults();
     }
 
     validateCode(index, code) {
-        // if (code.length !== 20) return;
-
         if (code === this.referenceCode) {
             this.pieceCodes[index].isValid = true;
             this.pieceCodes[index].isFinished = true;
+            this.moveToNextPiece();
         } else {
             this.currentValidatingIndex = index;
             this.invalidCode = code;
             this.showAlert();
         }
+    }
+
+    moveToNextPiece() {
+        this.currentPieceIndex++;
+        this.updateInputStatus();
+        
+        if (this.currentPieceIndex < this.pieceCount) {
+            this.codeInput.focus();
+        } else {
+            this.codeInput.disabled = true;
+            this.inputStatus.textContent = 'Todos los códigos han sido ingresados';
+        }
+    }
+
+    updateInputStatus() {
+        if (this.currentPieceIndex < this.pieceCount) {
+            this.currentPieceNumber.textContent = this.currentPieceIndex + 1;
+            this.inputStatus.innerHTML = `Esperando código para pieza #<span id="currentPieceNumber">${this.currentPieceIndex + 1}</span>`;
+        }
+    }
+
+    updateCodesDisplay() {
+        const codes = this.pieceCodes
+            .filter(piece => piece.code)
+            .map(piece => piece.code)
+            .join('\n');
+        
+        this.codesDisplay.value = codes;
+        this.codesDisplay.rows = Math.max(8, this.pieceCount);
+        
+        const enteredCodes = this.pieceCodes.filter(piece => piece.code).length;
+        this.linesCount.textContent = `Códigos ingresados: ${enteredCodes}/${this.pieceCount}`;
     }
 
     showAlert() {
@@ -962,6 +1013,7 @@ body {
         }
         
         this.hideAlert();
+        this.moveToNextPiece();
         this.updateDisplay();
         this.renderResults();
     }
@@ -974,6 +1026,7 @@ body {
         }
         
         this.hideAlert();
+        this.moveToNextPiece();
         this.updateDisplay();
         this.renderResults();
     }
@@ -1021,7 +1074,7 @@ body {
                         </svg>
                     `;
                 }
-            } else if (piece.code && piece.code.length === 20) {
+            } else if (piece.code) {
                 statusClass = 'validating';
                 statusText = 'Validando...';
                 statusIcon = `
@@ -1031,6 +1084,15 @@ body {
                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
                     </svg>
                 `;
+            } else if (index === this.currentPieceIndex) {
+                statusClass = 'validating';
+                statusText = 'Esperando entrada...';
+                statusIcon = `
+                    <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                `;
             }
 
             resultItem.classList.add(statusClass);
@@ -1038,13 +1100,13 @@ body {
             resultItem.innerHTML = `
                 <div class="result-number">${piece.id}</div>
                 <div class="result-content">
-                    <div class="result-code">${piece.code || 'Pendiente...'}</div>
+                    <div class="result-code">${piece.code || (index === this.currentPieceIndex ? 'Ingresando...' : 'Pendiente...')}</div>
                     <div class="result-status">
-                        ${piece.code ? `${piece.code.length} caracteres` : 'Esperando código'}
+                        ${piece.code ? `${piece.code.length} caracteres` : (index === this.currentPieceIndex ? 'Pieza actual' : 'Esperando código')}
                     </div>
                 </div>
                 <div class="result-indicator ${statusClass}">
-                    ${piece.isFinished || (piece.code) ? 
+                    ${piece.isFinished || piece.code || index === this.currentPieceIndex ? 
                         `${statusIcon}<span>${statusText}</span>` : 
                         '<div class="loading-placeholder"></div>'
                     }
@@ -1059,13 +1121,16 @@ body {
         this.referenceCode = '';
         this.pieceCount = 0;
         this.pieceCodes = [];
+        this.currentPieceIndex = 0;
         this.currentValidatingIndex = null;
         this.invalidCode = '';
 
         this.referenceCodeInput.value = '';
         this.pieceCountInput.value = '';
-        this.codesInput.value = '';
-        // this.updateCharCount('');
+        this.codeInput.value = '';
+        this.codeInput.disabled = false;
+        this.codesDisplay.value = '';
+        this.updateCharCount('');
 
         this.setupCard.classList.remove('hidden');
         this.validationPanel.classList.add('hidden');

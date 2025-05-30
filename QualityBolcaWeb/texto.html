@@ -1,108 +1,34 @@
-548.99
-429.00
-598.99
-598.99
-229.00
-228.99
-229.00
-228.99
-229.00
-228.99
-229.00
-228.99
-229.00
-229.00
-228.99
-229.00
-228.99
-229.00
-228.99
-229.00
-329.00
-549.00
-229.00
-228.99
-229.00
-578.00
-229.00
-578.01
-228.99
-229.00
-228.99
-229.00
-228.99
-229.00
-228.99
-229.00
-229.00
-228.99
-229.00
-228.99
-229.00
-228.99
-229.00
-228.99
-229.00
-229.00
-778.01
-228.99
-229.00
-228.99
-229.00
-229.00
-429.00
-2,293.77
-229.00
-749.00
-228.99
-549.01
-429.00
-229.00
-228.99
-1,047.02
-549.00
-549.01
-549.00
-229.00
-228.99
-229.00
-898.01
-229.00
-228.99
-229.00
-898.01
-229.00
-228.99
-229.00
-229.00
-228.99
-229.00
-549.00
-549.01
-398.99
-229.00
-228.99
-229.00
-228.99
-479.00
-549.01
-228.99
-229.00
-228.99
-229.00
-228.99
-229.00
-229.00
-549.00
-499.00
-1,299.00
-799.00
-399.00
-398.99
-398.99
-399.00
-299.00
-299.00
-299.00
-299.00
-491.91
+const express = require('express');
+const fs = require('fs');
+const app = express();
+
+// Middleware para registrar errores
+function logErrorToFile(errorMessage) {
+    const errorLog = `${new Date().toISOString()} - Error: ${errorMessage}\n`;
+    fs.appendFile('error_log.txt', errorLog, (err) => {
+        if (err) {
+            console.error('Error al escribir en el archivo de log:', err);
+        }
+    });
+}
+
+// Ruta de ejemplo con manejo de errores
+app.get('/', (req, res) => {
+    try {
+        throw new Error('Error de prueba'); // Simulación de un error
+    } catch (error) {
+        logErrorToFile(error.message);
+        res.status(500).send('Ocurrió un error, revisa el archivo de logs.');
+    }
+});
+
+// Middleware para capturar errores globales
+app.use((err, req, res, next) => {
+    logErrorToFile(err.message);
+    res.status(500).send('Error interno del servidor.');
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});

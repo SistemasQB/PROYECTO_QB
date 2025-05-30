@@ -595,52 +595,11 @@
     formSolicitud.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Swal.fire({
-        //     title: 'Procesando...',
-        //     html: '<div class="spinner"></div>',
-        //     showConfirmButton: false,
-        //     allowOutsideClick: false,
-        // })
-
         const formData = new FormData(formSolicitud);
         const urlEncoded = new URLSearchParams(formData).toString();
 
         alertaFetch(urlEncoded, 'solicitudServicio');
 
-        // fetch(`solicitudServicio`, {
-        //     method: 'POST',
-        //     body: urlEncoded,
-        //     headers: {
-        //         'Content-Type': 'application/x-www-form-urlencoded',
-        //     }
-        // })
-        //     .then(response => response.json())
-        //     .then(res => {
-        //         console.log(res);
-        //         if (res.ok) {
-        //             Swal.close();
-        //             Swal.fire({
-        //                 title: res.msg,
-        //                 text: "Solicitud enviada",
-        //                 icon: "success",
-        //                 allowOutsideClick: false,
-        //                 button: "OK"
-        //             }).then((value) => {
-        //                 if (value) {
-        //                     window.location.href = "solicitudServicio"
-        //                 }
-        //             });;
-        //         } else {
-        //             Swal.close();
-        //             Swal.fire({
-        //                 title: res.msg,
-        //                 icon: "error",
-        //                 text: "Error al enviar la solicitud",
-        //                 allowOutsideClick: false,
-        //                 button: "OK"
-        //             });
-        //         }
-        //     })
     })
 
     // Función para mostrar secciones

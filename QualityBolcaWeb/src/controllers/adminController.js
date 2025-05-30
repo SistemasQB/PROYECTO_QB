@@ -271,7 +271,7 @@ controller.solicitudServicio2 = async (req, res) => {
             fechaSolucion
         });
 
-        console.log( cursoDatos.idFolio, solcitante);
+        // console.log( cursoDatos.idFolio, solcitante);
         
 
         await emailSolicitud({ idFolio:cursoDatos.idFolio, solcitante:cursoDatos.solcitante})
@@ -600,6 +600,10 @@ controller.mantenimientoautonomo2 = async (req, res) => {
         res.status(200).send({ msg: 'Mantenimiento enviada', ok: true });
         return
     } catch (error) {
+        const errorLog = `${new Date().toISOString()} - Error: ${errorMessage}\n`;
+        
+
+
         console.error("Error al enviar correo o guardar datos:", error);
         res.status(400).send({ msg: error, ok: false });
         return

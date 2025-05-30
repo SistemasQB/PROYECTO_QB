@@ -2,6 +2,8 @@ import express from "express";
 import db from "../config/db.js";
 import {
     registroma,
+    informaciongch,
+    informacionpuesto,
     Inventario,
     Vales
 } from "../models/index.js";
@@ -91,14 +93,14 @@ controller.api = async (req, res) => {
     const resultado = await db.query(
         query2,
         {
-        //   replacements: { nfolio: '40' }, // Sustituir parámetros
-          type: QueryTypes.SELECT // Tipo de consulta: SELECT
+            //   replacements: { nfolio: '40' }, // Sustituir parámetros
+            type: QueryTypes.SELECT // Tipo de consulta: SELECT
         }
-      )
-      .then((resultados) => {
-        valeasignacion = resultados;
-      });
-      
+    )
+        .then((resultados) => {
+            valeasignacion = resultados;
+        });
+
 
 
     // res.render('admin/valeresguardo',{
@@ -134,9 +136,9 @@ controller.addvales2 = async (req, res) => {
     return
 }
 controller.registromantenimiento = async (req, res) => {
-let valeasignacion;
+    let valeasignacion;
 
-const resultado = await db.query(
+    const resultado = await db.query(
         `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
          FROM inventario i
          
@@ -164,6 +166,28 @@ const resultado = await db.query(
 controller.programamantenimiento = async (req, res) => {
 
     res.render('admin/sistemas/programamantenimiento');
+}
+
+controller.listadopersonal = async (req, res) => {
+
+    const personal = await db.query(
+        `
+            SELECT i.idInventario, i.tipo, i.folio ,i.marca, i.historial, v.firma, n1.nombrelargo, n6.descripcion
+            FROM inventario i
+            INNER JOIN vales v ON i.folio = v.idfolio
+            INNER JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
+            INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+         `,
+        {
+            type: QueryTypes.SELECT // Tipo de consulta: SELECT
+        }
+    )
+
+
+    res.render('admin/sistemas/listadopersonal',{
+        csrfToken: req.csrfToken(),
+        personal
+    });
 }
 
 export default controller;

@@ -14,6 +14,7 @@ router.get('/tablainventario',adminController.tablainventario);
 router.get('/api/:query2',adminController.api);
 router.get('/registromantenimiento',adminController.registromantenimiento);
 router.get('/programamantenimiento',adminController.programamantenimiento);
+router.get('/listadopersonal',adminController.listadopersonal);
 
 
 
