@@ -535,7 +535,7 @@
                 <div class="nav-links">
                     <a href="#" class="nav-link active">Colaboradores</a>
                     <a href="#" class="nav-link">Inventario</a>
-                    <a href="#" class="nav-link">Reportes</a>
+                    <a href="#" class="nav-link">Tickets</a>
                 </div>
             </div>
         </div>
@@ -555,46 +555,50 @@
             <!-- Employee List -->
             <div id="employeeGrid" class="employee-grid">
                 <!-- Los empleados se generarán dinámicamente con JavaScript -->
-                <% for (const [key, datos] of Object.entries(Rcomunicacion2)) { %>
-                <div class="employee-card">
-                    <div class="card-header">
-                        <div class="employee-info">
-                            <div class="employee-avatar">
-                                <i class="fas fa-user"></i>
+                <% for (const [key, datos] of Object.entries(personal)) { %>
+                    <div class="employee-card">
+                        <div class="card-header">
+                            <div class="employee-info">
+                                <div class="employee-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="employee-details">
+                                    <h3><%= datos.nombrelargo %></h3>
+                                    <p class="employee-position"><%= datos.descripcion %></p>
+                                </div>
                             </div>
-                            <div class="employee-details">
-                                <h3>${employee.name}</h3>
-                                <p class="employee-position">${employee.position}</p>
+                            <% if (datos.firma != '') { %>
+                            <span class="status-badge ${getStatusClass(employee.status)}">Firmado</span>
+                            <% } else { %>
+                            <span class="status-badge ${getStatusClass(employee.status)}">Falta Firmar</span>
+                            <% } %>
+                        </div>
+
+                        <div class="card-content">
+                            <div class="button-grid">
+                                <button class="btn" onclick="openModal('<%= datos.folio %>')">
+                                    <i class="fas fa-eye"></i>
+                                    Ver Equipos
+                                </button>
+
+                                <button class="btn" onclick="('<%= datos.folio %>')">
+                                    <i class="fas fa-plus"></i>
+                                    Añadir
+                                </button>
+folio
+                                <button class="btn" onclick="('<%= datos.folio %>')">
+                                    <i class="fas fa-minus"></i>
+                                    Remover
+                                </button>
+
+                                <button class="btn btn-destructive" onclick="('<%= datos.folio %>')">
+                                    <i class="fas fa-user-times"></i>
+                                    Dar Baja
+                                </button>
                             </div>
                         </div>
-                        <span class="status-badge ${getStatusClass(employee.status)}">${employee.status}</span>
                     </div>
-
-                    <div class="card-content">
-                        <div class="button-grid">
-                            <button class="btn" onclick="openModal(${employee.id}, 'view')">
-                                <i class="fas fa-eye"></i>
-                                Ver Equipos
-                            </button>
-
-                            <button class="btn" onclick="openModal(${employee.id}, 'add')">
-                                <i class="fas fa-plus"></i>
-                                Añadir
-                            </button>
-
-                            <button class="btn" onclick="openModal(${employee.id}, 'remove')">
-                                <i class="fas fa-minus"></i>
-                                Remover
-                            </button>
-
-                            <button class="btn btn-destructive" onclick="openModal(${employee.id}, 'deactivate')">
-                                <i class="fas fa-user-times"></i>
-                                Dar Baja
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <% } %>
+                    <% } %>
             </div>
 
             <!-- No Results Message -->
@@ -736,22 +740,22 @@
             
             <div class="card-content">
                 <div class="button-grid">
-                    <button class="btn" onclick="openModal(${employee.id}, 'view')">
+                    <button class="btn" onclick="'<%= datos.descripcion %>')">
                         <i class="fas fa-eye"></i>
                         Ver Equipos
                     </button>
                     
-                    <button class="btn" onclick="openModal(${employee.id}, 'add')">
+                    <button class="btn" onclick="'<%= datos.descripcion %>')">
                         <i class="fas fa-plus"></i>
                         Añadir
                     </button>
                     
-                    <button class="btn" onclick="openModal(${employee.id}, 'remove')">
+                    <button class="btn" onclick="'<%= datos.descripcion %>')">
                         <i class="fas fa-minus"></i>
                         Remover
                     </button>
                     
-                    <button class="btn btn-destructive" onclick="openModal(${employee.id}, 'deactivate')">
+                    <button class="btn btn-destructive" onclick="'<%= datos.descripcion %>')">
                         <i class="fas fa-user-times"></i>
                         Dar Baja
                     </button>
