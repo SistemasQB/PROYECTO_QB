@@ -174,11 +174,20 @@ controller.listadopersonal = async (req, res) => {
 
     const personal = await db.query(
         `
-            SELECT i.idInventario, i.tipo, i.folio ,i.marca, i.historial, v.firma, n1.nombrelargo, n6.descripcion
+            SELECT 
+            GROUP_CONCAT(i.idInventario) AS idInventario_concat, 
+            GROUP_CONCAT(i.tipo) AS tipo_concat, 
+            GROUP_CONCAT(i.marca) AS marca_concat, 
+            MAX(i.historial) AS historial, 
+            MAX(v.firma) AS firma, 
+            n1.nombrelargo, 
+            i.folio,
+            MAX(n6.descripcion) AS descripcion
             FROM inventario i
             INNER JOIN vales v ON i.folio = v.idfolio
             INNER JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
             INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+            GROUP BY n1.nombrelargo;
          `,
         {
             type: QueryTypes.SELECT // Tipo de consulta: SELECT
@@ -189,9 +198,9 @@ controller.listadopersonal = async (req, res) => {
 
     cuentaDatos = personal2.length;
     // console.log(personal2.length);
-    
 
-    res.render('admin/sistemas/listadopersonal',{
+
+    res.render('admin/sistemas/listadopersonal', {
         csrfToken: req.csrfToken(),
         cuentaDatos,
         personal2

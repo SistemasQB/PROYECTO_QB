@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Mejora Continua</title>
-    <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <style>
@@ -105,8 +105,16 @@
         text-decoration: none;
     }
 
-    .btnRubro:hover{
-        outline: solid red 1px;
+    .btnRubro:hover {
+        outline: solid red 3px;
+    }
+
+    .btnselected {
+        outline: solid red 4px;
+    }
+
+    .codificacion {
+        font-size: 12px;
     }
 
     .btn-primary {
@@ -600,7 +608,7 @@
             <div class="modal-header">
                 <img src="../img/Quality-BOLCA.png" alt="" width="10%">
                 <h2>Registro de Mejora Continua</h2>
-                <div>
+                <div class="codificacion">
                     <p>Código: QB-FR-A-06-01</p>
                     <p>Rev: 06</p>
                     <p>Fecha de emisión: 30-11-2017</p>
@@ -612,51 +620,55 @@
             </div>
 
             <form id="mejoraForm" class="modal-form">
-                <div style="display: flex; justify-content: center">
-                    <h2>Rubro</h2>
-                </div>
-                <br>
-                <div style="display: flex; justify-content: space-between;">
-                    <button class="btn btnRubro" style="
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                <div style="background-color: #eee6e691;">
+
+
+                    <div style="display: flex; justify-content: center">
+                        <h2>Rubro</h2>
+                    </div>
+                    <br>
+                    <div style="display: flex; justify-content: space-around;">
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(0)" type="button" style="
                             background-color: #fed7aa;
                             color: #ea580c;
                             border-color: #fdba74;
                             ">
-                        Ahorro
-                    </button>
-                    <button class="btn btnRubro" style="
+                            Ahorro
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(1)" type="button" style="
                     background-color: #e9d5ff;
         color: #7c3aed;
         border-color: #c4b5fd;
                     ">
-                        Sistema
-                    </button>
-                    <button class="btn btnRubro" style="
+                            Sistema
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(2)" type="button" style="
                     background-color: #dbeafe;
         color: #1e40af;
         border-color: #93c5fd;
-                    ";>
-                        Indirecta
-                    </button>
-                    <button class="btn btnRubro" style="
+                    " ;>
+                            Indirecta
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(3)" type="button" style="
                     background-color: #dcfce7;
         color: #166534;
         border-color: #bbf7d0;
                     ">
-                        Ambiental
-                    </button>
+                            Ambiental
+                        </button>
+                    </div>
+                    <br>
                 </div>
-                <br>
-                <br>
                 <!-- Información Personal -->
                 <div class="form-row">
                     <div class="form-group">
                         <label for="nombreMejora">Nombre de la Mejora *</label>
-                        <input type="text" id="nombreMejora" name="nombreMejora" required>
+                        <input type="text" id="nombreMejora" name="nombre_mejora" required>
                     </div>
                     <div class="form-group">
                         <label for="nombre">Generador de la idea o Líder del equipo de mejora *</label>
-                        <input type="text" id="nombre" name="nombre" required>
+                        <input type="text" id="nombre" name="generador_idea" required>
                     </div>
                     <!-- <div class="form-group">
                         <label for="email">E-mail *</label>
@@ -671,17 +683,17 @@
                     </div>
                     <div class="form-group">
                         <label for="proceso">Proceso al que Perteneces *</label>
-                        <input type="text" id="proceso" name="proceso" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="region">Región donde Aplica la Mejora *</label>
-                        <select id="region" name="region" required>
-                            <option value="">Seleccionar región</option>
-                            <option value="Norte">Norte</option>
-                            <option value="Centro">Centro</option>
-                            <option value="Sur">Sur</option>
-                            <option value="Este">Este</option>
-                            <option value="Oeste">Oeste</option>
+                        <select id="proceso" name="proceso" required>
+                            <option value="Comercialización y ventas">1. Comercialización y ventas</option>
+                            <option value="Planeación del servicio">2. Planeación del servicio.</option>
+                            <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
+                            <option value="Control y mejora del servicio">4. Control y mejora del servicio.</option>
+                            <option value="Gestión de infraestructura">5. Gestión de infraestructura.</option>
+                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.
+                            </option>
+                            <option value="Gestión de capital humano">7. Gestión de capital humano.</option>
+                            <option value="Sistema de gestión de calidad">8. Sistema de gestión de calidad.</option>
+                            <option value="Administración y finanzas">9. Administración y finanzas.</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -694,8 +706,8 @@
                 <!-- seccion para añadir a los participantes -->
                 <div class="form-row" id="containerParticipantes" style="display: none;">
                     <div class="form-group">
-                        <label for="nombre_participantes">Situación Actual *</label>
-                        <textarea id="nombre_participantes" name="nombre_participantes" rows="4" required
+                        <label for="nombre_participantes">Nombre de los participantes</label>
+                        <textarea id="nombre_participantes" rows="4" required
                             placeholder="Ingresa los nombres de los participantes separados por comas"></textarea>
                     </div>
                 </div>
@@ -704,12 +716,23 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="procesoAplicacion">Proceso (s) donde se aplica la mejora</label>
-                        <input type="text" id="procesoAplicacion" name="nombre_equipo">
+                        <label for="proceso_aplica_mejora">Proceso (s) donde se aplica la mejora *</label>
+                        <select id="proceso_aplica_mejora" name="proceso_aplica_mejora" required>
+                            <option value="Comercialización y ventas">1. Comercialización y ventas</option>
+                            <option value="Planeación del servicio">2. Planeación del servicio.</option>
+                            <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
+                            <option value="Control y mejora del servicio">4. Control y mejora del servicio.</option>
+                            <option value="Gestión de infraestructura">5. Gestión de infraestructura.</option>
+                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.
+                            </option>
+                            <option value="Gestión de capital humano">7. Gestión de capital humano.</option>
+                            <option value="Sistema de gestión de calidad">8. Sistema de gestión de calidad.</option>
+                            <option value="Administración y finanzas">9. Administración y finanzas.</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="regionAplicacion">Región (s) donde se propone la mejora</label>
-                        <input type="text" id="regionAplicacion" name="nombre_equipo">
+                        <label for="region_aplica_mejora">Región (s) donde se propone la mejora *</label>
+                        <input type="text" id="region_aplica_mejora" name="region_aplica_mejora">
                     </div>
                 </div>
 
@@ -718,49 +741,55 @@
                     <label class="form-label">Tipo de Mejora y Beneficios *</label>
                     <div class="checkbox-grid">
                         <div class="checkbox-item">
-                            <input type="checkbox" id="ahorro-material" name="tipoMejora"
+                            <input type="checkbox" id="ahorro-material" class="checkboxbeneficios"
                                 value="Genera un Ahorro Material">
                             <label for="ahorro-material">Genera un Ahorro Material</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="facilita-trabajo" name="tipoMejora"
+                            <input type="checkbox" id="facilita-trabajo" class="checkboxbeneficios"
                                 value="Facilita el Trabajo Diario">
                             <label for="facilita-trabajo">Facilita el Trabajo Diario</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="mejora-ambiente" name="tipoMejora"
+                            <input type="checkbox" id="mejora-ambiente" class="checkboxbeneficios"
                                 value="Mejora el Ambiente Laboral">
                             <label for="mejora-ambiente">Mejora el Ambiente Laboral</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="ahorro-economico" name="tipoMejora"
+                            <input type="checkbox" id="ahorro-economico" class="checkboxbeneficios"
                                 value="Genera un Ahorro Económico">
                             <label for="ahorro-economico">Genera un Ahorro Económico</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="ahorra-tiempo" name="tipoMejora" value="Ahorra Tiempo">
+                            <input type="checkbox" id="ahorra-tiempo" value="Ahorra Tiempo" class="checkboxbeneficios">
                             <label for="ahorra-tiempo">Ahorra Tiempo</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="efectividad" name="tipoMejora" value="Efectividad en tu Proceso">
+                            <input type="checkbox" id="efectividad" value="Efectividad en tu Proceso"
+                                class="checkboxbeneficios">
                             <label for="efectividad">Efectividad en tu Proceso</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="entorno-saludable" name="tipoMejora"
+                            <input type="checkbox" id="entorno-saludable" class="checkboxbeneficios"
                                 value="Entorno Más Saludable y Sostenible">
                             <label for="entorno-saludable">Entorno Más Saludable y Sostenible</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="mitiga-impacto" name="tipoMejora"
+                            <input type="checkbox" id="mitiga-impacto" class="checkboxbeneficios"
                                 value="Mitiga el Impacto Negativo">
                             <label for="mitiga-impacto">Mitiga el Impacto Negativo de Cualquier Actividad en el Medio
                                 Ambiente</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="beneficio-organizacion" name="tipoMejora"
+                            <input type="checkbox" id="beneficio-organizacion" class="checkboxbeneficios"
                                 value="Cambio en Beneficio de la Organización">
                             <label for="beneficio-organizacion">Cambio en Beneficio de la Organización</label>
                         </div>
+                    </div>
+                    <br>
+                    <div class="form-group" style="background-color: #eee6e691;">
+                        <label for="beneficiosadd"> Beneficios Adicionales</label>
+                        <input type="text" id="beneficiosadd">
                     </div>
                 </div>
 
@@ -769,30 +798,45 @@
                     <label class="form-label">¿Requiere Inversión? *</label>
                     <div class="radio-group">
                         <div class="radio-item">
-                            <input type="radio" id="inversion-si" name="requiereInversion" value="true" required>
+                            <input type="radio" id="inversion-si" name="inversion" value="1" required>
                             <label for="inversion-si">Sí</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" id="inversion-no" name="requiereInversion" value="false" required>
+                            <input type="radio" id="inversion-no" name="inversion" value="0" required>
                             <label for="inversion-no">No</label>
                         </div>
                     </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="background-color: #eee6e691;">
+                            <label for="monto"> Monto $</label>
+                            <input type="text" id="monto" name="monto"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                placeholder="Inreoduce el monto sin decimales" autocomplete="off">
+                        </div>
+                        <div class="form-group" style="background-color: #eee6e691;">
+                            <label for="recuperacion"> Tiempo de recuperación</label>
+                            <input type="text" id="recuperacion" name="recuperacion"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                placeholder="Inreoduce el numero de meses" autocomplete="off">
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Situación Actual -->
                 <div class="form-group">
-                    <label for="situacionActual">Situación Actual *</label>
-                    <textarea id="situacionActual" name="situacionActual" rows="4" required
+                    <label for="situacion_actual">Situación Actual *</label>
+                    <textarea id="situacion_actual" name="situacion_actual" rows="4" required
                         placeholder="Describe la situación actual que requiere mejora..."></textarea>
                 </div>
 
                 <!-- Mejora Propuesta -->
                 <div class="form-group">
-                    <label for="mejoraProuesta">Mejora Propuesta *</label>
-                    <textarea id="mejoraProuesta" name="mejoraProuesta" rows="4" required
+                    <label for="situacion_mejora">Mejora Propuesta *</label>
+                    <textarea id="situacion_mejora" name="situacion_mejora" rows="4" required
                         placeholder="Describe la mejora propuesta..."></textarea>
                 </div>
-
                 <!-- Botones -->
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
@@ -802,23 +846,101 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="../scripts/all/alertas.js"></script>
 </body>
 
 <script>
 
+    const btnRubro = document.querySelectorAll('.btnRubro');
     const nombreEquipo = document.getElementById('nombreEquipo');
+    const mejoraForm = document.getElementById('mejoraForm');
+
+    let rubro = ''
+    var mejoragrupal = 0
+    function rubroSeleccionado(num1) {
+        btnRubro[0].classList.remove('btnselected');
+        btnRubro[1].classList.remove('btnselected');
+        btnRubro[2].classList.remove('btnselected');
+        btnRubro[3].classList.remove('btnselected');
+        btnRubro[num1].classList.add('btnselected');
+        console.log(btnRubro[num1].innerText);
+        rubro = btnRubro[num1].innerText
+    }
+
+
 
     nombreEquipo.addEventListener('keyup', () => {
         if (nombreEquipo.value === '') {
             document.getElementById('containerParticipantes').style.display = 'none';
-            console.log('1');
+            mejoragrupal = 0
 
         } else {
             document.getElementById('containerParticipantes').style.display = 'block';
-            console.log('2');
+            mejoragrupal = 1
         }
     })
+
+    function contarEquipo() {
+        const nombre_participantes = document.getElementById('nombre_participantes').value;
+
+        // Dividir los valores por la coma y eliminar espacios adicionales
+        let elementos = nombre_participantes.split(",").map(item => item.trim()).filter(item => item !== "");
+
+        // Contar la cantidad de elementos
+        return elementos.length + 1;
+
+    }
+
+    function concatenarbeneficios() {
+
+        let checkboxes = document.getElementsByClassName('checkboxbeneficios');
+
+        let valoresConcatenados = ""
+
+        for(c=0; c<checkboxes.length; c++){
+            if (checkboxes[c].checked) {
+                valoresConcatenados += checkboxes[c].value + ','
+            }
+        }
+            
+        const beneficiosadd = document.getElementById('beneficiosadd');
+
+        // let valoresConcatenados = checkboxes.map(checkbox => checkbox.value).join(',');
+
+        let resultado = valoresConcatenados + beneficiosadd.value;
+
+        console.log(resultado);
+        return resultado
+    }
+
+    function obtenerFechaFormato() {
+    let fecha = new Date();
+    let año = fecha.getFullYear();
+    let mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Sumar 1 porque los meses van de 0 a 11
+    let dia = String(fecha.getDate()).padStart(2, '0'); // Asegurar que tenga dos dígitos
+
+    return `${año}-${mes}-${dia}`;
+}
+
+
+
+    mejoraForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        // var contarEquipo = contarEquipo();
+        // var concatenarbeneficios = concatenarbeneficios();
+        const formData = new FormData(mejoraForm);
+        formData.append('fecha', obtenerFechaFormato());
+        formData.append('numero_participantes', contarEquipo());
+        formData.append('rubro', rubro);
+        formData.append('beneficios', concatenarbeneficios());
+        formData.append('mejora_grupal', mejoragrupal);
+        formData.append('titulo_analisis', 'nombre.pdf');
+        const urlEncoded = new URLSearchParams(formData).toString();
+        console.log(urlEncoded);
+        alertaFetch(urlEncoded, 'mejoracontinua');
+    })
+
+
 
 
     // Estado de la aplicación
@@ -858,7 +980,6 @@
     const openModalBtn = document.getElementById('openModalBtn');
     const closeModalBtn = document.getElementById('closeModalBtn');
     const cancelBtn = document.getElementById('cancelBtn');
-    const mejoraForm = document.getElementById('mejoraForm');
     const mejorasGrid = document.getElementById('mejorasGrid');
     const emptyState = document.getElementById('emptyState');
     const totalMejoras = document.getElementById('totalMejoras');
@@ -904,44 +1025,6 @@
         mejoraForm.reset();
     }
 
-    function handleSubmit(e) {
-        e.preventDefault();
-
-        const formData = new FormData(mejoraForm);
-        const tipoMejora = [];
-
-        // Obtener todos los checkboxes seleccionados
-        const checkboxes = document.querySelectorAll('input[name="tipoMejora"]:checked');
-        checkboxes.forEach(checkbox => {
-            tipoMejora.push(checkbox.value);
-        });
-
-        // Validar que al menos un tipo de mejora esté seleccionado
-        if (tipoMejora.length === 0) {
-            alert('Por favor selecciona al menos un tipo de mejora.');
-            return;
-        }
-
-        const nuevaMejora = {
-            id: Date.now().toString(),
-            nombreMejora: formData.get('nombreMejora'),
-            nombre: formData.get('nombre'),
-            email: formData.get('email'),
-            puesto: formData.get('puesto'),
-            proceso: formData.get('proceso'),
-            region: formData.get('region'),
-            tipoMejora: tipoMejora,
-            requiereInversion: formData.get('requiereInversion') === 'true',
-            situacionActual: formData.get('situacionActual'),
-            mejoraProuesta: formData.get('mejoraProuesta'),
-            fechaCreacion: new Date().toISOString().split('T')[0]
-        };
-
-        mejoras.unshift(nuevaMejora);
-        renderMejoras();
-        updateTotalCount();
-        closeModal();
-    }
 
     function renderMejoras() {
         if (mejoras.length === 0) {

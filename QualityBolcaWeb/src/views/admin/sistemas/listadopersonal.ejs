@@ -1,632 +1,579 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EmpManager - Gestión de Colaboradores</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <style>
     /* Reset y estilos base */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: #f9fafb;
-        color: #111827;
-        line-height: 1.6;
-    }
-
-    /* Navbar */
-    .navbar {
-        background-color: white;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .nav-container {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 1rem;
-    }
-
-    .nav-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 4rem;
-    }
-
-    .logo {
-        display: flex;
-        align-items: center;
-        color: #2563eb;
-    }
-
-    .logo i {
-        font-size: 2rem;
-        margin-right: 0.5rem;
-    }
-
-    .logo-text {
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: #111827;
-    }
-
-    .nav-links {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .nav-link {
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.375rem;
-        text-decoration: none;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-
-    .nav-link.active {
-        background-color: #dbeafe;
-        color: #1d4ed8;
-    }
-
-    .nav-link:not(.active) {
-        color: #6b7280;
-    }
-
-    .nav-link:not(.active):hover {
-        color: #374151;
-    }
-
-    /* Main Content */
-    .main-content {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 1.5rem;
-    }
-
-    .container {
-        padding: 1.5rem 0;
-    }
-
-    /* Search Bar */
-    .search-container {
-        margin-bottom: 1.5rem;
-    }
-
-    .search-wrapper {
-        position: relative;
-        max-width: 28rem;
-        margin: 0 auto;
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-        font-size: 1rem;
-    }
-
-    .search-input {
-        width: 100%;
-        padding: 0.5rem 0.75rem 0.5rem 2.5rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .search-input:focus {
-        outline: none;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    /* Employee Grid */
-    .employee-grid {
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    }
-
-    /* Employee Card */
-    .employee-card {
-        background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.2s;
-        overflow: hidden;
-    }
-
-    .employee-card:hover {
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-        padding: 1rem 1rem 0.75rem;
-    }
-
-    .employee-info {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .employee-avatar {
-        background-color: #dbeafe;
-        padding: 0.5rem;
-        border-radius: 50%;
-        color: #2563eb;
-        font-size: 1.25rem;
-    }
-
-    .employee-details h3 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    .employee-position {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.375rem;
-        font-size: 0.75rem;
-        font-weight: 500;
-        width: fit-content;
-    }
-
-    .status-active {
-        background-color: #dcfce7;
-        color: #166534;
-    }
-
-    .status-vacation {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
-
-    .status-inactive {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-
-    .card-content {
-        padding: 0 1rem 1rem;
-    }
-
-    .button-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-    }
-
-    .btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.25rem;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        background: white;
-        color: #374151;
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-
-    .btn:hover {
-        background-color: #f9fafb;
-    }
-
-    .btn-destructive {
-        background-color: #dc2626;
-        color: white;
-        border-color: #dc2626;
-    }
-
-    .btn-destructive:hover {
-        background-color: #b91c1c;
-    }
-
-    /* No Results */
-    .no-results {
-        text-align: center;
-        padding: 3rem 0;
-    }
-
-    .no-results i {
-        font-size: 3rem;
-        color: #9ca3af;
-        margin-bottom: 0.5rem;
-    }
-
-    .no-results h3 {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #111827;
-        margin-bottom: 0.25rem;
-    }
-
-    .no-results p {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-
-    /* Modal */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-    }
-
-    .modal.show {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-content {
-        background: white;
-        border-radius: 0.5rem;
-        max-width: 42rem;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        position: relative;
-    }
-
-    .modal-header {
-        padding: 1.5rem 1.5rem 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        position: relative;
-    }
-
-    .modal-header h2 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .modal-header p {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-
-    .modal-close {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: none;
-        border: none;
-        font-size: 1.25rem;
-        color: #6b7280;
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-    }
-
-    .modal-close:hover {
-        background-color: #f3f4f6;
-    }
-
-    .modal-body {
-        padding: 1.5rem;
-    }
-
-    /* Form Elements */
-    .form-group {
-        margin-bottom: 1rem;
-    }
-
-    .form-label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-        color: #374151;
-    }
-
-    .form-input,
-    .form-select,
-    .form-textarea {
-        width: 100%;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-    }
-
-    .form-input:focus,
-    .form-select:focus,
-    .form-textarea:focus {
-        outline: none;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .form-textarea {
-        resize: vertical;
-        min-height: 4rem;
-    }
-
-    /* Table */
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-    }
-
-    .table th,
-    .table td {
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .table th {
-        font-weight: 600;
-        color: #374151;
-        background-color: #f9fafb;
-    }
-
-    .table td {
-        color: #6b7280;
-    }
-
-    /* Employee Info Grid */
-    .employee-info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .info-item {
-        font-size: 0.875rem;
-    }
-
-    .info-label {
-        font-weight: 600;
-        color: #374151;
-        display: block;
-        margin-bottom: 0.25rem;
-    }
-
-    /* Equipment Item */
-    .equipment-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.75rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.375rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .equipment-info h4 {
-        font-weight: 500;
-        margin-bottom: 0.25rem;
-    }
-
-    .equipment-info p {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-
-    /* Warning Box */
-    .warning-box {
-        background-color: #fef2f2;
-        border: 1px solid #fecaca;
-        border-radius: 0.5rem;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f9fafb;
+    color: #111827;
+    line-height: 1.5;
+}
+
+/* Header */
+.header {
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo {
+    width: 2rem;
+    height: 2rem;
+    background-color: #2563eb;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.nav-btn.active {
+    background-color: #2563eb;
+    color: white;
+}
+
+.nav-btn:not(.active) {
+    color: #6b7280;
+}
+
+.nav-btn:not(.active):hover {
+    background-color: #f3f4f6;
+}
+
+/* Main Content */
+.main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Search */
+.search-container {
+    margin-bottom: 2rem;
+}
+
+.search-box {
+    position: relative;
+    max-width: 24rem;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background-color: white;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Card */
+.card {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    padding: 1.5rem 1.5rem 1rem;
+}
+
+.card-user-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #dbeafe;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.user-avatar svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #2563eb;
+}
+
+.user-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.25;
+    margin-bottom: 0.25rem;
+}
+
+.user-position {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.card-content {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: #dcfce7;
+    color: #166534;
+    margin-bottom: 1rem;
+}
+
+.button-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: none;
+}
+
+.btn-outline {
+    background-color: white;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.btn-outline:hover {
+    background-color: #f9fafb;
+}
+
+.btn-destructive {
+    background-color: #dc2626;
+    color: white;
+    border: 1px solid #dc2626;
+}
+
+.btn-destructive:hover {
+    background-color: #b91c1c;
+}
+
+.btn svg {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 2% auto;
+    padding: 0;
+    border-radius: 0.5rem;
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+/* Vale de Resguardo Styles */
+.vale-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.vale-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.vale-logo img {
+    width: 4rem;
+    height: 4rem;
+}
+
+.vale-title {
+    flex: 1;
+    text-align: center;
+}
+
+.vale-title h2 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.vale-title p {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.vale-info {
+    text-align: right;
+    font-size: 0.875rem;
+}
+
+.vale-info p {
+    margin-bottom: 0.25rem;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #0072bc;
+    border-bottom: 2px solid #0072bc;
+    padding-bottom: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.equipment-item {
+    background-color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.375rem;
+}
+
+.equipment-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.equipment-details > div {
+    margin-bottom: 0.5rem;
+}
+
+.equipment-details .full-width {
+    grid-column: 1 / -1;
+}
+
+.equipment-details p:first-child {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.125rem;
+}
+
+.equipment-details p:last-child {
+    font-size: 0.875rem;
+}
+
+.separator {
+    background-color: #000;
+    height: 1px;
+    margin: 1.5rem 0;
+}
+
+.collaborator-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.collaborator-item {
+    background-color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.375rem;
+}
+
+.collaborator-item p:first-child {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.collaborator-item p:last-child {
+    font-size: 0.875rem;
+}
+
+.date-info {
+    text-align: right;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.conditions {
+    background-color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.375rem;
+}
+
+.conditions p {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.conditions ul {
+    font-size: 0.875rem;
+    padding-left: 1.25rem;
+}
+
+.conditions li {
+    margin-bottom: 0.5rem;
+}
+
+.signatures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding-top: 1.5rem;
+    margin-top: 2rem;
+}
+
+.signature {
+    text-align: center;
+}
+
+.signature-area {
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.signature-area img {
+    height: 4rem;
+}
+
+.signature-line {
+    border-top: 1px solid #9ca3af;
+    padding-top: 0.5rem;
+}
+
+.signature-line p {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.signature-line p:first-child {
+    font-weight: 500;
+}
+
+.signature-line p:not(:first-child) {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        height: auto;
         padding: 1rem;
-        margin-top: 1rem;
+        gap: 1rem;
     }
 
-    .warning-title {
-        font-weight: 600;
-        color: #991b1b;
-        margin-bottom: 0.5rem;
-    }
-
-    .warning-text {
-        color: #7f1d1d;
-        font-size: 0.875rem;
-        margin-bottom: 1rem;
-    }
-
-    .equipment-list {
-        margin-bottom: 1rem;
-    }
-
-    .equipment-list-title {
-        color: #991b1b;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-    }
-
-    .equipment-list ul {
-        list-style-type: disc;
-        list-style-position: inside;
-        color: #7f1d1d;
-        font-size: 0.875rem;
-    }
-
-    /* Button Variants */
-    .btn-full {
+    .nav {
         width: 100%;
-        margin-bottom: 0.5rem;
+        justify-content: center;
     }
 
-    .btn-outline {
-        background: white;
-        border: 1px solid #d1d5db;
-        color: #374151;
-    }
-
-    .btn-outline:hover {
-        background-color: #f9fafb;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .nav-links {
-            display: none;
-        }
-
-        .employee-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .employee-info-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .modal-content {
-            width: 95%;
-            margin: 1rem;
-        }
-    }
-
-    /* Empty state */
-    .empty-state {
+    .vale-header {
+        flex-direction: column;
         text-align: center;
-        padding: 2rem;
-        color: #6b7280;
     }
+
+    .vale-info {
+        text-align: center;
+    }
+
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .collaborator-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .signatures {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-content">
-                <!-- Logo -->
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="header-left">
                 <div class="logo">
-                    <i class="fas fa-building"></i>
-                    <span class="logo-text">EmpManager</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm10 16H4V9h16v11z" fill="white"/>
+                    </svg>
                 </div>
-
-                <!-- Navigation Links -->
-                <div class="nav-links">
-                    <a href="#" class="nav-link active">Colaboradores</a>
-                    <a href="#" class="nav-link">Inventario</a>
-                    <a href="#" class="nav-link">Tickets</a>
-                </div>
+                <h1>EmpManager</h1>
             </div>
+            <nav class="nav">
+                <button class="nav-btn active">Colaboradores</button>
+                <button class="nav-btn">Inventario</button>
+                <button class="nav-btn">Tickets</button>
+            </nav>
         </div>
-    </nav>
+    </header>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Search Bar -->
-            <div class="search-container">
-                <div class="search-wrapper">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar colaboradores..." class="search-input">
-                </div>
+    <main class="main">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar colaboradores..." class="search-input">
             </div>
+        </div>
 
-            <!-- Employee List -->
-            <div id="employeeGrid" class="employee-grid">
-                <!-- Los empleados se generarán dinámicamente con JavaScript -->
-                <% for (const [key, datos] of Object.entries(personal2)) { %>
-                    <div class="employee-card">
-                        <div class="card-header">
-                            <div class="employee-info">
-                                <div class="employee-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="employee-details">
-                                    <h3>
-                                        <%= datos.nombrelargo %>
-                                    </h3>
-                                    <p class="employee-position">
-                                        <%= datos.descripcion %>
-                                    </p>
-                                </div>
-                            </div>
-                            <% if (datos.firma !='' ) { %>
-                                <span class="status-badge ${getStatusClass(employee.status)}">Firmado</span>
-                                <% } else { %>
-                                    <span class="status-badge ${getStatusClass(employee.status)}">Falta Firmar</span>
-                                    <% } %>
-                        </div>
-
-                        <div class="card-content">
-                            <div class="button-grid">
-                                <button class="btn" onclick="openModal('<%= datos.folio %>')">
-                                    <i class="fas fa-eye"></i>
-                                    Ver Equipos
-                                </button>
-
-                                <button class="btn" onclick="('<%= datos.folio %>')">
-                                    <i class="fas fa-plus"></i>
-                                    Añadir
-                                </button>
-                                <button class="btn" onclick="('<%= datos.folio %>')">
-                                    <i class="fas fa-minus"></i>
-                                    Remover
-                                </button>
-
-                                <button class="btn btn-destructive" onclick="('<%= datos.folio %>')">
-                                    <i class="fas fa-user-times"></i>
-                                    Dar Baja
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <% } %>
-            </div>
-
-            <!-- No Results Message -->
-            <div id="noResults" class="no-results" style="display: none;">
-                <i class="fas fa-user"></i>
-                <h3>No se encontraron colaboradores</h3>
-                <p>Intenta con un término de búsqueda diferente.</p>
-            </div>
+        <!-- Colaboradores Grid -->
+        <div id="colaboradoresGrid" class="grid">
+            <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
         </div>
     </main>
 
     <!-- Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Título del Modal</h2>
-                <p id="modalDescription">Descripción del modal</p>
-                <button class="modal-close" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+            <span class="close">&times;</span>
             <div id="modalBody" class="modal-body">
-                <!-- El contenido se generará dinámicamente -->
-
-
+                <!-- El contenido del modal se generará dinámicamente -->
             </div>
         </div>
     </div>
@@ -635,335 +582,352 @@
 </body>
 
 <script>
-    // Datos de ejemplo
-    const employees = [
-        {
-            id: 1,
-            name: "Ana García",
-            position: "Desarrolladora Frontend",
-            status: "Activo",
-            equipment: [
-                { id: 1, name: "Laptop Dell XPS 13", type: "Computadora", assignedDate: "2024-01-15" },
-                { id: 2, name: 'Monitor Samsung 24"', type: "Monitor", assignedDate: "2024-01-15" },
-                { id: 3, name: "Teclado Mecánico", type: "Periférico", assignedDate: "2024-01-20" },
-            ],
-        },
-        {
-            id: 2,
-            name: "Carlos Rodríguez",
-            position: "Diseñador UX/UI",
-            status: "Activo",
-            equipment: [
-                { id: 4, name: 'MacBook Pro 16"', type: "Computadora", assignedDate: "2024-02-01" },
-                { id: 5, name: "Tableta Wacom", type: "Periférico", assignedDate: "2024-02-01" },
-            ],
-        },
-        {
-            id: 3,
-            name: "María López",
-            position: "Project Manager",
-            status: "Vacaciones",
-            equipment: [
-                { id: 6, name: "Laptop HP EliteBook", type: "Computadora", assignedDate: "2024-01-10" },
-                { id: 7, name: "Mouse Inalámbrico", type: "Periférico", assignedDate: "2024-01-10" },
-            ],
-        },
-        {
-            id: 4,
-            name: "Roberto Silva",
-            position: "Desarrollador Backend",
-            status: "Inactivo",
-            equipment: [],
-        },
-    ];
+    // Datos de ejemplo de colaboradores
+const colaboradores = [
+    {
+        id: 1,
+        nombre: "ALFARO GODINEZ PILAR ANDREA",
+        puesto: "Supervisor de Proyecto",
+        firmado: true,
+        equipos: [
+            { tipo: "Laptop", marca: "Dell", modelo: "Latitude 5520", serie: "ABC123", estado: "Activo" },
+            { tipo: "Mouse", marca: "Logitech", modelo: "MX Master 3", serie: "DEF456", estado: "Activo" },
+            { tipo: "Monitor", marca: "Samsung", modelo: "24'", serie: "GHI789", estado: "Activo" },
+        ],
+    },
+    {
+        id: 2,
+        nombre: "ALMARAZ ESTRADA CLAUDIA PATRICIA",
+        puesto: "Líder de Sorteo",
+        firmado: true,
+        equipos: [
+            { tipo: "Laptop", marca: "HP", modelo: "EliteBook 840", serie: "JKL012", estado: "Activo" },
+            { tipo: "Teléfono", marca: "iPhone", modelo: "13", serie: "MNO345", estado: "Activo" },
+        ],
+    },
+    {
+        id: 3,
+        nombre: "ANDRADE MONTAÑEZ DANIELA LIZETH",
+        puesto: "Auxiliar de comercialización y ventas",
+        firmado: true,
+        equipos: [
+            { tipo: "Laptop", marca: "Lenovo", modelo: "ThinkPad E14", serie: "PQR678", estado: "Activo" },
+            { tipo: "Impresora", marca: "Canon", modelo: "PIXMA", serie: "STU901", estado: "Activo" },
+        ],
+    },
+    {
+        id: 4,
+        nombre: "ARIAS SORIA LINDA LIZBETH",
+        puesto: "Líder de Sorteo",
+        firmado: true,
+        equipos: [
+            { tipo: "Tablet", marca: "iPad", modelo: "Air", serie: "VWX234", estado: "Activo" },
+            { tipo: "Teclado", marca: "Apple", modelo: "Magic Keyboard", serie: "YZA567", estado: "Activo" },
+        ],
+    },
+    {
+        id: 5,
+        nombre: "BEGINES OROZCO EDUARDO",
+        puesto: "Gerente Nacional de Sorteo",
+        firmado: true,
+        equipos: [
+            { tipo: "Laptop", marca: "MacBook", modelo: "Pro 16", serie: "BCD890", estado: "Activo" },
+            { tipo: "Monitor", marca: "LG", modelo: "27' 4K", serie: "EFG123", estado: "Activo" },
+            { tipo: "Webcam", marca: "Logitech", modelo: "C920", serie: "HIJ456", estado: "Activo" },
+        ],
+    },
+    {
+        id: 6,
+        nombre: "CADENA MENDOZA EVA GABRIELA",
+        puesto: "Jefe de Compras y Suministros",
+        firmado: true,
+        equipos: [
+            { tipo: "Laptop", marca: "ASUS", modelo: "ZenBook", serie: "KLM789", estado: "Activo" },
+            { tipo: "Scanner", marca: "Epson", modelo: "V600", serie: "NOP012", estado: "Activo" },
+        ],
+    },
+];
 
-    const equipmentTypes = ["Computadora", "Monitor", "Periférico", "Móvil", "Otro"];
+// Variables globales
+let filteredColaboradores = [...colaboradores];
 
-    // Variables globales
-    let filteredEmployees = [...employees];
-    let selectedEmployee = null;
-    let modalType = "";
+// Elementos del DOM
+const searchInput = document.getElementById('searchInput');
+const colaboradoresGrid = document.getElementById('colaboradoresGrid');
+const modal = document.getElementById('modal');
+const modalBody = document.getElementById('modalBody');
+const closeBtn = document.querySelector('.close');
 
-    let valoresPersonas = '<%= JSON.stringify(personal2) %>';
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    renderColaboradores();
+    setupEventListeners();
+});
 
-    let contadorP = 0;
-    // Inicialización
-    document.addEventListener('DOMContentLoaded', function () {
-        renderEmployees();
-        setupEventListeners();
-    });
-
-    // Event Listeners
-    function setupEventListeners() {
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', handleSearch);
-
-        // Cerrar modal al hacer clic fuera
-        const modal = document.getElementById('modal');
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-    }
-
+function setupEventListeners() {
     // Búsqueda
-    function handleSearch(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        filteredEmployees = employees.filter(employee =>
-            employee.name.toLowerCase().includes(searchTerm) ||
-            employee.position.toLowerCase().includes(searchTerm)
-        );
-        renderEmployees(contadorP);
-        contadorP++;
-    }
-
-    // Renderizar empleados
-    function renderEmployees(contadorP) {
-        const grid = document.getElementById('employeeGrid');
-        const noResults = document.getElementById('noResults');
-
-        if (filteredEmployees.length === 0) {
-            grid.style.display = 'none';
-            noResults.style.display = 'block';
-            return;
+    searchInput.addEventListener('input', handleSearch);
+    
+    // Modal
+    closeBtn.addEventListener('click', closeModal);
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            closeModal();
         }
+    });
+}
 
-        grid.style.display = 'grid';
-        noResults.style.display = 'none';
-    }
+function handleSearch(event) {
+    const searchTerm = event.target.value.toLowerCase();
+    filteredColaboradores = colaboradores.filter(colaborador =>
+        colaborador.nombre.toLowerCase().includes(searchTerm) ||
+        colaborador.puesto.toLowerCase().includes(searchTerm)
+    );
+    renderColaboradores();
+}
 
-    // Obtener clase de estatus
-    function getStatusClass(status) {
-        switch (status) {
-            case "Activo":
-                return "status-active";
-            case "Vacaciones":
-                return "status-vacation";
-            case "Inactivo":
-                return "status-inactive";
-            default:
-                return "status-inactive";
-        }
-    }
+function renderColaboradores() {
+    colaboradoresGrid.innerHTML = '';
+    
+    filteredColaboradores.forEach(colaborador => {
+        const cardElement = createColaboradorCard(colaborador);
+        colaboradoresGrid.appendChild(cardElement);
+    });
+}
 
-    // Abrir modal
-    function openModal(employeeId, type) {
-        selectedEmployee = employees.find(emp => emp.id === employeeId);
-        modalType = type;
-
-        const modal = document.getElementById('modal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
-        const modalBody = document.getElementById('modalBody');
-
-        // Configurar título y descripción
-        const modalConfig = getModalConfig(type);
-        modalTitle.textContent = modalConfig.title;
-        modalDescription.textContent = modalConfig.description;
-
-        // Renderizar contenido del modal
-        modalBody.innerHTML = renderModalContent(type);
-
-        // Mostrar modal
-        modal.classList.add('show');
-    }
-
-    // Cerrar modal
-    function closeModal() {
-        const modal = document.getElementById('modal');
-        modal.classList.remove('show');
-        selectedEmployee = null;
-        modalType = "";
-    }
-
-    // Configuración del modal
-    function getModalConfig(type) {
-        const configs = {
-            view: {
-                title: "Vale de Equipos",
-                description: "Consulta los equipos asignados al colaborador"
-            },
-            add: {
-                title: "Añadir Equipo al Inventario",
-                description: "Asigna un nuevo equipo al colaborador"
-            },
-            remove: {
-                title: "Remover Equipo del Inventario",
-                description: "Remueve equipos del inventario del colaborador"
-            },
-            deactivate: {
-                title: "Baja del Colaborador",
-                description: "Procede con la baja del colaborador"
-            }
-        };
-        return configs[type] || { title: "", description: "" };
-    }
-
-    // Renderizar contenido del modal
-    function renderModalContent(type) {
-        if (!selectedEmployee) return '';
-
-        const employeeInfo = `
-        <div class="employee-info-grid">
-            <div class="info-item">
-                <span class="info-label">Colaborador:</span>
-                <span>${selectedEmployee.name}</span>
+function createColaboradorCard(colaborador) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    
+    card.innerHTML = `
+        <div class="card-header">
+            <div class="card-user-info">
+                <div class="user-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="user-details">
+                    <h3 class="user-name">${colaborador.nombre}</h3>
+                    <p class="user-position">${colaborador.puesto}</p>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">Puesto:</span>
-                <span>${selectedEmployee.position}</span>
+        </div>
+        <div class="card-content">
+            <div class="status-badge">
+                Firmado
+            </div>
+            <div class="button-grid">
+                <button class="btn btn-outline" onclick="verEquipos(${colaborador.id})">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Ver Equipos
+                </button>
+                <button class="btn btn-outline">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Añadir
+                </button>
+                <button class="btn btn-outline">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Remover
+                </button>
+                <button class="btn btn-destructive">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="17" y1="8" x2="22" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="22" y1="8" x2="17" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Dar Baja
+                </button>
             </div>
         </div>
     `;
+    
+    return card;
+}
 
-        switch (type) {
-            case 'view':
-                return `
-                ${employeeInfo}
-                ${selectedEmployee.equipment.length > 0 ? `
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Equipo</th>
-                                <th>Tipo</th>
-                                <th>Fecha Asignación</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${selectedEmployee.equipment.map(item => `
-                                <tr>
-                                    <td>${item.name}</td>
-                                    <td>${item.type}</td>
-                                    <td>${item.assignedDate}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                ` : `
-                    <div class="empty-state">
-                        <p>No hay equipos asignados a este colaborador</p>
-                    </div>
-                `}
-            `;
+function verEquipos(colaboradorId) {
+    const colaborador = colaboradores.find(c => c.id === colaboradorId);
+    if (colaborador) {
+        showModal(colaborador);
+    }
+}
 
-            case 'add':
-                return `
-                ${employeeInfo}
-                <form onsubmit="handleAddEquipment(event)">
-                    <div class="form-group">
-                        <label class="form-label" for="equipment-name">Nombre del Equipo</label>
-                        <input type="text" id="equipment-name" class="form-input" placeholder="Ej: Laptop Dell XPS 13" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="equipment-type">Tipo de Equipo</label>
-                        <select id="equipment-type" class="form-select" required>
-                            <option value="">Selecciona el tipo</option>
-                            ${equipmentTypes.map(type => `<option value="${type}">${type}</option>`).join('')}
-                        </select>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-full" style="background-color: #2563eb; color: white; border-color: #2563eb;">
-                        Asignar Equipo
-                    </button>
-                </form>
-            `;
+function showModal(colaborador) {
+    const currentDate = new Date().toLocaleDateString('es-ES');
+    
+    modalBody.innerHTML = `
+        <div class="vale-header">
+            <div class="vale-logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iOCIgZmlsbD0iIzAwNzJiYyIvPgo8dGV4dCB4PSI0MCIgeT0iNDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RQjwvdGV4dD4KPC9zdmc+" alt="Quality BOLCA Logo">
+                <div>
+                    <h2 style="color: #0072bc;">Quality BOLCA</h2>
+                </div>
+            </div>
+            <div class="vale-title">
+                <h2>Vale de asignación de equipos</h2>
+                <p>Documento de entrega y responsabilidad</p>
+                <p>Folio: 38</p>
+            </div>
+            <div class="vale-info">
+                <p><strong>Código:</strong> QB-FR-A-12-01</p>
+                <p><strong>Rev:</strong> 00</p>
+                <p><strong>Fecha de emisión:</strong> ${currentDate}</p>
+                <p><strong>Fecha de revisión:</strong> N/A</p>
+            </div>
+        </div>
 
-            case 'remove':
-                return `
-                ${employeeInfo}
-                ${selectedEmployee.equipment.length > 0 ? `
-                    <div class="form-group">
-                        <label class="form-label">Selecciona el equipo a remover:</label>
-                        <div style="margin-top: 0.5rem;">
-                            ${selectedEmployee.equipment.map(item => `
-                                <div class="equipment-item">
-                                    <div class="equipment-info">
-                                        <h4>${item.name}</h4>
-                                        <p>${item.type}</p>
-                                    </div>
-                                    <button class="btn btn-destructive" onclick="handleRemoveEquipment(${item.id})">
-                                        Remover
-                                    </button>
-                                </div>
-                            `).join('')}
+        <div>
+            <h3 class="section-title">Información del Equipo</h3>
+            <div class="equipment-grid">
+                <div class="equipment-item">
+                    <div class="equipment-details">
+                        <div>
+                            <p>Tipo de Equipo:</p>
+                            <p>Monitor</p>
                         </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="remove-reason">Motivo de la remoción</label>
-                        <textarea id="remove-reason" class="form-textarea" placeholder="Describe el motivo de la remoción del equipo..."></textarea>
-                    </div>
-                ` : `
-                    <div class="empty-state">
-                        <p>No hay equipos asignados para remover</p>
-                    </div>
-                `}
-            `;
-
-            case 'deactivate':
-                return `
-                ${employeeInfo}
-                <div class="warning-box">
-                    <h4 class="warning-title">⚠️ Confirmación de Baja</h4>
-                    <p class="warning-text">
-                        Esta acción dará de baja al colaborador y liberará todos sus equipos asignados.
-                    </p>
-                    
-                    ${selectedEmployee.equipment.length > 0 ? `
-                        <div class="equipment-list">
-                            <label class="equipment-list-title">Equipos que serán liberados:</label>
-                            <ul>
-                                ${selectedEmployee.equipment.map(item => `<li>${item.name}</li>`).join('')}
-                            </ul>
+                        <div>
+                            <p>Número de Serie:</p>
+                            <p>0</p>
                         </div>
-                    ` : ''}
-                    
-                    <div style="margin-top: 1rem;">
-                        <button class="btn btn-destructive btn-full" onclick="handleDeactivateEmployee()">
-                            Confirmar Baja del Colaborador
-                        </button>
-                        <button class="btn btn-outline btn-full" onclick="closeModal()">
-                            Cancelar
-                        </button>
+                        <div>
+                            <p>Marca:</p>
+                            <p>ACTECK</p>
+                        </div>
+                        <div>
+                            <p>Código de Inventario:</p>
+                            <p>86</p>
+                        </div>
+                        <div>
+                            <p>Estado:</p>
+                            <p>Nuevo</p>
+                        </div>
+                        <div>
+                            <p>Accesorios:</p>
+                            <p>NA</p>
+                        </div>
+                        <div class="full-width">
+                            <p>Comentarios:</p>
+                            <p></p>
+                        </div>
                     </div>
                 </div>
-            `;
+                <div class="equipment-item">
+                    <div class="equipment-details">
+                        <div>
+                            <p>Tipo de Equipo:</p>
+                            <p>Ensamblado</p>
+                        </div>
+                        <div>
+                            <p>Número de Serie:</p>
+                            <p>0</p>
+                        </div>
+                        <div>
+                            <p>Marca:</p>
+                            <p>N/A</p>
+                        </div>
+                        <div>
+                            <p>Código de Inventario:</p>
+                            <p>87</p>
+                        </div>
+                        <div>
+                            <p>Estado:</p>
+                            <p>Usado</p>
+                        </div>
+                        <div>
+                            <p>Accesorios:</p>
+                            <p>teclado y mouse</p>
+                        </div>
+                        <div class="full-width">
+                            <p>Comentarios:</p>
+                            <p>no funciona el botón de encender</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            default:
-                return '';
-        }
-    }
+        <div class="separator"></div>
 
-    // Manejar añadir equipo
-    function handleAddEquipment(event) {
-        event.preventDefault();
+        <div>
+            <h3 class="section-title">Información del Colaborador</h3>
+            <div class="collaborator-grid">
+                <div class="collaborator-item">
+                    <p>Nombre:</p>
+                    <p>${colaborador.nombre}</p>
+                </div>
+                <div class="collaborator-item">
+                    <p>Departamento:</p>
+                    <p>TECNOLOGÍAS DE LA INFORMACIÓN</p>
+                </div>
+                <div class="collaborator-item">
+                    <p>Cargo:</p>
+                    <p>${colaborador.puesto}</p>
+                </div>
+                <div class="collaborator-item">
+                    <p>ID Empleado:</p>
+                    <p>15996</p>
+                </div>
+            </div>
+            <div class="date-info">
+                <p><strong>Fecha de Entrega:</strong> 2025-07-01</p>
+            </div>
+        </div>
 
-        const name = document.getElementById('equipment-name').value;
-        const type = document.getElementById('equipment-type').value;
+        <div>
+            <h3 class="section-title">Condiciones de Uso</h3>
+            <div class="conditions">
+                <p>El colaborador que recibe el equipo se compromete a:</p>
+                <ul>
+                    <li>Utilizar el equipo únicamente para fines laborales.</li>
+                    <li>Mantener el equipo en buenas condiciones y reportar cualquier daño inmediatamente.</li>
+                    <li>No instalar software no autorizado por la empresa.</li>
+                    <li>No prestar o transferir el equipo a terceros.</li>
+                    <li>Devolver el equipo en caso de terminación de la relación laboral.</li>
+                    <li>Seguir todas las políticas de seguridad informática de la empresa.</li>
+                    <li>Asumir responsabilidad por pérdida o daño debido a negligencia.</li>
+                </ul>
+            </div>
+        </div>
 
-        console.log('Añadiendo equipo:', { name, type, employee: selectedEmployee.name });
-        alert(`Equipo "${name}" asignado a ${selectedEmployee.name}`);
-        closeModal();
-    }
+        <div class="signatures">
+            <div class="signature">
+                <div class="signature-area">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTAgNDBDMjAgMzAgNDAgMjAgNjAgMzBDODAgNDAgMTAwIDMwIDExMCA0MCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+" alt="Firma del Responsable">
+                </div>
+                <div class="signature-line">
+                    <p>Firma del Responsable de TI</p>
+                    <p>Nombre: Oscar Arturo De luna Lujan</p>
+                    <p>Cargo: Analista de TI</p>
+                </div>
+            </div>
+            <div class="signature">
+                <div class="signature-area">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTAgMzBDMzAgMjAgNTAgNDAgNzAgMjVDOTAgMzUgMTEwIDI1IDExMCAzNSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+" alt="Firma del Colaborador">
+                </div>
+                <div class="signature-line">
+                    <p>Firma del Colaborador</p>
+                    <p>Nombre: ${colaborador.nombre}</p>
+                    <p>Fecha: 2025-07-01</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+}
 
-    // Manejar remover equipo
-    function handleRemoveEquipment(equipmentId) {
-        const equipment = selectedEmployee.equipment.find(eq => eq.id === equipmentId);
-        const reason = document.getElementById('remove-reason').value;
-
-        console.log('Removiendo equipo:', { equipment, reason });
-        alert(`Equipo "${equipment.name}" removido de ${selectedEmployee.name}`);
-        closeModal();
-    }
-
-    // Manejar baja de empleado
-    function handleDeactivateEmployee() {
-        console.log('Dando de baja a:', selectedEmployee.name);
-        alert(`Colaborador ${selectedEmployee.name} dado de baja exitosamente`);
-        closeModal();
-    }
+function closeModal() {
+    modal.style.display = 'none';
+}
 </script>
-
 </html>

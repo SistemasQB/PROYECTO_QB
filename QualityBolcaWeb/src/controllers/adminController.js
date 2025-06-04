@@ -48,7 +48,7 @@ import db from "../config/db.js";
 
 import on from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
-import { emailRequisicion, registroCursos, emailMantenimientoA,emailSolicitud } from "../helpers/emails.js";
+import { emailRequisicion, registroCursos, emailMantenimientoA, emailSolicitud } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
@@ -272,9 +272,9 @@ controller.solicitudServicio2 = async (req, res) => {
         });
 
         // console.log( cursoDatos.idFolio, solcitante);
-        
 
-        await emailSolicitud({ idFolio:cursoDatos.idFolio, solcitante:cursoDatos.solcitante})
+
+        await emailSolicitud({ idFolio: cursoDatos.idFolio, solcitante: cursoDatos.solcitante })
         res.status(200).send({ msg: 'Solicitud enviada', ok: true, folio: cursoDatos.idFolio });
         return
     } catch (error) {
@@ -430,15 +430,83 @@ controller.mejoracontinua = async (req, res) => {
     // const obtenerValores = await MejoraContinua.findAll({ where: { generador_idea: obtenerNombre.nombrelargo }, order: [[Sequelize.literal('fecha'), 'DESC']], });
 
 
-    res.render('admin/mejoracontinua',{
+    res.render('admin/mejoracontinua', {
         csrfToken: req.csrfToken(),
         // obtenerNombre,
         // obtenerValores
     })
 }
 
-controller.mejoracontinua2 = (req, res) => {
-    res.render('admin/mejoracontinua')
+controller.mejoracontinua2 = async (req, res) => {
+
+    const {
+        id,
+        fecha,
+        nombre_mejora,
+        generador_idea,
+        nombre_equipo,
+        numero_participantes,
+        nombre_participantes,
+        numero_empleado_registra,
+        proceso_aplica_mejora,
+        region_aplica_mejora,
+        rubro,
+        beneficios,
+        inversion,
+        monto,
+        recuperacion,
+        situacion_actual,
+        situacion_mejora,
+        mejora_grupal,
+        estatus,
+        fecha_respuesta_comite,
+        email,
+        motivo,
+        titulo_analisis
+    } = req.body
+
+
+    try {
+        const Rmejora = await Mejora.create(
+            { 
+                id,
+        fecha,
+        nombre_mejora,
+        generador_idea,
+        nombre_equipo,
+        numero_participantes,
+        nombre_participantes,
+        numero_empleado_registra,
+        proceso_aplica_mejora,
+        region_aplica_mejora,
+        rubro,
+        beneficios,
+        inversion,
+        monto,
+        recuperacion,
+        situacion_actual,
+        situacion_mejora,
+        mejora_grupal,
+        estatus,
+        fecha_respuesta_comite,
+        email,
+        motivo,
+        titulo_analisis
+             }
+        )
+
+        res.status(200).send({ msg: 'Mejora Enviada', ok: true });
+        return
+    } catch (error) {
+        // const errorLog = `${new Date().toISOString()} - Error: ${errorMessage}\n`;
+
+
+
+        console.error("Error al enviar tu mejora", error);
+        res.status(400).send({ msg: "Error al enviar tu mejora", ok: false });
+        return
+    }
+
 }
 
 
@@ -607,12 +675,12 @@ controller.mantenimientoautonomo2 = async (req, res) => {
         )
         // Enviar email de confirmacion
         await emailMantenimientoA({ region, respuestas, tipo, nombre })
-        
+
         res.status(200).send({ msg: 'Mantenimiento enviada', ok: true });
         return
     } catch (error) {
         const errorLog = `${new Date().toISOString()} - Error: ${errorMessage}\n`;
-        
+
 
 
         console.error("Error al enviar correo o guardar datos:", error);
