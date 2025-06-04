@@ -422,8 +422,19 @@ controller.valeSalida = (req, res) => {
     res.render('admin/vale')
 }
 
-controller.mejoracontinua = (req, res) => {
-    res.render('admin/mejoracontinua')
+controller.mejoracontinua = async (req, res) => {
+
+    // const { codigoempleado } = req.usuario
+
+    // const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado }, attributes: ['nombrelargo'] });
+    // const obtenerValores = await MejoraContinua.findAll({ where: { generador_idea: obtenerNombre.nombrelargo }, order: [[Sequelize.literal('fecha'), 'DESC']], });
+
+
+    res.render('admin/mejoracontinua',{
+        csrfToken: req.csrfToken(),
+        // obtenerNombre,
+        // obtenerValores
+    })
 }
 
 controller.mejoracontinua2 = (req, res) => {

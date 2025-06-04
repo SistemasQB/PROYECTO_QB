@@ -169,6 +169,8 @@ controller.programamantenimiento = async (req, res) => {
 }
 
 controller.listadopersonal = async (req, res) => {
+    let personal2
+    let cuentaDatos
 
     const personal = await db.query(
         `
@@ -181,12 +183,18 @@ controller.listadopersonal = async (req, res) => {
         {
             type: QueryTypes.SELECT // Tipo de consulta: SELECT
         }
-    )
+    ).then((resultados) => {
+        personal2 = resultados;
+    });
 
+    cuentaDatos = personal2.length;
+    // console.log(personal2.length);
+    
 
     res.render('admin/sistemas/listadopersonal',{
         csrfToken: req.csrfToken(),
-        personal
+        cuentaDatos,
+        personal2
     });
 }
 

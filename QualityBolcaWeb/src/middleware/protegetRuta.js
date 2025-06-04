@@ -22,7 +22,7 @@ const protegerRuta = async(req, res, next) =>{
         
         const decoded = jwt.verify(_token, process.env.JWT_SECRET)
         const usuario = await Usuario.scope('eliminarPassword').findByPk(decoded.codigoempleado)
-        // console.log(decoded);001
+        // console.log(decoded);
 
         //Almacenar el usuario al Req
         if (usuario) {

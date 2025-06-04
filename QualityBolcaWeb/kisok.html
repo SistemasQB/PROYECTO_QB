@@ -3,670 +3,726 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - BOLCA</title>
+    <title2>BOLCA - Registro de Mejora</title2>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <style>
-    * {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
-    background-color: #f5f5f5;
-}
-
-/* Estilos para la página de inicio */
-.home-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #f0f9ff 100%);
+    color: #111827;
+    line-height: 1.6;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.home-content {
-    text-align: center;
-    background: white;
-    padding: 60px 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-}
-
-.logo-section h1 {
-    margin: 20px 0 10px;
-    color: #333;
-    font-size: 28px;
-}
-
-.logo-section p {
-    color: #666;
-    margin-bottom: 30px;
-    font-size: 16px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #0f4c81, #1a5fa0);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(15, 76, 129, 0.3);
-}
-
-/* Navbar */
-.navbar {
+/* Header */
+.header2 {
     background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.nav-container {
+.header2-container {
     max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    height: 70px;
+    padding: 0 1.5rem;
 }
 
-.nav-menu {
-    display: flex;
-    gap: 20px;
-}
-
-.nav-btn {
-    background: none;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-.nav-btn:hover {
-    background-color: #f0f0f0;
-}
-
-.nav-btn.active {
-    background-color: #0f4c81;
-    color: white;
-}
-
-.btn-home {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.2s;
-}
-
-.btn-home:hover {
-    background-color: #5a6268;
-}
-
-/* Contenido principal */
-.main-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.section {
-    display: none;
-}
-
-.section.active {
-    display: block;
-}
-
-.section-header {
+.header2-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding: 1rem 0;
 }
 
-.section-header h2 {
-    color: #333;
-    font-size: 24px;
+.logo2-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-.btn-refresh {
-    background-color: #28a745;
+.logo2-icon {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 2rem;
 }
 
-.btn-refresh:hover {
-    background-color: #218838;
+.logo2-text h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #111827;
+    margin-bottom: 0.25rem;
 }
 
-/* Lista de solicitudes */
-.solicitudes-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.logo2-text p {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.document2-info {
+    text-align: right;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.info2-item {
+    margin-bottom: 0.25rem;
+}
+
+.info2-item .label2 {
+    font-weight: 500;
+}
+
+/* Main Content */
+.main2-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.container2 {
+    padding: 1.5rem 0;
+}
+
+/* Title Section */
+.title2-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.title2-section h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.title2-section p {
+    color: #6b7280;
+    font-size: 1.125rem;
+}
+
+/* Form */
+.improvement2-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Cards */
+.card2 {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 0;
     overflow: hidden;
 }
 
-.solicitud-item {
-    border-bottom: 1px solid #eee;
-    padding: 20px;
-    transition: background-color 0.2s;
-}
-
-.solicitud-item:hover {
-    background-color: #f8f9fa;
-}
-
-.solicitud-item:last-child {
-    border-bottom: none;
-}
-
-.solicitud-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.solicitud-folio {
-    font-weight: bold;
-    color: #0f4c81;
-    font-size: 18px;
-}
-
-.solicitud-fecha {
-    color: #666;
-    font-size: 14px;
-}
-
-.solicitud-info {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.solicitud-field {
-    font-size: 14px;
-}
-
-.solicitud-field strong {
-    color: #333;
-}
-
-.solicitud-descripcion {
-    background-color: #f8f9fa;
-    padding: 10px;
-    border-radius: 4px;
-    margin-top: 10px;
-}
-
-.solicitud-descripcion strong {
-    display: block;
-    margin-bottom: 5px;
-    color: #0f4c81;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #666;
-}
-
-.empty-state h3 {
-    margin-bottom: 10px;
-    color: #333;
-}
-
-/* Estilos del formulario (reutilizados) */
-.form-container {
-    background-color: white;
-    padding: 24px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-}
-
-.logo {
-    margin-bottom: 16px;
-}
-
-.title {
-    flex-grow: 1;
-    text-align: center;
-}
-
-.title h1 {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.code-info {
-    text-align: right;
-    font-size: 14px;
-}
-
-.folio {
-    text-align: right;
-    margin-bottom: 16px;
-    font-weight: 600;
-}
-
-.form-row {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 24px;
-}
-
-.form-group {
-    margin-bottom: 16px;
-    width: 100%;
-}
-
-.form-row .form-group {
-    flex: 1;
-}
-
-label {
-    display: block;
-    margin-bottom: 4px;
-    font-weight: 600;
-}
-
-input, textarea {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-input:focus, textarea:focus {
-    outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-}
-
-.description-header {
-    background-color: #0f4c81;
+.card2-header2 {
+    padding: 1.5rem;
     color: white;
-    padding: 8px;
-    font-weight: 600;
-    margin-bottom: 8px;
+    border-radius: 0.75rem 0.75rem 0 0;
 }
 
-textarea {
-    resize: vertical;
-    min-height: 150px;
-}
-
-.form-actions {
+.card2-title2 {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 24px;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
 }
 
-button[type="submit"] {
-    background-color: #0f4c81;
+.card2-content {
+    padding: 1.5rem;
+}
+
+/* Gradients */
+.blue-gradient {
+    background: linear-gradient(135deg, #2563eb, #3730a3);
+}
+
+.green-gradient {
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+.purple-gradient {
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+}
+
+.amber-gradient {
+    background: linear-gradient(135deg, #d97706, #ea580c);
+}
+
+.indigo-gradient {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
+/* Form Elements */
+.form2-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.form2-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form2-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form2-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form2-input, .form2-textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.form2-input:focus, .form2-textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form2-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.large2-textarea {
+    min-height: 200px;
+}
+
+/* Benefits Grid */
+.benefits2-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.benefit2-category {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.category2-title2 {
+    font-weight: 600;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge2 {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid;
+}
+
+.blue-badge {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.green-badge {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+.orange-badge {
+    background-color: #fff7ed;
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+
+.emerald-badge {
+    background-color: #ecfdf5;
+    color: #064e3b;
+    border-color: #6ee7b7;
+}
+
+/* Checkbox and Radio Groups */
+.checkbox2-group, .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.radio2-group {
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.checkbox2-item, .radio-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.checkbox2-item input[type="checkbox"],
+.radio2-item input[type="radio"] {
+    margin-top: 0.125rem;
+    width: 1rem;
+    height: 1rem;
+    accent-color: #2563eb;
+}
+
+.checkbox2-item label,
+.radio2-item label {
+    font-size: 0.875rem;
+    color: #374151;
+    cursor: pointer;
+    line-height: 1.4;
+}
+
+/* Submit Section */
+.submit2-section {
+    display: flex;
+    justify-content: center;
+    padding-top: 1.5rem;
+}
+
+.submit2-btn {
+    background: linear-gradient(135deg, #2563eb, #3730a3);
     color: white;
     border: none;
-    padding: 10px 16px;
-    border-radius: 4px;
+    padding: 1rem 3rem;
+    border-radius: 0.5rem;
+    font-size: 1.125rem;
     font-weight: 600;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
 }
 
-button[type="submit"]:hover {
-    background-color: #0a3b64;
+.submit2-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8, #312e81);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
 }
 
-/* Responsive */
+.submit2-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .nav-container {
+    .header2-content {
         flex-direction: column;
-        height: auto;
-        padding: 10px 20px;
-    }
-    
-    .nav-menu {
-        margin: 10px 0;
-    }
-    
-    .header {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .code-info {
+        gap: 1rem;
         text-align: center;
-        margin-top: 16px;
     }
-    
-    .form-row {
-        flex-direction: column;
-        gap: 0;
-    }
-    
-    .logo, .title, .code-info {
-        width: 100%;
+
+    .document2-info {
         text-align: center;
-        margin-bottom: 16px;
     }
-    
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+
+    .main2-content {
+        padding: 1rem;
     }
-    
-    .solicitud-info {
+
+    .title2-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .title2-section p {
+        font-size: 1rem;
+    }
+
+    .form2-grid {
         grid-template-columns: 1fr;
+    }
+
+    .benefits2-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .radio2-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .submit2-btn {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+    }
+
+    .card2-header2 {
+        padding: 1rem;
+    }
+
+    .card2-content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo2-section {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .logo2-icon {
+        font-size: 1.5rem;
+        padding: 0.5rem;
+    }
+
+    .benefits2-grid {
+        gap: 1rem;
+    }
+
+    .form2-grid {
+        gap: 1rem;
+    }
+}
+
+/* Animation for form submission */
+.form2-submitting {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.form2-submitting .submit2-btn {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+/* Success message */
+.success2-message {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    margin-top: 1rem;
+    display: none;
+}
+
+.success2-message.show {
+    display: block;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 </style>
 
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-64WSMTQqkuTSaK0Yi2LLmy6bveGhr8.png" alt="Logo BOLCA" width="100">
-            </div>
-            <div class="nav-menu">
-                <button class="nav-btn active" onclick="showSection('solicitudes')">
-                    Mis Solicitudes
-                </button>
-                <button class="nav-btn" onclick="showSection('nueva')">
-                    Nueva Solicitud
-                </button>
-            </div>
-            <div class="nav-actions">
-                <button class="btn-home" onclick="window.location.href='index.html'">
-                    ← Inicio
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <div class="main-content">
-        <!-- Sección de Lista de Solicitudes -->
-        <div id="solicitudes-section" class="section active">
-            <div class="section-header">
-                <h2>Mis Solicitudes de Servicio</h2>
-                <button class="btn-refresh" onclick="loadSolicitudes()">
-                    Actualizar
-                </button>
-            </div>
-            
-            <div class="solicitudes-container">
-                <div id="solicitudes-list">
-                    <!-- Las solicitudes se cargarán aquí dinámicamente -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Sección de Nueva Solicitud -->
-        <div id="nueva-section" class="section">
-            <div class="section-header">
-                <h2>Nueva Solicitud de Servicio</h2>
-            </div>
-            
-                <div class="container">
-        <div class="form-container">
-            <div class="header">
-                <div class="logo">
-                    <img src="../img/Quality-BOLCA.png" alt="Logo BOLCA" width="150">
-                </div>
-                <div class="title">
-                    <h1>SOLICITUD DE SERVICIO</h1>
-                </div>
-                <div class="code-info">
-                    <p>Código: QB-FR-A-16-03</p>
-                    <p>Rev: 00</p>
-                    <p>Fecha de emisión: 10-04-2023</p>
-                    <p>Fecha de revisión: N/A</p>
-                </div>
-            </div>
-            
-            <form id="formSolicitud">
-                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-            <div class="folio">
-                <!-- <p>Folio:<span style="color: red;" id="idFolio"><%= // obtenerFolio%></span></p> -->
-            </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="fecha">Fecha:</label>
-                        <input type="text" id="fecha" name="fecha" readonly>
+    <!-- Header -->
+    <div class="header">
+        <div class="header2-container">
+            <div class="header2-content">
+                <div class="logo2-section">
+                    <div class="logo2-icon">
+                        <i class="fas fa-building"></i>
                     </div>
-                    <div class="form-group">
-                        <label for="region">Región:</label>
-                        <input type="text" id="region" name="region" required>
+                    <div class="logo2-text">
+                        <h1>BOLCA</h1>
+                        <p>Sistema de Mejora Continua</p>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="nombre">Nombre Solicitante:</label>
-                    <input type="text" id="nombre" name="solcitante" value="<%=obtenerNombre.nombrelargo%>" readonly>
+                <div class="document2-info">
+                    <div class="info2-item">
+                        <span class="label">Código:</span> QB-FR-A-06-01
+                    </div>
+                    <div class="info2-item">
+                        <span class="label">Rev:</span> 06
+                    </div>
+                    <div class="info2-item">
+                        <span class="label">Fecha de emisión:</span> 30-11-2017
+                    </div>
+                    <div class="info2-item">
+                        <span class="label">Fecha de revisión:</span> 31-10-2024
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="email">e-mail Solicitante:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="equipo">Tipo de Equipo:</label>
-                    <input type="text" id="equipo" name="tipo" required>
-                </div>
-
-                <div class="form-group">
-                    <div class="description-header">Descripción del problema</div>
-                    <textarea id="descripcion" name="descripcion" rows="10" required></textarea>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit">Enviar Solicitud</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="main2-content">
+        <div class="container">
+            <!-- Title Section -->
+            <div class="title2-section">
+                <h2>Registro de Mejora</h2>
+                <p>Documenta tu propuesta de mejora para impulsar la innovación</p>
+            </div>
+
+            <!-- Form -->
+            <form id="improvementForm" class="improvement-form">
+                <!-- Información del Generador -->
+                <div class="card2">
+                    <div class="card2-header2 blue-gradient">
+                        <h3 class="card2-title2">
+                            <i class="fas fa-users"></i>
+                            Información sobre el(los) generador(es) de la idea y la aplicabilidad
+                        </h3>
+                    </div>
+                    <div class="card2-content">
+                        <div class="form2-grid">
+                            <div class="form2-group">
+                                <label for="improvementName" class="form2-label">Nombre de la mejora *</label>
+                                <input type="text" id="improvementName" name="improvementName" 
+                                       placeholder="Describe brevemente tu mejora" class="form2-input" required>
+                            </div>
+
+                            <div class="form2-group">
+                                <label for="ideaGenerator" class="form2-label">Generador de la idea o líder del equipo de mejora *</label>
+                                <input type="text" id="ideaGenerator" name="ideaGenerator" 
+                                       placeholder="Nombre completo" class="form2-input" required>
+                            </div>
+
+                            <div class="form2-group">
+                                <label for="position" class="form2-label">Puesto *</label>
+                                <input type="text" id="position" name="position" 
+                                       placeholder="Cargo o posición" class="form2-input" required>
+                            </div>
+
+                            <div class="form2-group">
+                                <label for="process" class="form2-label">Proceso al que perteneces *</label>
+                                <input type="text" id="process" name="process" 
+                                       placeholder="Área o departamento" class="form2-input" required>
+                            </div>
+
+                            <div class="form2-group">
+                                <label for="teamName" class="form2-label">Nombre del equipo (Si aplica)</label>
+                                <input type="text" id="teamName" name="teamName" 
+                                       placeholder="Nombre del equipo de trabajo" class="form2-input">
+                            </div>
+                        </div>
+
+                        <div class="form2-group full-width">
+                            <label for="participants" class="form2-label">Nombre de los participantes</label>
+                            <textarea id="participants" name="participants" 
+                                      placeholder="Lista los nombres de todos los participantes, separados por comas" 
+                                      class="form2-textarea"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alcance de la Mejora -->
+                <div class="card2">
+                    <div class="card2-header2 green-gradient">
+                        <h3 class="card2-title2">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Alcance de la Mejora
+                        </h3>
+                    </div>
+                    <div class="card2-content">
+                        <div class="form2-grid">
+                            <div class="form2-group">
+                                <label for="applicationProcess" class="form2-label">Proceso(s) donde se aplica la mejora *</label>
+                                <textarea id="applicationProcess" name="applicationProcess" 
+                                          placeholder="Describe los procesos que se verán beneficiados" 
+                                          class="form2-textarea" required></textarea>
+                            </div>
+
+                            <div class="form2-group">
+                                <label for="proposedRegion" class="form2-label">Región(s) donde se propone la mejora *</label>
+                                <textarea id="proposedRegion" name="proposedRegion" 
+                                          placeholder="Especifica las regiones o ubicaciones" 
+                                          class="form2-textarea" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tipo de Mejora y Beneficios -->
+                <div class="card2">
+                    <div class="card2-header2 purple-gradient">
+                        <h3 class="card2-title2">
+                            <i class="fas fa-bullseye"></i>
+                            Tipo de mejora y beneficios
+                        </h3>
+                    </div>
+                    <div class="card2-content">
+                        <div class="benefits-grid">
+                            <!-- Rubro -->
+                            <div class="benefit-category">
+                                <h4 class="category2-title2">
+                                    <span class="badge blue-badge">Rubro</span>
+                                </h4>
+                                <div class="checkbox2-group">
+                                    <div class="checkbox2-item">
+                                        <input type="checkbox" id="materialSaving" name="improvementTypes" value="materialSaving">
+                                        <label for="materialSaving">Genera un ahorro material</label>
+                                    </div>
+                                    <div class="checkbox2-item">
+                                        <input type="checkbox" id="economicSaving" name="improvementTypes" value="economicSaving">
+                                        <label for="economicSaving">Genera un ahorro económico</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ahorro -->
+                            <div class="benefit2-category">
+                                <h4 class="category2-title2">
+                                    <span class="badge green-badge">Ahorro</span>
+                                </h4>
+                                <div class="checkbox2-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="dailyWorkFacilitation" name="improvementTypes" value="dailyWorkFacilitation">
+                                        <label for="dailyWorkFacilitation">Facilita el trabajo diario</label>
+                                    </div>
+                                    <div class="checkbox2-item">
+                                        <input type="checkbox" id="timesSaving" name="improvementTypes" value="timesSaving">
+                                        <label for="timesSaving">Ahorra tiempos</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sistema -->
+                            <div class="benefit-category">
+                                <h4 class="category-title2">
+                                    <span class="badge orange-badge">Sistema</span>
+                                </h4>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="processEffectiveness" name="improvementTypes" value="processEffectiveness">
+                                        <label for="processEffectiveness">Efectividad en tu proceso</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="organizationalBenefit" name="improvementTypes" value="organizationalBenefit">
+                                        <label for="organizationalBenefit">Cambio en beneficio a la organización</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ambiental -->
+                            <div class="benefit-category">
+                                <h4 class="category-title2">
+                                    <span class="badge emerald-badge">Ambiental</span>
+                                </h4>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="healthierEnvironment" name="improvementTypes" value="healthierEnvironment">
+                                        <label for="healthierEnvironment">Crear un entorno más saludable y sostenible</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="environmentalImpactMitigation" name="improvementTypes" value="environmentalImpactMitigation">
+                                        <label for="environmentalImpactMitigation">Mitiga el impacto negativo de cualquier actividad en el medio ambiente</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beneficios Adicionales -->
+                <div class="card2">
+                    <div class="card2-header2 amber-gradient">
+                        <h3 class="card2-title2">
+                            <i class="fas fa-dollar-sign"></i>
+                            Beneficios Adicionales
+                        </h3>
+                    </div>
+                    <div class="card2-content">
+                        <div class="form2-grid">
+                            <div class="form2-group">
+                                <label class="form2-label">Requiere de inversión</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" id="investmentYes" name="requiresInvestment" value="SI">
+                                        <label for="investmentYes">SÍ</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="investmentNo" name="requiresInvestment" value="NO">
+                                        <label for="investmentNo">NO</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form2-group">
+                                <label for="amount" class="form2-label">Monto $</label>
+                                <input type="number" id="amount" name="amount" 
+                                       placeholder="0.00" step="0.01" class="form2-input">
+                            </div>
+
+                            <div class="form2-group">
+                                <label for="recoveryTime" class="form2-label">Tiempo de recuperación</label>
+                                <input type="text" id="recoveryTime" name="recoveryTime" 
+                                       placeholder="Ej: 6 meses" class="form2-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Análisis y Propuesta -->
+                <div class="card2">
+                    <div class="card2-header2 indigo-gradient">
+                        <h3 class="card2-title2">
+                            <i class="fas fa-lightbulb"></i>
+                            Análisis y Propuesta
+                        </h3>
+                    </div>
+                    <div class="card2-content">
+                        <div class="form2-grid">
+                            <div class="form2-group">
+                                <label for="currentSituation" class="form2-label">Situación Actual *</label>
+                                <textarea id="currentSituation" name="currentSituation" 
+                                          placeholder="Describe detalladamente la situación actual que requiere mejora..." 
+                                          class="form2-textarea large-textarea" required></textarea>
+                            </div>
+
+                            <div class="form2-group">
+                                <label for="proposedImprovement" class="form2-label">Mejora Propuesta *</label>
+                                <textarea id="proposedImprovement" name="proposedImprovement" 
+                                          placeholder="Explica detalladamente tu propuesta de mejora y cómo solucionará la situación actual..." 
+                                          class="form2-textarea large-textarea" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="submit2-section">
+                    <button type="submit" class="submit2-btn">
+                        <i class="fas fa-clock"></i>
+                        Enviar Registro de Mejora
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
-
-<script>
-    // Variables globales
-let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
-let folioCounter = parseInt(localStorage.getItem('folioCounter')) || 1;
-
-// Función para mostrar secciones
-function showSection(sectionName) {
-    // Ocultar todas las secciones
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
-    });
-    
-    // Remover clase active de todos los botones
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Mostrar la sección seleccionada
-    document.getElementById(sectionName + '-section').classList.add('active');
-    
-    // Activar el botón correspondiente
-    event.target.classList.add('active');
-    
-    // Cargar datos según la sección
-    if (sectionName === 'solicitudes') {
-        loadSolicitudes();
-    } else if (sectionName === 'nueva') {
-        generateFolio();
-        setCurrentDate();
-    }
-}
-
-// Función para generar número de folio
-function generateFolio() {
-    const folioElement = document.getElementById('folio-number');
-    if (folioElement) {
-        folioElement.textContent = String(folioCounter).padStart(6, '0');
-    }
-}
-
-// Función para establecer la fecha actual
-function setCurrentDate() {
-    const fechaInput = document.getElementById('fecha');
-    if (fechaInput) {
-        const today = new Date().toISOString().split('T')[0];
-        fechaInput.value = today;
-    }
-}
-
-// Función para cargar solicitudes
-function loadSolicitudes() {
-    const container = document.getElementById('solicitudes-list');
-    
-    if (solicitudes.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <h3>No hay solicitudes registradas</h3>
-                <p>Crea tu primera solicitud usando el botón "Nueva Solicitud"</p>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = solicitudes.map(solicitud => `
-        <div class="solicitud-item">
-            <div class="solicitud-header">
-                <div class="solicitud-folio">Folio: ${solicitud.folio}</div>
-                <div class="solicitud-fecha">${formatDate(solicitud.fechaCreacion)}</div>
-            </div>
-            <div class="solicitud-info">
-                <div class="solicitud-field">
-                    <strong>Fecha:</strong> ${solicitud.fecha}
-                </div>
-                <div class="solicitud-field">
-                    <strong>Región:</strong> ${solicitud.region}
-                </div>
-                <div class="solicitud-field">
-                    <strong>Solicitante:</strong> ${solicitud.nombre}
-                </div>
-                <div class="solicitud-field">
-                    <strong>Email:</strong> ${solicitud.email}
-                </div>
-                <div class="solicitud-field">
-                    <strong>Tipo de Equipo:</strong> ${solicitud.equipo}
-                </div>
-            </div>
-            <div class="solicitud-descripcion">
-                <strong>Descripción del problema:</strong>
-                ${solicitud.descripcion}
-            </div>
-        </div>
-    `).join('');
-}
-
-// Función para formatear fecha
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-// Función para manejar el envío del formulario
-function handleFormSubmit(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
-    const solicitud = {
-        folio: String(folioCounter).padStart(6, '0'),
-        fecha: formData.get('fecha'),
-        region: formData.get('region'),
-        nombre: formData.get('nombre'),
-        email: formData.get('email'),
-        equipo: formData.get('equipo'),
-        descripcion: formData.get('descripcion'),
-        fechaCreacion: new Date().toISOString()
-    };
-    
-    // Agregar solicitud al array
-    solicitudes.unshift(solicitud); // unshift para que aparezca al principio
-    
-    // Incrementar contador de folio
-    folioCounter++;
-    
-    // Guardar en localStorage
-    localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
-    localStorage.setItem('folioCounter', folioCounter.toString());
-    
-    // Mostrar mensaje de éxito
-    alert(`Solicitud enviada exitosamente!\nFolio: ${solicitud.folio}`);
-    
-    // Limpiar formulario
-    event.target.reset();
-    
-    // Cambiar a la sección de solicitudes
-    showSection('solicitudes');
-    
-    // Actualizar el botón activo manualmente
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector('.nav-btn').classList.add('active');
-}
-
-// Inicialización cuando se carga la página
-document.addEventListener('DOMContentLoaded', function() {
-    // Configurar el formulario
-    const form = document.getElementById('solicitud-form');
-    if (form) {
-        form.addEventListener('submit', handleFormSubmit);
-    }
-    
-    // Cargar solicitudes por defecto
-    loadSolicitudes();
-    generateFolio();
-    setCurrentDate();
-});
-</script>
 </html>
