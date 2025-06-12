@@ -121,17 +121,12 @@
 </head>
 
 <body>
-    <header class="header">
-        <!-- <img src="logo.jpg" alt="Quality BOLCA Logo" class="logo"> -->
-    </header>
 
     <div class="container">
         <div class="upload-container">
-            <h1>Sube aqui tu Curriculum o Solicitud en formato PDF</h1>
-            <form id="formCV" 
-            class="dropzone" enctype="multipart/form-data"
-            action=<%= solicitud.id %> method="post"
-            style="border-style: dashed; border-color: #0088CC; 
+            <h1>Sube aqui tu Analisis en formato PDF</h1>
+            <form id="formAnalisis" class="dropzone" enctype="multipart/form-data" action="456"
+                method="post" style="border-style: dashed; border-color: #0088CC; 
             background: url(../svg/file.svg) no-repeat;
             background-position: top;
             background-size: 10%;
@@ -140,7 +135,8 @@
     align-items: center;">
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>">
             </form>
-            <button type="button"  class="submit-btn" id="btnEnviarPDF">
+            <br>
+            <button type="button" class="submit-btn" id="btnEnviarPDF">
                 Enviar Documento
             </button>
         </div>
@@ -149,5 +145,4 @@
 </body>
 
 </html>
-<script src="../js/agregarpdf.js"></script>
-
+<script src="../../js/agregaranalisis.js"></script>

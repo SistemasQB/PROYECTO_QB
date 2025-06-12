@@ -43,6 +43,8 @@ router.get('/voz', adminController.voz);
 router.get('/crear', adminController.crear);
 router.get('/mejoracontinua',protegetRuta, adminController.mejoracontinua);
 router.post('/mejoracontinua', protegetRuta, adminController.mejoracontinua2);
+router.get('/subiranalisis/:id', protegetRuta, adminController.subiranalisis);
+router.post('/subiranalisis/:id', protegetRuta,upload.single('analisisFile'), adminController.subiranalisis2);
 router.get('/reuniones', adminController.reuniones);
 router.post('/reuniones', adminController.reuniones2);
 router.get('/glosario', adminController.glosario);

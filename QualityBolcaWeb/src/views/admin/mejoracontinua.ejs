@@ -707,7 +707,7 @@
                 <div class="form-row" id="containerParticipantes" style="display: none;">
                     <div class="form-group">
                         <label for="nombre_participantes">Nombre de los participantes</label>
-                        <textarea id="nombre_participantes" rows="4" required
+                        <textarea id="nombre_participantes" rows="4" required name="nombre_participantes"
                             placeholder="Ingresa los nombres de los participantes separados por comas"></textarea>
                     </div>
                 </div>
@@ -809,13 +809,13 @@
 
                     <div class="form-row">
                         <div class="form-group" style="background-color: #eee6e691;">
-                            <label for="monto"> Monto $</label>
+                            <label for="monto"> Monto $ (Mxm)</label>
                             <input type="text" id="monto" name="monto"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                 placeholder="Inreoduce el monto sin decimales" autocomplete="off">
                         </div>
                         <div class="form-group" style="background-color: #eee6e691;">
-                            <label for="recuperacion"> Tiempo de recuperación</label>
+                            <label for="recuperacion"> Tiempo de recuperación (Meses)</label>
                             <input type="text" id="recuperacion" name="recuperacion"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                 placeholder="Inreoduce el numero de meses" autocomplete="off">
@@ -937,7 +937,8 @@
         formData.append('titulo_analisis', 'nombre.pdf');
         const urlEncoded = new URLSearchParams(formData).toString();
         console.log(urlEncoded);
-        alertaFetch(urlEncoded, 'mejoracontinua');
+        alertaFetch(urlEncoded, 'mejoracontinua', 'subiranalisis');
+
     })
 
 

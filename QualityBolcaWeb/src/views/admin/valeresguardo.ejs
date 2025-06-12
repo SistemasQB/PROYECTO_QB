@@ -380,10 +380,16 @@
                                 <%=datos.accesorios%>
                             </span>
                         </p>
-                        <p><span class="detail-label">comentarios:</span>
+                        <p><span class="detail-label">Comentarios:</span>
+                            <% if (datos.detalles) { %>
                             <span class="detail-value">
                                 <%=datos.detalles%>
                             </span>
+                            <% } else { %>
+                            <span class="detail-value">
+                                Sin Comentarios
+                            </span>
+                            <% } %>
                         </p>
                     </div>
                     <% } %>
@@ -457,7 +463,7 @@
             <div class="signature-box">
                 <div class="signature-line" style="text-align: center;">
                     <% if (valeasignacion[0].Firma) { %>
-                        <img src="../firmas/<%=valeasignacion[0].Firma%>" style="max-width: 150px;" alt="" srcset="">
+                        <img src="../firmas/<%=valeasignacion[0].Firma%>" style="max-width: 350px;" alt="" srcset="">
                         <% } %>
                             <% if (valeasignacion[0].comentarios) { %>
                                 <p>Se rechazo por el siguiente motivo:</p>

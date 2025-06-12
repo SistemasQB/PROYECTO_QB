@@ -1,533 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmpManager - Gestión de Colaboradores</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Gestión de Colaboradores</title>
+    <link rel="stylesheet" href="../styles/sistemas/listadopersonal.css">
 </head>
 
-<style>
-    /* Reset y estilos base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #f9fafb;
-    color: #111827;
-    line-height: 1.5;
-}
-
-/* Header */
-.header {
-    background-color: white;
-    border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-}
-
-.header-container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 4rem;
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.logo {
-    width: 2rem;
-    height: 2rem;
-    background-color: #2563eb;
-    border-radius: 0.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.header h1 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #111827;
-}
-
-.nav {
-    display: flex;
-    gap: 2rem;
-}
-
-.nav-btn {
-    background: none;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.nav-btn.active {
-    background-color: #2563eb;
-    color: white;
-}
-
-.nav-btn:not(.active) {
-    color: #6b7280;
-}
-
-.nav-btn:not(.active):hover {
-    background-color: #f3f4f6;
-}
-
-/* Main Content */
-.main {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-}
-
-/* Search */
-.search-container {
-    margin-bottom: 2rem;
-}
-
-.search-box {
-    position: relative;
-    max-width: 24rem;
-}
-
-.search-icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9ca3af;
-}
-
-.search-input {
-    width: 100%;
-    padding: 0.5rem 0.75rem 0.5rem 2.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    background-color: white;
-    transition: border-color 0.2s;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-/* Grid */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-/* Card */
-.card {
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s;
-}
-
-.card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-    padding: 1.5rem 1.5rem 1rem;
-}
-
-.card-user-info {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-}
-
-.user-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    background-color: #dbeafe;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.user-avatar svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    color: #2563eb;
-}
-
-.user-details {
-    flex: 1;
-    min-width: 0;
-}
-
-.user-name {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #111827;
-    line-height: 1.25;
-    margin-bottom: 0.25rem;
-}
-
-.user-position {
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.card-content {
-    padding: 0 1.5rem 1.5rem;
-}
-
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    background-color: #dcfce7;
-    color: #166534;
-    margin-bottom: 1rem;
-}
-
-.button-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-}
-
-.btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    border: none;
-}
-
-.btn-outline {
-    background-color: white;
-    border: 1px solid #d1d5db;
-    color: #374151;
-}
-
-.btn-outline:hover {
-    background-color: #f9fafb;
-}
-
-.btn-destructive {
-    background-color: #dc2626;
-    color: white;
-    border: 1px solid #dc2626;
-}
-
-.btn-destructive:hover {
-    background-color: #b91c1c;
-}
-
-.btn svg {
-    width: 0.75rem;
-    height: 0.75rem;
-}
-
-/* Modal */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: white;
-    margin: 2% auto;
-    padding: 0;
-    border-radius: 0.5rem;
-    width: 90%;
-    max-width: 1000px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-}
-
-.close {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 1001;
-}
-
-.close:hover {
-    color: #000;
-}
-
-.modal-body {
-    padding: 2rem;
-}
-
-/* Vale de Resguardo Styles */
-.vale-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.vale-logo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.vale-logo img {
-    width: 4rem;
-    height: 4rem;
-}
-
-.vale-title {
-    flex: 1;
-    text-align: center;
-}
-
-.vale-title h2 {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
-}
-
-.vale-title p {
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.vale-info {
-    text-align: right;
-    font-size: 0.875rem;
-}
-
-.vale-info p {
-    margin-bottom: 0.25rem;
-}
-
-.section-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #0072bc;
-    border-bottom: 2px solid #0072bc;
-    padding-bottom: 0.25rem;
-    margin-bottom: 1rem;
-}
-
-.equipment-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.equipment-item {
-    background-color: #f9fafb;
-    padding: 1rem;
-    border-radius: 0.375rem;
-}
-
-.equipment-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-}
-
-.equipment-details > div {
-    margin-bottom: 0.5rem;
-}
-
-.equipment-details .full-width {
-    grid-column: 1 / -1;
-}
-
-.equipment-details p:first-child {
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 0.125rem;
-}
-
-.equipment-details p:last-child {
-    font-size: 0.875rem;
-}
-
-.separator {
-    background-color: #000;
-    height: 1px;
-    margin: 1.5rem 0;
-}
-
-.collaborator-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.collaborator-item {
-    background-color: #f9fafb;
-    padding: 1rem;
-    border-radius: 0.375rem;
-}
-
-.collaborator-item p:first-child {
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-}
-
-.collaborator-item p:last-child {
-    font-size: 0.875rem;
-}
-
-.date-info {
-    text-align: right;
-    margin-top: 1rem;
-    font-size: 0.875rem;
-}
-
-.conditions {
-    background-color: #f9fafb;
-    padding: 1rem;
-    border-radius: 0.375rem;
-}
-
-.conditions p {
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-}
-
-.conditions ul {
-    font-size: 0.875rem;
-    padding-left: 1.25rem;
-}
-
-.conditions li {
-    margin-bottom: 0.5rem;
-}
-
-.signatures {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    padding-top: 1.5rem;
-    margin-top: 2rem;
-}
-
-.signature {
-    text-align: center;
-}
-
-.signature-area {
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-}
-
-.signature-area img {
-    height: 4rem;
-}
-
-.signature-line {
-    border-top: 1px solid #9ca3af;
-    padding-top: 0.5rem;
-}
-
-.signature-line p {
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-}
-
-.signature-line p:first-child {
-    font-weight: 500;
-}
-
-.signature-line p:not(:first-child) {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .header-container {
-        flex-direction: column;
-        height: auto;
-        padding: 1rem;
-        gap: 1rem;
-    }
-
-    .nav {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .vale-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .vale-info {
-        text-align: center;
-    }
-
-    .equipment-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .collaborator-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .signatures {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
 
 <body>
     <!-- Header -->
@@ -536,7 +16,9 @@ body {
             <div class="header-left">
                 <div class="logo">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm10 16H4V9h16v11z" fill="white"/>
+                        <path
+                            d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm10 16H4V9h16v11z"
+                            fill="white" />
                     </svg>
                 </div>
                 <h1>EmpManager</h1>
@@ -554,9 +36,10 @@ body {
         <!-- Search Bar -->
         <div class="search-container">
             <div class="search-box">
-                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2"/>
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" />
                 </svg>
                 <input type="text" id="searchInput" placeholder="Buscar colaboradores..." class="search-input">
             </div>
@@ -565,6 +48,87 @@ body {
         <!-- Colaboradores Grid -->
         <div id="colaboradoresGrid" class="grid">
             <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
+
+            <% for (const [key, datos] of Object.entries(personal2)) { %>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-user-info">
+                            <div class="user-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="user-details">
+                                <h3 class="user-name">
+                                    <%= datos.nombrelargo %>
+                                </h3>
+                                <p class="user-position">
+                                    <%=datos.descripcion %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <% if (datos.firma) { %>
+                        <div class="status-badge">
+                            Firmado
+                        </div>
+                        <% } else { %>
+                        <div class="status-badge2">
+                            No Firmado
+                        </div>
+                        <% } %>
+                        <div class="button-grid">
+                            <button class="btn btn-outline" onclick="showModal('<%= JSON.stringify(datos) %>')">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Ver Equipos
+                            </button>
+                            <button class="btn btn-outline">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Añadir
+                            </button>
+                            <button class="btn btn-outline">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Remover
+                            </button>
+                            <button class="btn btn-destructive">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                    <line x1="17" y1="8" x2="22" y2="13" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                    <line x1="22" y1="8" x2="17" y2="13" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Dar Baja2
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
         </div>
     </main>
 
@@ -578,356 +142,8 @@ body {
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="../scripts/sistemas/listadopersonal.js"></script>
 </body>
 
-<script>
-    // Datos de ejemplo de colaboradores
-const colaboradores = [
-    {
-        id: 1,
-        nombre: "ALFARO GODINEZ PILAR ANDREA",
-        puesto: "Supervisor de Proyecto",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "Dell", modelo: "Latitude 5520", serie: "ABC123", estado: "Activo" },
-            { tipo: "Mouse", marca: "Logitech", modelo: "MX Master 3", serie: "DEF456", estado: "Activo" },
-            { tipo: "Monitor", marca: "Samsung", modelo: "24'", serie: "GHI789", estado: "Activo" },
-        ],
-    },
-    {
-        id: 2,
-        nombre: "ALMARAZ ESTRADA CLAUDIA PATRICIA",
-        puesto: "Líder de Sorteo",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "HP", modelo: "EliteBook 840", serie: "JKL012", estado: "Activo" },
-            { tipo: "Teléfono", marca: "iPhone", modelo: "13", serie: "MNO345", estado: "Activo" },
-        ],
-    },
-    {
-        id: 3,
-        nombre: "ANDRADE MONTAÑEZ DANIELA LIZETH",
-        puesto: "Auxiliar de comercialización y ventas",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "Lenovo", modelo: "ThinkPad E14", serie: "PQR678", estado: "Activo" },
-            { tipo: "Impresora", marca: "Canon", modelo: "PIXMA", serie: "STU901", estado: "Activo" },
-        ],
-    },
-    {
-        id: 4,
-        nombre: "ARIAS SORIA LINDA LIZBETH",
-        puesto: "Líder de Sorteo",
-        firmado: true,
-        equipos: [
-            { tipo: "Tablet", marca: "iPad", modelo: "Air", serie: "VWX234", estado: "Activo" },
-            { tipo: "Teclado", marca: "Apple", modelo: "Magic Keyboard", serie: "YZA567", estado: "Activo" },
-        ],
-    },
-    {
-        id: 5,
-        nombre: "BEGINES OROZCO EDUARDO",
-        puesto: "Gerente Nacional de Sorteo",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "MacBook", modelo: "Pro 16", serie: "BCD890", estado: "Activo" },
-            { tipo: "Monitor", marca: "LG", modelo: "27' 4K", serie: "EFG123", estado: "Activo" },
-            { tipo: "Webcam", marca: "Logitech", modelo: "C920", serie: "HIJ456", estado: "Activo" },
-        ],
-    },
-    {
-        id: 6,
-        nombre: "CADENA MENDOZA EVA GABRIELA",
-        puesto: "Jefe de Compras y Suministros",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "ASUS", modelo: "ZenBook", serie: "KLM789", estado: "Activo" },
-            { tipo: "Scanner", marca: "Epson", modelo: "V600", serie: "NOP012", estado: "Activo" },
-        ],
-    },
-];
 
-// Variables globales
-let filteredColaboradores = [...colaboradores];
-
-// Elementos del DOM
-const searchInput = document.getElementById('searchInput');
-const colaboradoresGrid = document.getElementById('colaboradoresGrid');
-const modal = document.getElementById('modal');
-const modalBody = document.getElementById('modalBody');
-const closeBtn = document.querySelector('.close');
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    renderColaboradores();
-    setupEventListeners();
-});
-
-function setupEventListeners() {
-    // Búsqueda
-    searchInput.addEventListener('input', handleSearch);
-    
-    // Modal
-    closeBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
-}
-
-function handleSearch(event) {
-    const searchTerm = event.target.value.toLowerCase();
-    filteredColaboradores = colaboradores.filter(colaborador =>
-        colaborador.nombre.toLowerCase().includes(searchTerm) ||
-        colaborador.puesto.toLowerCase().includes(searchTerm)
-    );
-    renderColaboradores();
-}
-
-function renderColaboradores() {
-    colaboradoresGrid.innerHTML = '';
-    
-    filteredColaboradores.forEach(colaborador => {
-        const cardElement = createColaboradorCard(colaborador);
-        colaboradoresGrid.appendChild(cardElement);
-    });
-}
-
-function createColaboradorCard(colaborador) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    
-    card.innerHTML = `
-        <div class="card-header">
-            <div class="card-user-info">
-                <div class="user-avatar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div class="user-details">
-                    <h3 class="user-name">${colaborador.nombre}</h3>
-                    <p class="user-position">${colaborador.puesto}</p>
-                </div>
-            </div>
-        </div>
-        <div class="card-content">
-            <div class="status-badge">
-                Firmado
-            </div>
-            <div class="button-grid">
-                <button class="btn btn-outline" onclick="verEquipos(${colaborador.id})">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Ver Equipos
-                </button>
-                <button class="btn btn-outline">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Añadir
-                </button>
-                <button class="btn btn-outline">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Remover
-                </button>
-                <button class="btn btn-destructive">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="17" y1="8" x2="22" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="22" y1="8" x2="17" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Dar Baja
-                </button>
-            </div>
-        </div>
-    `;
-    
-    return card;
-}
-
-function verEquipos(colaboradorId) {
-    const colaborador = colaboradores.find(c => c.id === colaboradorId);
-    if (colaborador) {
-        showModal(colaborador);
-    }
-}
-
-function showModal(colaborador) {
-    const currentDate = new Date().toLocaleDateString('es-ES');
-    
-    modalBody.innerHTML = `
-        <div class="vale-header">
-            <div class="vale-logo">
-                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iOCIgZmlsbD0iIzAwNzJiYyIvPgo8dGV4dCB4PSI0MCIgeT0iNDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RQjwvdGV4dD4KPC9zdmc+" alt="Quality BOLCA Logo">
-                <div>
-                    <h2 style="color: #0072bc;">Quality BOLCA</h2>
-                </div>
-            </div>
-            <div class="vale-title">
-                <h2>Vale de asignación de equipos</h2>
-                <p>Documento de entrega y responsabilidad</p>
-                <p>Folio: 38</p>
-            </div>
-            <div class="vale-info">
-                <p><strong>Código:</strong> QB-FR-A-12-01</p>
-                <p><strong>Rev:</strong> 00</p>
-                <p><strong>Fecha de emisión:</strong> ${currentDate}</p>
-                <p><strong>Fecha de revisión:</strong> N/A</p>
-            </div>
-        </div>
-
-        <div>
-            <h3 class="section-title">Información del Equipo</h3>
-            <div class="equipment-grid">
-                <div class="equipment-item">
-                    <div class="equipment-details">
-                        <div>
-                            <p>Tipo de Equipo:</p>
-                            <p>Monitor</p>
-                        </div>
-                        <div>
-                            <p>Número de Serie:</p>
-                            <p>0</p>
-                        </div>
-                        <div>
-                            <p>Marca:</p>
-                            <p>ACTECK</p>
-                        </div>
-                        <div>
-                            <p>Código de Inventario:</p>
-                            <p>86</p>
-                        </div>
-                        <div>
-                            <p>Estado:</p>
-                            <p>Nuevo</p>
-                        </div>
-                        <div>
-                            <p>Accesorios:</p>
-                            <p>NA</p>
-                        </div>
-                        <div class="full-width">
-                            <p>Comentarios:</p>
-                            <p></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="equipment-item">
-                    <div class="equipment-details">
-                        <div>
-                            <p>Tipo de Equipo:</p>
-                            <p>Ensamblado</p>
-                        </div>
-                        <div>
-                            <p>Número de Serie:</p>
-                            <p>0</p>
-                        </div>
-                        <div>
-                            <p>Marca:</p>
-                            <p>N/A</p>
-                        </div>
-                        <div>
-                            <p>Código de Inventario:</p>
-                            <p>87</p>
-                        </div>
-                        <div>
-                            <p>Estado:</p>
-                            <p>Usado</p>
-                        </div>
-                        <div>
-                            <p>Accesorios:</p>
-                            <p>teclado y mouse</p>
-                        </div>
-                        <div class="full-width">
-                            <p>Comentarios:</p>
-                            <p>no funciona el botón de encender</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="separator"></div>
-
-        <div>
-            <h3 class="section-title">Información del Colaborador</h3>
-            <div class="collaborator-grid">
-                <div class="collaborator-item">
-                    <p>Nombre:</p>
-                    <p>${colaborador.nombre}</p>
-                </div>
-                <div class="collaborator-item">
-                    <p>Departamento:</p>
-                    <p>TECNOLOGÍAS DE LA INFORMACIÓN</p>
-                </div>
-                <div class="collaborator-item">
-                    <p>Cargo:</p>
-                    <p>${colaborador.puesto}</p>
-                </div>
-                <div class="collaborator-item">
-                    <p>ID Empleado:</p>
-                    <p>15996</p>
-                </div>
-            </div>
-            <div class="date-info">
-                <p><strong>Fecha de Entrega:</strong> 2025-07-01</p>
-            </div>
-        </div>
-
-        <div>
-            <h3 class="section-title">Condiciones de Uso</h3>
-            <div class="conditions">
-                <p>El colaborador que recibe el equipo se compromete a:</p>
-                <ul>
-                    <li>Utilizar el equipo únicamente para fines laborales.</li>
-                    <li>Mantener el equipo en buenas condiciones y reportar cualquier daño inmediatamente.</li>
-                    <li>No instalar software no autorizado por la empresa.</li>
-                    <li>No prestar o transferir el equipo a terceros.</li>
-                    <li>Devolver el equipo en caso de terminación de la relación laboral.</li>
-                    <li>Seguir todas las políticas de seguridad informática de la empresa.</li>
-                    <li>Asumir responsabilidad por pérdida o daño debido a negligencia.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="signatures">
-            <div class="signature">
-                <div class="signature-area">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTAgNDBDMjAgMzAgNDAgMjAgNjAgMzBDODAgNDAgMTAwIDMwIDExMCA0MCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+" alt="Firma del Responsable">
-                </div>
-                <div class="signature-line">
-                    <p>Firma del Responsable de TI</p>
-                    <p>Nombre: Oscar Arturo De luna Lujan</p>
-                    <p>Cargo: Analista de TI</p>
-                </div>
-            </div>
-            <div class="signature">
-                <div class="signature-area">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTAgMzBDMzAgMjAgNTAgNDAgNzAgMjVDOTAgMzUgMTEwIDI1IDExMCAzNSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+" alt="Firma del Colaborador">
-                </div>
-                <div class="signature-line">
-                    <p>Firma del Colaborador</p>
-                    <p>Nombre: ${colaborador.nombre}</p>
-                    <p>Fecha: 2025-07-01</p>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    modal.style.display = 'block';
-}
-
-function closeModal() {
-    modal.style.display = 'none';
-}
-</script>
 </html>

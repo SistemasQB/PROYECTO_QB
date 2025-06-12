@@ -1,4 +1,6 @@
-function alertaFetch(urlEncoded, link) {
+// import e = require("express");
+
+function alertaFetch(urlEncoded, link, redirect) {
 
     Swal.fire({
         title: 'Procesando...',
@@ -26,7 +28,11 @@ function alertaFetch(urlEncoded, link) {
                     allowOutsideClick: false,
                     button: "OK"
                 }).then((value) => {
-                    if (value) {
+                    if (value && redirect && res.id) {
+                        window.location.href = redirect + res.id
+                    }else if (value && redirect) {
+                        window.location.href = redirect
+                    }else{
                         window.location.href = link
                     }
                 });;

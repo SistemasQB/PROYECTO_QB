@@ -535,7 +535,7 @@
                     <form id="formSolicitud">
                         <input type="hidden" name="_csrf" value="<%=csrfToken%>">
                         <div class="folio">
-                            <!-- <p>Folio:<span style="color: red;" id="idFolio"><%= // obtenerFolio%></span></p> -->
+                            <p>Folio: <span style="color: red;" id="idFolio">En Proceso</span></p>
                         </div>
 
                         <div class="form-row">
@@ -568,6 +568,10 @@
                         <div class="form-group">
                             <div class="description-header">Descripción del problema</div>
                             <textarea id="descripcion" name="descripcion" rows="10" required></textarea>
+                        </div>
+
+                        <div class="form-group" style="display: flex; justify-content: center; align-items: center; background-color: grey;">
+                            <p style="font-size: 100%;">Carr. A Paso Blanco No. 300, Localidad Tepetates c.p.20908, Jesús María Aguascalientes</p>
                         </div>
 
                         <div class="form-actions">

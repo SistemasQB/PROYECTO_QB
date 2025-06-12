@@ -468,34 +468,34 @@ controller.mejoracontinua2 = async (req, res) => {
 
     try {
         const Rmejora = await Mejora.create(
-            { 
+            {
                 id,
-        fecha,
-        nombre_mejora,
-        generador_idea,
-        nombre_equipo,
-        numero_participantes,
-        nombre_participantes,
-        numero_empleado_registra,
-        proceso_aplica_mejora,
-        region_aplica_mejora,
-        rubro,
-        beneficios,
-        inversion,
-        monto,
-        recuperacion,
-        situacion_actual,
-        situacion_mejora,
-        mejora_grupal,
-        estatus,
-        fecha_respuesta_comite,
-        email,
-        motivo,
-        titulo_analisis
-             }
+                fecha,
+                nombre_mejora,
+                generador_idea,
+                nombre_equipo,
+                numero_participantes,
+                nombre_participantes,
+                numero_empleado_registra,
+                proceso_aplica_mejora,
+                region_aplica_mejora,
+                rubro,
+                beneficios,
+                inversion,
+                monto,
+                recuperacion,
+                situacion_actual,
+                situacion_mejora,
+                mejora_grupal,
+                estatus,
+                fecha_respuesta_comite,
+                email,
+                motivo,
+                titulo_analisis
+            }
         )
 
-        res.status(200).send({ msg: 'Mejora Enviada', ok: true });
+        res.status(200).send({ msg: 'Mejora Enviada', ok: true, id: Rmejora.id });
         return
     } catch (error) {
         // const errorLog = `${new Date().toISOString()} - Error: ${errorMessage}\n`;
@@ -507,6 +507,33 @@ controller.mejoracontinua2 = async (req, res) => {
         return
     }
 
+}
+
+controller.subiranalisis = async (req, res) => {
+
+    
+
+    res.render('admin/subiranalisis', {
+        csrfToken: req.csrfToken(),
+    })
+}
+
+controller.subiranalisis2 = async (req, res) => {
+
+    const { id } = req.params
+
+    const obtenerAnalisis = await mejora.findByPk(id);
+
+    try {
+        obtenerAnalisis.analisis = req.file.filename
+        await obtenerAnalisis.save();
+        next()
+        res.status(200).send({ msg: 'Analisis enviado con exito', ok: true });
+        return
+    } catch (error) {
+        res.status(400).send({ msg: 'Error al enviar el analisis', ok: false });
+        return
+    }
 }
 
 

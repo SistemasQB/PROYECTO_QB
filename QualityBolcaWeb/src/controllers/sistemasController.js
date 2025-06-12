@@ -143,7 +143,7 @@ controller.registromantenimiento = async (req, res) => {
          FROM inventario i
          
          left JOIN vales v ON i.folio = v.idfolio
-         left JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
+         right JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
          left JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
          where tipo = 'Laptop' or tipo = 'Ensamblado'
          order by idInventario asc;`,
@@ -174,14 +174,21 @@ controller.listadopersonal = async (req, res) => {
 
     const personal = await db.query(
         `
-            SELECT 
+SELECT 
             GROUP_CONCAT(i.idInventario) AS idInventario_concat, 
             GROUP_CONCAT(i.tipo) AS tipo_concat, 
             GROUP_CONCAT(i.marca) AS marca_concat, 
+            GROUP_CONCAT(i.serie) AS serie,
+            GROUP_CONCAT(i.estado) AS estado,
+            GROUP_CONCAT(i.accesorios) AS accesorios,
+            GROUP_CONCAT(i.detalles) AS detalles,
             MAX(i.historial) AS historial, 
             MAX(v.firma) AS firma, 
             n1.nombrelargo, 
+            i.usoExclusivo,
             i.folio,
+            i.fechaEntrega,
+            v.numeroEmpleado,
             MAX(n6.descripcion) AS descripcion
             FROM inventario i
             INNER JOIN vales v ON i.folio = v.idfolio
@@ -196,13 +203,8 @@ controller.listadopersonal = async (req, res) => {
         personal2 = resultados;
     });
 
-    cuentaDatos = personal2.length;
-    // console.log(personal2.length);
-
-
     res.render('admin/sistemas/listadopersonal', {
         csrfToken: req.csrfToken(),
-        cuentaDatos,
         personal2
     });
 }

@@ -13,7 +13,8 @@ export default{
         directoriofoto: './src/js/directoriofoto.js',
         directoriofoto: './src/js/imagenrequisicion.js',
         firmas: './src/js/firmas.js',
-        valeresguardo: './src/js/valeresguardo.js'
+        valeresguardo: './src/js/valeresguardo.js',
+        agregaranalisis: './src/js/agregaranalisis.js'
     },
     output:{
         filename: '[name].js',
