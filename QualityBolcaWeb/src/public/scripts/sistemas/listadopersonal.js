@@ -302,7 +302,7 @@ function showModal(colaborador) {
                 </div>
             </div>
             <div class="date-info">
-                <p><strong>Fecha de Entrega:</strong> 2025-07-01</p>
+                <p><strong>Fecha de Entrega:</strong> ${vLista.fechaFolio}</p>
             </div>
         </div>
 

@@ -174,7 +174,7 @@ controller.listadopersonal = async (req, res) => {
 
     const personal = await db.query(
         `
-SELECT 
+            SELECT 
             GROUP_CONCAT(i.idInventario) AS idInventario_concat, 
             GROUP_CONCAT(i.tipo) AS tipo_concat, 
             GROUP_CONCAT(i.marca) AS marca_concat, 
@@ -189,6 +189,7 @@ SELECT
             i.folio,
             i.fechaEntrega,
             v.numeroEmpleado,
+            v.fechaFolio,
             MAX(n6.descripcion) AS descripcion
             FROM inventario i
             INNER JOIN vales v ON i.folio = v.idfolio
