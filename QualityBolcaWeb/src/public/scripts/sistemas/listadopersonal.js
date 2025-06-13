@@ -1,4 +1,4 @@
-    // Datos de ejemplo de colaboradores
+// Datos de ejemplo de colaboradores
 const colaboradores = [
     {
         id: 1,
@@ -75,7 +75,7 @@ const modalBody = document.getElementById('modalBody');
 const closeBtn = document.querySelector('.close');
 
 // Event listeners
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // renderColaboradores();
     setupEventListeners();
 });
@@ -83,10 +83,10 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupEventListeners() {
     // Búsqueda
     searchInput.addEventListener('input', handleSearch);
-    
+
     // Modal
     closeBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', function (event) {
         if (event.target === modal) {
             closeModal();
         }
@@ -104,7 +104,7 @@ function handleSearch(event) {
 
 function renderColaboradores() {
     colaboradoresGrid.innerHTML = '';
-    
+
     filteredColaboradores.forEach(colaborador => {
         const cardElement = createColaboradorCard(colaborador);
         colaboradoresGrid.appendChild(cardElement);
@@ -114,7 +114,7 @@ function renderColaboradores() {
 function createColaboradorCard(colaborador) {
     const card = document.createElement('div');
     card.className = 'card';
-    
+
     card.innerHTML = `
         <div class="card-header">
             <div class="card-user-info">
@@ -167,7 +167,7 @@ function createColaboradorCard(colaborador) {
             </div>
         </div>
     `;
-    
+
     return card;
 }
 
@@ -191,16 +191,16 @@ function showModal(colaborador) {
     raccesorios = JSON.stringify(vLista.accesorios).split(',');
     rdetalles = JSON.stringify(vLista.detalles).split(',');
 
-    console.log( rid2);
-    
+    console.log(rid2);
+
 
     let vbody = '';
     let Vhtmlheader = '';
     let Vhtmlfooter = '';
     let Vhtmlbody = '';
 
-    Vhtmlheader = 
-    `
+    Vhtmlheader =
+        `
     <div class="vale-header">
             <div class="vale-logo">
                 <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iOCIgZmlsbD0iIzAwNzJiYyIvPgo8dGV4dCB4PSI0MCIgeT0iNDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RQjwvdGV4dD4KPC9zdmc+" alt="Quality BOLCA Logo">
@@ -234,8 +234,8 @@ function showModal(colaborador) {
     // let vaccesorios = vLista.raccesorios.split(',');
     // let vdetalles = vLista.rdetalles.split(',');
     for (let i = 0; i < rid2.length; i++) {
-            Vhtmlcartas = 
-    `
+        Vhtmlcartas =
+            `
     <div class="equipment-item">
                     <div class="equipment-details">
                         <div>
@@ -274,8 +274,8 @@ function showModal(colaborador) {
 
 
 
-    Vhtmlfooter = 
-    `
+    Vhtmlfooter =
+        `
                 </div>
         </div>
 
@@ -325,7 +325,7 @@ function showModal(colaborador) {
         <div class="signatures">
             <div class="signature">
                 <div class="signature-area">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTAgNDBDMjAgMzAgNDAgMjAgNjAgMzBDODAgNDAgMTAwIDMwIDExMCA0MCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+" alt="Firma del Responsable">
+                    <img src="../firmas/618818.webp" alt="Firma del Colaborador">
                 </div>
                 <div class="signature-line">
                     <p>Firma del Responsable de TI</p>
@@ -335,7 +335,7 @@ function showModal(colaborador) {
             </div>
             <div class="signature">
                 <div class="signature-area">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTIwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMTAgMzBDMzAgMjAgNTAgNDAgNzAgMjVDOTAgMzUgMTEwIDI1IDExMCAzNSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+" alt="Firma del Colaborador">
+                    <img src="../firmas/${vLista.firma}" alt="Firma del Colaborador">
                 </div>
                 <div class="signature-line">
                     <p>Firma del Colaborador</p>
@@ -347,14 +347,14 @@ function showModal(colaborador) {
     
     `
 
-    
-    
+
+
     modalBody.innerHTML = Vhtmlheader + vbody + Vhtmlfooter
 
 
 
-                
-    
+
+
     modal.style.display = 'block';
 }
 
