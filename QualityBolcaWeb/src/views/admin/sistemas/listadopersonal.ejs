@@ -15,13 +15,9 @@
         <div class="header-container">
             <div class="header-left">
                 <div class="logo">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm10 16H4V9h16v11z"
-                            fill="white" />
-                    </svg>
+                    <img src="../img/Quality-BOLCA.png" style="width: 100%;" alt="" srcset="">
                 </div>
-                <h1>EmpManager</h1>
+                <h1>Listado de Personal</h1>
             </div>
             <nav class="nav">
                 <button class="nav-btn active">Colaboradores</button>
@@ -69,6 +65,14 @@
                                 <p class="user-position">
                                     <%=datos.descripcion %>
                                 </p>
+                                <p class="user-position">
+                                    Folio: 
+                                    <span><%=datos.folio %></span>
+                                </p>
+                                <p class="user-position">
+                                    Num. Empleado:
+                                    <span><%=datos.numeroEmpleado %></span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -83,6 +87,26 @@
                         </div>
                         <% } %>
                         <div class="button-grid">
+                            <!-- <button class="btn btn-outline" onclick="showModal2('<%= JSON.stringify(datos) %>')">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                M. Preventivo
+                            </button>
+                            <button class="btn btn-outline" onclick="showModal3('<%= JSON.stringify(datos) %>')">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                M. Autonomo
+                            </button> -->
                             <button class="btn btn-outline" onclick="showModal('<%= JSON.stringify(datos) %>')">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -91,7 +115,7 @@
                                     <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
-                                Ver Equipos
+                                Vale Asiganción
                             </button>
                             <button class="btn btn-outline">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
@@ -123,7 +147,7 @@
                                     <line x1="22" y1="8" x2="17" y2="13" stroke="currentColor" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
-                                Dar Baja2
+                                Dar Baja
                             </button>
                         </div>
                     </div>
@@ -143,6 +167,34 @@
     </div>
 
     <script src="../scripts/sistemas/listadopersonal.js"></script>
+
+    <script>
+    const buscador = document.getElementById("searchInput")
+
+    buscador.addEventListener("search", e => {
+        e.target.value = ""
+        document.querySelectorAll(".card").forEach(fruta => {
+
+    fruta.textContent.toLowerCase().includes(e.target.value.toLowerCase())
+    ? fruta.classList.remove("hidden")
+    : fruta.classList.add("hidden")
+    })
+    })
+
+    buscador.addEventListener("keyup", e => {
+
+
+            if (e.key === "Escape") e.target.value = ""
+
+
+            document.querySelectorAll(".card").forEach(fruta => {
+
+                fruta.textContent.toLowerCase().includes(e.target.value.toLowerCase())
+                    ? fruta.classList.remove("hidden")
+                    : fruta.classList.add("hidden")
+            })
+    })
+    </script>
 </body>
 
 

@@ -9,11 +9,18 @@ const protegerRuta = async(req, res, next) =>{
     //Verificar si hay un tok<en
     const { _token } = req.cookies
     // console.log(req.cookies);
-    
+
+        
     if(!_token){
         // console.log('no hay token');
+        // console.log(req.originalUrl);
         
+        // redireccion = req.originalUrl;
+
+        req.session.redirectTo = req.originalUrl;
+
         return res.redirect('/')
+
     }
     
     //Comprobar el token
@@ -32,6 +39,7 @@ const protegerRuta = async(req, res, next) =>{
             
             return res.redirect('/')
         }
+
         return next();
 
     } catch (error) {

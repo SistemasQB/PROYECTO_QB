@@ -226,7 +226,7 @@
             <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
             <% for (const [key, datos] of Object.entries(Rcomunicacion2)) { %>
 
-                <%let nombreCompleto=datos.nombrelargo%>
+                <%let nombreCompleto=  datos.apellidopaterno +  ' ' + datos.apellidomaterno + ' ' + datos.nombre%>
                     <div class="card">
                         <%if (datos.fotografia != null) { %>
                             <% let Rfoto ='../fotos/'+ datos.fotografia%>

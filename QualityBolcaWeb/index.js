@@ -1,10 +1,11 @@
 import express from "express";
 import csurf from "csurf";
 import cookieParser from "cookie-parser";
+import session from "express-session";
 // import uuidv4 from "uuid/v4";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { PORT } from "./src/config.js";
+import { PORT, SECRET_JWT_KEY } from "./src/config.js";
 // import dbSQLS from "./src/config/dbSQLS.js";
 import db from "./src/config/db.js";
 import myConnection from "express-myconnection";
@@ -71,6 +72,18 @@ try {
 catch (error) {
   console.log(error);
 }
+
+// Configura la sesión
+app.use(session({
+  secret: SECRET_JWT_KEY, // Cambia esto por una cadena única y segura
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // pon true si usas HTTPS
+    maxAge: 1000 * 60 * 60 * 24 // 1 hora
+  }
+}));
+
 
 
 export const transporter = nodeMailer.createTransport({

@@ -579,7 +579,7 @@
         <div class="container">
             <div class="main-header">
                 <h2>Mejoras Registradas</h2>
-                <p id="totalMejoras">Total de mejoras: 2</p>
+                <p id="totalMejoras">Total de mejoras: <span id="totalMejorasCount"></span></p>
             </div>
 
             <!-- Empty State -->
@@ -663,8 +663,8 @@
                 <!-- Información Personal -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="nombreMejora">Nombre de la Mejora *</label>
-                        <input type="text" id="nombreMejora" name="nombre_mejora" required>
+                        <label for="nombre_mejora">Nombre de la Mejora *</label>
+                        <input type="text" id="nombre_mejora" name="nombre_mejora" required>
                     </div>
                     <div class="form-group">
                         <label for="nombre">Generador de la idea o Líder del equipo de mejora *</label>
@@ -851,6 +851,15 @@
 
 <script>
 
+    /*
+    0 -- ingresada sin análisis
+1 -- ingresada con análisis
+2 -- modificar
+3 -- Aceptada
+4 -- Rechazada
+5 -- Declinada por falta de seguimiento
+    */
+
     const btnRubro = document.querySelectorAll('.btnRubro');
     const nombreEquipo = document.getElementById('nombreEquipo');
     const mejoraForm = document.getElementById('mejoraForm');
@@ -863,7 +872,6 @@
         btnRubro[2].classList.remove('btnselected');
         btnRubro[3].classList.remove('btnselected');
         btnRubro[num1].classList.add('btnselected');
-        console.log(btnRubro[num1].innerText);
         rubro = btnRubro[num1].innerText
     }
 
@@ -897,30 +905,29 @@
 
         let valoresConcatenados = ""
 
-        for(c=0; c<checkboxes.length; c++){
+        for (c = 0; c < checkboxes.length; c++) {
             if (checkboxes[c].checked) {
                 valoresConcatenados += checkboxes[c].value + ','
             }
         }
-            
+
         const beneficiosadd = document.getElementById('beneficiosadd');
 
         // let valoresConcatenados = checkboxes.map(checkbox => checkbox.value).join(',');
 
         let resultado = valoresConcatenados + beneficiosadd.value;
 
-        console.log(resultado);
         return resultado
     }
 
     function obtenerFechaFormato() {
-    let fecha = new Date();
-    let año = fecha.getFullYear();
-    let mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Sumar 1 porque los meses van de 0 a 11
-    let dia = String(fecha.getDate()).padStart(2, '0'); // Asegurar que tenga dos dígitos
+        let fecha = new Date();
+        let año = fecha.getFullYear();
+        let mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Sumar 1 porque los meses van de 0 a 11
+        let dia = String(fecha.getDate()).padStart(2, '0'); // Asegurar que tenga dos dígitos
 
-    return `${año}-${mes}-${dia}`;
-}
+        return `${año}-${mes}-${dia}`;
+    }
 
 
 
@@ -936,45 +943,47 @@
         formData.append('mejora_grupal', mejoragrupal);
         formData.append('titulo_analisis', 'nombre.pdf');
         const urlEncoded = new URLSearchParams(formData).toString();
-        console.log(urlEncoded);
         alertaFetch(urlEncoded, 'mejoracontinua', 'subiranalisis');
 
     })
 
 
-
+    /* */
 
     // Estado de la aplicación
-    let mejoras = [
-        {
-            id: "1",
-            nombreMejora: "Optimización del proceso de empaque",
-            nombre: "María González",
-            email: "maria.gonzalez@company.com",
-            puesto: "Supervisor de Producción",
-            proceso: "Empaque y Distribución",
-            region: "Norte",
-            tipoMejora: ["Ahorra Tiempo", "Genera un Ahorro Económico"],
-            requiereInversion: false,
-            situacionActual: "El proceso actual de empaque toma 15 minutos por unidad debido a pasos redundantes",
-            mejoraProuesta: "Reorganizar la línea de empaque para eliminar movimientos innecesarios y reducir el tiempo a 10 minutos por unidad",
-            fechaCreacion: "2024-01-15"
-        },
-        {
-            id: "2",
-            nombreMejora: "Implementación de sistema de reciclaje",
-            nombre: "Carlos Rodríguez",
-            email: "carlos.rodriguez@company.com",
-            puesto: "Analista Ambiental",
-            proceso: "Gestión de Residuos",
-            region: "Centro",
-            tipoMejora: ["Entorno Más Saludable y Sostenible", "Genera un Ahorro Material"],
-            requiereInversion: true,
-            situacionActual: "Los residuos se desechan sin clasificación, generando costos adicionales",
-            mejoraProuesta: "Implementar contenedores de reciclaje y capacitar al personal para reducir residuos en 40%",
-            fechaCreacion: "2024-01-10"
-        }
-    ];
+    let mejoras = <%- JSON.stringify(obtenerValores) %>;
+    let usuario = <%- JSON.stringify(obtenerDatos) %>;
+
+    // [
+    //     {
+    //         id: "1",
+    //         nombre_mejora: "Optimización del proceso de empaque",
+    //         generador_idea: "María González",
+    //         email: "maria.gonzalez@company.com",
+    //         puesto: "Supervisor de Producción",
+    //         proceso: "Empaque y Distribución",
+    //         region: "Norte",
+    //         tipoMejora: ["Ahorra Tiempo", "Genera un Ahorro Económico"],
+    //         requiereInversion: false,
+    //         situacionActual: "El proceso actual de empaque toma 15 minutos por unidad debido a pasos redundantes",
+    //         mejoraProuesta: "Reorganizar la línea de empaque para eliminar movimientos innecesarios y reducir el tiempo a 10 minutos por unidad",
+    //         fecha: "2024-01-15"
+    //     },
+    //     {
+    //         id: "2",
+    //         nombre_mejora: "Implementación de sistema de reciclaje",
+    //         generador_idea: "Carlos Rodríguez",
+    //         email: "carlos.rodriguez@company.com",
+    //         puesto: "Analista Ambiental",
+    //         proceso: "Gestión de Residuos",
+    //         region: "Centro",
+    //         tipoMejora: ["Entorno Más Saludable y Sostenible", "Genera un Ahorro Material"],
+    //         requiereInversion: true,
+    //         situacionActual: "Los residuos se desechan sin clasificación, generando costos adicionales",
+    //         mejoraProuesta: "Implementar contenedores de reciclaje y capacitar al personal para reducir residuos en 40%",
+    //         fecha: "2024-01-10"
+    //     }
+    // ];
 
     // Elementos del DOM
     const modal = document.getElementById('modal');
@@ -994,7 +1003,7 @@
     openModalBtn.addEventListener('click', openModal);
     closeModalBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
-    mejoraForm.addEventListener('submit', handleSubmit);
+    // mejoraForm.addEventListener('submit', handleSubmit);
 
     // Event listener para botones de "abrir modal" en empty state
     document.addEventListener('click', function (e) {
@@ -1028,27 +1037,52 @@
 
 
     function renderMejoras() {
-        if (mejoras.length === 0) {
+        if (!mejoras) {
             emptyState.style.display = 'block';
             mejorasGrid.style.display = 'none';
         } else {
             emptyState.style.display = 'none';
             mejorasGrid.style.display = 'grid';
 
+            descripcion = '<%= obtenerDatos.descripcion %>';
+
             mejorasGrid.innerHTML = mejoras.map(mejora => createMejoraCard(mejora)).join('');
         }
     }
 
     function createMejoraCard(mejora) {
-        const fechaFormateada = new Date(mejora.fechaCreacion).toLocaleDateString('es-ES');
-        const badgesHtml = mejora.tipoMejora.map(tipo =>
+        let colorcarta = 0;
+        switch (mejora.estatus) {
+            case 0:
+                colorcarta = '';
+                break;
+            case 1:
+                colorcarta = 'background-color: #fdfef4; border: 2px solid #f59e0b;'
+                break;
+            case 2:
+                colorcarta = 'background-color: #f4fefe; border: 2px solid #bae2ff;'
+                break;
+            case 3:
+                colorcarta = 'background-color: #f5fef4; border: 2px solid #7cfca9;';
+                break;
+            case 4:
+                colorcarta = 'background-color: #fef4f4; border: 2px solid #ff0000;'
+                break;
+            case 5:
+                colorcarta = 'background-color: #e2e2e2; border: 2px solid #828282;'
+                break;
+        }
+
+        const fechaFormateada = new Date(mejora.fecha).toLocaleDateString('es-ES');
+        const beneficiosA = mejora.beneficios.split(',');
+        const badgesHtml = beneficiosA.map(tipo =>
             `<span class="badge ${getBadgeClass(tipo)}">${tipo}</span>`
         ).join('');
 
         return `
-        <div class="mejora-card">
+        <div class="mejora-card" style="${colorcarta}">
             <div class="card-header">
-                <h3 class="card-title">${mejora.nombreMejora}</h3>
+                <h3 class="card-title">${mejora.nombre_mejora}</h3>
                 <div class="card-meta">
                     <div>
                         <i class="fas fa-calendar"></i>
@@ -1061,11 +1095,11 @@
                 <div class="card-section">
                     <div class="card-info">
                         <i class="fas fa-user"></i>
-                        <span class="name">${mejora.nombre}</span>
+                        <span class="name">${mejora.generador_idea}</span>
                     </div>
                     <div class="card-info">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span class="location">${mejora.region} - ${mejora.proceso}</span>
+                        <i class="fas fa-address-card"></i>
+                        <span class="location">${descripcion}</span>
                     </div>
                 </div>
                 
@@ -1078,12 +1112,12 @@
                 
                 <div class="card-section">
                     <div class="section-title">Situación Actual:</div>
-                    <div class="section-text">${mejora.situacionActual}</div>
+                    <div class="section-text">${mejora.situacion_actual}</div>
                 </div>
                 
                 <div class="card-section">
                     <div class="section-title">Mejora Propuesta:</div>
-                    <div class="section-text">${mejora.mejoraProuesta}</div>
+                    <div class="section-text">${mejora.situacion_mejora}</div>
                 </div>
             </div>
         </div>

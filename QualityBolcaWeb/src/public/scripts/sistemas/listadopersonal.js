@@ -1,175 +1,16 @@
-// Datos de ejemplo de colaboradores
-const colaboradores = [
-    {
-        id: 1,
-        nombre: "ALFARO GODINEZ PILAR ANDREA",
-        puesto: "Supervisor de Proyecto",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "Dell", modelo: "Latitude 5520", serie: "ABC123", estado: "Activo" },
-            { tipo: "Mouse", marca: "Logitech", modelo: "MX Master 3", serie: "DEF456", estado: "Activo" },
-            { tipo: "Monitor", marca: "Samsung", modelo: "24'", serie: "GHI789", estado: "Activo" },
-        ],
-    },
-    {
-        id: 2,
-        nombre: "ALMARAZ ESTRADA CLAUDIA PATRICIA",
-        puesto: "Líder de Sorteo",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "HP", modelo: "EliteBook 840", serie: "JKL012", estado: "Activo" },
-            { tipo: "Teléfono", marca: "iPhone", modelo: "13", serie: "MNO345", estado: "Activo" },
-        ],
-    },
-    {
-        id: 3,
-        nombre: "ANDRADE MONTAÑEZ DANIELA LIZETH",
-        puesto: "Auxiliar de comercialización y ventas",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "Lenovo", modelo: "ThinkPad E14", serie: "PQR678", estado: "Activo" },
-            { tipo: "Impresora", marca: "Canon", modelo: "PIXMA", serie: "STU901", estado: "Activo" },
-        ],
-    },
-    {
-        id: 4,
-        nombre: "ARIAS SORIA LINDA LIZBETH",
-        puesto: "Líder de Sorteo",
-        firmado: true,
-        equipos: [
-            { tipo: "Tablet", marca: "iPad", modelo: "Air", serie: "VWX234", estado: "Activo" },
-            { tipo: "Teclado", marca: "Apple", modelo: "Magic Keyboard", serie: "YZA567", estado: "Activo" },
-        ],
-    },
-    {
-        id: 5,
-        nombre: "BEGINES OROZCO EDUARDO",
-        puesto: "Gerente Nacional de Sorteo",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "MacBook", modelo: "Pro 16", serie: "BCD890", estado: "Activo" },
-            { tipo: "Monitor", marca: "LG", modelo: "27' 4K", serie: "EFG123", estado: "Activo" },
-            { tipo: "Webcam", marca: "Logitech", modelo: "C920", serie: "HIJ456", estado: "Activo" },
-        ],
-    },
-    {
-        id: 6,
-        nombre: "CADENA MENDOZA EVA GABRIELA",
-        puesto: "Jefe de Compras y Suministros",
-        firmado: true,
-        equipos: [
-            { tipo: "Laptop", marca: "ASUS", modelo: "ZenBook", serie: "KLM789", estado: "Activo" },
-            { tipo: "Scanner", marca: "Epson", modelo: "V600", serie: "NOP012", estado: "Activo" },
-        ],
-    },
-];
 
-// Variables globales
-let filteredColaboradores = [...colaboradores];
-
-// Elementos del DOM
-const searchInput = document.getElementById('searchInput');
 const colaboradoresGrid = document.getElementById('colaboradoresGrid');
 const modal = document.getElementById('modal');
 const modalBody = document.getElementById('modalBody');
 const closeBtn = document.querySelector('.close');
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', function () {
-    // renderColaboradores();
-    setupEventListeners();
-});
 
-function setupEventListeners() {
-    // Búsqueda
-    searchInput.addEventListener('input', handleSearch);
-
-    // Modal
-    closeBtn.addEventListener('click', closeModal);
+closeBtn.addEventListener('click', closeModal);
     window.addEventListener('click', function (event) {
         if (event.target === modal) {
             closeModal();
         }
     });
-}
-
-function handleSearch(event) {
-    const searchTerm = event.target.value.toLowerCase();
-    filteredColaboradores = colaboradores.filter(colaborador =>
-        colaborador.nombre.toLowerCase().includes(searchTerm) ||
-        colaborador.puesto.toLowerCase().includes(searchTerm)
-    );
-    renderColaboradores();
-}
-
-function renderColaboradores() {
-    colaboradoresGrid.innerHTML = '';
-
-    filteredColaboradores.forEach(colaborador => {
-        const cardElement = createColaboradorCard(colaborador);
-        colaboradoresGrid.appendChild(cardElement);
-    });
-}
-
-function createColaboradorCard(colaborador) {
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    card.innerHTML = `
-        <div class="card-header">
-            <div class="card-user-info">
-                <div class="user-avatar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div class="user-details">
-                    <h3 class="user-name">${colaborador.nombre}</h3>
-                    <p class="user-position">${colaborador.puesto}</p>
-                </div>
-            </div>
-        </div>
-        <div class="card-content">
-            <div class="status-badge">
-                Firmado
-            </div>
-            <div class="button-grid">
-                <button class="btn btn-outline" onclick="verEquipos(${colaborador.id})">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Ver Equipos
-                </button>
-                <button class="btn btn-outline">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Añadir
-                </button>
-                <button class="btn btn-outline">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Remover
-                </button>
-                <button class="btn btn-destructive">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="17" y1="8" x2="22" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="22" y1="8" x2="17" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Dar Baja
-                </button>
-            </div>
-        </div>
-    `;
-
-    return card;
-}
 
 function verEquipos(colaboradorId) {
     const colaborador = colaboradores.find(c => c.id === colaboradorId);
@@ -191,9 +32,6 @@ function showModal(colaborador) {
     raccesorios = JSON.stringify(vLista.accesorios).split(',');
     rdetalles = JSON.stringify(vLista.detalles).split(',');
 
-    console.log(rid2);
-
-
     let vbody = '';
     let Vhtmlheader = '';
     let Vhtmlfooter = '';
@@ -203,15 +41,12 @@ function showModal(colaborador) {
         `
     <div class="vale-header">
             <div class="vale-logo">
-                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iOCIgZmlsbD0iIzAwNzJiYyIvPgo8dGV4dCB4PSI0MCIgeT0iNDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RQjwvdGV4dD4KPC9zdmc+" alt="Quality BOLCA Logo">
-                <div>
-                    <h2 style="color: #0072bc;">Quality BOLCA</h2>
-                </div>
+                <img src="../img/Quality-BOLCA.png" alt="Quality BOLCA Logo" style="width: 200%;">
             </div>
             <div class="vale-title">
                 <h2>Vale de asignación de equipos</h2>
                 <p>Documento de entrega y responsabilidad</p>
-                <p>Folio: 38</p>
+                <p>Folio: ${vLista.folio}</p>
             </div>
             <div class="vale-info">
                 <p><strong>Código:</strong> QB-FR-A-12-01</p>
@@ -225,15 +60,8 @@ function showModal(colaborador) {
             <div class="equipment-grid">
     `
 
-    // ciclo para crear los elementos del inventario
-    // let idInventario = rid2.split(',');
-    // let vtipo = vLista.rtipo.split(',');
-    // let vmarca = vLista.rmarca.split(',');
-    // let vserie = vLista.rserie.split(',');
-    // let vestado = vLista.restado.split(',');
-    // let vaccesorios = vLista.raccesorios.split(',');
-    // let vdetalles = vLista.rdetalles.split(',');
     for (let i = 0; i < rid2.length; i++) {
+        let estado2 = restado[i] === '1' ? 'Nuevo' : 'Usado'
         Vhtmlcartas =
             `
     <div class="equipment-item">
@@ -256,7 +84,7 @@ function showModal(colaborador) {
                         </div>
                         <div>
                             <p>Estado:</p>
-                            <p>${restado[i]}</p>
+                            <p>${estado2}</p>
                         </div>
                         <div>
                             <p>Accesorios:</p>
@@ -271,8 +99,6 @@ function showModal(colaborador) {
     `
         vbody = vbody + Vhtmlcartas;
     }
-
-
 
     Vhtmlfooter =
         `
@@ -347,16 +173,12 @@ function showModal(colaborador) {
     
     `
 
-
-
     modalBody.innerHTML = Vhtmlheader + vbody + Vhtmlfooter
-
-
-
-
 
     modal.style.display = 'block';
 }
+
+
 
 function closeModal() {
     modal.style.display = 'none';

@@ -494,6 +494,10 @@ body {
     color: #6b7280;
 }
 
+.hidden {
+            display: none;
+        }
+
 /* Responsive */
 @media (max-width: 768px) {
     .header-container {

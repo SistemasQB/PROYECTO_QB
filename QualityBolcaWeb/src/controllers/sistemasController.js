@@ -5,6 +5,7 @@ import {
     informaciongch,
     informacionpuesto,
     Inventario,
+    Solicitudservicio,
     Vales
 } from "../models/index.js";
 
@@ -165,7 +166,28 @@ controller.registromantenimiento = async (req, res) => {
 
 controller.programamantenimiento = async (req, res) => {
 
-    res.render('admin/sistemas/programamantenimiento');
+    let programaResultados
+
+    const resultados = await db.query(
+        `
+        SELECT i.idInventario, i.marca, i.tipo, i.usoExclusivo, i.ultimoMantenimiento, i.fechaCompra,
+        CONCAT(e.nombre, ' ', e.apellidopaterno, ' ', e.apellidomaterno) nombrelargo  FROM qualitybolca.inventario i
+        left join vales v on i.folio = v.idFolio
+        inner join empleados e on v.numeroEmpleado = e.codigoempleado
+        where tipo IN ('Allinone','Laptop','Ensamblado')
+        order by idInventario;
+        `,
+        {
+            type: QueryTypes.SELECT // Tipo de consulta: SELECT
+        }
+    ).then((resultados) => {
+        programaResultados = resultados;
+    });
+
+    res.render('admin/sistemas/programamantenimiento',{
+        csrfToken: req.csrfToken(),
+        programaResultados
+    });
 }
 
 controller.listadopersonal = async (req, res) => {
@@ -209,5 +231,36 @@ controller.listadopersonal = async (req, res) => {
         personal2
     });
 }
+controller.listadosolicitudes = async (req, res) => {
+    let listadoSolicitudes
+    let cuentaDatos
+
+    const personal = await Solicitudservicio.findAll(
+    ).then((resultados) => {
+        listadoSolicitudes = resultados;
+    });
+
+    res.render('admin/sistemas/solicitudes', {
+        csrfToken: req.csrfToken(),
+        listadoSolicitudes
+    });
+}
+
+controller.mantenimientoautonomo = async (req, res) => {
+    let matenimientos
+    let cuentaDatos
+
+    const personal = await registroma.findAll()
+        .then((resultados) => {
+            matenimientos = resultados;
+        });
+
+    res.render('admin/sistemas/mantenimientoautonomo', {
+        csrfToken: req.csrfToken(),
+        matenimientos
+    });
+}
+
+
 
 export default controller;

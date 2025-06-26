@@ -1,789 +1,492 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Explorador de Archivos</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador de Archivos PDF</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <style>
-/* Estilos generales */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: #f9fafb;
-  color: #374151;
-  line-height: 1.5;
-}
-
-.main {
-  min-height: 100vh;
-  padding: 2rem 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
+    color: #334155;
+    line-height: 1.6;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-height: 100vh;
 }
 
-.hidden {
-  display: none !important;
-}
-
-/* Explorador de archivos */
-.file-explorer {
-  background-color: white;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-/* Encabezado */
 .header {
-  background: linear-gradient(to right, #0057B8, #0085CA);
-  padding: 1.5rem;
-  color: white;
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
-.title {
-  display: flex;
-  align-items: center;
-  font-size: 1.5rem;
-  font-weight: 700;
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
 }
 
-.icon {
-  margin-right: 0.5rem;
+.header p {
+    color: #64748b;
+    font-size: 1.1rem;
 }
 
-.breadcrumb {
-  margin-top: 0.5rem;
-  color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
 }
 
-.separator {
-  margin: 0 0.5rem;
+.card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-/* Paneles */
-.panels {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
+.card-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-@media (min-width: 768px) {
-  .panels {
-    grid-template-columns: 1fr 1fr 2fr;
-  }
+.card-content {
+    padding: 1.5rem;
 }
 
-.panel {
-  border-right: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
+.file-explorer-container {
+    flex: 0 0 auto;
 }
 
-.panel-wide {
-  grid-column: span 1;
+.file-tree {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #fafafa;
 }
 
-@media (min-width: 768px) {
-  .panel-wide {
-    grid-column: span 2;
-  }
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    user-select: none;
 }
 
-.panel-header {
-  padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+.file-item:hover {
+    background-color: #f1f5f9;
 }
 
-.panel-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
+.file-item.file:hover {
+    background-color: #dbeafe;
 }
 
-.panel-content {
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 0.5rem;
+.folder-toggle {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: transform 0.2s;
 }
 
-/* Lista de carpetas */
-.folder-list {
-  list-style: none;
-}
-
-.folder-item {
-  margin-bottom: 0.25rem;
-}
-
-.folder-button {
-  width: 100%;
-  text-align: left;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  display: flex;
-  align-items: center;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #4b5563;
-}
-
-.folder-button:hover {
-  background-color: #f3f4f6;
-}
-
-.folder-button.selected {
-  background-color: #e6f2ff;
-  color: #0057B8;
+.folder-toggle.expanded {
+    transform: rotate(90deg);
 }
 
 .folder-icon {
-  margin-right: 0.5rem;
-  color: #0085CA;
+    font-size: 16px;
 }
 
 .file-icon {
-  margin-right: 0.5rem;
-  color: #75787b;
+    font-size: 16px;
 }
 
-/* Grid de carpetas */
-.folder-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-@media (min-width: 640px) {
-  .folder-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.folder-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid transparent;
-}
-
-.folder-card:hover {
-  background-color: #f9fafb;
-}
-
-.folder-card.selected {
-  background-color: #e6fffa;
-  border-color: #99f6e4;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.folder-icon-container {
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #e6fffa;
-  border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.file-icon-container {
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #e2eefe;
-  border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
+.item-name {
+    font-size: 0.9rem;
+    flex: 1;
 }
 
 .folder-name {
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-align: center;
-  color: #4b5563;
+    font-weight: 500;
 }
 
-/* Área de resultado */
-.result-area {
-  border-top: 1px solid #e5e7eb;
+.file-name {
+    color: #475569;
 }
 
-.result-header {
-  padding: 1rem;
-  background-color: #f3f4f6;
-  border-bottom: 1px solid #e5e7eb;
+.folder-children {
+    margin-left: 20px;
+    border-left: 1px solid #e2e8f0;
+    padding-left: 1rem;
 }
 
-.result-content {
-  min-height: 400px;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.folder-children.hidden {
+    display: none;
+}
+
+.pdf-viewer-container {
+    flex: 1;
 }
 
 .pdf-viewer {
-  width: 100%;
-  height: 500px;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.25rem;
+    min-height: 500px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-/* Mensaje vacío */
-.empty-message {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #9ca3af;
-  text-align: center;
-  padding: 2rem;
+.pdf-placeholder {
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
 }
 
-.empty-icon {
-  margin-bottom: 1rem;
-  color: #d1d5db;
+.placeholder-content {
+    text-align: center;
+    color: #64748b;
+}
+
+.placeholder-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.placeholder-content h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #475569;
+}
+
+.placeholder-content p {
+    font-size: 0.9rem;
+}
+
+.pdf-frame {
+    width: 100%;
+    height: 600px;
+    border: none;
+    background: white;
+}
+
+.pdf-content {
+    padding: 2rem;
+    text-align: center;
+    background: white;
+    border: 2px dashed #e2e8f0;
+    border-radius: 8px;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pdf-preview {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.pdf-preview h3 {
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.pdf-preview p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.open-button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.open-button:hover {
+    background: #2563eb;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+        gap: 1rem;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .file-tree {
+        max-height: 300px;
+    }
+    
+    .pdf-viewer {
+        min-height: 400px;
+    }
+    
+    .pdf-frame {
+        height: 400px;
+    }
 }
 </style>
 
-<!-- Carpetas de docuemntos controlados -->
-<!-- 
-Documentos
-Misión, visión y valores QB
-Objetivos e indicadores
-Videos tutoriales
-
-
--->
-
-
 <body>
-  <main class="main">
     <div class="container">
-      <div class="file-explorer">
-        <!-- Encabezado -->
-        <div class="header">
-          <h1 class="title">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
-              <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-            </svg>
-            Documentos Controlados Publicos
-          </h1>
-          <div class="breadcrumb">
-            <span id="level1-name">Quality Bolca</span>
-            <span id="level2-path" class="hidden">
-              <span class="separator">›</span>
-              <span id="level2-name"></span>
-            </span>
-            <span id="level3-path" class="hidden">
-              <span class="separator">›</span>
-              <span id="level3-name"></span>
-            </span>
-          </div>
+        <!-- Header -->
+        <header class="header">
+            <h1>Explorador de Archivos PDF</h1>
+            <p>Navega por las carpetas y haz clic en los archivos PDF para visualizarlos</p>
+        </header>
+
+        <!-- File Explorer -->
+        <div class="file-explorer-container">
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <span class="folder-icon">📁</span>
+                        Sistema de Archivos
+                    </h2>
+                </div>
+                <div class="card-content">
+                    <div id="fileTree" class="file-tree"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="panels">
-          <!-- Panel de navegación nivel 1 -->
-          <div class="panel">
-            <div class="panel-header">
-              <h2 class="panel-title">Nivel 1</h2>
+        <!-- PDF Viewer -->
+        <div class="pdf-viewer-container">
+            <div class="card">
+                <div class="card-header" id="pdfHeader" style="display: none;">
+                    <h2>
+                        <span class="file-icon">📄</span>
+                        <span id="pdfTitle">Visor de PDF</span>
+                    </h2>
+                </div>
+                <div class="card-content">
+                    <div id="pdfViewer" class="pdf-viewer">
+                        <div class="pdf-placeholder">
+                            <div class="placeholder-content">
+                                <div class="placeholder-icon">📄</div>
+                                <h3>Selecciona un archivo PDF</h3>
+                                <p>Haz clic en cualquier archivo PDF del explorador para visualizarlo aquí</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="panel-content" id="level1-folders">
-              <!-- Se llenará con JavaScript -->
-            </div>
-          </div>
-
-          <!-- Panel de navegación nivel 2 -->
-          <div class="panel">
-            <div class="panel-header">
-              <h2 class="panel-title">Nivel 2</h2>
-            </div>
-            <div class="panel-content" id="level2-folders">
-              <div class="empty-message">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
-                  <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-                </svg>
-                <p>Selecciona una carpeta del primer nivel</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Panel de navegación nivel 3 -->
-          <div class="panel">
-            <div class="panel-header">
-              <h2 class="panel-title">Nivel 3</h2>
-            </div>
-            <div class="panel-content" id="level3-folders">
-              <div class="empty-message">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
-                  <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-                </svg>
-                <p>Selecciona una carpeta del segundo nivel</p>
-              </div>
-            </div>
-          </div>
         </div>
-
-        <!-- Área de resultado -->
-        <div class="result-area">
-          <div class="result-header">
-            <h2 class="panel-title">Resultado</h2>
-          </div>
-          <div class="result-content" id="result-container">
-            <div class="empty-message">
-              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
-                <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-              </svg>
-              <p>Selecciona un archivo PDF para visualizarlo aquí</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </main>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 <script>
-// Datos de ejemplo para el explorador de archivos
-const folders = [
-    {
-      id: "folder1",
-      name: "Certificado ISO 9001 2015",
-      type: "folder",
-      children: [
-      {
-          id: "subfolder2-1",
-          name: "Vacaciones",
-          type: "folder",
-          children: [
-            {
-              id: "img2-1-1",
-              name: "Foto Playa",
-              type: "pdf",
-              url: "https://www.africau.edu/images/default/sample.pdf",
-            },
-          ],
+  // Estructura de datos JSON para el sistema de archivos
+const fileSystemData = {
+    name: "Documentos",
+    type: "folder",
+    children: [
+        {
+            name: "Proyectos",
+            type: "folder",
+            children: [
+                {
+                    name: "Proyecto A",
+                    type: "folder",
+                    children: [
+                        {
+                            name: "manual-usuario.pdf",
+                            type: "file",
+                            url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                        },
+                        {
+                            name: "especificaciones.pdf",
+                            type: "file",
+                            url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                        }
+                    ]
+                },
+                {
+                    name: "Proyecto B",
+                    type: "folder",
+                    children: [
+                        {
+                            name: "documentacion.pdf",
+                            type: "file",
+                            url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                        },
+                        {
+                            name: "Recursos",
+                            type: "folder",
+                            children: [
+                                {
+                                    name: "guia-instalacion.pdf",
+                                    type: "file",
+                                    url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
-          id: "img1-1",
-          name: "Certificado ISO9001 2015",
-          type: "pdf",
-          url: "https://www.africau.edu/images/default/sample.pdf",
+            name: "Reportes",
+            type: "folder",
+            children: [
+                {
+                    name: "reporte-mensual.pdf",
+                    type: "file",
+                    url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                },
+                {
+                    name: "reporte-anual.pdf",
+                    type: "file",
+                    url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                }
+            ]
+        },
+        {
+            name: "manual-general.pdf",
+            type: "file",
+            url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
         }
-      ],
-    },
-    {
-      id: "folder2",
-      name: "Imágenes",
-      type: "folder",
-      children: [
-        {
-          id: "subfolder2-1",
-          name: "Vacaciones",
-          type: "folder",
-          children: [
-            {
-              id: "img2-1-1",
-              name: "Foto Playa",
-              type: "pdf",
-              url: "https://www.africau.edu/images/default/sample.pdf",
-            },
-          ],
-        },
-        {
-          id: "subfolder2-2",
-          name: "Trabajo",
-          type: "folder",
-          children: [],
-        },
-      ],
-    },
-    {
-      id: "folder3",
-      name: "Proyectos",
-      type: "folder",
-      children: [
-        {
-          id: "subfolder3-1",
-          name: "Proyecto A",
-          type: "folder",
-          children: [
-            {
-              id: "doc3-1-1",
-              name: "Informe Final",
-              type: "pdf",
-              url: "https://www.africau.edu/images/default/sample.pdf",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "folder4",
-      name: "Personal",
-      type: "folder",
-      children: [
-        {
-          id: "subfolder4-1",
-          name: "Salud",
-          type: "folder",
-          children: [
-            {
-              id: "doc4-1-1",
-              name: "Análisis",
-              type: "pdf",
-              url: "https://www.africau.edu/images/default/sample.pdf",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "folder5",
-      name: "Finanzas",
-      type: "folder",
-      children: [
-        {
-          id: "subfolder5-1",
-          name: "Inversiones",
-          type: "folder",
-          children: [
-            {
-              id: "doc5-1-1",
-              name: "Reporte Anual",
-              type: "pdf",
-              url: "https://www.africau.edu/images/default/sample.pdf",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "folder6",
-      name: "Música",
-      type: "folder",
-      children: [
-        {
-          id: "subfolder6-1",
-          name: "Rock",
-          type: "folder",
-          children: [],
-        },
-      ],
-    },
-  ];
-
-// Estado de la aplicación
-let state = {
-  selectedLevel1: null,
-  selectedLevel2: null,
-  selectedLevel3: null,
-  pdfUrl: null,
+    ]
 };
 
-// Elementos del DOM
-const level1FoldersEl = document.getElementById('level1-folders');
-const level2FoldersEl = document.getElementById('level2-folders');
-const level3FoldersEl = document.getElementById('level3-folders');
-const resultContainerEl = document.getElementById('result-container');
-const level1NameEl = document.getElementById('level1-name');
-const level2PathEl = document.getElementById('level2-path');
-const level2NameEl = document.getElementById('level2-name');
-const level3PathEl = document.getElementById('level3-path');
-const level3NameEl = document.getElementById('level3-name');
+// Estado de carpetas expandidas
+let expandedFolders = new Set(['Documentos']);
 
-
-// Renderizar carpetas de nivel 1
-function renderLevel1Folders() {
-  level1FoldersEl.innerHTML = '';
-  
-  const ul = document.createElement('ul');
-  ul.className = 'folder-list';
-  
-  folders.forEach(folder => {
-    const li = document.createElement('li');
-    li.className = 'folder-item';
+// Función para crear el HTML de un elemento del árbol
+function createFileTreeHTML(item, level = 0, path = '') {
+    const currentPath = path ? `${path}/${item.name}` : item.name;
+    const isExpanded = expandedFolders.has(currentPath);
     
-    const button = document.createElement('button');
-    button.className = `folder-button ${state.selectedLevel1 === folder.id ? 'selected' : ''}`;
-    button.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon">
-        <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-      </svg>
-      ${folder.name}
-    `;
+    if (item.type === 'file') {
+        return `
+            <div class="file-item file" style="padding-left: ${level * 20 + 8}px" onclick="selectFile('${item.name}', '${item.url}')">
+                <span class="file-icon">📄</span>
+                <span class="item-name file-name">${item.name}</span>
+            </div>
+        `;
+    }
     
-    button.addEventListener('click', () => {
-      selectLevel1Folder(folder.id);
-    });
-    
-    li.appendChild(button);
-    ul.appendChild(li);
-  });
-  
-  level1FoldersEl.appendChild(ul);
-}
-
-// Renderizar carpetas de nivel 2
-function renderLevel2Folders() {
-  level2FoldersEl.innerHTML = '';
-  
-  if (!state.selectedLevel1) {
-    level2FoldersEl.innerHTML = `
-      <div class="empty-message">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-        </svg>
-        <p>Selecciona una carpeta del primer nivel</p>
-      </div>
-    `;
-    return;
-  }
-  
-  const level2Folders = folders.find(f => f.id === state.selectedLevel1)?.children || [];
-  
-  if (level2Folders.length === 0) {
-    level2FoldersEl.innerHTML = `
-      <div class="empty-message">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-        </svg>
-        <p>Esta carpeta está vacía</p>
-      </div>
-    `;
-    return;
-  }
-  
-  const ul = document.createElement('ul');
-  ul.className = 'folder-list';
-  
-  level2Folders.forEach(folder => {
-    const li = document.createElement('li');
-    li.className = 'folder-item';
-    
-    const button = document.createElement('button');
-    button.className = `folder-button ${state.selectedLevel2 === folder.id ? 'selected' : ''}`;
-    button.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon">
-        <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-      </svg>
-      ${folder.name}
-    `;
-    
-    button.addEventListener('click', () => {
-      selectLevel2Folder(folder.id);
-    });
-    
-    li.appendChild(button);
-    ul.appendChild(li);
-  });
-  
-  level2FoldersEl.appendChild(ul);
-}
-
-// Renderizar carpetas de nivel 3
-function renderLevel3Folders() {
-  level3FoldersEl.innerHTML = '';
-  
-  if (!state.selectedLevel2) {
-    level3FoldersEl.innerHTML = `
-      <div class="empty-message">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-        </svg>
-        <p>Selecciona una carpeta del segundo nivel</p>
-      </div>
-    `;
-    return;
-  }
-  
-  const level2Folders = folders.find(f => f.id === state.selectedLevel1)?.children || [];
-  const level3Folders = level2Folders.find(f => f.id === state.selectedLevel2)?.children || [];
-  
-  if (level3Folders.length === 0) {
-    level3FoldersEl.innerHTML = `
-      <div class="empty-message">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-        </svg>
-        <p>Esta carpeta está vacía</p>
-      </div>
-    `;
-    return;
-  }
-  
-  const div = document.createElement('div');
-  div.className = 'folder-grid';
-  
-  level3Folders.forEach(item => {
-    const card = document.createElement('div');
-    card.className = `folder-card ${state.selectedLevel3 === item.id ? 'selected' : ''}`;
-    
-    if (item.type === 'folder') {
-      card.innerHTML = `
-        <div class="folder-icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon">
-            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-          </svg>
+    let html = `
+        <div class="file-item folder" style="padding-left: ${level * 20 + 8}px" onclick="toggleFolder('${currentPath}')">
+            <span class="folder-toggle ${isExpanded ? 'expanded' : ''}">▶</span>
+            <span class="folder-icon">${isExpanded ? '📂' : '📁'}</span>
+            <span class="item-name folder-name">${item.name}</span>
         </div>
-        <span class="folder-name">${item.name}</span>
-      `;
+    `;
+    
+    if (item.children && item.children.length > 0) {
+        html += `<div class="folder-children ${isExpanded ? '' : 'hidden'}" id="children-${currentPath.replace(/[^a-zA-Z0-9]/g, '-')}">`;
+        
+        item.children.forEach(child => {
+            html += createFileTreeHTML(child, level + 1, currentPath);
+        });
+        
+        html += '</div>';
+    }
+    
+    return html;
+}
+
+// Función para renderizar el árbol de archivos
+function renderFileTree() {
+    const fileTreeContainer = document.getElementById('fileTree');
+    fileTreeContainer.innerHTML = createFileTreeHTML(fileSystemData);
+}
+
+// Función para alternar el estado de una carpeta
+function toggleFolder(path) {
+    if (expandedFolders.has(path)) {
+        expandedFolders.delete(path);
     } else {
-      card.innerHTML = `
-        <div class="file-icon-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="file-icon">
-            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <line x1="10" y1="9" x2="8" y2="9"></line>
-          </svg>
+        expandedFolders.add(path);
+    }
+    renderFileTree();
+}
+
+// Función para seleccionar un archivo
+function selectFile(fileName, fileUrl) {
+    const pdfHeader = document.getElementById('pdfHeader');
+    const pdfTitle = document.getElementById('pdfTitle');
+    const pdfViewer = document.getElementById('pdfViewer');
+    
+    // Mostrar el header del PDF
+    pdfHeader.style.display = 'block';
+    pdfTitle.textContent = `Visor de PDF: ${fileName}`;
+    
+    // Crear el contenido del visor PDF
+    pdfViewer.innerHTML = `
+        <div class="pdf-content">
+            <div class="pdf-preview">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                <h3>${fileName}</h3>
+                <p>Archivo PDF seleccionado</p>
+                <button class="open-button" onclick="openPDF('${fileUrl}')">
+                    Abrir PDF en nueva pestaña
+                </button>
+            </div>
         </div>
-        <span class="folder-name">${item.name}</span>
-      `;
-    }
-    
-    card.addEventListener('click', () => {
-      selectLevel3Item(item.id, item.type === 'pdf', item.url || null);
-    });
-    
-    div.appendChild(card);
-  });
-  
-  level3FoldersEl.appendChild(div);
-}
-
-// Renderizar área de resultado
-function renderResult() {
-  if (state.pdfUrl) {
-    resultContainerEl.innerHTML = `
-      <iframe src="${state.pdfUrl}" class="pdf-viewer" title="PDF Viewer"></iframe>
     `;
-  } else {
-    resultContainerEl.innerHTML = `
-      <div class="empty-message">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"></path>
-        </svg>
-        <p>Selecciona un archivo PDF para visualizarlo aquí</p>
-      </div>
-    `;
-  }
+    
+    // Opcional: Si quieres mostrar el PDF directamente en un iframe
+    // pdfViewer.innerHTML = `<iframe src="${fileUrl}" class="pdf-frame"></iframe>`;
 }
 
-// Actualizar la ruta de navegación
-function updateBreadcrumb() {
-  // Nivel 1
-  if (state.selectedLevel1) {
-    const folder = folders.find(f => f.id === state.selectedLevel1);
-    if (folder) {
-      level1NameEl.textContent = folder.name;
-    }
-  } else {
-    level1NameEl.textContent = 'Explorador de Archivos';
-  }
-  
-  // Nivel 2
-  if (state.selectedLevel2) {
-    const level2Folders = folders.find(f => f.id === state.selectedLevel1)?.children || [];
-    const folder = level2Folders.find(f => f.id === state.selectedLevel2);
-    if (folder) {
-      level2NameEl.textContent = folder.name;
-      level2PathEl.classList.remove('hidden');
-    }
-  
-  } else {
-    level2PathEl.classList.add('hidden');
-  }
-  
-  // Nivel 3
-  if (state.selectedLevel3) {
-    const level2Folders = folders.find(f => f.id === state.selectedLevel1)?.children || [];
-    const level3Folders = level2Folders.find(f => f.id === state.selectedLevel2)?.children || [];
-    const item = level3Folders.find(f => f.id === state.selectedLevel3);
-    if (item) {
-      level3NameEl.textContent = item.name;
-      level3PathEl.classList.remove('hidden');
-    }
-  } else {
-    level3PathEl.classList.add('hidden');
-  }
-}
-
-// Seleccionar carpeta de nivel 1
-function selectLevel1Folder(folderId) {
-  state.selectedLevel1 = folderId;
-  state.selectedLevel2 = null;
-  state.selectedLevel3 = null;
-  state.pdfUrl = null;
-  
-  renderLevel1Folders();
-  renderLevel2Folders();
-  renderLevel3Folders();
-  renderResult();
-  updateBreadcrumb();
-}
-
-// Seleccionar carpeta de nivel 2
-function selectLevel2Folder(folderId) {
-  state.selectedLevel2 = folderId;
-  state.selectedLevel3 = null;
-  state.pdfUrl = null;
-  
-  renderLevel2Folders();
-  renderLevel3Folders();
-  renderResult();
-  updateBreadcrumb();
-}
-
-// Seleccionar item de nivel 3
-function selectLevel3Item(itemId, isPdf, url) {
-  state.selectedLevel3 = itemId;
-  
-  if (isPdf && url) {
-    state.pdfUrl = url;
-  } else {
-    state.pdfUrl = null;
-  }
-  
-  renderLevel3Folders();
-  renderResult();
-  updateBreadcrumb();
+// Función para abrir PDF en nueva pestaña
+function openPDF(url) {
+    window.open(url, '_blank');
 }
 
 // Inicializar la aplicación
-function init() {
-  renderLevel1Folders();
-  renderLevel2Folders();
-  renderLevel3Folders();
-  renderResult();
-  updateBreadcrumb();
-}
+document.addEventListener('DOMContentLoaded', function() {
+    renderFileTree();
+});
 
-// Iniciar la aplicación cuando el DOM esté cargado
-document.addEventListener('DOMContentLoaded', init);
+// Hacer las funciones globales para que puedan ser llamadas desde onclick
+window.toggleFolder = toggleFolder;
+window.selectFile = selectFile;
+window.openPDF = openPDF;
 </script>
 </html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Solicitudes de Servicio - Quality BOLCA</title>
+    <link rel="stylesheet" href="../styles/sistemas/solicitudes.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Header con Logo -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="../img/Quality-BOLCA.png" alt="Quality BOLCA Logo" class="logo">
+                    <div class="header-text">
+                        <h1>Sistema de Solicitudes de Servicio</h1>
+                        <p>Gestión y seguimiento de solicitudes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Buscador -->
+            <div class="search-section">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por folio, nombre, región..."
+                        class="search-input">
+                </div>
+            </div>
+
+            <!-- Lista de Solicitudes -->
+            <div id="solicitudesList" class="solicitudes-list">
+                <!-- Las solicitudes se cargarán aquí dinámicamente -->
+            </div>
+
+            <!-- Mensaje cuando no hay resultados -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="fas fa-file-text"></i>
+                <p>No se encontraron solicitudes que coincidan con tu búsqueda.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para mostrar información detallada -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>SOLICITUD DE SERVICIO</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-header">
+                    <div class="logo-container" style="max-width: 150px;">
+                        <img src="../img/Quality-BOLCA.png" alt="Quality BOLCA" width="100%" height="100%" class="modal-logo">
+                    </div>
+
+                    <div class="codificacion-info">
+                        <p><strong>Código:</strong> QB-FR-A-16-03</p>
+                        <p><strong>Rev:</strong> 00</p>
+                        <p><strong>Fecha de emisión:</strong> 10-04-2023</p>
+                        <p><strong>Fecha de revisión:</strong> N/A</p>
+                    </div>
+                </div>
+
+                <div class="form-content">
+                    <div class="folio-info">
+                        <p><strong>Folio:</strong> <span id="modalFolio" class="folio-status"></span></p>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha:</label>
+                            <input type="text" id="modalFecha" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Región:</label>
+                            <input type="text" id="modalRegion" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nombre Solicitante:</label>
+                        <input type="text" id="modalNombre" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>e-mail Solicitante:</label>
+                        <input type="text" id="modalEmail" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Equipo:</label>
+                        <input type="text" id="modalTipoEquipo" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="section-header">Descripción del problema</div>
+                        <textarea id="modalDescripcion" readonly></textarea>
+                    </div>
+
+                </div>
+
+                <div class="form-footer">
+                    <div class="footer-address">
+                        Carr. A Paso Blanco No. 300, Localidad Tepatitlán c.p 20900, Jesús María Aguascalientes
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>SOLICITUD DE SERVICIO</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-content">
+                    <div class="folio-info" style="text-align: center;">
+                        <p><strong>Folio:</strong> <span id="modalFolio2" class="folio-status"></span></p>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Solicitante:</label>
+                        <input type="text" id="modalNombre2" readonly>
+                    </div>
+                    <div class="form-group" id="solucionGroup">
+                        <div class="section-header">Solución</div>
+                        <textarea id="modalSolucion2" readonly></textarea>
+                    </div>
+                    <div class="form-group" id="fechaSolucionGroup">
+                        <label>Fecha de Solución:</label>
+                        <input type="text" id="modalFechaSolucion2" readonly>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <div class="footer-address">
+                        Carr. A Paso Blanco No. 300, Localidad Tepatitlán c.p 20900, Jesús María Aguascalientes
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/sistemas/solicitudes.js"></script>
+</body>
+
+<script>
+    window.onload = function () {
+        llenardatos(<%- JSON.stringify(listadoSolicitudes) %>)
+    }
+</script>
+
+</html>

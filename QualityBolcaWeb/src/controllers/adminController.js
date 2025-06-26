@@ -38,7 +38,8 @@ import {
     Inventario,
     BuzonQuejas,
     Vacaciones,
-    Solicitudservicio
+    Solicitudservicio,
+    Empleados
 } from "../models/index.js";
 // import InformacionpuestoM from "../models/informacionpuesto.js"
 
@@ -65,7 +66,11 @@ const app = express();
 const controller = {};
 
 controller.inicio = (req, res) => {
-    res.render('admin/inicio')
+    if (req.originalUrl) {
+        res.redirect(req.originalUrl);
+    }else{
+        res.render('admin/inicio')
+    }
 }
 
 controller.enviar = (req, res) => {
@@ -81,12 +86,11 @@ controller.directorio = async (req, res) => {
 
 
     const Rcomunicacion = await db.query(
-        `SELECT c.*, n1.nombrelargo, n1.codigoempleado, n6.descripcion, u.fotografia
+        `SELECT c.correo, c.telefono, e.*, u.fotografia
          FROM comunicacions c
-         INNER JOIN nom10001 n1 ON c.id = n1.codigoempleado
-         INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
-         LEFT JOIN usuarios u on c.id = u.codigoempleado
-         order by nombrelargo asc;`,
+         right JOIN empleados e ON c.id = e.codigoempleado
+         left JOIN usuarios u on c.id = u.codigoempleado
+         order by apellidopaterno asc;`,
         {
             type: QueryTypes.SELECT // Tipo de consulta: SELECT
         }
@@ -424,16 +428,16 @@ controller.valeSalida = (req, res) => {
 
 controller.mejoracontinua = async (req, res) => {
 
-    // const { codigoempleado } = req.usuario
+    const { codigoempleado } = req.usuario
 
-    // const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado }, attributes: ['nombrelargo'] });
-    // const obtenerValores = await MejoraContinua.findAll({ where: { generador_idea: obtenerNombre.nombrelargo }, order: [[Sequelize.literal('fecha'), 'DESC']], });
+    const obtenerDatos = await Empleados.findOne({ where: { codigoempleado: codigoempleado } });
+    const obtenerValores = await Mejora.findAll({ where: { numero_empleado_registra: codigoempleado }, order: [[Sequelize.literal('fecha'), 'DESC']], });
 
 
     res.render('admin/mejoracontinua', {
         csrfToken: req.csrfToken(),
-        // obtenerNombre,
-        // obtenerValores
+        obtenerDatos,
+        obtenerValores
     })
 }
 
@@ -694,22 +698,23 @@ controller.mantenimientoautonomo = async (req, res) => {
 
 controller.mantenimientoautonomo2 = async (req, res) => {
 
-    const { nombre, tipo, region, respuestas, comentarios } = req.body
+    const { nombre, tipo, region, respuestas } = req.body
+
+    // const registromantenimiento = await registroma.findOne({ where: { nombre: nombre } });
+
 
     try {
-        const Resregistroma = await registroma.create(
-            { nombre, tipo, region, respuestas, comentarios }
-        )
+
+        await registroma.update(
+            { tipo, region, respuestas },
+            { where: { nombre } }
+          )
         // Enviar email de confirmacion
         await emailMantenimientoA({ region, respuestas, tipo, nombre })
 
         res.status(200).send({ msg: 'Mantenimiento enviada', ok: true });
         return
     } catch (error) {
-        const errorLog = `${new Date().toISOString()} - Error: ${errorMessage}\n`;
-
-
-
         console.error("Error al enviar correo o guardar datos:", error);
         res.status(400).send({ msg: error, ok: false });
         return

@@ -95,7 +95,17 @@ controller.autenticar = async (req, res) => {
         secure: false,
     })
 
-    res.status(200).send({ ok: true });
+    console.log(req.session.redirectTo);
+    
+
+    let redireccionar = ''
+
+    
+        redireccionar =  req.session.redirectTo || '/inicio';
+        delete req.session.redirectTo;
+
+
+    res.status(200).send({ ok: true, redirect: redireccionar});
     return
 }
 

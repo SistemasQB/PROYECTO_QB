@@ -15,7 +15,8 @@ router.get('/api/:query2',adminController.api);
 router.get('/registromantenimiento',adminController.registromantenimiento);
 router.get('/programamantenimiento',adminController.programamantenimiento);
 router.get('/listadopersonal',adminController.listadopersonal);
-
+router.get('/listadosolicitudes',adminController.listadosolicitudes);
+router.get('/mantenimientoautonomo',adminController.mantenimientoautonomo);
 
 
 export default router;

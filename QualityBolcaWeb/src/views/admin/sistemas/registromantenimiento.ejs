@@ -16,6 +16,10 @@
         background-color: #f5f5f5;
     }
 
+    .hidden {
+            display: none;
+    }
+    
     .container {
         max-width: 1000px;
         margin: 0 auto;
@@ -275,7 +279,13 @@
             margin: 10% auto;
             padding: 15px;
         }
+
+
     }
+
+    td {
+            text-transform: uppercase;
+        }
 </style>
 
 <body>
@@ -292,7 +302,7 @@
 
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Buscar por ID o usuario...">
-            <button id="searchButton">Buscar</button>
+            <!-- <button id="searchButton">Buscar</button> -->
         </div>
 
         <table class="records-table">
@@ -330,7 +340,8 @@
 
     const registros = <%- JSON.stringify(valeasignacion) %>;
 
-
+    let mes, mes2, mes3;
+    let meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     // Función para cargar los registros en la tabla
     function cargarRegistros(registrosFiltrados = null) {
         const listaRegistros = document.getElementById('recordsList');
@@ -338,18 +349,34 @@
 
         const registrosAMostrar = registrosFiltrados || registros;
 
+
+
+
         if (registrosAMostrar.length === 0) {
             listaRegistros.innerHTML = '<tr><td colspan="5" class="center">No se encontraron registros</td></tr>';
             return;
         }
 
         registrosAMostrar.forEach((registro, index) => {
+
+            
+
+            if (registro.ultimoMantenimiento != 'N/A') {
+                mes2 = new Date(registro.ultimoMantenimiento);
+
+                mes = meses[mes2.getMonth()];
+            }else{
+                mes = 'N/A';
+            }
+
+
+
             const fila = document.createElement('tr');
             fila.innerHTML = `
             <td>${registro.idInventario}</td>
             <td>${registro.nombrelargo}</td>
             <td>${registro.usoExclusivo}</td>
-            <td>${registro.ultimoMantenimiento}</td>
+            <td>${mes}</td>
             <td><button class="action-button" data-index="${index}">Mostrar registro</button></td>
         `;
             listaRegistros.appendChild(fila);
@@ -369,6 +396,15 @@
         const modal = document.getElementById('recordModal');
         const detalleContenido = document.getElementById('recordDetail');
 
+        if (registro.ultimoMantenimiento != 'N/A') {
+                mes2 = new Date(registro.ultimoMantenimiento);
+                mes = meses[mes2.getMonth()];
+            }else{
+                mes = 'N/A';
+            }
+            let mes3 = mes == "junio" ? "DICIEMBRE" : "JUNIO"
+
+            
         // Crear el contenido del detalle
         detalleContenido.innerHTML = `
         <div class="detail-header">
@@ -417,8 +453,8 @@
                 <tr>
                     <td>${registro.usoExclusivo}</td>
                     <td>${registro.nombrelargo}</td>
-                    <td>DICIEMBRE</td>
-                    <td>JUNIO</td>
+                    <td>${mes}</td>
+                    <td>${mes3}</td>
                 </tr>
             </tbody>
         </table>
@@ -499,7 +535,7 @@
             </tbody>
         </table>
 
-        <div class="notes-box" style="display: flex; justify-content: center; align-items: center;"> Sin observaciones Generales</div>
+        <div class="notes-box" style="display: flex; justify-content: center; align-items: center;"> SIN OBSERVACIONES GENERALES</div>
 
         <div class="signature">
             <div class="signature-line">
@@ -514,20 +550,31 @@
     }
 
     // Función para buscar registros
-    function buscarRegistros(termino) {
-        if (!termino) {
-            cargarRegistros();
-            return;
-        }
+    const buscador = document.getElementById("searchInput")
 
-        termino = termino.toLowerCase();
-        const resultados = registros.filter(registro =>
-            registro.id.toLowerCase().includes(termino) ||
-            registro.usuario.toLowerCase().includes(termino)
-        );
+    buscador.addEventListener("search", e => {
+        e.target.value = ""
+        document.querySelectorAll("tr").forEach(fruta => {
 
-        cargarRegistros(resultados);
-    }
+    fruta.textContent.toLowerCase().includes(e.target.value.toLowerCase())
+    ? fruta.classList.remove("hidden")
+    : fruta.classList.add("hidden")
+    })
+    })
+
+    buscador.addEventListener("keyup", e => {
+
+
+            if (e.key === "Escape") e.target.value = ""
+
+
+            document.querySelectorAll("tr").forEach(fruta => {
+
+                fruta.textContent.toLowerCase().includes(e.target.value.toLowerCase())
+                    ? fruta.classList.remove("hidden")
+                    : fruta.classList.add("hidden")
+            })
+    })
 
     // Inicializar la página
     document.addEventListener('DOMContentLoaded', function () {
@@ -535,10 +582,10 @@
         cargarRegistros();
 
         // Configurar el botón de búsqueda
-        document.getElementById('searchButton').addEventListener('click', function () {
-            const termino = document.getElementById('searchInput').value;
-            buscarRegistros(termino);
-        });
+        // document.getElementById('searchButton').addEventListener('click', function () {
+        //     const termino = document.getElementById('searchInput').value;
+        //     buscarRegistros(termino);
+        // });
 
         // Permitir búsqueda al presionar Enter
         document.getElementById('searchInput').addEventListener('keypress', function (e) {

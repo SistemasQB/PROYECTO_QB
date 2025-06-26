@@ -1,6 +1,8 @@
 // import { NOMBRE, CONTRA } from "../../config";
 // import Swal from 'sweetalert2'
 
+// import { ResNetModel } from "@xenova/transformers"
+
 // const datosMain = [];
 
 const $ = el => document.querySelector(el)
@@ -33,7 +35,7 @@ loginForm?.addEventListener('submit',  e => {
     .then(response => response.json())
     .then(res => {
             if (res.ok) {
-                location.href = '/inicio'
+                location.href = res.redirect
             } else {
                 Swal.fire({
                     title: 'Error',
