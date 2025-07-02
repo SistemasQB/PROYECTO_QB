@@ -46,6 +46,15 @@
         padding: 0 1rem;
     }
 
+    .coloresExpllicacion{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 3vh;
+        height: 3vh;
+        /* margin: 1vh; */
+    }
+
     /* Header */
     .header {
         background-color: var(--color-white);
@@ -109,6 +118,10 @@
         outline: solid red 3px;
     }
 
+    .disabled {
+        display: block;
+    }
+
     .btnselected {
         outline: solid red 4px;
     }
@@ -120,6 +133,11 @@
     .btn-primary {
         background-color: var(--color-primary);
         color: var(--color-white);
+    }
+
+    .btn-warning {
+        background-color: var(--color-warning);
+        color: var(--color-dark);
     }
 
     .btn-primary:hover {
@@ -216,6 +234,10 @@
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+
+    #btnEvidencia {
+        display: none;
     }
 
     .card-meta {
@@ -559,7 +581,7 @@
             <div class="header-content">
                 <div class="header-left">
                     <div class="logo">
-                        <i class="fas fa-lightbulb"></i>
+                        <img src="../img/Quality-BOLCA.png" width="100%" alt="" srcset="">
                     </div>
                     <div class="header-text">
                         <h1>Registro de Mejora Continua</h1>
@@ -580,6 +602,15 @@
             <div class="main-header">
                 <h2>Mejoras Registradas</h2>
                 <p id="totalMejoras">Total de mejoras: <span id="totalMejorasCount"></span></p>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="coloresExpllicacion" style=" background-color: #ffffff; border: 4px solid #000000;"></div><div>Sin analisis</div>
+                    <div class="coloresExpllicacion" style=" background-color: #fdfef4; border: 4px solid #f59e0b;"></div><div>En espera</div>
+                    <div class="coloresExpllicacion" style=" background-color: #f4fefe; border: 4px solid #bae2ff;"></div><div>Implementacion</div>
+                    <div class="coloresExpllicacion" style=" background-color: #f5fef4; border: 4px solid #7cfca9;"></div><div>Aprovada</div>
+                    <div class="coloresExpllicacion" style=" background-color: #fdf4fe; border: 4px solid #df9dfd;"></div><div>Implementada</div>
+                    <div class="coloresExpllicacion" style=" background-color: #fef4f4; border: 4px solid #ff0000;"></div><div>Rechazada</div>
+                    <div class="coloresExpllicacion" style=" background-color: #e2e2e2; border: 4px solid #828282;"></div><div>Declinada</div>
+                </div>
             </div>
 
             <!-- Empty State -->
@@ -632,15 +663,13 @@
                         <button class="btn btnRubro" onclick="rubroSeleccionado(0)" type="button" style="
                             background-color: #fed7aa;
                             color: #ea580c;
-                            border-color: #fdba74;
-                            ">
+                            border-color: #fdba74;">
                             Ahorro
                         </button>
                         <button class="btn btnRubro" onclick="rubroSeleccionado(1)" type="button" style="
                     background-color: #e9d5ff;
         color: #7c3aed;
-        border-color: #c4b5fd;
-                    ">
+        border-color: #c4b5fd;">
                             Sistema
                         </button>
                         <button class="btn btnRubro" onclick="rubroSeleccionado(2)" type="button" style="
@@ -954,40 +983,11 @@
     let mejoras = <%- JSON.stringify(obtenerValores) %>;
     let usuario = <%- JSON.stringify(obtenerDatos) %>;
 
-    // [
-    //     {
-    //         id: "1",
-    //         nombre_mejora: "Optimización del proceso de empaque",
-    //         generador_idea: "María González",
-    //         email: "maria.gonzalez@company.com",
-    //         puesto: "Supervisor de Producción",
-    //         proceso: "Empaque y Distribución",
-    //         region: "Norte",
-    //         tipoMejora: ["Ahorra Tiempo", "Genera un Ahorro Económico"],
-    //         requiereInversion: false,
-    //         situacionActual: "El proceso actual de empaque toma 15 minutos por unidad debido a pasos redundantes",
-    //         mejoraProuesta: "Reorganizar la línea de empaque para eliminar movimientos innecesarios y reducir el tiempo a 10 minutos por unidad",
-    //         fecha: "2024-01-15"
-    //     },
-    //     {
-    //         id: "2",
-    //         nombre_mejora: "Implementación de sistema de reciclaje",
-    //         generador_idea: "Carlos Rodríguez",
-    //         email: "carlos.rodriguez@company.com",
-    //         puesto: "Analista Ambiental",
-    //         proceso: "Gestión de Residuos",
-    //         region: "Centro",
-    //         tipoMejora: ["Entorno Más Saludable y Sostenible", "Genera un Ahorro Material"],
-    //         requiereInversion: true,
-    //         situacionActual: "Los residuos se desechan sin clasificación, generando costos adicionales",
-    //         mejoraProuesta: "Implementar contenedores de reciclaje y capacitar al personal para reducir residuos en 40%",
-    //         fecha: "2024-01-10"
-    //     }
-    // ];
 
     // Elementos del DOM
     const modal = document.getElementById('modal');
     const openModalBtn = document.getElementById('openModalBtn');
+    const openModalBtn2 = document.getElementById('openModalBtn2');
     const closeModalBtn = document.getElementById('closeModalBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const mejorasGrid = document.getElementById('mejorasGrid');
@@ -1025,6 +1025,11 @@
         document.body.style.overflow = 'hidden';
     }
 
+    function openModal2() {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
     function closeModal() {
         modal.classList.remove('show');
         document.body.style.overflow = 'auto';
@@ -1052,26 +1057,83 @@
 
     function createMejoraCard(mejora) {
         let colorcarta = 0;
+        let btnActivo = '';
+        let btnModificar = 'none';
         switch (mejora.estatus) {
             case 0:
+                btnActivo = 'block';
                 colorcarta = '';
                 break;
             case 1:
+                btnActivo = 'none';
                 colorcarta = 'background-color: #fdfef4; border: 2px solid #f59e0b;'
                 break;
             case 2:
+                btnActivo = 'none';
                 colorcarta = 'background-color: #f4fefe; border: 2px solid #bae2ff;'
+                btnModificar = 'block'
                 break;
             case 3:
+                btnActivo = 'none';
                 colorcarta = 'background-color: #f5fef4; border: 2px solid #7cfca9;';
                 break;
             case 4:
+                btnActivo = 'none';
                 colorcarta = 'background-color: #fef4f4; border: 2px solid #ff0000;'
                 break;
             case 5:
+                btnActivo = 'none';
                 colorcarta = 'background-color: #e2e2e2; border: 2px solid #828282;'
                 break;
+            case 6:
+                colorcarta = 'background-color: #fdf4fe; border: 4px solid #df9dfd;'
+                break;
         }
+
+        //mostrar boton de envio de evidencias
+        let btnEvidenciaS = 'none';
+        let fechaComite = 0;
+        if (mejora.fecha_respuesta_comite != null) {
+            const resultado = validarFechas(mejora.fecha_respuesta_comite);
+
+            if (resultado.dentroDe15a20 && !mejora.evidencia1 || resultado.paso1Mes && !mejora.evidencia2 || resultado.paso2Meses  && !mejora.evidencia3) {
+                btnEvidenciaS = 'block';
+            }
+        }
+
+
+        function validarFechas(fechaBaseStr) {
+            const fechaBase = new Date(fechaBaseStr);
+            const hoy = new Date();
+
+            // Normalizamos horas para comparar solo fechas
+            fechaBase.setHours(0, 0, 0, 0);
+            hoy.setHours(0, 0, 0, 0);
+
+            const msPorDia = 1000 * 60 * 60 * 24;
+            const diasTranscurridos = Math.floor((hoy - fechaBase) / msPorDia);
+
+            // Condición 1: más de 15 y menos de 20 días
+            const dentroDe15a20 = diasTranscurridos > 15 && diasTranscurridos < 20;
+
+            // Condición 2: meses completos
+            const fechaMas1Mes = new Date(fechaBase);
+            fechaMas1Mes.setMonth(fechaBase.getMonth() + 1);
+
+            const fechaMas2Meses = new Date(fechaBase);
+            fechaMas2Meses.setMonth(fechaBase.getMonth() + 2);
+
+            const paso1Mes = hoy >= fechaMas1Mes;
+            const paso2Meses = hoy >= fechaMas2Meses;
+
+            return {
+                diasTranscurridos,
+                dentroDe15a20,
+                paso1Mes,
+                paso2Meses
+            };
+        }
+
 
         const fechaFormateada = new Date(mejora.fecha).toLocaleDateString('es-ES');
         const beneficiosA = mejora.beneficios.split(',');
@@ -1119,6 +1181,15 @@
                     <div class="section-title">Mejora Propuesta:</div>
                     <div class="section-text">${mejora.situacion_mejora}</div>
                 </div>
+                <div class="card-section">
+                    <button class="btn btn-primary" style = "display: ${btnActivo}" id="btnAnalisis" onclick= "location.href ='/admin/subiranalisis/${mejora.id}'">Subir Análisis</button>
+                </div>
+                <div class="card-section">
+                    <button class="btn" id="btnEvidencia" style = "background-color: #1c6e46; color : white; display: ${btnEvidenciaS}" onclick= "location.href ='/admin/subirevidencia/${mejora.id}'">Subir Evidencia</button>
+                </div>
+                <div class="card-section">
+                    <button class="btn btn-primary"  id="btnModificar" style = "display: ${btnModificar}" onclick= "">Modificar Mejora</button>
+                </div>
             </div>
         </div>
     `;
@@ -1142,6 +1213,16 @@
 
     function updateTotalCount() {
         totalMejoras.textContent = `Total de mejoras: ${mejoras.length}`;
+    }
+
+
+    function modificarMejora(mejoraId) {
+        colorcarta = 'background-color: #fdfef4; border: 2px solid #f59e0b;'
+        colorcarta = 'background-color: #f4fefe; border: 2px solid #bae2ff;'
+        colorcarta = 'background-color: #f5fef4; border: 2px solid #7cfca9;'
+        colorcarta = 'background-color: #fdf4fe; border: 4px solid #df9dfd;'
+        colorcarta = 'background-color: #fef4f4; border: 2px solid #ff0000;'
+        colorcarta = 'background-color: #e2e2e2; border: 2px solid #828282;'
     }
 </script>
 

@@ -33,6 +33,8 @@ import { default as BuzonQuejas } from './buzonQuejas.js';
 import { default as Vacaciones } from './vacaciones.js';
 import { default as Solicitudservicio } from './solicitudservicio.js';
 import { default as Empleados } from './empleado.js';
+import { default as Cc1 } from './cc1.js';
+import { default as Checklistcc1 } from './sorteo/cc1/checklistcc1.js';
 
 // Configuración de Sequelize
 const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
@@ -109,5 +111,7 @@ export {
   BuzonQuejas,
   Vacaciones,
   Solicitudservicio,
-  Empleados
+  Empleados,
+  Cc1,
+  Checklistcc1
 };

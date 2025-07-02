@@ -14,7 +14,8 @@ export default{
         directoriofoto: './src/js/imagenrequisicion.js',
         firmas: './src/js/firmas.js',
         valeresguardo: './src/js/valeresguardo.js',
-        agregaranalisis: './src/js/agregaranalisis.js'
+        agregaranalisis: './src/js/agregaranalisis.js',
+        agregarevidencia: './src/js/agregarevidencia.js'
     },
     output:{
         filename: '[name].js',

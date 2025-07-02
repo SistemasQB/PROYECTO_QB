@@ -90,7 +90,8 @@ controller.directorio = async (req, res) => {
          FROM comunicacions c
          right JOIN empleados e ON c.id = e.codigoempleado
          left JOIN usuarios u on c.id = u.codigoempleado
-         order by apellidopaterno asc;`,
+         order by apellidopaterno asc;
+         `,
         {
             type: QueryTypes.SELECT // Tipo de consulta: SELECT
         }
@@ -515,27 +516,83 @@ controller.mejoracontinua2 = async (req, res) => {
 
 controller.subiranalisis = async (req, res) => {
 
-    
+    const { mejoraid } = req.params
+    const obtenerAnalisis = await Mejora.findByPk(mejoraid);
 
-    res.render('admin/subiranalisis', {
-        csrfToken: req.csrfToken(),
-    })
+    if (obtenerAnalisis.estatus != 0 || !obtenerAnalisis) {
+        res.redirect('../../admin/mejoracontinua')
+    }else{
+        res.render('admin/subiranalisis', {
+            csrfToken: req.csrfToken(),
+            mejoraid
+        })
+    }
+
+    
 }
 
 controller.subiranalisis2 = async (req, res) => {
 
-    const { id } = req.params
-
-    const obtenerAnalisis = await mejora.findByPk(id);
+    
+    const { mejoraid } = req.params
+    const obtenerAnalisis = await Mejora.findByPk(mejoraid);
 
     try {
-        obtenerAnalisis.analisis = req.file.filename
+        obtenerAnalisis.titulo_analisis = req.file.filename
+        obtenerAnalisis.estatus = 1
+
+        console.log(obtenerAnalisis);
         await obtenerAnalisis.save();
-        next()
+        // next()
         res.status(200).send({ msg: 'Analisis enviado con exito', ok: true });
         return
     } catch (error) {
-        res.status(400).send({ msg: 'Error al enviar el analisis', ok: false });
+        res.status(400).send({ msg: 'Error al enviar el analisis' + error, ok: false });
+        return
+    }
+}
+
+controller.subirevidencia = async (req, res) => {
+
+    const { mejoraid } = req.params
+    const obtenerAnalisis = await Mejora.findByPk(mejoraid);
+    console.log(obtenerAnalisis);
+    
+
+    if (obtenerAnalisis.evidencia1 ==='' && obtenerAnalisis.evidencia2 ==='' && obtenerAnalisis.evidencia3 ==='' || obtenerAnalisis || obtenerAnalisis.estatus !== 5) {
+        res.render('admin/subirevidencia', {
+            csrfToken: req.csrfToken(),
+            mejoraid
+        })
+    }else{
+        res.redirect('../../admin/mejoracontinua')
+    }
+
+}
+
+controller.subirevidencia2 = async (req, res) => {
+
+    
+    const { mejoraid } = req.params
+    const obtenerAnalisis = await Mejora.findByPk(mejoraid);
+
+    try {
+        if (!obtenerAnalisis.evidencia1) {
+            obtenerAnalisis.evidencia1 = req.file.filename
+        }else if (!obtenerAnalisis.evidencia2) {
+            obtenerAnalisis.evidencia2 = req.file.filename
+        }else{
+            obtenerAnalisis.evidencia3 = req.file.filename
+        }
+        obtenerAnalisis.titulo_analisis = req.file.filename
+
+        console.log(obtenerAnalisis);
+        await obtenerAnalisis.save();
+        // next()
+        res.status(200).send({ msg: 'Analisis enviado con exito', ok: true });
+        return
+    } catch (error) {
+        res.status(400).send({ msg: 'Error al enviar el analisis' + error, ok: false });
         return
     }
 }
@@ -764,5 +821,12 @@ controller.publicarEvento2 = (req, res) => {
     res.render('admin/publicarevento')
 }
 
+controller.validarusuario = async (req, res) => {
+    
+    const {codigoEmpleado, pswEmpleado} = req.body
+
+    
+    
+}
 
 export default controller;

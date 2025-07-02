@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%=csrfToken%>">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" , href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.css">
+    <title>Subir PDF - Quality BOLCA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            padding: 2rem;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1rem;
+        }
+
+        .logo {
+            height: 60px;
+            width: auto;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 4rem auto;
+            padding: 2rem;
+        }
+
+        .upload-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            color: #0088CC;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #0088CC;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background-color: rgba(0, 136, 204, 0.05);
+        }
+
+        .upload-area.dragover {
+            background-color: rgba(0, 136, 204, 0.1);
+            border-color: #006699;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #0088CC;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .submit-btn {
+            background-color: #0088CC;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #006699;
+        }
+
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            color: #666;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="upload-container">
+            <h1>Sube aqui tu Evidencia en formato PDF</h1>
+            <form id="formAnalisis" class="dropzone" enctype="multipart/form-data" action="<%=mejoraid%>"
+                method="post" style="border-style: dashed; border-color: #0088CC; 
+            background: url(../svg/file.svg) no-repeat;
+            background-position: top;
+            background-size: 10%;
+            display: flex;
+    justify-content: center;
+    align-items: center;">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            </form>
+            <br>
+            <button type="button" class="submit-btn" id="btnEnviarPDF">
+                Enviar Evidencia
+            </button>
+        </div>
+    </div>
+
+</body>
+
+</html>
+<script src="../../js/agregarevidencia.js"></script>

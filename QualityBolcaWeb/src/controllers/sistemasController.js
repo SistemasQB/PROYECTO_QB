@@ -146,7 +146,7 @@ controller.registromantenimiento = async (req, res) => {
          left JOIN vales v ON i.folio = v.idfolio
          right JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
          left JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
-         where tipo = 'Laptop' or tipo = 'Ensamblado'
+         where tipo = 'Laptop' or tipo = 'Ensamblado' or tipo = 'Allinone'
          order by idInventario asc;`,
         {
             type: QueryTypes.SELECT // Tipo de consulta: SELECT
@@ -214,7 +214,7 @@ controller.listadopersonal = async (req, res) => {
             v.fechaFolio,
             MAX(n6.descripcion) AS descripcion
             FROM inventario i
-            INNER JOIN vales v ON i.folio = v.idfolio
+            LEFT JOIN vales v ON i.folio = v.idfolio
             INNER JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
             INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
             GROUP BY n1.nombrelargo;

@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist de Báscula</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f8fafc;
+        color: #334155;
+        line-height: 1.6;
+    }
+
+    .modalContainer {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+
+    .modalContainer .modalContent {
+        background-color: #282b29;
+        margin: auto;
+        padding: 25px;
+        border: 1px solid #6927a7;
+        width: 60%;
+    }
+
+    .modalContainer .close {
+        color: rgb(192, 40, 40);
+        float: right;
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    .modalContainer .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: #2563eb;
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .card-header h1 {
+        font-size: 1.75rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .card-header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-header p {
+        color: #e5e9ee;
+        font-size: 1rem;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: #374151;
+        font-size: 0.875rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    textarea {
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .separator {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 1.5rem 0;
+    }
+
+    .equipment-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .equipment-image {
+        display: flex;
+        justify-content: center;
+    }
+
+    .scale-image {
+        max-width: 300px;
+        height: auto;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .equipment-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .symbol-section {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .warning-icon {
+        color: #eab308;
+        font-size: 1.25rem;
+    }
+
+    .symbol-title {
+        font-weight: 600;
+    }
+
+    .badges {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    .badge-ok {
+        background: #10b981;
+        color: white;
+    }
+
+    .badge-ng {
+        background: #ef4444;
+        color: white;
+    }
+
+    .anomaly-alert {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .anomaly-alert h4 {
+        color: #991b1b;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .anomaly-alert ol {
+        color: #7f1d1d;
+        font-size: 0.875rem;
+        padding-left: 1.25rem;
+    }
+
+    .anomaly-alert li {
+        margin-bottom: 0.25rem;
+    }
+
+    .checklist-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .checklist-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        transition: background-color 0.2s;
+    }
+
+    .checklist-item:hover {
+        background-color: #f9fafb;
+    }
+
+    .checklist-item-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .checklist-number {
+        background: #dbeafe;
+        color: #1d4ed8;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        min-width: 2rem;
+        text-align: center;
+    }
+
+    .checklist-text {
+        font-size: 0.875rem;
+    }
+
+    .checklist-options {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .radio-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .radio-group input[type="radio"] {
+        margin: 0;
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .radio-group label {
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+    }
+
+    .radio-group.ok label {
+        color: #059669;
+    }
+
+    .radio-group.ng label {
+        color: #dc2626;
+    }
+
+    .anomaly-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .anomalies-list {
+        margin-top: 1rem;
+    }
+
+    .anomalies-list h4 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .anomaly-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+
+    .anomaly-text {
+        font-size: 0.875rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background-color 0.2s, transform 0.1s;
+        font-size: 0.875rem;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-secondary {
+        background: #6b7280;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #4b5563;
+    }
+
+    .btn-danger {
+        background: #ef4444;
+        color: white;
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .btn-danger:hover {
+        background: #dc2626;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    textarea {
+        width: 100%;
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .equipment-section {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .checklist-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .checklist-options {
+            align-self: flex-end;
+        }
+
+        .actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="card">
+            <div class="card-header" style="display: flex;">
+                <img src="/img/Quality-BOLCA.png" alt="" srcset="" style="width: 5%; height: 5%; margin-right: 2rem;"
+                <h1><span style="font-size: 200%;">CHECKLIST DE &nbsp;</span><span id="equipoName" style="font-size: 200%;">BÁSCULA</span></h1>
+            </div>
+            <div class="card-content">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="area">Área</label>
+                        <input type="text" id="area" placeholder="Ingrese el área" name="area" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipo">Equipo</label>
+                        <select id="equipo" name="equipo" required>
+                            <option value="" disabled>Seleccionar Equipo</option>
+                            <option value="BÁSCULA">Báscula</option>
+                            <option value="MONTACARGAS">Montacargas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha">Fecha</label>
+                        <input type="date" name="fecha" id="fecha" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="turno">Turno</label>
+                        <select id="turno" name="turno" required>
+                            <option value="" disabled>Seleccionar turno</option>
+                            <option value="1">Turno 1</option>
+                            <option value="2">Turno 2</option>
+                            <option value="3">Turno 3</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="separator"></div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="elaboro">Elaboró</label>
+                        <input type="text" id="elaboro" placeholder="Nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviso">Revisó</label>
+                        <input type="text" id="reviso" placeholder="Nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="aprobo">Aprobó</label>
+                        <input type="text" id="aprobo" value="HERNANDEZ LARA JOSE ENRIQUE" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equipment Image and Status -->
+        <div class="card">
+            <div class="card-content">
+                <div class="equipment-section">
+                    <div class="equipment-image">
+                        <img src="/img/bascula.png" alt="Báscula Industrial" class="scale-image" id="imagenEquipo">
+                    </div>
+                    <div class="equipment-info">
+                        <div class="symbol-section">
+                            <i class="fas fa-exclamation-triangle warning-icon"></i>
+                            <span class="symbol-title">Simbología:</span>
+                        </div>
+                        <div class="badges">
+                            <span class="badge badge-ok">OK</span>
+                            <span class="badge badge-ng">NG</span>
+                        </div>
+                        <div id="anomaly-alert" class="anomaly-alert" style="display: none;">
+                            <h4>En caso de anomalía:</h4>
+                            <ol>
+                                <li>NO operar el equipo</li>
+                                <li>Colocar identificación de EQUIPO FUERA DE SERVICIO</li>
+                                <li>Dar aviso a Supervisor</li>
+                                <li>Registrar anomalía en la parte inferior de este formato</li>
+                                <li>Esperar indicaciones del supervisor</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist Items -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-clipboard-list"></i> Puntos de Confirmación</h2>
+                <p>Marque OK si el punto está conforme, NG si presenta anomalías</p>
+            </div>
+            <div class="card-content">
+                <div id="checklist-items" class="checklist-container">
+                    <!-- Los items se generarán dinámicamente con JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Anomalies Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Registro de Anomalías</h2>
+            </div>
+            <div class="card-content">
+                <div class="anomaly-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="anomaly-date">Fecha</label>
+                            <input type="date" id="anomaly-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="anomaly-desc">Anomalía Detectada</label>
+                            <input type="text" id="anomaly-desc" placeholder="Descripción de la anomalía">
+                        </div>
+                        <div class="form-group">
+                            <label for="anomaly-action">Actividad Realizada</label>
+                            <input type="text" id="anomaly-action" placeholder="Acción tomada">
+                        </div>
+                        <div class="form-group">
+                            <label for="anomaly-responsible">Responsable</label>
+                            <input type="text" id="anomaly-responsible" placeholder="Nombre del responsable">
+                        </div>
+                    </div>
+                    <button type="button" id="add-anomaly-btn" class="btn btn-secondary">
+                        Agregar Anomalía
+                    </button>
+                </div>
+
+                <div id="anomalies-list" class="anomalies-list" style="display: none;">
+                    <h4>Anomalías Registradas:</h4>
+                    <div id="anomalies-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observations -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Observaciones Adicionales</h2>
+            </div>
+            <div class="card-content">
+                <textarea id="observaciones" placeholder="Ingrese cualquier observación adicional..."
+                    rows="4"></textarea>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="actions">
+            <button type="button" id="" class="btn btn-primary" onclick="" data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop">
+                <i class="fas fa-save"></i> Guardar Checklist
+            </button>
+        </div>
+    </div>
+
+    <div id="" class="">
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form action="" id="formUsuario">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Aprobar Checklist</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+
+                            <div class="mb-3">
+                                <label for="codigoEmpleado" class="form-label">Numero de Empleado</label>
+                                <input type="text" class="form-control" name="codigoEmpleado" id="codigoEmpleado">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pswEmpleado" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" name="pswEmpleado" id="pswEmpleado">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../scripts/all/alertas.js"></script>
+</body>
+
+<script>
+    // Datos del checklist
+    const checklistItems = [
+        "Encendido y apagado correctamente",
+        "Báscula limpia y libre de residuos",
+        "Superficie nivelada y sin objetos encima",
+        "Indicador digital funcionando correctamente",
+        "Lectura en cero al encender (tara correcta)",
+        "Botones de función responden correctamente",
+        "Verificación visual de calibración (sello intacto)",
+        "Lectura sin variaciones anormales",
+        "Condiciones del entorno sin humedad o vibraciones",
+        "Cableado en buen estado (sin cortes o dobleces)",
+    ]
+
+
+    let anomalias2 = []
+    // Estado de la aplicación
+    // let formData = {
+    //     area: "",
+    //     equipo: "BÁSCULA",
+    //     fecha: "",
+    //     turno: "",
+    //     elaboro: "",
+    //     reviso: "",
+    //     aprobo: "",
+    //     checklistResults: {},
+    //     anomalias: [],
+    //     observaciones: "",
+    // }
+
+    // Inicializar la aplicación
+    document.addEventListener("DOMContentLoaded", () => {
+        initializeForm()
+        generateChecklistItems()
+        // setupEventListeners()
+    })
+
+
+    const formUsuario = document.getElementById("formUsuario")
+    var arrayChecks2 = [false, false, false, false, false, false, false, false, false, false];
+    const checkboxes = document.querySelectorAll('.checkbox');
+    function arrayChecks(numeroA, valor) {
+
+    //   checkboxes[numeroA].classList.toggle('checked');
+      arrayChecks2[numeroA] = valor;
+      
+    }
+
+    formUsuario.addEventListener("submit", (e) => {
+        e.preventDefault()
+   
+
+        const formData = new FormData(formUsuario)
+        formData.append("Area", document.getElementById("area").value)
+        formData.append("Equipo", document.getElementById("equipo").value)
+        formData.append("fecha", document.getElementById("fecha").value)
+        formData.append("turno", document.getElementById("turno").value)
+        formData.append("elaboro", document.getElementById("elaboro").value)
+        formData.append("aprobo", document.getElementById("aprobo").value)
+        formData.append("listado", arrayChecks2.toString())
+        formData.append("anomalias", JSON.stringify(anomalias2))
+        formData.append("observaciones", document.getElementById("observaciones").value)
+        const urlEncoded = new URLSearchParams(formData).toString();
+        // console.log(urlEncoded);
+        
+        alertaFetch(urlEncoded, 'checklist', 'checklist')
+
+
+    })
+
+    // Funcion cambio de imagen
+
+    const equipo = document.getElementById("equipo")
+
+    equipo.addEventListener("change", (e) => {
+        if (equipo.value == 'BÁSCULA') {
+            const imagenEquipo = document.getElementById("imagenEquipo")
+            imagenEquipo.src = "/img/bascula.png"
+            document.getElementById('equipoName').textContent = 'BÁSCULA'
+        } else {
+            const imagenEquipo = document.getElementById("imagenEquipo")
+            imagenEquipo.src = "/img/montacargas.jpg"
+            document.getElementById('equipoName').textContent = 'MONTACARGAS'
+        }
+    })
+
+    function initializeForm() {
+        // Establecer fecha actual
+        const today = new Date().toISOString().split("T")[0]
+        document.getElementById("fecha").value = today
+        document.getElementById("anomaly-date").value = today
+    }
+
+    function generateChecklistItems() {
+        const container = document.getElementById("checklist-items")
+
+        checklistItems.forEach((item, index) => {
+            const itemDiv = document.createElement("div")
+            itemDiv.className = "checklist-item"
+            itemDiv.innerHTML = `
+            <div class="checklist-item-info">
+                <span class="checklist-number">${index + 1}</span>
+                <span class="checklist-text">${item}</span>
+            </div>
+            <div class="checklist-options">
+                <div class="radio-group ok">
+                    <input type="radio" id="ok-${index}" name="item-${index}" onclick="arrayChecks(${index}, true)" value="OK" required>
+                    <label for="ok-${index}" onclick="arrayChecks(${index}, true)">OK</label>
+                </div>
+                <div class="radio-group ng">
+                    <input type="radio" id="ng-${index}" name="item-${index}" onclick="arrayChecks(${index}, false)" value="NG" required>
+                    <label for="ng-${index}" onclick="arrayChecks(${index}, false)">NG</label>
+                </div>
+            </div>
+        `
+            container.appendChild(itemDiv)
+        })
+    }
+
+
+    document.getElementById("add-anomaly-btn").addEventListener("click", addAnomaly)
+
+    function checkAnomalies() {
+        const hasAnomalies = Object.values(formData.checklistResults).includes("NG")
+        const anomalyAlert = document.getElementById("anomaly-alert")
+
+        if (hasAnomalies) {
+            anomalyAlert.style.display = "block"
+        } else {
+            anomalyAlert.style.display = "none"
+        }
+    }
+
+    function addAnomaly() {
+        const fecha = document.getElementById("anomaly-date").value
+        const anomalia = document.getElementById("anomaly-desc").value.trim()
+        const actividad = document.getElementById("anomaly-action").value.trim()
+        const responsable = document.getElementById("anomaly-responsible").value.trim()
+
+        if (!anomalia) {
+            alert("Por favor, ingrese la descripción de la anomalía")
+            return
+        }
+
+        const newAnomaly = {
+            fecha: fecha || new Date().toISOString().split("T")[0],
+            anomalia,
+            actividad,
+            responsable,
+        }
+
+        anomalias2.push(newAnomaly)
+
+        console.log(JSON.stringify(anomalias2));
+        
+
+        // Limpiar campos
+        document.getElementById("anomaly-desc").value = ""
+        document.getElementById("anomaly-action").value = ""
+        document.getElementById("anomaly-responsible").value = ""
+
+        renderAnomalies()
+    }
+
+    function renderAnomalies() {
+        const container = document.getElementById("anomalies-container")
+        const anomaliesList = document.getElementById("anomalies-list")
+
+        if (anomalias2.length === 0) {
+            anomaliesList.style.display = "none"
+            return
+        }
+
+        anomaliesList.style.display = "block"
+        container.innerHTML = ""
+
+        anomalias2.forEach((anomaly, index) => {
+            const anomalyDiv = document.createElement("div")
+            anomalyDiv.className = "anomaly-item"
+            anomalyDiv.innerHTML = 
+            `
+            <div class="anomaly-text">
+                <strong>${anomaly.fecha}:</strong> ${anomaly.anomalia} - ${anomaly.actividad} (${anomaly.responsable})
+            </div>
+            <button class="btn btn-danger" onclick="removeAnomaly(${index})">
+                Eliminar
+            </button>
+        `
+            container.appendChild(anomalyDiv)
+        })
+    }
+
+    function removeAnomaly(index) {
+        anomalias2.splice(index, 1)
+        renderAnomalies()
+    }
+
+    function saveChecklist() {
+        // Validar campos requeridos
+        if (!formData.area.trim()) {
+            alert("Por favor, ingrese el área")
+            return
+        }
+
+        if (!document.getElementById("fecha").value) {
+            alert("Por favor, seleccione la fecha")
+            return
+        }
+
+        if (!formData.elaboro.trim()) {
+            alert("Por favor, ingrese quién elaboró el checklist")
+            return
+        }
+
+        // Verificar que se hayan completado todos los puntos del checklist
+        const completedItems = Object.keys(formData.checklistResults).length
+        if (completedItems < checklistItems.length) {
+            alert("Por favor, complete todos los puntos del checklist")
+            return
+        }
+
+        var modal = document.getElementById("modalAprovacion");
+        var button = document.getElementById("save-btn");
+        var span = document.getElementsByClassName("close")[0];
+        var body = document.getElementsByTagName("body")[0];
+
+        button.onclick = function () {
+            modal.style.display = "block";
+            body[0].style.position = "static";
+            body[0].style.height = "100%";
+            body[0].style.overflow = "hidden";
+        }
+
+        span.onclick = function () {
+            modal.style.display = "none";
+            body[0].style.position = "inherit";
+            body[0].style.height = "auto";
+            body[0].style.overflow = "visible";
+        }
+
+
+
+        // Actualizar datos del formulario
+        formData.area = document.getElementById("area").value
+        formData.equipo = document.getElementById("equipo").value
+        formData.fecha = document.getElementById("fecha").value
+        formData.turno = document.getElementById("turno").value
+        formData.elaboro = document.getElementById("elaboro").value
+        formData.reviso = document.getElementById("reviso").value
+        formData.aprobo = document.getElementById("aprobo").value
+        formData.observaciones = document.getElementById("observaciones").value
+
+        // Aquí puedes agregar la lógica para enviar los datos al servidor
+
+        alert("Checklist guardado exitosamente")
+
+        // Opcional: limpiar formulario después de guardar
+        // resetForm();
+    }
+
+    function resetForm() {
+        // Reiniciar el formulario
+        document.querySelectorAll("input, select, textarea").forEach((element) => {
+            if (element.type === "radio") {
+                element.checked = false
+            } else if (element.type === "date") {
+                element.value = new Date().toISOString().split("T")[0]
+            } else {
+                element.value = ""
+            }
+        })
+
+        document.getElementById("equipo").value = "BÁSCULA"
+
+        formData = {
+            area: "",
+            equipo: "BÁSCULA",
+            fecha: "",
+            turno: "",
+            elaboro: "",
+            reviso: "",
+            aprobo: "",
+            checklistResults: {},
+            anomalias: [],
+            observaciones: "",
+        }
+
+        document.getElementById("anomaly-alert").style.display = "none"
+        document.getElementById("anomalies-list").style.display = "none"
+    }
+
+</script>
+
+</html>

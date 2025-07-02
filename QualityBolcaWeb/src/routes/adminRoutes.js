@@ -4,7 +4,8 @@ import multer from "multer";
 import protegetRuta from "../middleware/protegetRuta.js";
 import upload from "../middleware/subirImagen.js";
 import upload2 from "../middleware/valeresguardo.js";
-// import upload3 from "../middleware/subirmantenimientoA.js";
+import upload3 from "../middleware/agregaranalisis.js";
+import upload4 from "../middleware/agregarevidencia.js";
 // import {default as imagenEnviar} from "../../index.js";
 
 const router = express.Router();
@@ -43,8 +44,10 @@ router.get('/voz', adminController.voz);
 router.get('/crear', adminController.crear);
 router.get('/mejoracontinua',protegetRuta, adminController.mejoracontinua);
 router.post('/mejoracontinua', protegetRuta, adminController.mejoracontinua2);
-router.get('/subiranalisis/:id', protegetRuta, adminController.subiranalisis);
-router.post('/subiranalisis/:id', protegetRuta,upload.single('analisisFile'), adminController.subiranalisis2);
+router.get('/subiranalisis/:mejoraid', protegetRuta, adminController.subiranalisis);
+router.post('/subiranalisis/:mejoraid', protegetRuta,upload3.single('analisisFile'), adminController.subiranalisis2);
+router.get('/subirevidencia/:mejoraid', protegetRuta, adminController.subirevidencia);
+router.post('/subirevidencia/:mejoraid', protegetRuta,upload4.single('analisisFile'), adminController.subirevidencia2);
 router.get('/reuniones', adminController.reuniones);
 router.post('/reuniones', adminController.reuniones2);
 router.get('/glosario', adminController.glosario);
@@ -60,7 +63,7 @@ router.get('/buzonquejas',protegetRuta ,adminController.buzonquejas);
 router.post('/buzonquejas',protegetRuta ,adminController.buzonquejas2);
 router.get('/publicarEvento',protegetRuta ,adminController.publicarEvento);
 router.post('/publicarEvento',protegetRuta ,adminController.publicarEvento2);
-
+router.post('/validarusuario',adminController.validarusuario);
 
 
 export default router;

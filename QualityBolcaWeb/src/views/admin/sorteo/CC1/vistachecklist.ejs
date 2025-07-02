@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Checklists de Báscula</title>
+    <link rel="stylesheet" href="view-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1e293b;
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-left: 4px solid #6b7280;
+}
+
+.stat-card.success {
+  border-left-color: #10b981;
+}
+
+.stat-card.warning {
+  border-left-color: #f59e0b;
+}
+
+.stat-card.info {
+  border-left-color: #3b82f6;
+}
+
+.stat-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: #6b7280;
+}
+
+.stat-card.success .stat-icon {
+  background: #d1fae5;
+  color: #10b981;
+}
+
+.stat-card.warning .stat-icon {
+  background: #fef3c7;
+  color: #f59e0b;
+}
+
+.stat-card.info .stat-icon {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.stat-info h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.stat-info p {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+}
+
+.btn.active {
+  background: #2563eb;
+  color: white;
+}
+
+.checklist-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.checklist-item:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.checklist-header {
+  background: #f8fafc;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checklist-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.checklist-info span {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.checklist-info strong {
+  color: #1e293b;
+}
+
+.checklist-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.checklist-body {
+  padding: 1.5rem;
+}
+
+.checklist-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.summary-item {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.summary-item.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.summary-item.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.summary-item h4 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.summary-item p {
+  font-size: 0.875rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-badge.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.checklist-point {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: #f8fafc;
+  font-size: 0.875rem;
+}
+
+.checklist-point.ok {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.checklist-point.ng {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.point-status {
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.point-status.ok {
+  background: #10b981;
+  color: white;
+}
+
+.point-status.ng {
+  background: #ef4444;
+  color: white;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+}
+
+.no-data i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #cbd5e1;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 2% auto;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #64748b;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-section h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.detail-item {
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.detail-item label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.detail-item span {
+  display: block;
+  font-size: 0.875rem;
+  color: #1e293b;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .checklist-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .checklist-info {
+    width: 100%;
+  }
+
+  .checklist-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .checklist-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    margin: 5% auto;
+    width: 95%;
+  }
+}
+
+/* Agregar estilos para las anomalías al final del archivo CSS */
+
+.anomalies-count {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.anomalies-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.anomaly-detail-card {
+  border: 1px solid #fee2e2;
+  border-radius: 8px;
+  background: #fef2f2;
+  overflow: hidden;
+}
+
+.anomaly-detail-header {
+  background: #fecaca;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #fee2e2;
+}
+
+.anomaly-number {
+  background: #ef4444;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.anomaly-date {
+  font-size: 0.875rem;
+  color: #991b1b;
+  font-weight: 500;
+}
+
+.anomaly-detail-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.anomaly-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.anomaly-detail-item label {
+  font-size: 0.75rem;
+  color: #991b1b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.anomaly-detail-item span {
+  font-size: 0.875rem;
+  color: #7f1d1d;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #fecaca;
+}
+
+.mini-anomalies-list {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mini-anomaly-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: #fef2f2;
+  border-radius: 4px;
+  border-left: 3px solid #ef4444;
+}
+
+.mini-anomaly-date {
+  color: #991b1b;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.mini-anomaly-text {
+  color: #7f1d1d;
+  flex: 1;
+}
+
+.mini-anomaly-more {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+  text-align: center;
+  padding: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .anomaly-detail-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .mini-anomaly-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .mini-anomaly-date {
+    min-width: auto;
+  }
+}
+
+</style>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Visualizar Checklists de Báscula</h1>
+            <div class="header-actions">
+                <!-- <button id="load-sample-btn" class="btn btn-secondary">
+                    <i class="fas fa-database"></i> Cargar Datos de Ejemplo
+                </button> -->
+                <button id="back-btn" class="btn btn-primary" onclick="window.location.href='checklist'">
+                    <i class="fas fa-plus"></i> Nuevo Checklist
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-filter"></i> Filtros</h2>
+            </div>
+            <div class="card-content">
+                <div class="filters-grid">
+                    <div class="form-group">
+                        <label for="filter-area">Área</label>
+                        <select id="filter-area">
+                            <option value="">Todas las áreas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-date-from">Fecha desde</label>
+                        <input type="date" id="filter-date-from">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-date-to">Fecha hasta</label>
+                        <input type="date" id="filter-date-to">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-status">Estado</label>
+                        <select id="filter-status">
+                            <option value="">Todos</option>
+                            <option value="ok">Solo OK</option>
+                            <option value="ng">Con Anomalías</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="apply-filters-btn" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Aplicar Filtros
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="total-checklists">0</h3>
+                    <p>Total Checklists</p>
+                </div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="ok-checklists">0</h3>
+                    <p>Sin Anomalías</p>
+                </div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="ng-checklists">0</h3>
+                    <p>Con Anomalías</p>
+                </div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="success-rate">0%</h3>
+                    <p>Tasa de Éxito</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklists List -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> Lista de Checklists</h2>
+                <div class="view-toggle">
+                    <button id="list-view-btn" class="btn btn-sm active">
+                        <i class="fas fa-list"></i> Lista
+                    </button>
+                    <button id="detail-view-btn" class="btn btn-sm">
+                        <i class="fas fa-eye"></i> Detalle
+                    </button>
+                </div>
+            </div>
+            <div class="card-content">
+                <div id="checklists-container">
+                    <div class="no-data">
+                        <i class="fas fa-inbox"></i>
+                        <p>No hay checklists para mostrar</p>
+                        <button id="load-sample-btn-2" class="btn btn-secondary">Cargar Datos de Ejemplo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Modal -->
+        <div id="detail-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Detalle del Checklist</h2>
+                    <button class="modal-close" id="close-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- El contenido se generará dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="view-script.js"></script>
+</body>
+
+<script>
+    // Datos de ejemplo y estado de la aplicación
+let allChecklists = []
+let filteredChecklists = []
+let currentView = "list"
+
+// Items del checklist (deben coincidir con los de la página principal)
+const checklistItems = [
+  "Encendido y apagado correctamente",
+  "Báscula limpia y libre de residuos",
+  "Superficie nivelada y sin objetos encima",
+  "Indicador digital funcionando correctamente",
+  "Lectura en cero al encender (tara correcta)",
+  "Botones de función responden correctamente",
+  "Verificación visual de calibración (sello intacto)",
+  "Lectura sin variaciones anormales",
+  "Condiciones del entorno sin humedad o vibraciones",
+  "Cableado en buen estado (sin cortes o dobleces)",
+]
+
+// Actualizar los datos de ejemplo para que coincidan con el formato proporcionado
+const sampleData = [
+  {
+    id: 8,
+    Area: "Peso y etiquetado",
+    Equipo: "Bascula",
+    fecha: "2025-07-02",
+    turno: 2,
+    elaboro: "karen itzel",
+    reviso: "KAREN ITZEL VAZQUEZ REYES",
+    aprobo: "HERNANDEZ LARA JOSE ENRIQUE",
+    listado: "[true,false,false,true,false,true,true,true,true,true]",
+    anomalias:
+      '[{"fecha":"2025-07-01","anomalia":"tuvo lectura incorrecta","actividad":"reiniciarla","responsable":"karen itzel"}]',
+    observaciones: "se detecto que cuando no se usa se apaga, y esto provoca una lectura de datos incorrecta",
+  },
+  {
+    id: 1,
+    Area: "Producción A",
+    Equipo: "Bascula",
+    fecha: "2024-01-15",
+    turno: 1,
+    elaboro: "Juan Pérez",
+    reviso: "María García",
+    aprobo: "Carlos López",
+    listado: "[true,true,false,true,true,true,true,false,true,true]",
+    anomalias:
+      '[{"fecha":"2024-01-15","anomalia":"Residuos encontrados en la superficie","actividad":"Limpieza completa de la báscula","responsable":"Juan Pérez"},{"fecha":"2024-01-15","anomalia":"Variaciones en la lectura detectadas","actividad":"Calibración del equipo","responsable":"Técnico de mantenimiento"}]',
+    observaciones: "Se encontraron residuos en la superficie y variaciones en la lectura durante la verificación.",
+  },
+  {
+    id: 2,
+    Area: "Producción B",
+    Equipo: "Bascula",
+    fecha: "2024-01-16",
+    turno: 2,
+    elaboro: "Ana Martínez",
+    reviso: "Pedro Rodríguez",
+    aprobo: "Laura Sánchez",
+    listado: "[true,true,true,true,true,true,true,true,true,true]",
+    anomalias: "[]",
+    observaciones: "Equipo funcionando correctamente sin anomalías detectadas.",
+  },
+  {
+    id: 3,
+    Area: "Producción A",
+    Equipo: "Bascula",
+    fecha: "2024-01-17",
+    turno: 3,
+    elaboro: "Roberto Silva",
+    reviso: "Carmen Díaz",
+    aprobo: "Miguel Torres",
+    listado: "[true,false,true,false,true,true,true,true,false,true]",
+    anomalias:
+      '[{"fecha":"2024-01-17","anomalia":"Báscula sucia con residuos","actividad":"Limpieza profunda","responsable":"Roberto Silva"},{"fecha":"2024-01-17","anomalia":"Display con fallas intermitentes","actividad":"Revisión técnica programada","responsable":"Técnico especializado"},{"fecha":"2024-01-17","anomalia":"Humedad detectada en el ambiente","actividad":"Verificar sistema de ventilación","responsable":"Mantenimiento"}]',
+    observaciones: "Múltiples anomalías detectadas. Equipo requiere mantenimiento urgente.",
+  },
+]
+
+// Inicializar la aplicación
+document.addEventListener("DOMContentLoaded", () => {
+  setupEventListeners()
+  loadSampleData()
+})
+
+function setupEventListeners() {
+  // Botones de carga de datos
+  document.getElementById("load-sample-btn").addEventListener("click", loadSampleData)
+  document.getElementById("load-sample-btn-2").addEventListener("click", loadSampleData)
+
+  // Filtros
+  document.getElementById("apply-filters-btn").addEventListener("click", applyFilters)
+
+  // Vista
+  document.getElementById("list-view-btn").addEventListener("click", () => switchView("list"))
+  document.getElementById("detail-view-btn").addEventListener("click", () => switchView("detail"))
+
+  // Modal
+  document.getElementById("close-modal").addEventListener("click", closeModal)
+  document.getElementById("detail-modal").addEventListener("click", (e) => {
+    if (e.target.id === "detail-modal") {
+      closeModal()
+    }
+  })
+}
+
+// Función para procesar los datos y convertir strings JSON a arrays
+function processChecklistData(rawData) {
+  return rawData.map((item) => {
+    // Parsear el listado si es string
+    let listado = item.listado
+    if (typeof listado === "string") {
+      try {
+        listado = JSON.parse(listado)
+      } catch (e) {
+        console.error("Error parsing listado:", e)
+        listado = []
+      }
+    }
+
+    // Parsear las anomalías si es string
+    let anomalias = item.anomalias
+    if (typeof anomalias === "string") {
+      try {
+        anomalias = JSON.parse(anomalias)
+      } catch (e) {
+        console.error("Error parsing anomalias:", e)
+        anomalias = []
+      }
+    }
+
+    return {
+      ...item,
+      listado,
+      anomalias,
+    }
+  })
+}
+
+// Actualizar la función loadSampleData para procesar los datos
+function loadSampleData() {
+  allChecklists = processChecklistData([...sampleData])
+  filteredChecklists = [...allChecklists]
+
+  updateFilters()
+  updateStatistics()
+  renderChecklists()
+}
+
+// Actualizar la función updateFilters para usar Area en lugar de area
+function updateFilters() {
+  const areaFilter = document.getElementById("filter-area")
+  const areas = [...new Set(allChecklists.map((item) => item.Area))]
+
+  areaFilter.innerHTML = '<option value="">Todas las áreas</option>'
+  areas.forEach((area) => {
+    const option = document.createElement("option")
+    option.value = area
+    option.textContent = area
+    areaFilter.appendChild(option)
+  })
+}
+
+// Actualizar la función applyFilters para usar Area en lugar de area
+function applyFilters() {
+  const areaFilter = document.getElementById("filter-area").value
+  const dateFromFilter = document.getElementById("filter-date-from").value
+  const dateToFilter = document.getElementById("filter-date-to").value
+  const statusFilter = document.getElementById("filter-status").value
+
+  filteredChecklists = allChecklists.filter((item) => {
+    // Filtro por área
+    if (areaFilter && item.Area !== areaFilter) return false
+
+    // Filtro por fecha
+    if (dateFromFilter && item.fecha < dateFromFilter) return false
+    if (dateToFilter && item.fecha > dateToFilter) return false
+
+    // Filtro por estado
+    if (statusFilter) {
+      const hasAnomalies = item.listado.includes(false)
+      if (statusFilter === "ok" && hasAnomalies) return false
+      if (statusFilter === "ng" && !hasAnomalies) return false
+    }
+
+    return true
+  })
+
+  updateStatistics()
+  renderChecklists()
+}
+
+function updateStatistics() {
+  const total = filteredChecklists.length
+  const okChecklists = filteredChecklists.filter((item) => !item.listado.includes(false)).length
+  const ngChecklists = total - okChecklists
+  const successRate = total > 0 ? Math.round((okChecklists / total) * 100) : 0
+
+  document.getElementById("total-checklists").textContent = total
+  document.getElementById("ok-checklists").textContent = okChecklists
+  document.getElementById("ng-checklists").textContent = ngChecklists
+  document.getElementById("success-rate").textContent = `${successRate}%`
+}
+
+function switchView(view) {
+  currentView = view
+
+  // Actualizar botones
+  document.getElementById("list-view-btn").classList.toggle("active", view === "list")
+  document.getElementById("detail-view-btn").classList.toggle("active", view === "detail")
+
+  renderChecklists()
+}
+
+function renderChecklists() {
+  const container = document.getElementById("checklists-container")
+
+  if (filteredChecklists.length === 0) {
+    container.innerHTML = `
+      <div class="no-data">
+        <i class="fas fa-inbox"></i>
+        <p>No hay checklists para mostrar</p>
+        <button id="load-sample-btn-3" class="btn btn-secondary" onclick="loadSampleData()">Cargar Datos de Ejemplo</button>
+      </div>
+    `
+    return
+  }
+
+  if (currentView === "list") {
+    renderListView(container)
+  } else {
+    renderDetailView(container)
+  }
+}
+
+// Actualizar la función renderListView para usar Area y Equipo en lugar de area y equipo
+function renderListView(container) {
+  container.innerHTML = filteredChecklists
+    .map((item) => {
+      const hasAnomalies = item.listado.includes(false)
+      const okCount = item.listado.filter((result) => result).length
+      const totalCount = item.listado.length
+      const successRate = Math.round((okCount / totalCount) * 100)
+      const anomaliasCount = item.anomalias ? item.anomalias.length : 0
+
+      return `
+      <div class="checklist-item">
+        <div class="checklist-header">
+          <div class="checklist-info">
+            <span><strong>ID:</strong> ${item.id}</span>
+            <span><strong>Área:</strong> ${item.Area}</span>
+            <span><strong>Equipo:</strong> ${item.Equipo}</span>
+            <span><strong>Fecha:</strong> ${formatDate(item.fecha)}</span>
+            <span><strong>Turno:</strong> ${item.turno}</span>
+            <span><strong>Elaboró:</strong> ${item.elaboro}</span>
+            <span class="status-badge ${hasAnomalies ? "warning" : "success"}">
+              ${hasAnomalies ? "Con Anomalías" : "Sin Anomalías"}
+            </span>
+            ${anomaliasCount > 0 ? `<span class="anomalies-count"><i class="fas fa-exclamation-triangle"></i> ${anomaliasCount} anomalía${anomaliasCount > 1 ? "s" : ""}</span>` : ""}
+          </div>
+          <div class="checklist-actions">
+            <button class="btn btn-sm btn-primary" onclick="showDetail(${item.id})">
+              <i class="fas fa-eye"></i> Ver Detalle
+            </button>
+          </div>
+        </div>
+        <div class="checklist-body">
+          <div class="checklist-summary">
+            <div class="summary-item ${hasAnomalies ? "danger" : "success"}">
+              <h4>${successRate}%</h4>
+              <p>Tasa de Éxito</p>
+            </div>
+            <div class="summary-item success">
+              <h4>${okCount}</h4>
+              <p>Puntos OK</p>
+            </div>
+            <div class="summary-item ${hasAnomalies ? "danger" : "success"}">
+              <h4>${totalCount - okCount}</h4>
+              <p>Puntos NG</p>
+            </div>
+            <div class="summary-item info">
+              <h4>${anomaliasCount}</h4>
+              <p>Anomalías Registradas</p>
+            </div>
+          </div>
+          ${
+            item.observaciones
+              ? `
+            <div style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 6px;">
+              <strong>Observaciones:</strong> ${item.observaciones}
+            </div>
+          `
+              : ""
+          }
+          ${
+            anomaliasCount > 0
+              ? `
+            <div style="margin-top: 1rem;">
+              <strong>Últimas anomalías:</strong>
+              <div class="mini-anomalies-list">
+                ${item.anomalias
+                  .slice(0, 2)
+                  .map(
+                    (anomalia) => `
+                  <div class="mini-anomaly-item">
+                    <span class="mini-anomaly-date">${formatDate(anomalia.fecha)}</span>
+                    <span class="mini-anomaly-text">${anomalia.anomalia}</span>
+                  </div>
+                `,
+                  )
+                  .join("")}
+                ${anomaliasCount > 2 ? `<div class="mini-anomaly-more">+${anomaliasCount - 2} más...</div>` : ""}
+              </div>
+            </div>
+          `
+              : ""
+          }
+        </div>
+      </div>
+    `
+    })
+    .join("")
+}
+
+// Actualizar la función renderDetailView para usar Area en lugar de area
+function renderDetailView(container) {
+  container.innerHTML = filteredChecklists
+    .map((item) => {
+      const hasAnomalies = item.listado.includes(false)
+
+      return `
+      <div class="checklist-item">
+        <div class="checklist-header">
+          <div class="checklist-info">
+            <span><strong>ID:</strong> ${item.id}</span>
+            <span><strong>Área:</strong> ${item.Area}</span>
+            <span><strong>Equipo:</strong> ${item.Equipo}</span>
+            <span><strong>Fecha:</strong> ${formatDate(item.fecha)}</span>
+            <span class="status-badge ${hasAnomalies ? "warning" : "success"}">
+              ${hasAnomalies ? "Con Anomalías" : "Sin Anomalías"}
+            </span>
+          </div>
+        </div>
+        <div class="checklist-body">
+          <div class="checklist-grid">
+            ${item.listado
+              .map(
+                (result, index) => `
+              <div class="checklist-point ${result ? "ok" : "ng"}">
+                <span>${index + 1}. ${checklistItems[index]}</span>
+                <div>
+                  <span class="point-status ${result ? "ok" : "ng"}">
+                    ${result ? "OK" : "NG"}
+                  </span>
+                </div>
+              </div>
+            `,
+              )
+              .join("")}
+          </div>
+          ${
+            item.observaciones
+              ? `
+            <div style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 6px;">
+              <strong>Observaciones:</strong> ${item.observaciones}
+            </div>
+          `
+              : ""
+          }
+        </div>
+      </div>
+    `
+    })
+    .join("")
+}
+
+// Actualizar la función showDetail para usar Area y Equipo en lugar de area y equipo
+function showDetail(id) {
+  const item = allChecklists.find((checklist) => checklist.id === id)
+  if (!item) return
+
+  const hasAnomalies = item.listado.includes(false)
+  const okCount = item.listado.filter((result) => result).length
+  const totalCount = item.listado.length
+
+  const modalBody = document.getElementById("modal-body")
+  modalBody.innerHTML = `
+    <div class="detail-section">
+      <h3><i class="fas fa-info-circle"></i> Información General</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>ID</label>
+          <span>${item.id}</span>
+        </div>
+        <div class="detail-item">
+          <label>Área</label>
+          <span>${item.Area}</span>
+        </div>
+        <div class="detail-item">
+          <label>Equipo</label>
+          <span>${item.Equipo}</span>
+        </div>
+        <div class="detail-item">
+          <label>Fecha</label>
+          <span>${formatDate(item.fecha)}</span>
+        </div>
+        <div class="detail-item">
+          <label>Turno</label>
+          <span>${item.turno}</span>
+        </div>
+        <div class="detail-item">
+          <label>Estado</label>
+          <span class="status-badge ${hasAnomalies ? "warning" : "success"}">
+            ${hasAnomalies ? "Con Anomalías" : "Sin Anomalías"}
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="detail-section">
+      <h3><i class="fas fa-users"></i> Responsables</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Elaboró</label>
+          <span>${item.elaboro}</span>
+        </div>
+        <div class="detail-item">
+          <label>Revisó</label>
+          <span>${item.reviso}</span>
+        </div>
+        <div class="detail-item">
+          <label>Aprobó</label>
+          <span>${item.aprobo}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="detail-section">
+      <h3><i class="fas fa-chart-pie"></i> Resumen</h3>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Total de Puntos</label>
+          <span>${totalCount}</span>
+        </div>
+        <div class="detail-item">
+          <label>Puntos OK</label>
+          <span style="color: #10b981;">${okCount}</span>
+        </div>
+        <div class="detail-item">
+          <label>Anomalías</label>
+          <span style="color: #ef4444;">${totalCount - okCount}</span>
+        </div>
+        <div class="detail-item">
+          <label>Tasa de Éxito</label>
+          <span>${Math.round((okCount / totalCount) * 100)}%</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="detail-section">
+      <h3><i class="fas fa-clipboard-check"></i> Detalle del Checklist</h3>
+      <div class="checklist-grid">
+        ${item.listado
+          .map(
+            (result, index) => `
+          <div class="checklist-point ${result ? "ok" : "ng"}">
+            <div>
+              <strong>${index + 1}. ${checklistItems[index]}</strong>
+            </div>
+            <span class="point-status ${result ? "ok" : "ng"}">
+              ${result ? "OK" : "NG"}
+            </span>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    </div>
+    
+    ${
+      item.anomalias && item.anomalias.length > 0
+        ? `
+      <div class="detail-section">
+        <h3><i class="fas fa-exclamation-triangle"></i> Registro de Anomalías (${item.anomalias.length})</h3>
+        <div class="anomalies-detail-container">
+          ${item.anomalias
+            .map(
+              (anomalia, index) => `
+            <div class="anomaly-detail-card">
+              <div class="anomaly-detail-header">
+                <span class="anomaly-number">#${index + 1}</span>
+                <span class="anomaly-date">${formatDate(anomalia.fecha)}</span>
+              </div>
+              <div class="anomaly-detail-body">
+                <div class="anomaly-detail-item">
+                  <label><i class="fas fa-exclamation-circle"></i> Anomalía Detectada</label>
+                  <span>${anomalia.anomalia}</span>
+                </div>
+                <div class="anomaly-detail-item">
+                  <label><i class="fas fa-tools"></i> Actividad Realizada</label>
+                  <span>${anomalia.actividad}</span>
+                </div>
+                <div class="anomaly-detail-item">
+                  <label><i class="fas fa-user"></i> Responsable</label>
+                  <span>${anomalia.responsable}</span>
+                </div>
+              </div>
+            </div>
+          `,
+            )
+            .join("")}
+        </div>
+      </div>
+    `
+        : ""
+    }
+    
+    ${
+      item.observaciones
+        ? `
+      <div class="detail-section">
+        <h3><i class="fas fa-comment"></i> Observaciones</h3>
+        <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid #3b82f6;">
+          ${item.observaciones}
+        </div>
+      </div>
+    `
+        : ""
+    }
+  `
+
+  document.getElementById("modal-title").textContent = `Checklist #${item.id} - ${item.Area}`
+  document.getElementById("detail-modal").style.display = "block"
+}
+
+function closeModal() {
+  document.getElementById("detail-modal").style.display = "none"
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString)
+  return date.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+}
+
+// Función para cargar datos desde una API (ejemplo actualizado)
+function loadDataFromAPI() {
+  // Ejemplo de cómo cargar datos desde una API
+  fetch("/api/checklists")
+    .then((response) => response.json())
+    .then((data) => {
+      allChecklists = processChecklistData(data)
+      filteredChecklists = [...allChecklists]
+      updateFilters()
+      updateStatistics()
+      renderChecklists()
+    })
+    .catch((error) => {
+      console.error("Error loading data:", error)
+      // Cargar datos de ejemplo en caso de error
+      loadSampleData()
+    })
+}
+
+</script>
+</html>

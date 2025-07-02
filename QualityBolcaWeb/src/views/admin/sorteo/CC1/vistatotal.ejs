@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Inventario</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+</head>
+
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+}
+
+.container {
+  padding: 1.5rem;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.header {
+  margin-bottom: 2rem;
+}
+
+.header-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.main-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.metric-card {
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.metric-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.metric-icon {
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-icon i {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: white;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* Color variants for metrics */
+.metric-blue {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+.metric-icon-blue {
+  background: #3b82f6;
+}
+.metric-label-blue {
+  color: #2563eb;
+}
+.metric-value-blue {
+  color: #1e40af;
+}
+
+.metric-green {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+}
+.metric-icon-green {
+  background: #10b981;
+}
+.metric-label-green {
+  color: #059669;
+}
+.metric-value-green {
+  color: #047857;
+}
+
+.metric-purple {
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+}
+.metric-icon-purple {
+  background: #8b5cf6;
+}
+.metric-label-purple {
+  color: #7c3aed;
+}
+.metric-value-purple {
+  color: #6d28d9;
+}
+
+.metric-orange {
+  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+}
+.metric-icon-orange {
+  background: #f97316;
+}
+.metric-label-orange {
+  color: #ea580c;
+}
+.metric-value-orange {
+  color: #c2410c;
+}
+
+/* Main Grid */
+.main-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 1280px) {
+  .main-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.5rem;
+  color: white;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.card-title i {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  opacity: 0.9;
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+/* Card Header Colors */
+.card-header-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+.card-header-yellow {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+}
+.card-header-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+.card-header-green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Inventario Total */
+.inventario-item {
+  padding: 1rem;
+  transition: background-color 0.2s;
+}
+
+.inventario-item:hover {
+  background-color: #f9fafb;
+}
+
+.inventario-item:not(:last-child) {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.inventario-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inventario-info h4 {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.inventario-info p {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.badge {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Mesas Grid - Amarillo */
+.mesas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.mesa-item {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.mesa-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.mesa-numero {
+  font-weight: bold;
+  color: #92400e;
+  font-size: 0.875rem;
+}
+
+.mesa-cajas {
+  background: #fbbf24;
+  color: #78350f;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  display: inline-block;
+}
+
+.mesa-alert {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Historial */
+.historial-container {
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+.historial-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.historial-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.historial-dot.asignacion {
+  background: #10b981;
+}
+.historial-dot.retiro {
+  background: #ef4444;
+}
+
+.historial-content {
+  flex: 1;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.historial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.historial-info h4 {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+.historial-info p {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.historial-time {
+  text-align: right;
+}
+
+.historial-time p {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.historial-line {
+  width: 1px;
+  height: 1rem;
+  background: #e5e7eb;
+  margin-left: 0.375rem;
+}
+
+/* Inventario Salida - Verde */
+.salida-item {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border-left: 4px solid #10b981;
+  margin-bottom: 0.75rem;
+}
+
+.salida-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.salida-info h4 {
+  font-weight: 600;
+  color: #047857;
+}
+
+.salida-destino {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.salida-destino i {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: #059669;
+}
+
+.salida-destino span {
+  font-size: 0.75rem;
+  color: #059669;
+}
+
+.salida-details {
+  text-align: right;
+}
+
+.salida-cantidad {
+  background: #a7f3d0;
+  color: #047857;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.salida-fecha {
+  font-size: 0.75rem;
+  color: #065f46;
+  margin-top: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .main-title {
+    font-size: 2rem;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-card">
+                <div class="header-content">
+                    <div class="header-title">
+                        <h1 class="main-title">Control de Inventario</h1>
+                        <p class="subtitle">Gestión en tiempo real del almacén</p>
+                    </div>
+                </div>
+
+                <!-- Métricas principales -->
+                <div class="metrics-grid">
+                    <div class="metric-card metric-blue">
+                        <div class="metric-content">
+                            <div class="metric-icon metric-icon-blue">
+                                <i data-lucide="bar-chart-3"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label metric-label-blue">Lote</p>
+                                <p class="metric-value metric-value-blue" id="lote">L001</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card metric-green">
+                        <div class="metric-content">
+                            <div class="metric-icon metric-icon-green">
+                                <i data-lucide="package"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label metric-label-green">Producción</p>
+                                <p class="metric-value metric-value-green" id="produccion">850</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card metric-purple">
+                        <div class="metric-content">
+                            <div class="metric-icon metric-icon-purple">
+                                <i data-lucide="trending-down"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label metric-label-purple">Distribución</p>
+                                <p class="metric-value metric-value-purple" id="distribucion">120</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card metric-orange">
+                        <div class="metric-content">
+                            <div class="metric-icon metric-icon-orange">
+                                <i data-lucide="clock"></i>
+                            </div>
+                            <div class="metric-info">
+                                <p class="metric-label metric-label-orange">Estado</p>
+                                <p class="metric-value metric-value-orange">Activo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid principal -->
+        <div class="main-grid">
+            <!-- Columna 1: Inventario Total -->
+            <div class="column">
+                <div class="card">
+                    <div class="card-header card-header-blue">
+                        <div class="card-title">
+                            <i data-lucide="package"></i>
+                            <span>Inventario Total</span>
+                        </div>
+                        <p class="card-subtitle">Total: <span id="total-inventario">725</span> unidades</p>
+                    </div>
+                    <div class="card-content" id="inventario-total">
+                        <!-- Se llena con JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 2: Mesas de Trabajo (Amarillo) -->
+            <div class="column">
+                <div class="card">
+                    <div class="card-header card-header-yellow">
+                        <div class="card-title">
+                            <i data-lucide="users"></i>
+                            <span>Mesas de Trabajo</span>
+                        </div>
+                        <p class="card-subtitle">16 estaciones activas</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="mesas-grid" id="mesas-grid">
+                            <!-- Se llena con JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 3: Historial de Actividad -->
+            <div class="column">
+                <div class="card">
+                    <div class="card-header card-header-purple">
+                        <div class="card-title">
+                            <i data-lucide="history"></i>
+                            <span>Historial de Actividad</span>
+                        </div>
+                        <p class="card-subtitle">Últimos movimientos</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="historial-container" id="historial-container">
+                            <!-- Se llena con JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 4: Inventario Salida (Verde) -->
+            <div class="column">
+                <div class="card">
+                    <div class="card-header card-header-green">
+                        <div class="card-title">
+                            <i data-lucide="trending-up"></i>
+                            <span>Inventario Salida</span>
+                        </div>
+                        <p class="card-subtitle">Total: <span id="total-salida">90</span> unidades</p>
+                    </div>
+                    <div class="card-content" id="inventario-salida">
+                        <!-- Se llena con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="script.js"></script>
+</body>
+
+<script>
+    // Import Lucide icons library
+// import lucide from "lucide"
+
+// Datos de ejemplo
+const mockData = {
+  id: 1,
+  numlote: "L001",
+  inventariototal: [
+    { id: 1, producto: "Producto A", cantidad: 150, lote: "L001-A" },
+    { id: 2, producto: "Producto B", cantidad: 200, lote: "L001-B" },
+    { id: 3, producto: "Producto C", cantidad: 75, lote: "L001-C" },
+    { id: 4, producto: "Producto D", cantidad: 300, lote: "L001-D" },
+  ],
+  inventariosalida: [
+    { id: 1, producto: "Producto A", cantidad: 25, destino: "Cliente 1", fecha: "2024-01-15" },
+    { id: 2, producto: "Producto B", cantidad: 50, destino: "Cliente 2", fecha: "2024-01-15" },
+    { id: 3, producto: "Producto C", cantidad: 15, destino: "Cliente 3", fecha: "2024-01-14" },
+  ],
+  produccion: 850,
+  distribucion: 120,
+  mesas: Array.from({ length: 16 }, (_, i) => ({
+    id: i + 1,
+    numero: i + 1,
+    cajas: Math.floor(Math.random() * 20) + 1,
+  })),
+  historialMesas: [ 
+    { id: 1, mesa: 1, accion: "Asignación", cajas: 15, hora: "08:30", fecha: "2024-01-15" },
+    { id: 2, mesa: 3, accion: "Retiro", cajas: 8, hora: "09:15", fecha: "2024-01-15" },
+    { id: 3, mesa: 7, accion: "Asignación", cajas: 12, hora: "10:00", fecha: "2024-01-15" },
+    { id: 4, mesa: 2, accion: "Retiro", cajas: 5, hora: "10:30", fecha: "2024-01-15" },
+    { id: 5, mesa: 12, accion: "Asignación", cajas: 18, hora: "11:00", fecha: "2024-01-15" },
+  ],
+}
+
+// Función para inicializar la aplicación
+function initApp() {
+  // Inicializar iconos de Lucide
+  lucide.createIcons()
+
+  // Cargar datos
+  loadInventarioTotal()
+  loadMesas()
+  loadHistorial()
+  loadInventarioSalida()
+  updateMetrics()
+}
+
+// Cargar inventario total
+function loadInventarioTotal() {
+  const container = document.getElementById("inventario-total")
+  container.innerHTML = ""
+
+  mockData.inventariototal.forEach((item, index) => {
+    const div = document.createElement("div")
+    div.className = "inventario-item"
+
+    div.innerHTML = `
+            <div class="inventario-content">
+                <div class="inventario-info">
+                    <h4>${item.producto}</h4>
+                    <p>${item.lote}</p>
+                </div>
+                <span class="badge">${item.cantidad}</span>
+            </div>
+        `
+
+    container.appendChild(div)
+  })
+}
+
+// Cargar mesas
+function loadMesas() {
+  const container = document.getElementById("mesas-grid")
+  container.innerHTML = ""
+
+  mockData.mesas.forEach((mesa) => {
+    const div = document.createElement("div")
+    div.className = "mesa-item"
+
+    div.innerHTML = `
+            <div class="mesa-numero">#${mesa.numero}</div>
+            <span class="mesa-cajas">${mesa.cajas}</span>
+            ${mesa.cajas > 15 ? '<div class="mesa-alert"></div>' : ""}
+        `
+
+    container.appendChild(div)
+  })
+}
+
+// Cargar historial
+function loadHistorial() {
+  const container = document.getElementById("historial-container")
+  container.innerHTML = ""
+
+  mockData.historialMesas.forEach((registro, index) => {
+    const div = document.createElement("div")
+    div.className = "historial-item"
+
+    div.innerHTML = `
+            <div class="historial-dot ${registro.accion.toLowerCase()}"></div>
+            <div class="historial-content">
+                <div class="historial-header">
+                    <div class="historial-info">
+                        <h4>Mesa ${registro.mesa} - ${registro.accion}</h4>
+                        <p>${registro.cajas} cajas</p>
+                    </div>
+                    <div class="historial-time">
+                        <p>${registro.hora}</p>
+                        <p>${registro.fecha}</p>
+                    </div>
+                </div>
+            </div>
+        `
+
+    container.appendChild(div)
+
+    // Agregar línea divisoria (excepto en el último elemento)
+    if (index < mockData.historialMesas.length - 1) {
+      const line = document.createElement("div")
+      line.className = "historial-line"
+      container.appendChild(line)
+    }
+  })
+}
+
+// Cargar inventario salida
+function loadInventarioSalida() {
+  const container = document.getElementById("inventario-salida")
+  container.innerHTML = ""
+
+  mockData.inventariosalida.forEach((item) => {
+    const div = document.createElement("div")
+    div.className = "salida-item"
+
+    div.innerHTML = `
+            <div class="salida-content">
+                <div class="salida-info">
+                    <h4>${item.producto}</h4>
+                    <div class="salida-destino">
+                        <i data-lucide="map-pin"></i>
+                        <span>${item.destino}</span>
+                    </div>
+                </div>
+                <div class="salida-details">
+                    <span class="salida-cantidad">${item.cantidad}</span>
+                    <p class="salida-fecha">${item.fecha}</p>
+                </div>
+            </div>
+        `
+
+    container.appendChild(div)
+  })
+
+  // Reinicializar iconos después de agregar contenido dinámico
+  lucide.createIcons()
+}
+
+// Actualizar métricas
+function updateMetrics() {
+  const totalInventario = mockData.inventariototal.reduce((sum, item) => sum + item.cantidad, 0)
+  const totalSalida = mockData.inventariosalida.reduce((sum, item) => sum + item.cantidad, 0)
+
+  document.getElementById("lote").textContent = mockData.numlote
+  document.getElementById("produccion").textContent = mockData.produccion
+  document.getElementById("distribucion").textContent = mockData.distribucion
+  document.getElementById("total-inventario").textContent = totalInventario
+  document.getElementById("total-salida").textContent = totalSalida
+}
+
+// Función para actualizar datos (simulación de API)
+function updateData(newData) {
+  Object.assign(mockData, newData)
+  initApp()
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener("DOMContentLoaded", initApp)
+
+// Exportar funciones para uso externo
+window.InventoryDashboard = {
+  updateData,
+  mockData,
+}
+
+</script>
+</html>

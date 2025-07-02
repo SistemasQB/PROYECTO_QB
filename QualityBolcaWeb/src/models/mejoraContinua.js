@@ -95,6 +95,18 @@ const Mejora = db.define('mejora', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    evidencia1: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+    },
+    evidencia2: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+    },
+    evidencia3: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+    }
 }, {
     timestamps: false,
 });

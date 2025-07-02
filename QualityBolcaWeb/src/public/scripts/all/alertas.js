@@ -18,7 +18,7 @@ function alertaFetch(urlEncoded, link, redirect) {
     })
         .then(response => response.json())
         .then(res => {
-            console.log(res);
+            // console.log(res);
             if (res.ok) {
                 Swal.close();
                 Swal.fire({
