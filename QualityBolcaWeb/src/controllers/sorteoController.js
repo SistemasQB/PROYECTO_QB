@@ -139,4 +139,8 @@ controller.vistachecklist = async (req, res) => {
     });
 }
 
+controller.registromaterial = (req, res) => {
+    res.render('admin/sorteo/cc1/registromaterial');
+}
+
 export default controller;

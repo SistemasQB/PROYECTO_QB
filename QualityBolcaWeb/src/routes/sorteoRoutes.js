@@ -13,6 +13,7 @@ router.get('/cc1/vistatotal',sorteoController.vistatotal);
 router.get('/cc1/checklist',sorteoController.checklist);
 router.post('/cc1/checklist',sorteoController.checklist2);
 router.get('/cc1/vistachecklist',sorteoController.vistachecklist);
+router.get('/cc1/registromaterial',sorteoController.registromaterial);
 
 
 export default router;

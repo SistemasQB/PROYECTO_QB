@@ -46,7 +46,7 @@
         padding: 0 1rem;
     }
 
-    .coloresExpllicacion{
+    .coloresExpllicacion {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -603,13 +603,27 @@
                 <h2>Mejoras Registradas</h2>
                 <p id="totalMejoras">Total de mejoras: <span id="totalMejorasCount"></span></p>
                 <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
-                    <div class="coloresExpllicacion" style=" background-color: #ffffff; border: 4px solid #000000;"></div><div>Sin analisis</div>
-                    <div class="coloresExpllicacion" style=" background-color: #fdfef4; border: 4px solid #f59e0b;"></div><div>En espera</div>
-                    <div class="coloresExpllicacion" style=" background-color: #f4fefe; border: 4px solid #bae2ff;"></div><div>Implementacion</div>
-                    <div class="coloresExpllicacion" style=" background-color: #f5fef4; border: 4px solid #7cfca9;"></div><div>Aprovada</div>
-                    <div class="coloresExpllicacion" style=" background-color: #fdf4fe; border: 4px solid #df9dfd;"></div><div>Implementada</div>
-                    <div class="coloresExpllicacion" style=" background-color: #fef4f4; border: 4px solid #ff0000;"></div><div>Rechazada</div>
-                    <div class="coloresExpllicacion" style=" background-color: #e2e2e2; border: 4px solid #828282;"></div><div>Declinada</div>
+                    <div class="coloresExpllicacion" style=" background-color: #ffffff; border: 4px solid #000000;">
+                    </div>
+                    <div>Sin analisis</div>
+                    <div class="coloresExpllicacion" style=" background-color: #fdfef4; border: 4px solid #f59e0b;">
+                    </div>
+                    <div>En espera</div>
+                    <div class="coloresExpllicacion" style=" background-color: #f4fefe; border: 4px solid #bae2ff;">
+                    </div>
+                    <div>Implementacion</div>
+                    <div class="coloresExpllicacion" style=" background-color: #f5fef4; border: 4px solid #7cfca9;">
+                    </div>
+                    <div>Aprovada</div>
+                    <div class="coloresExpllicacion" style=" background-color: #fdf4fe; border: 4px solid #df9dfd;">
+                    </div>
+                    <div>Implementada</div>
+                    <div class="coloresExpllicacion" style=" background-color: #fef4f4; border: 4px solid #ff0000;">
+                    </div>
+                    <div>Rechazada</div>
+                    <div class="coloresExpllicacion" style=" background-color: #e2e2e2; border: 4px solid #828282;">
+                    </div>
+                    <div>Declinada</div>
                 </div>
             </div>
 
@@ -958,8 +972,6 @@
         return `${año}-${mes}-${dia}`;
     }
 
-
-
     mejoraForm.addEventListener('submit', function (e) {
         e.preventDefault();
         // var contarEquipo = contarEquipo();
@@ -980,8 +992,8 @@
     /* */
 
     // Estado de la aplicación
-    let mejoras = <%- JSON.stringify(obtenerValores) %>;
-    let usuario = <%- JSON.stringify(obtenerDatos) %>;
+    let mejoras = <% - JSON.stringify(obtenerValores) %>;
+    let usuario = <% - JSON.stringify(obtenerDatos) %>;
 
 
     // Elementos del DOM
@@ -1025,9 +1037,41 @@
         document.body.style.overflow = 'hidden';
     }
 
-    function openModal2() {
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
+    function openModal2(valores) {
+
+        Ahorro
+        Sistema
+        Indirecta
+        Ambiental
+
+        btnRubro[0].classList.remove('btnselected');
+        btnRubro[1].classList.remove('btnselected');
+        btnRubro[2].classList.remove('btnselected');
+        btnRubro[3].classList.remove('btnselected');
+        switch (valores.rubro) {
+            case Ahorro:
+        btnRubro[0].classList.add('btnselected');
+        break;
+            case Sistema:
+        btnRubro[1].classList.add('btnselected');
+        break;
+            case Indirecta:
+        btnRubro[2].classList.add('btnselected');
+        break;
+            case Ambiental:
+        btnRubro[3].classList.add('btnselected');
+        break;
+    }
+
+    nombre_mejora.value = valores.nombre_mejora;
+    nombre.value = valores.generador_idea;
+    mejoragrupal = valores.mejora_grupal;
+    mejoragrupal = 1
+
+
+
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
@@ -1096,7 +1140,7 @@
         if (mejora.fecha_respuesta_comite != null) {
             const resultado = validarFechas(mejora.fecha_respuesta_comite);
 
-            if (resultado.dentroDe15a20 && !mejora.evidencia1 || resultado.paso1Mes && !mejora.evidencia2 || resultado.paso2Meses  && !mejora.evidencia3) {
+            if (resultado.dentroDe15a20 && !mejora.evidencia1 || resultado.paso1Mes && !mejora.evidencia2 || resultado.paso2Meses && !mejora.evidencia3) {
                 btnEvidenciaS = 'block';
             }
         }
