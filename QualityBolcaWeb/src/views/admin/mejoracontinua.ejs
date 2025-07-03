@@ -600,30 +600,31 @@
     <main class="main">
         <div class="container">
             <div class="main-header">
+
                 <h2>Mejoras Registradas</h2>
                 <p id="totalMejoras">Total de mejoras: <span id="totalMejorasCount"></span></p>
                 <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
-                    <div class="coloresExpllicacion" style=" background-color: #ffffff; border: 4px solid #000000;">
+                    <div class="coloresExpllicacion" style='background-color: #e8f9ff; border: 2px solid rgb(173, 216, 230);'>
                     </div>
                     <div>Sin analisis</div>
-                    <div class="coloresExpllicacion" style=" background-color: #fdfef4; border: 4px solid #f59e0b;">
+                    <div class="coloresExpllicacion" style='background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'>
                     </div>
                     <div>En espera</div>
-                    <div class="coloresExpllicacion" style=" background-color: #f4fefe; border: 4px solid #bae2ff;">
+                    <div class="coloresExpllicacion" style='background-color: #ffead3; border: 2px solid rgb(255, 135, 0);'>
                     </div>
-                    <div>Implementacion</div>
-                    <div class="coloresExpllicacion" style=" background-color: #f5fef4; border: 4px solid #7cfca9;">
+                    <div>Espera de modificación</div>
+                    <div class="coloresExpllicacion" style='background-color: #dfffe1; border: 2px solid rgb(76, 175, 80);'>
                     </div>
-                    <div>Aprovada</div>
-                    <div class="coloresExpllicacion" style=" background-color: #fdf4fe; border: 4px solid #df9dfd;">
+                    <div>Aprobada</div>
+                    <div class="coloresExpllicacion" style='background-color: #d9f8f5; border: 4px solid rgb(64, 224, 208);'>
                     </div>
                     <div>Implementada</div>
-                    <div class="coloresExpllicacion" style=" background-color: #fef4f4; border: 4px solid #ff0000;">
+                    <div class="coloresExpllicacion" style='background-color: #ffe6e4; border: 2px solid rgb(244, 67, 54);'>
                     </div>
                     <div>Rechazada</div>
-                    <div class="coloresExpllicacion" style=" background-color: #e2e2e2; border: 4px solid #828282;">
+                    <div class="coloresExpllicacion" style='background-color: #ececec; border: 2px solid rgb(105, 105, 105);'>
                     </div>
-                    <div>Declinada</div>
+                    <div>Declinada por falta de seguimiento</div>
                 </div>
             </div>
 
@@ -669,6 +670,8 @@
                 <div style="background-color: #eee6e691;">
 
 
+                    <input type="hidden" value="" id="indexmejora">
+                    
                     <div style="display: flex; justify-content: center">
                         <h2>Rubro</h2>
                     </div>
@@ -711,7 +714,7 @@
                     </div>
                     <div class="form-group">
                         <label for="nombre">Generador de la idea o Líder del equipo de mejora *</label>
-                        <input type="text" id="nombre" name="generador_idea" required>
+                        <input type="text" id="nombre" name="generador_idea" disabled>
                     </div>
                     <!-- <div class="form-group">
                         <label for="email">E-mail *</label>
@@ -722,7 +725,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="puesto">Puesto *</label>
-                        <input type="text" id="puesto" name="puesto" required>
+                        <input type="text" id="puesto" name="puesto" disabled>
                     </div>
                     <div class="form-group">
                         <label for="proceso">Proceso al que Perteneces *</label>
@@ -750,7 +753,7 @@
                 <div class="form-row" id="containerParticipantes" style="display: none;">
                     <div class="form-group">
                         <label for="nombre_participantes">Nombre de los participantes</label>
-                        <textarea id="nombre_participantes" rows="4" required name="nombre_participantes"
+                        <textarea id="nombre_participantes" rows="4" name="nombre_participantes"
                             placeholder="Ingresa los nombres de los participantes separados por comas"></textarea>
                     </div>
                 </div>
@@ -841,11 +844,11 @@
                     <label class="form-label">¿Requiere Inversión? *</label>
                     <div class="radio-group">
                         <div class="radio-item">
-                            <input type="radio" id="inversion-si" name="inversion" value="1" required>
+                            <input type="radio" class="inversionSN" id="inversion-si" name="inversion" value="1" required>
                             <label for="inversion-si">Sí</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" id="inversion-no" name="inversion" value="0" required>
+                            <input type="radio" class="inversionSN" id="inversion-no" name="inversion" value="0" required>
                             <label for="inversion-no">No</label>
                         </div>
                     </div>
@@ -854,14 +857,14 @@
                         <div class="form-group" style="background-color: #eee6e691;">
                             <label for="monto"> Monto $ (Mxm)</label>
                             <input type="text" id="monto" name="monto"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                placeholder="Inreoduce el monto sin decimales" autocomplete="off">
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" value=0
+                                placeholder="Introduce el monto sin decimales" autocomplete="off">
                         </div>
                         <div class="form-group" style="background-color: #eee6e691;">
                             <label for="recuperacion"> Tiempo de recuperación (Meses)</label>
                             <input type="text" id="recuperacion" name="recuperacion"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                placeholder="Inreoduce el numero de meses" autocomplete="off">
+                                placeholder="Introduce el numero de meses" autocomplete="off" value=0>
                         </div>
                     </div>
 
@@ -977,6 +980,7 @@
         // var contarEquipo = contarEquipo();
         // var concatenarbeneficios = concatenarbeneficios();
         const formData = new FormData(mejoraForm);
+        formData.append('id', document.getElementById('indexmejora').value);
         formData.append('fecha', obtenerFechaFormato());
         formData.append('numero_participantes', contarEquipo());
         formData.append('rubro', rubro);
@@ -984,7 +988,12 @@
         formData.append('mejora_grupal', mejoragrupal);
         formData.append('titulo_analisis', 'nombre.pdf');
         const urlEncoded = new URLSearchParams(formData).toString();
-        alertaFetch(urlEncoded, 'mejoracontinua', 'subiranalisis');
+
+        if (document.getElementById('indexmejora').value == '') {
+            alertaFetch(urlEncoded, 'mejoracontinua', 'subiranalisis');
+        }else{
+            alertaFetch(urlEncoded, 'mejoracontinua2', 'subiranalisis');
+        }
 
     })
 
@@ -992,8 +1001,8 @@
     /* */
 
     // Estado de la aplicación
-    let mejoras = <% - JSON.stringify(obtenerValores) %>;
-    let usuario = <% - JSON.stringify(obtenerDatos) %>;
+    let mejoras = <%- JSON.stringify(obtenerValores) %>;
+    let usuario = <%- JSON.stringify(obtenerDatos) %>;
 
 
     // Elementos del DOM
@@ -1033,42 +1042,79 @@
 
     // Funciones
     function openModal() {
+        <% nombrelargo = obtenerDatos.nombre + ' ' + obtenerDatos.apellidopaterno + ' ' + obtenerDatos.apellidomaterno %>
+        document.getElementById('nombre').value = '<%=nombrelargo%>';
+        document.getElementById('puesto').value = '<%= obtenerDatos.descripcion%>';
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
     }
 
     function openModal2(valores) {
 
-        Ahorro
-        Sistema
-        Indirecta
-        Ambiental
+        console.log(valores);
+        rubro = valores.rubro
 
+        document.getElementById('indexmejora').value = valores.id;
+        
         btnRubro[0].classList.remove('btnselected');
         btnRubro[1].classList.remove('btnselected');
         btnRubro[2].classList.remove('btnselected');
         btnRubro[3].classList.remove('btnselected');
         switch (valores.rubro) {
-            case Ahorro:
+            case 'Ahorro':
         btnRubro[0].classList.add('btnselected');
         break;
-            case Sistema:
+            case 'Sistema':
         btnRubro[1].classList.add('btnselected');
         break;
-            case Indirecta:
+            case 'Indirecta':
         btnRubro[2].classList.add('btnselected');
         break;
-            case Ambiental:
+            case 'Ambiental':
         btnRubro[3].classList.add('btnselected');
         break;
     }
 
-    nombre_mejora.value = valores.nombre_mejora;
-    nombre.value = valores.generador_idea;
-    mejoragrupal = valores.mejora_grupal;
-    mejoragrupal = 1
+    
 
+    let beneficios = valores.beneficios.split(',');
 
+    let checkboxes = document.getElementsByClassName('checkboxbeneficios');
+
+        let valoresConcatenados = ""
+
+        for (c = 0; c < checkboxes.length; c++) {
+            for (let c1 = 0; c1 < beneficios.length -1; c1++) {
+                if (checkboxes[c].value == beneficios[c1]) {
+                checkboxes[c].checked = true;
+            }
+            }
+        }
+
+        document.getElementById('beneficiosadd').value = beneficios[beneficios.length - 1];
+
+        const inversionSN = document.getElementsByClassName('inversionSN')
+
+        if (valores.inversion == '1') {
+            inversionSN[0].checked = true;
+        } else {
+            inversionSN[1].checked = true;
+        }
+        //este linea de abajo toma los valores que recibe del servidor y los concatena para obtener el nombre completo
+        <% nombrelargo = obtenerDatos.nombre + ' ' + obtenerDatos.apellidopaterno + ' ' + obtenerDatos.apellidomaterno %>
+
+        document.getElementById('nombre_mejora').value = valores.nombre_mejora;
+        document.getElementById('nombre').value = '<%=nombrelargo%>';
+        document.getElementById('puesto').value = '<%= obtenerDatos.descripcion%>';
+        document.getElementById('nombreEquipo').value = valores.nombre_equipo;
+        // document.getElementById('mejoragrupal').value = valores.numero_participantes
+        document.getElementById('nombre_participantes').value = valores.nombre_participantes;
+        document.getElementById('proceso_aplica_mejora').value = valores.proceso_aplica_mejora;
+        document.getElementById('region_aplica_mejora').value = valores.region_aplica_mejora;
+        document.getElementById('monto').value = valores.monto;
+        document.getElementById('recuperacion').value = valores.recuperacion;
+        document.getElementById('situacion_actual').value = valores.situacion_actual;
+        document.getElementById('situacion_mejora').value = valores.situacion_mejora;
 
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
@@ -1105,32 +1151,35 @@
         let btnModificar = 'none';
         switch (mejora.estatus) {
             case 0:
+                colorcarta = 'background-color: #e8f9ff; border: 2px solid rgb(173, 216, 230);'
                 btnActivo = 'block';
-                colorcarta = '';
+                // colorcarta = '';
+                btnModificar = 'block'
                 break;
             case 1:
                 btnActivo = 'none';
-                colorcarta = 'background-color: #fdfef4; border: 2px solid #f59e0b;'
+                colorcarta = 'background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'
                 break;
             case 2:
+                
                 btnActivo = 'none';
-                colorcarta = 'background-color: #f4fefe; border: 2px solid #bae2ff;'
+                colorcarta = 'background-color: #ffead3; border: 2px solid rgb(255, 135, 0);'
                 btnModificar = 'block'
                 break;
             case 3:
                 btnActivo = 'none';
-                colorcarta = 'background-color: #f5fef4; border: 2px solid #7cfca9;';
+                colorcarta = 'background-color: #dfffe1; border: 2px solid rgb(76, 175, 80);';
                 break;
             case 4:
                 btnActivo = 'none';
-                colorcarta = 'background-color: #fef4f4; border: 2px solid #ff0000;'
+                colorcarta = 'background-color: #ffe6e4; border: 2px solid rgb(244, 67, 54);'
                 break;
             case 5:
                 btnActivo = 'none';
-                colorcarta = 'background-color: #e2e2e2; border: 2px solid #828282;'
+                colorcarta = 'background-color: #ececec; border: 2px solid rgb(105, 105, 105);'
                 break;
             case 6:
-                colorcarta = 'background-color: #fdf4fe; border: 4px solid #df9dfd;'
+                colorcarta = 'background-color: #d9f8f5; border: 4px solid rgb(64, 224, 208);'
                 break;
         }
 
@@ -1232,7 +1281,7 @@
                     <button class="btn" id="btnEvidencia" style = "background-color: #1c6e46; color : white; display: ${btnEvidenciaS}" onclick= "location.href ='/admin/subirevidencia/${mejora.id}'">Subir Evidencia</button>
                 </div>
                 <div class="card-section">
-                    <button class="btn btn-primary"  id="btnModificar" style = "display: ${btnModificar}" onclick= "">Modificar Mejora</button>
+                    <button class="btn btn-primary"  id="btnModificar" style = "display: ${btnModificar}" onclick= "modificarMejora(${mejora.id})">Modificar Mejora</button>
                 </div>
             </div>
         </div>
@@ -1261,12 +1310,8 @@
 
 
     function modificarMejora(mejoraId) {
-        colorcarta = 'background-color: #fdfef4; border: 2px solid #f59e0b;'
-        colorcarta = 'background-color: #f4fefe; border: 2px solid #bae2ff;'
-        colorcarta = 'background-color: #f5fef4; border: 2px solid #7cfca9;'
-        colorcarta = 'background-color: #fdf4fe; border: 4px solid #df9dfd;'
-        colorcarta = 'background-color: #fef4f4; border: 2px solid #ff0000;'
-        colorcarta = 'background-color: #e2e2e2; border: 2px solid #828282;'
+        const record = mejoras.find(item => item.id === mejoraId);
+        openModal2(record);
     }
 </script>
 

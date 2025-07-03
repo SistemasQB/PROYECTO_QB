@@ -171,9 +171,10 @@ controller.programamantenimiento = async (req, res) => {
     const resultados = await db.query(
         `
         SELECT i.idInventario, i.marca, i.tipo, i.usoExclusivo, i.ultimoMantenimiento, i.fechaCompra,
-        CONCAT(e.nombre, ' ', e.apellidopaterno, ' ', e.apellidomaterno) nombrelargo  FROM qualitybolca.inventario i
+        n1.nombrelargo, n3.descripcion region FROM qualitybolca.inventario i
         left join vales v on i.folio = v.idFolio
-        inner join empleados e on v.numeroEmpleado = e.codigoempleado
+        inner join nom10001 n1 on v.numeroEmpleado = n1.codigoempleado
+        right join nom10003 n3 on n1.iddepartamento = n3.iddepartamento
         where tipo IN ('Allinone','Laptop','Ensamblado')
         order by idInventario;
         `,

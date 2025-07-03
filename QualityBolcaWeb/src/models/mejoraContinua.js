@@ -58,10 +58,12 @@ const Mejora = db.define('mejora', {
     monto: {
         type: DataTypes.DOUBLE,
         allowNull: false,
+        defaultValue: 0
     },
     recuperacion: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 0
     },
     situacion_actual: {
         type: DataTypes.TEXT,

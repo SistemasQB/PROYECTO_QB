@@ -29,7 +29,7 @@ function alertaFetch(urlEncoded, link, redirect) {
                     button: "OK"
                 }).then((value) => {
                     if (value && redirect && res.id) {
-                        window.location.href = redirect + res.id
+                        window.location.href = redirect + '/' + res.id
                     }else if (value && redirect) {
                         window.location.href = redirect
                     }else{

@@ -44,6 +44,8 @@ router.get('/voz', adminController.voz);
 router.get('/crear', adminController.crear);
 router.get('/mejoracontinua',protegetRuta, adminController.mejoracontinua);
 router.post('/mejoracontinua', protegetRuta, adminController.mejoracontinua2);
+router.post('/mejoracontinua2', protegetRuta, adminController.mejoracontinua3);
+router.get('/blogayuda', adminController.blogayuda);
 router.get('/subiranalisis/:mejoraid', protegetRuta, adminController.subiranalisis);
 router.post('/subiranalisis/:mejoraid', protegetRuta,upload3.single('analisisFile'), adminController.subiranalisis2);
 router.get('/subirevidencia/:mejoraid', protegetRuta, adminController.subirevidencia);

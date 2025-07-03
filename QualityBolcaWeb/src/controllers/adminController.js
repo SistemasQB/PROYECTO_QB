@@ -444,6 +444,8 @@ controller.mejoracontinua = async (req, res) => {
 
 controller.mejoracontinua2 = async (req, res) => {
 
+    const { codigoempleado } = req.usuario
+
     const {
         id,
         fecha,
@@ -452,7 +454,6 @@ controller.mejoracontinua2 = async (req, res) => {
         nombre_equipo,
         numero_participantes,
         nombre_participantes,
-        numero_empleado_registra,
         proceso_aplica_mejora,
         region_aplica_mejora,
         rubro,
@@ -481,7 +482,7 @@ controller.mejoracontinua2 = async (req, res) => {
                 nombre_equipo,
                 numero_participantes,
                 nombre_participantes,
-                numero_empleado_registra,
+                numero_empleado_registra: codigoempleado,
                 proceso_aplica_mejora,
                 region_aplica_mejora,
                 rubro,
@@ -501,6 +502,80 @@ controller.mejoracontinua2 = async (req, res) => {
         )
 
         res.status(200).send({ msg: 'Mejora Enviada', ok: true, id: Rmejora.id });
+        return
+    } catch (error) {
+        // const errorLog = `${new Date().toISOString()} - Error: ${errorMessage}\n`;
+
+
+
+        console.error("Error al enviar tu mejora", error);
+        res.status(400).send({ msg: "Error al enviar tu mejora", ok: false });
+        return
+    }
+
+}
+
+controller.mejoracontinua3 = async (req, res) => {
+
+    const { codigoempleado } = req.usuario
+
+    const {
+        id,
+        fecha,
+        nombre_mejora,
+        generador_idea,
+        nombre_equipo,
+        numero_participantes,
+        nombre_participantes,
+        proceso_aplica_mejora,
+        region_aplica_mejora,
+        rubro,
+        beneficios,
+        inversion,
+        monto,
+        recuperacion,
+        situacion_actual,
+        situacion_mejora,
+        mejora_grupal,
+        estatus,
+        fecha_respuesta_comite,
+        email,
+        motivo,
+        titulo_analisis
+    } = req.body
+
+
+    try {
+
+        await Mejora.update(
+            { 
+                fecha,
+                nombre_mejora,
+                generador_idea,
+                nombre_equipo,
+                numero_participantes,
+                nombre_participantes,
+                numero_empleado_registra: codigoempleado,
+                proceso_aplica_mejora,
+                region_aplica_mejora,
+                rubro,
+                beneficios,
+                inversion,
+                monto,
+                recuperacion,
+                situacion_actual,
+                situacion_mejora,
+                mejora_grupal,
+                estatus,
+                fecha_respuesta_comite,
+                email,
+                motivo,
+                titulo_analisis: ''
+             },
+            { where: { id } }
+          )
+
+        res.status(200).send({ msg: 'Mejora Enviada', ok: true, id: id });
         return
     } catch (error) {
         // const errorLog = `${new Date().toISOString()} - Error: ${errorMessage}\n`;
@@ -827,6 +902,10 @@ controller.validarusuario = async (req, res) => {
 
     
     
+}
+
+controller.blogayuda = (req, res) => {
+    res.render('admin/blogdeayuda')
 }
 
 export default controller;
