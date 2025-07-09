@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Mejora Continua</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</head>
+
+<style>
+    /* Reset y variables */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --color-primary: #0057B8;
+        --color-secondary: #00B5CA;
+        --color-dark: #2D2926;
+        --color-gray: #75787B;
+        --color-light-gray: #f9fafb;
+        --color-white: #ffffff;
+        --color-border: #e5e7eb;
+        --color-success: #10b981;
+        --color-warning: #f59e0b;
+        --color-error: #ef4444;
+        --border-radius: 8px;
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: var(--color-light-gray);
+        color: var(--color-dark);
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .coloresExpllicacion {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 3vh;
+        height: 3vh;
+        /* margin: 1vh; */
+    }
+
+    /* Header */
+    .header {
+        background-color: var(--color-white);
+        border-bottom: 1px solid var(--color-border);
+        box-shadow: var(--shadow);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 0;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .logo {
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: var(--color-secondary);
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-white);
+        font-size: 1.25rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    .header-text p {
+        font-size: 0.875rem;
+        color: var(--color-gray);
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btnRubro:hover {
+        outline: solid red 3px;
+    }
+
+    .disabled {
+        display: block;
+    }
+
+    .btnselected {
+        outline: solid red 4px;
+    }
+
+    .codificacion {
+        font-size: 12px;
+    }
+
+    .btn-primary {
+        background-color: var(--color-primary);
+        color: var(--color-white);
+    }
+
+    .btn-warning {
+        background-color: var(--color-warning);
+        color: var(--color-dark);
+    }
+
+    .btn-primary:hover {
+        background-color: #004494;
+    }
+
+    .btn-secondary {
+        background-color: transparent;
+        color: var(--color-gray);
+        border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--color-light-gray);
+    }
+
+    /* Main Content */
+    .main {
+        padding: 2rem 0;
+    }
+
+    .main-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .main-header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--color-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .main-header p {
+        color: var(--color-gray);
+    }
+
+    /* Empty State */
+    .empty-state {
+        background-color: var(--color-white);
+        border-radius: var(--border-radius);
+        padding: 3rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--color-gray);
+        margin-bottom: 1rem;
+    }
+
+    .empty-content h3 {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--color-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-content p {
+        color: var(--color-gray);
+        margin-bottom: 1rem;
+    }
+
+    /* Mejoras Grid */
+    .mejoras-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .mejora-card {
+        background-color: var(--color-white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        transition: box-shadow 0.2s;
+        overflow: hidden;
+    }
+
+    .mejora-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+        padding: 1.5rem 1.5rem 0.75rem;
+    }
+
+    .card-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--color-dark);
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    #btnEvidencia {
+        display: none;
+    }
+
+    .card-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: var(--color-gray);
+    }
+
+    .card-content {
+        padding: 0 1.5rem 1.5rem;
+    }
+
+    .card-section {
+        margin-bottom: 1rem;
+    }
+
+    .card-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .card-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-info i {
+        color: var(--color-gray);
+        width: 1rem;
+    }
+
+    .card-info .name {
+        font-weight: 500;
+        color: var(--color-dark);
+    }
+
+    .card-info .location {
+        color: var(--color-gray);
+    }
+
+    .section-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--color-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .section-text {
+        font-size: 0.875rem;
+        color: var(--color-gray);
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Badges */
+    .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        border: 1px solid;
+    }
+
+    .badge-investment {
+        background-color: #fef3c7;
+        color: #92400e;
+        border-color: #fcd34d;
+    }
+
+    .badge-material {
+        background-color: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
+    }
+
+    .badge-economic {
+        background-color: #dbeafe;
+        color: #1e40af;
+        border-color: #93c5fd;
+    }
+
+    .badge-time {
+        background-color: #e9d5ff;
+        color: #7c3aed;
+        border-color: #c4b5fd;
+    }
+
+    .badge-work {
+        background-color: #fed7aa;
+        color: #ea580c;
+        border-color: #fdba74;
+    }
+
+    .badge-environment {
+        background-color: #fce7f3;
+        color: #be185d;
+        border-color: #f9a8d4;
+    }
+
+    .badge-sustainable {
+        background-color: #d1fae5;
+        color: #065f46;
+        border-color: #a7f3d0;
+    }
+
+    .badge-effectiveness {
+        background-color: #e0e7ff;
+        color: #3730a3;
+        border-color: #c7d2fe;
+    }
+
+    .badge-impact {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border-color: #fca5a5;
+    }
+
+    .badge-organization {
+        background-color: #fef3c7;
+        color: #92400e;
+        border-color: #fcd34d;
+    }
+
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+
+    .modal.show {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .modal-content {
+        background-color: var(--color-white);
+        border-radius: var(--border-radius);
+        width: 100%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .modal-header h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-dark);
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        color: var(--color-gray);
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: var(--border-radius);
+        transition: background-color 0.2s;
+    }
+
+    .close-btn:hover {
+        background-color: var(--color-light-gray);
+    }
+
+    /* Form */
+    .modal-form {
+        padding: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--color-dark);
+        margin-bottom: 0.75rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--color-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius);
+        font-size: 0.875rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.1);
+    }
+
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .checkbox-item,
+    .radio-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .checkbox-item input,
+    .radio-item input {
+        width: auto;
+        margin-top: 0.125rem;
+    }
+
+    .checkbox-item label,
+    .radio-item label {
+        font-size: 0.875rem;
+        color: var(--color-dark);
+        line-height: 1.4;
+        cursor: pointer;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--color-border);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .mejoras-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .checkbox-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .radio-group {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .modal {
+            padding: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 0 0.5rem;
+        }
+
+        .modal {
+            padding: 0.5rem;
+        }
+
+        .modal-content {
+            max-height: 95vh;
+        }
+    }
+</style>
+
+<body>
+        <div>
+      <nav class="navbar bg-dark navbar-expand-lg bg-body-tertiary"  data-bs-theme="dark">
+        <div class="container-fluid">
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="mejoracontinua">Mis mejoras</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" style="background-color: rgb(29, 211, 211);" aria-current="page" href="">Todas Las mejoras</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="blogayuda">Foro de ayuda</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <img src="../img/Quality-BOLCA.png" width="100%" alt="" srcset="">
+                    </div>
+                    <div class="header-text">
+                        <h1>Registro de Mejora Continua</h1>
+                        <p>Sistema de gestión de mejoras Quality BOLCA</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="main-header">
+
+                <h2>Mejoras Registradas</h2>
+                <p id="totalMejoras">Total de mejoras: <span id="totalMejorasCount"></span></p>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="coloresExpllicacion" style='background-color: #e8f9ff; border: 2px solid rgb(173, 216, 230);'>
+                    </div>
+                    <div>Sin analisis</div>
+                    <div class="coloresExpllicacion" style='background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'>
+                    </div>
+                    <div>En espera</div>
+                    <div class="coloresExpllicacion" style='background-color: #ffead3; border: 2px solid rgb(255, 135, 0);'>
+                    </div>
+                    <div>Espera de modificación</div>
+                    <div class="coloresExpllicacion" style='background-color: #dfffe1; border: 2px solid rgb(76, 175, 80);'>
+                    </div>
+                    <div>Aprobada</div>
+                    <div class="coloresExpllicacion" style='background-color: #d9f8f5; border: 4px solid rgb(64, 224, 208);'>
+                    </div>
+                    <div>Implementada</div>
+                    <div class="coloresExpllicacion" style='background-color: #ffe6e4; border: 2px solid rgb(244, 67, 54);'>
+                    </div>
+                    <div>Rechazada</div>
+                    <div class="coloresExpllicacion" style='background-color: #ececec; border: 2px solid rgb(105, 105, 105);'>
+                    </div>
+                    <div>Declinada por falta de seguimiento</div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-content">
+                    <i class="fas fa-lightbulb empty-icon"></i>
+                    <h3>No hay mejoras registradas</h3>
+                    <p>Comienza registrando tu primera mejora continua</p>
+                    <button class="btn btn-primary open-modal-btn">
+                        <i class="fas fa-plus"></i>
+                        Registrar Primera Mejora
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mejoras Grid -->
+            <div id="mejorasGrid" class="mejoras-grid">
+                <!-- Las mejoras se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="../img/Quality-BOLCA.png" alt="" width="10%">
+                <h2>Registro de Mejora Continua</h2>
+                <div class="codificacion">
+                    <p>Código: QB-FR-A-06-01</p>
+                    <p>Rev: 06</p>
+                    <p>Fecha de emisión: 30-11-2017</p>
+                    <p>Fecha de revisión: 31-10-2024</p>
+                </div>
+                <button id="closeModalBtn" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="mejoraForm" class="modal-form">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                <div style="background-color: #eee6e691;">
+
+
+                    <input type="hidden" value="" id="indexmejora">
+                    
+                    <div style="display: flex; justify-content: center">
+                        <h2>Rubro</h2>
+                    </div>
+                    <br>
+                    <div style="display: flex; justify-content: space-around;">
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(0)" type="button" style="
+                            background-color: #fed7aa;
+                            color: #ea580c;
+                            border-color: #fdba74;">
+                            Ahorro
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(1)" type="button" style="
+                    background-color: #e9d5ff;
+        color: #7c3aed;
+        border-color: #c4b5fd;">
+                            Sistema
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(2)" type="button" style="
+                    background-color: #dbeafe;
+        color: #1e40af;
+        border-color: #93c5fd;
+                    " ;>
+                            Indirecta
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(3)" type="button" style="
+                    background-color: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
+                    ">
+                            Ambiental
+                        </button>
+                    </div>
+                    <br>
+                </div>
+                <!-- Información Personal -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre_mejora">Nombre de la Mejora *</label>
+                        <input type="text" id="nombre_mejora" name="nombre_mejora" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Generador de la idea o Líder del equipo de mejora *</label>
+                        <input type="text" id="nombre" name="generador_idea" disabled>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="email">E-mail *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div> -->
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="puesto">Puesto *</label>
+                        <input type="text" id="puesto" name="puesto" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="proceso">Proceso al que Perteneces *</label>
+                        <select id="proceso" name="proceso" required>
+                            <option value="Comercialización y ventas">1. Comercialización y ventas</option>
+                            <option value="Planeación del servicio">2. Planeación del servicio.</option>
+                            <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
+                            <option value="Control y mejora del servicio">4. Control y mejora del servicio.</option>
+                            <option value="Gestión de infraestructura">5. Gestión de infraestructura.</option>
+                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.
+                            </option>
+                            <option value="Gestión de capital humano">7. Gestión de capital humano.</option>
+                            <option value="Sistema de gestión de calidad">8. Sistema de gestión de calidad.</option>
+                            <option value="Administración y finanzas">9. Administración y finanzas.</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreEquipo">Nombre del equipo (Si aplica)</label>
+                        <input type="text" id="nombreEquipo" name="nombre_equipo">
+                    </div>
+                </div>
+
+
+                <!-- seccion para añadir a los participantes -->
+                <div class="form-row" id="containerParticipantes" style="display: none;">
+                    <div class="form-group">
+                        <label for="nombre_participantes">Nombre de los participantes</label>
+                        <textarea id="nombre_participantes" rows="4" name="nombre_participantes"
+                            placeholder="Ingresa los nombres de los participantes separados por comas"></textarea>
+                    </div>
+                </div>
+
+
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="proceso_aplica_mejora">Proceso (s) donde se aplica la mejora *</label>
+                        <select id="proceso_aplica_mejora" name="proceso_aplica_mejora" required>
+                            <option value="Comercialización y ventas">1. Comercialización y ventas</option>
+                            <option value="Planeación del servicio">2. Planeación del servicio.</option>
+                            <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
+                            <option value="Control y mejora del servicio">4. Control y mejora del servicio.</option>
+                            <option value="Gestión de infraestructura">5. Gestión de infraestructura.</option>
+                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.
+                            </option>
+                            <option value="Gestión de capital humano">7. Gestión de capital humano.</option>
+                            <option value="Sistema de gestión de calidad">8. Sistema de gestión de calidad.</option>
+                            <option value="Administración y finanzas">9. Administración y finanzas.</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="region_aplica_mejora">Región (s) donde se propone la mejora *</label>
+                        <input type="text" id="region_aplica_mejora" name="region_aplica_mejora">
+                    </div>
+                </div>
+
+                <!-- Tipo de Mejora -->
+                <div class="form-group">
+                    <label class="form-label">Tipo de Mejora y Beneficios *</label>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ahorro-material" class="checkboxbeneficios"
+                                value="Genera un Ahorro Material">
+                            <label for="ahorro-material">Genera un Ahorro Material</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="facilita-trabajo" class="checkboxbeneficios"
+                                value="Facilita el Trabajo Diario">
+                            <label for="facilita-trabajo">Facilita el Trabajo Diario</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mejora-ambiente" class="checkboxbeneficios"
+                                value="Mejora el Ambiente Laboral">
+                            <label for="mejora-ambiente">Mejora el Ambiente Laboral</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ahorro-economico" class="checkboxbeneficios"
+                                value="Genera un Ahorro Económico">
+                            <label for="ahorro-economico">Genera un Ahorro Económico</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ahorra-tiempo" value="Ahorra Tiempo" class="checkboxbeneficios">
+                            <label for="ahorra-tiempo">Ahorra Tiempo</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efectividad" value="Efectividad en tu Proceso"
+                                class="checkboxbeneficios">
+                            <label for="efectividad">Efectividad en tu Proceso</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="entorno-saludable" class="checkboxbeneficios"
+                                value="Entorno Más Saludable y Sostenible">
+                            <label for="entorno-saludable">Entorno Más Saludable y Sostenible</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mitiga-impacto" class="checkboxbeneficios"
+                                value="Mitiga el Impacto Negativo">
+                            <label for="mitiga-impacto">Mitiga el Impacto Negativo de Cualquier Actividad en el Medio
+                                Ambiente</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="beneficio-organizacion" class="checkboxbeneficios"
+                                value="Cambio en Beneficio de la Organización">
+                            <label for="beneficio-organizacion">Cambio en Beneficio de la Organización</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-group" style="background-color: #eee6e691;">
+                        <label for="beneficiosadd"> Beneficios Adicionales</label>
+                        <input type="text" id="beneficiosadd">
+                    </div>
+                </div>
+
+                <!-- Requiere Inversión -->
+                <div class="form-group">
+                    <label class="form-label">¿Requiere Inversión? *</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" class="inversionSN" id="inversion-si" name="inversion" value="1" required>
+                            <label for="inversion-si">Sí</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" class="inversionSN" id="inversion-no" name="inversion" value="0" required>
+                            <label for="inversion-no">No</label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="background-color: #eee6e691;">
+                            <label for="monto"> Monto $ (Mxm)</label>
+                            <input type="text" id="monto" name="monto"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" value=0
+                                placeholder="Introduce el monto sin decimales" autocomplete="off">
+                        </div>
+                        <div class="form-group" style="background-color: #eee6e691;">
+                            <label for="recuperacion"> Tiempo de recuperación (Meses)</label>
+                            <input type="text" id="recuperacion" name="recuperacion"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                placeholder="Introduce el numero de meses" autocomplete="off" value=0>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Situación Actual -->
+                <div class="form-group">
+                    <label for="situacion_actual">Situación Actual *</label>
+                    <textarea id="situacion_actual" name="situacion_actual" rows="4" required
+                        placeholder="Describe la situación actual que requiere mejora..."></textarea>
+                </div>
+
+                <!-- Mejora Propuesta -->
+                <div class="form-group">
+                    <label for="situacion_mejora">Mejora Propuesta *</label>
+                    <textarea id="situacion_mejora" name="situacion_mejora" rows="4" required
+                        placeholder="Describe la mejora propuesta..."></textarea>
+                </div>
+                <!-- Botones -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../scripts/all/alertas.js"></script>
+</body>
+
+<script>
+
+    /*
+    0 -- ingresada sin análisis
+1 -- ingresada con análisis
+2 -- modificar
+3 -- Aceptada
+4 -- Rechazada
+5 -- Declinada por falta de seguimiento
+    */
+
+    const btnRubro = document.querySelectorAll('.btnRubro');
+    const nombreEquipo = document.getElementById('nombreEquipo');
+    const mejoraForm = document.getElementById('mejoraForm');
+
+    let rubro = ''
+    var mejoragrupal = 0
+    function rubroSeleccionado(num1) {
+        btnRubro[0].classList.remove('btnselected');
+        btnRubro[1].classList.remove('btnselected');
+        btnRubro[2].classList.remove('btnselected');
+        btnRubro[3].classList.remove('btnselected');
+        btnRubro[num1].classList.add('btnselected');
+        rubro = btnRubro[num1].innerText
+    }
+
+
+
+    nombreEquipo.addEventListener('keyup', () => {
+        if (nombreEquipo.value === '') {
+            document.getElementById('containerParticipantes').style.display = 'none';
+            mejoragrupal = 0
+
+        } else {
+            document.getElementById('containerParticipantes').style.display = 'block';
+            mejoragrupal = 1
+        }
+    })
+
+    function contarEquipo() {
+        const nombre_participantes = document.getElementById('nombre_participantes').value;
+
+        // Dividir los valores por la coma y eliminar espacios adicionales
+        let elementos = nombre_participantes.split(",").map(item => item.trim()).filter(item => item !== "");
+
+        // Contar la cantidad de elementos
+        return elementos.length + 1;
+
+    }
+
+    function concatenarbeneficios() {
+
+        let checkboxes = document.getElementsByClassName('checkboxbeneficios');
+
+        let valoresConcatenados = ""
+
+        for (c = 0; c < checkboxes.length; c++) {
+            if (checkboxes[c].checked) {
+                valoresConcatenados += checkboxes[c].value + ','
+            }
+        }
+
+        const beneficiosadd = document.getElementById('beneficiosadd');
+
+        // let valoresConcatenados = checkboxes.map(checkbox => checkbox.value).join(',');
+
+        let resultado = valoresConcatenados + beneficiosadd.value;
+
+        return resultado
+    }
+
+    function obtenerFechaFormato() {
+        let fecha = new Date();
+        let año = fecha.getFullYear();
+        let mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Sumar 1 porque los meses van de 0 a 11
+        let dia = String(fecha.getDate()).padStart(2, '0'); // Asegurar que tenga dos dígitos
+
+        return `${año}-${mes}-${dia}`;
+    }
+
+    mejoraForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        // var contarEquipo = contarEquipo();
+        // var concatenarbeneficios = concatenarbeneficios();
+        const formData = new FormData(mejoraForm);
+        formData.append('generador_idea', document.getElementById('nombre').value);
+        formData.append('fecha', obtenerFechaFormato());
+        formData.append('numero_participantes', contarEquipo());
+        formData.append('rubro', rubro);
+        formData.append('beneficios', concatenarbeneficios());
+        formData.append('mejora_grupal', mejoragrupal);
+        formData.append('titulo_analisis', 'nombre.pdf');
+        
+
+        // console.log(urlEncoded);
+
+        if (document.getElementById('indexmejora').value == '') {
+            const urlEncoded = new URLSearchParams(formData).toString();
+            alertaFetch(urlEncoded, 'mejoracontinua', 'subiranalisis');
+        }else{
+            formData.append('id', document.getElementById('indexmejora').value);
+            const urlEncoded = new URLSearchParams(formData).toString();
+            alertaFetch(urlEncoded, 'mejoracontinua2', 'subiranalisis');
+        }
+
+    })
+
+
+    /* */
+
+    // Estado de la aplicación
+    let mejoras = <%- JSON.stringify(obtenerValores) %>;
+
+
+    // Elementos del DOM
+    const modal = document.getElementById('modal');
+    const openModalBtn = document.getElementById('openModalBtn');
+    const openModalBtn2 = document.getElementById('openModalBtn2');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const mejorasGrid = document.getElementById('mejorasGrid');
+    const emptyState = document.getElementById('emptyState');
+    const totalMejoras = document.getElementById('totalMejoras');
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function () {
+        renderMejoras();
+        updateTotalCount();
+    });
+
+    function resetForm() {
+        mejoraForm.reset();
+    }
+
+
+    function renderMejoras() {
+        if (!mejoras) {
+            emptyState.style.display = 'block';
+            mejorasGrid.style.display = 'none';
+        } else {
+            emptyState.style.display = 'none';
+            mejorasGrid.style.display = 'grid';
+
+            descripcion = '<%= obtenerValores.generador_idea %>';
+
+            mejorasGrid.innerHTML = mejoras.map(mejora => createMejoraCard(mejora)).join('');
+        }
+    }
+
+    function createMejoraCard(mejora) {
+        let colorcarta = 0;
+        let btnActivo = '';
+        let btnModificar = 'none';
+        switch (mejora.estatus) {
+            case 0:
+                colorcarta = 'background-color: #e8f9ff; border: 2px solid rgb(173, 216, 230);'
+                btnActivo = 'block';
+                // colorcarta = '';
+                btnModificar = 'block'
+                break;
+            case 1:
+                btnActivo = 'none';
+                colorcarta = 'background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'
+                break;
+            case 2:
+                
+                btnActivo = 'none';
+                colorcarta = 'background-color: #ffead3; border: 2px solid rgb(255, 135, 0);'
+                btnModificar = 'block'
+                break;
+            case 3:
+                btnActivo = 'none';
+                colorcarta = 'background-color: #dfffe1; border: 2px solid rgb(76, 175, 80);';
+                break;
+            case 4:
+                btnActivo = 'none';
+                colorcarta = 'background-color: #ffe6e4; border: 2px solid rgb(244, 67, 54);'
+                break;
+            case 5:
+                btnActivo = 'none';
+                colorcarta = 'background-color: #ececec; border: 2px solid rgb(105, 105, 105);'
+                break;
+            case 6:
+                colorcarta = 'background-color: #d9f8f5; border: 4px solid rgb(64, 224, 208);'
+                break;
+        }
+
+        //mostrar boton de envio de evidencias
+        let btnEvidenciaS = 'none';
+        let fechaComite = 0;
+        if (mejora.fecha_respuesta_comite != null) {
+            const resultado = validarFechas(mejora.fecha_respuesta_comite);
+
+            if (resultado.dentroDe15a20 && !mejora.evidencia1 || resultado.paso1Mes && !mejora.evidencia2 || resultado.paso2Meses && !mejora.evidencia3) {
+                btnEvidenciaS = 'block';
+            }
+        }
+
+
+        function validarFechas(fechaBaseStr) {
+            const fechaBase = new Date(fechaBaseStr);
+            const hoy = new Date();
+
+            // Normalizamos horas para comparar solo fechas
+            fechaBase.setHours(0, 0, 0, 0);
+            hoy.setHours(0, 0, 0, 0);
+
+            const msPorDia = 1000 * 60 * 60 * 24;
+            const diasTranscurridos = Math.floor((hoy - fechaBase) / msPorDia);
+
+            // Condición 1: más de 15 y menos de 20 días
+            const dentroDe15a20 = diasTranscurridos > 15 && diasTranscurridos < 20;
+
+            // Condición 2: meses completos
+            const fechaMas1Mes = new Date(fechaBase);
+            fechaMas1Mes.setMonth(fechaBase.getMonth() + 1);
+
+            const fechaMas2Meses = new Date(fechaBase);
+            fechaMas2Meses.setMonth(fechaBase.getMonth() + 2);
+
+            const paso1Mes = hoy >= fechaMas1Mes;
+            const paso2Meses = hoy >= fechaMas2Meses;
+
+            return {
+                diasTranscurridos,
+                dentroDe15a20,
+                paso1Mes,
+                paso2Meses
+            };
+        }
+
+
+        const fechaFormateada = new Date(mejora.fecha).toLocaleDateString('es-ES');
+        const beneficiosA = mejora.beneficios.split(',');
+        const badgesHtml = beneficiosA.map(tipo =>
+            `<span class="badge ${getBadgeClass(tipo)}">${tipo}</span>`
+        ).join('');
+
+        return `
+        <div class="mejora-card" style="${colorcarta}">
+            <div class="card-header">
+                <h3 class="card-title">${mejora.nombre_mejora}</h3>
+                <div class="card-meta">
+                    <div>
+                        <i class="fas fa-calendar"></i>
+                        ${fechaFormateada}
+                    </div>
+                    ${mejora.requiereInversion ? '<span class="badge badge-investment">Requiere Inversión</span>' : ''}
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-section">
+                    <div class="card-info">
+                        <i class="fas fa-user"></i>
+                        <span class="name">${mejora.generador_idea}</span>
+                    </div>
+                    <div class="card-info">
+                        <i class="fas fa-address-card"></i>
+                        <span class="location">${descripcion}</span>
+                    </div>
+                </div>
+                
+                <div class="card-section">
+                    <div class="section-title">Beneficios:</div>
+                    <div class="badges">
+                        ${badgesHtml}
+                    </div>
+                </div>
+                
+                <div class="card-section">
+                    <div class="section-title">Situación Actual:</div>
+                    <div class="section-text">${mejora.situacion_actual}</div>
+                </div>
+                
+                <div class="card-section">
+                    <div class="section-title">Mejora Propuesta:</div>
+                    <div class="section-text">${mejora.situacion_mejora}</div>
+                </div>
+                <div class="card-section">
+                    <button class="btn btn-primary" style = "display: ${btnActivo}" id="btnAnalisis" onclick= "location.href ='/admin/subiranalisis/${mejora.id}'">Subir Análisis</button>
+                </div>
+                <div class="card-section">
+                    <button class="btn" id="btnEvidencia" style = "background-color: #1c6e46; color : white; display: ${btnEvidenciaS}" onclick= "location.href ='/admin/subirevidencia/${mejora.id}'">Subir Evidencia</button>
+                </div>
+                <div class="card-section">
+                    <button class="btn btn-primary"  id="btnModificar" style = "display: ${btnModificar}" onclick= "modificarMejora(${mejora.id})">Modificar Mejora</button>
+                </div>
+            </div>
+        </div>
+    `;
+    }
+
+        function getBadgeClass(tipo) {
+        const badgeClasses = {
+            "Genera un Ahorro Material": "badge-material",
+            "Genera un Ahorro Económico": "badge-economic",
+            "Ahorra Tiempo": "badge-time",
+            "Facilita el Trabajo Diario": "badge-work",
+            "Mejora el Ambiente Laboral": "badge-environment",
+            "Entorno Más Saludable y Sostenible": "badge-sustainable",
+            "Efectividad en tu Proceso": "badge-effectiveness",
+            "Mitiga el Impacto Negativo": "badge-impact",
+            "Cambio en Beneficio de la Organización": "badge-organization"
+        };
+
+        return badgeClasses[tipo] || "badge-organization";
+    }
+
+
+    function updateTotalCount() {
+        totalMejoras.textContent = `Total de mejoras: ${mejoras.length}`;
+    }
+
+
+</script>
+
+</html>

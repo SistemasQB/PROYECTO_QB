@@ -1,4 +1,5 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Sequelize } from "sequelize";
+const sequelize = new Sequelize('sqlite::memory:');
 import db from "../config/db.js";
 
 const Mejora = db.define('mejora', {
@@ -101,13 +102,25 @@ const Mejora = db.define('mejora', {
         type: DataTypes.STRING(50),
         allowNull: true,
     },
+    fechaevidencia1: {
+        type: DataTypes.DATEONLY,
+        defaultValue: Sequelize.NOW
+    },
     evidencia2: {
         type: DataTypes.STRING(50),
         allowNull: true,
     },
+    fechaevidencia2: {
+        type: DataTypes.DATEONLY,
+        defaultValue: Sequelize.NOW
+    },
     evidencia3: {
         type: DataTypes.STRING(50),
         allowNull: true,
+    },
+    fechaevidencia3: {
+        type: DataTypes.DATEONLY,
+        defaultValue: Sequelize.NOW
     }
 }, {
     timestamps: false,

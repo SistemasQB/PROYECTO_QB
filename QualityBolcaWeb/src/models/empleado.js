@@ -23,6 +23,10 @@ const Empleados = db.define('empleados', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    departamento:{
+        type: DataTypes.STRING,
+        allowNull: true
+    }
 },{
     tableName: 'empleados',
     sequelize,

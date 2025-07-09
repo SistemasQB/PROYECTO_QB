@@ -53,6 +53,11 @@ import { emailRequisicion, registroCursos, emailMantenimientoA, emailSolicitud }
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath ( import . meta . url ); // obtener la ruta resuelta al archivo 
+const __dirname = path. dirname (__filename); // obtener el nombre del directorio
+// const dataPath = path.join(__dirname, 'data.json');
 import RegistroMa from "../models/registroma.js";
 
 // Comunicacion.belongsTo(Gch_alta, { foreignKey: 'id', targetKey: 'curp'  });
@@ -589,6 +594,21 @@ controller.mejoracontinua3 = async (req, res) => {
 
 }
 
+controller.mejoracontinua4 = async (req, res) => {
+
+    // const { codigoempleado } = req.usuario
+
+    // const obtenerDatos = await Empleados.findOne({ where: { codigoempleado: codigoempleado } });
+    const obtenerValores = await Mejora.findAll({ order: [[Sequelize.literal('fecha'), 'DESC']] });
+
+
+    res.render('admin/mejoracontinuaall', {
+        csrfToken: req.csrfToken(),
+        // obtenerDatos,
+        obtenerValores
+    })
+}
+
 controller.subiranalisis = async (req, res) => {
 
     const { mejoraid } = req.params
@@ -905,7 +925,116 @@ controller.validarusuario = async (req, res) => {
 }
 
 controller.blogayuda = (req, res) => {
-    res.render('admin/blogdeayuda')
+
+function cargarJSONLocal() {
+  const ruta = path.join(__dirname, 'blogayuda.json');
+  try {
+    const contenido = fs.readFileSync(ruta, 'utf-8');
+    posts = JSON.parse(contenido);
+    // console.log("Posts cargados:", posts);
+    // Aquí puedes usar `posts` como quieras
+  } catch (error) {
+    console.error("Error al leer el archivo JSON:", error);
+  }
 }
+
+cargarJSONLocal();
+
+    res.render('admin/blogdeayuda', {
+        csrfToken: req.csrfToken(),
+        posts
+    })
+}
+controller.blogayuda2 = (req, res) => {
+
+   const nuevoPost = req.body;
+
+  const ruta = path.join(__dirname, 'blogayuda.json');
+
+  try {
+    // Leer el archivo actual
+    const contenido = fs.readFileSync(ruta, 'utf-8');
+    const posts = JSON.parse(contenido);
+
+    delete nuevoPost._csrf
+
+    nuevoPost.replies = []
+
+    // Agregar el nuevo post
+    posts.push(nuevoPost);
+
+    // Guardar el archivo actualizado
+    fs.writeFileSync(ruta, JSON.stringify(posts, null, 2), 'utf-8');
+
+    res.send({ ok: true, msg: 'Post guardado correctamente' });
+  } catch (error) {
+    console.error('Error al guardar el post:', error);
+    res.status(500).send({ ok: false, msg: 'Error al guardar el post' });
+  }
+}
+
+
+controller.blogayuda3 = (req, res) => {
+  const nuevoPost = { ...req.body };
+  const { postId, replyPath } = req.body;
+
+
+  const ruta = path.join(__dirname, 'blogayuda.json');
+
+  try {
+    const contenido = fs.readFileSync(ruta, 'utf-8');
+    const posts = JSON.parse(contenido);
+
+    const post = posts.find((p) => p.id == postId);
+
+    // const record = mejoras.find(item => item.id === mejoraId);
+
+    // Limpieza de campos innecesarios
+    delete nuevoPost._csrf;
+    delete nuevoPost.currentReplyTarget;
+
+    
+
+    nuevoPost.replies = [];
+
+    if (post) {
+      let targetReplies = post.replies;
+
+      // Navegar hasta el nivel correcto de respuestas anidadas
+      for (let i = 0; i < replyPath.length - 1; i++) {
+        targetReplies = targetReplies[replyPath[i]].replies;
+      }
+
+      if (replyPath.length === 0) {
+        post.replies.push(nuevoPost);
+      } else {
+        targetReplies[replyPath[replyPath.length - 1]].replies.push(nuevoPost);
+      }
+
+      // ✅ Guardar el objeto completo actualizado
+      fs.writeFileSync(ruta, JSON.stringify(posts, null, 2), 'utf-8');
+
+      res.send({ ok: true, msg: 'Post guardado correctamente' });
+    } else {
+      res.status(404).send({ ok: false, msg: 'Post no encontrado' });
+    }
+  } catch (error) {
+    console.error('Error al guardar el post:', error);
+    res.status(500).send({ ok: false, msg: 'Error al guardar el post' });
+  }
+};
+
+let posts;
+
+
+
+
+
+// Guardar datos
+// function guardarDatos(data) {
+//   fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+// }
+
+
 
 export default controller;

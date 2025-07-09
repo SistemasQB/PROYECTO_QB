@@ -1,3 +1,4 @@
+// Datos iniciales del foro
 const initialPosts = [
   {
     id: 1,
