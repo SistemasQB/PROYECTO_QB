@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Colaboradores</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+</head>
+
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  color: #334155;
+}
+
+/* Header Styles */
+.header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header-text h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.header-text p {
+  color: #64748b;
+}
+
+.search-container {
+  align-self: flex-start;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 320px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px 8px 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Main Content */
+.main-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.colaboradores-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.colaboradores-table thead {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.colaboradores-table th {
+  text-align: left;
+  padding: 16px 24px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+}
+
+.colaboradores-table th.text-right {
+  text-align: right;
+}
+
+.colaboradores-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s;
+}
+
+.colaboradores-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.colaboradores-table td {
+  padding: 16px 24px;
+  vertical-align: middle;
+}
+
+.colaborador-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.colaborador-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.colaborador-puesto {
+  color: #64748b;
+}
+
+.permisos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-secondary {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.badge-outline {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.btn-outline:hover {
+  background: #f3f4f6;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 896px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  padding: 24px 24px 0 24px;
+  border-bottom: 1px solid #e2e8f0;
+  position: relative;
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.modal-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.modal-description {
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.modal-close:hover {
+  background: #f3f4f6;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.categoria-section {
+  margin-bottom: 24px;
+}
+
+.categoria-title {
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.permisos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.permiso-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.permiso-card:hover {
+  background: #f8fafc;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.permiso-card.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.permiso-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.permiso-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.permiso-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.permiso-card.active .permiso-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.permiso-details h4 {
+  font-weight: 500;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.permiso-details p {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #d1d5db;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.switch.active {
+  background: #3b82f6;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.switch.active::after {
+  transform: translateX(20px);
+}
+
+.modal-footer {
+  padding: 24px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .header-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-input-wrapper {
+    width: 100%;
+  }
+
+  .colaboradores-table {
+    font-size: 14px;
+  }
+
+  .colaboradores-table th,
+  .colaboradores-table td {
+    padding: 12px 16px;
+  }
+
+  .permisos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-container">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Gestión de Colaboradores</h1>
+                    <p>Administra permisos y accesos de tu equipo</p>
+                </div>
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Buscar colaboradores..." class="search-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="main-container">
+        <div class="table-container">
+            <table class="colaboradores-table">
+                <thead>
+                    <tr>
+                        <th>Colaborador</th>
+                        <th>Puesto</th>
+                        <th>Permisos</th>
+                        <th class="text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="colaboradoresTableBody">
+                    <!-- Los colaboradores se cargarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="permisosModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div id="modalAvatar" class="modal-avatar"></div>
+                    <span id="modalTitle">Permisos de Usuario</span>
+                </div>
+                <p class="modal-description">Configura los permisos de acceso organizados por categorías</p>
+                <button class="modal-close" id="closeModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body" id="modalBody">
+                <!-- Los permisos se cargarán dinámicamente -->
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelBtn">Cancelar</button>
+                <button class="btn btn-primary" id="saveBtn">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- <script src="script.js"></script> -->
+</body>
+
+<script>
+    // Datos de colaboradores
+const colaboradores = [
+  {
+    id: 1,
+    nombre: "Ana García",
+    puesto: "Gerente de Ventas",
+    permisos: ["ventas", "reportes", "marketing"],
+    iniciales: "AG",
+    color: "#a855f7",
+  },
+  {
+    id: 2,
+    nombre: "Carlos López",
+    puesto: "Desarrollador Senior",
+    permisos: ["soporte", "usuarios", "administracion"],
+    iniciales: "CL",
+    color: "#3b82f6",
+  },
+  {
+    id: 3,
+    nombre: "María Rodríguez",
+    puesto: "Contadora",
+    permisos: ["finanzas", "reportes", "contabilidad"],
+    iniciales: "MR",
+    color: "#10b981",
+  },
+  {
+    id: 4,
+    nombre: "Juan Pérez",
+    puesto: "Especialista Marketing",
+    permisos: ["marketing", "ventas"],
+    iniciales: "JP",
+    color: "#f59e0b",
+  },
+  {
+    id: 5,
+    nombre: "Laura Martínez",
+    puesto: "Administradora",
+    permisos: ["administracion", "usuarios", "reportes", "rrhh"],
+    iniciales: "LM",
+    color: "#ec4899",
+  },
+  {
+    id: 6,
+    nombre: "Roberto Silva",
+    puesto: "Jefe de Logística",
+    permisos: ["logistica", "inventario", "compras"],
+    iniciales: "RS",
+    color: "#6366f1",
+  },
+]
+
+// Configuración de permisos
+const permisosConfig = {
+  ventas: {
+    label: "Ventas",
+    icon: "shopping-cart",
+    categoria: "Comercial",
+    descripcion: "Gestionar ventas y clientes",
+  },
+  inventario: {
+    label: "Inventario",
+    icon: "package",
+    categoria: "Operaciones",
+    descripcion: "Control de stock y productos",
+  },
+  reportes: {
+    label: "Reportes",
+    icon: "bar-chart-3",
+    categoria: "Análisis",
+    descripcion: "Ver reportes y estadísticas",
+  },
+  usuarios: {
+    label: "Usuarios",
+    icon: "users",
+    categoria: "Administración",
+    descripcion: "Gestionar usuarios del sistema",
+  },
+  finanzas: {
+    label: "Finanzas",
+    icon: "dollar-sign",
+    categoria: "Financiero",
+    descripcion: "Acceso a información financiera",
+  },
+  marketing: {
+    label: "Marketing",
+    icon: "megaphone",
+    categoria: "Comercial",
+    descripcion: "Campañas y promociones",
+  },
+  soporte: {
+    label: "Soporte",
+    icon: "headphones",
+    categoria: "Operaciones",
+    descripcion: "Atención al cliente",
+  },
+  administracion: {
+    label: "Admin",
+    icon: "shield",
+    categoria: "Administración",
+    descripcion: "Acceso administrativo completo",
+  },
+  compras: {
+    label: "Compras",
+    icon: "package",
+    categoria: "Operaciones",
+    descripcion: "Gestión de proveedores",
+  },
+  rrhh: {
+    label: "RRHH",
+    icon: "users",
+    categoria: "Administración",
+    descripcion: "Recursos humanos",
+  },
+  contabilidad: {
+    label: "Contabilidad",
+    icon: "dollar-sign",
+    categoria: "Financiero",
+    descripcion: "Registros contables",
+  },
+  logistica: {
+    label: "Logística",
+    icon: "package",
+    categoria: "Operaciones",
+    descripcion: "Envíos y distribución",
+  },
+}
+
+// Variables globales
+let colaboradorSeleccionado = null
+let permisosTemporales = []
+
+// Función para crear icono SVG
+function createIcon(iconName) {
+  const icons = {
+    "shopping-cart":
+      '<path d="m1 1 4 4 4.68 11h6.64l4.68-11h-15.32z"></path><circle cx="9" cy="22" r="1"></circle><circle cx="20" cy="22" r="1"></circle>',
+    package:
+      '<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>',
+    "bar-chart-3": '<path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path>',
+    users:
+      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="m22 21-3.5-3.5a4 4 0 1 0-1.41 1.41L21 22z"></path>',
+    "dollar-sign":
+      '<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
+    megaphone: '<path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>',
+    headphones:
+      '<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>',
+    settings:
+      '<circle cx="12" cy="12" r="3"></circle><path d="m12 1 2.09 6.26L22 9l-6.26 2.09L14 19l-2.09-6.26L4 11l6.26-2.09L12 1z"></path>',
+  }
+
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[iconName] || icons["package"]}</svg>`
+}
+
+// Función para renderizar colaboradores
+function renderColaboradores(colaboradoresFiltrados = colaboradores) {
+  const tbody = document.getElementById("colaboradoresTableBody")
+  tbody.innerHTML = ""
+
+  colaboradoresFiltrados.forEach((colaborador) => {
+    const row = document.createElement("tr")
+
+    // Crear badges de permisos
+    const permisosVisibles = colaborador.permisos.slice(0, 3)
+    const permisosRestantes = colaborador.permisos.length - 3
+
+    let permisosHTML = permisosVisibles
+      .map((permiso) => {
+        const config = permisosConfig[permiso]
+        return `<span class="badge badge-secondary">
+                ${createIcon(config.icon)}
+                <span>${config.label}</span>
+            </span>`
+      })
+      .join("")
+
+    if (permisosRestantes > 0) {
+      permisosHTML += `<span class="badge badge-outline">+${permisosRestantes} más</span>`
+    }
+
+    row.innerHTML = `
+            <td>
+                <div class="colaborador-info">
+                    <div class="avatar" style="background-color: ${colaborador.color}">
+                        ${colaborador.iniciales}
+                    </div>
+                    <div class="colaborador-name">${colaborador.nombre}</div>
+                </div>
+            </td>
+            <td>
+                <span class="colaborador-puesto">${colaborador.puesto}</span>
+            </td>
+            <td>
+                <div class="permisos-container">
+                    ${permisosHTML}
+                </div>
+            </td>
+            <td style="text-align: right;">
+                <button class="btn btn-outline" onclick="abrirModal(${colaborador.id})">
+                    ${createIcon("settings")}
+                    Permisos
+                </button>
+            </td>
+        `
+
+    tbody.appendChild(row)
+  })
+}
+
+// Función para abrir modal
+function abrirModal(colaboradorId) {
+  colaboradorSeleccionado = colaboradores.find((c) => c.id === colaboradorId)
+  permisosTemporales = [...colaboradorSeleccionado.permisos]
+
+  // Actualizar título del modal
+  document.getElementById("modalTitle").textContent = `Permisos de ${colaboradorSeleccionado.nombre}`
+
+  // Actualizar avatar del modal
+  const modalAvatar = document.getElementById("modalAvatar")
+  modalAvatar.textContent = colaboradorSeleccionado.iniciales
+  modalAvatar.style.backgroundColor = colaboradorSeleccionado.color
+
+  // Renderizar permisos por categoría
+  renderPermisosModal()
+
+  // Mostrar modal
+  document.getElementById("permisosModal").classList.add("active")
+}
+
+// Función para cerrar modal
+function cerrarModal() {
+  document.getElementById("permisosModal").classList.remove("active")
+  colaboradorSeleccionado = null
+  permisosTemporales = []
+}
+
+// Función para renderizar permisos en el modal
+function renderPermisosModal() {
+  const modalBody = document.getElementById("modalBody")
+  modalBody.innerHTML = ""
+
+  // Agrupar permisos por categoría
+  const permisosPorCategoria = {}
+  Object.entries(permisosConfig).forEach(([key, config]) => {
+    if (!permisosPorCategoria[config.categoria]) {
+      permisosPorCategoria[config.categoria] = []
+    }
+    permisosPorCategoria[config.categoria].push({ key, ...config })
+  })
+
+  // Crear secciones por categoría
+  Object.entries(permisosPorCategoria).forEach(([categoria, permisos]) => {
+    const section = document.createElement("div")
+    section.className = "categoria-section"
+
+    const title = document.createElement("h3")
+    title.className = "categoria-title"
+    title.textContent = categoria
+    section.appendChild(title)
+
+    const grid = document.createElement("div")
+    grid.className = "permisos-grid"
+
+    permisos.forEach(({ key, label, icon, descripcion }) => {
+      const card = document.createElement("div")
+      card.className = `permiso-card ${permisosTemporales.includes(key) ? "active" : ""}`
+      card.onclick = () => togglePermiso(key)
+
+      card.innerHTML = `
+                <div class="permiso-content">
+                    <div class="permiso-info">
+                        <div class="permiso-icon">
+                            ${createIcon(icon)}
+                        </div>
+                        <div class="permiso-details">
+                            <h4>${label}</h4>
+                            <p>${descripcion}</p>
+                        </div>
+                    </div>
+                    <div class="switch ${permisosTemporales.includes(key) ? "active" : ""}" data-permiso="${key}"></div>
+                </div>
+            `
+
+      grid.appendChild(card)
+    })
+
+    section.appendChild(grid)
+    modalBody.appendChild(section)
+  })
+}
+
+// Función para toggle permiso
+function togglePermiso(permiso) {
+  if (permisosTemporales.includes(permiso)) {
+    permisosTemporales = permisosTemporales.filter((p) => p !== permiso)
+  } else {
+    permisosTemporales.push(permiso)
+  }
+
+  // Actualizar UI
+  renderPermisosModal()
+}
+
+// Función para guardar permisos
+function guardarPermisos() {
+  if (colaboradorSeleccionado) {
+    const index = colaboradores.findIndex((c) => c.id === colaboradorSeleccionado.id)
+    colaboradores[index].permisos = [...permisosTemporales]
+
+    console.log(`Permisos guardados para ${colaboradorSeleccionado.nombre}:`, permisosTemporales)
+
+    // Actualizar tabla
+    renderColaboradores()
+
+    // Cerrar modal
+    cerrarModal()
+  }
+}
+
+// Función para filtrar colaboradores
+function filtrarColaboradores(busqueda) {
+  const colaboradoresFiltrados = colaboradores.filter(
+    (colaborador) =>
+      colaborador.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      colaborador.puesto.toLowerCase().includes(busqueda.toLowerCase()),
+  )
+  renderColaboradores(colaboradoresFiltrados)
+}
+
+// Event listeners
+document.addEventListener("DOMContentLoaded", () => {
+  // Renderizar colaboradores iniciales
+  renderColaboradores()
+
+  // Búsqueda
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    filtrarColaboradores(e.target.value)
+  })
+
+  // Modal events
+  document.getElementById("closeModal").addEventListener("click", cerrarModal)
+  document.getElementById("cancelBtn").addEventListener("click", cerrarModal)
+  document.getElementById("saveBtn").addEventListener("click", guardarPermisos)
+
+  // Cerrar modal al hacer click fuera
+  document.getElementById("permisosModal").addEventListener("click", function (e) {
+    if (e.target === this) {
+      cerrarModal()
+    }
+  })
+
+  // Prevenir cierre del modal al hacer click dentro del contenido
+  document.querySelector(".modal-content").addEventListener("click", (e) => {
+    e.stopPropagation()
+  })
+})
+
+</script>
+
+</html>

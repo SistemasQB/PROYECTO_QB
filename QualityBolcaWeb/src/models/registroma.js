@@ -22,6 +22,11 @@ const RegistroMa = db.define('registroMa', {
         type: DataTypes.STRING,
         allowNull: true
     }
+},{
+    timezone: '-06:00', // CST (o -05:00 si estás en horario de verano)
+  dialectOptions: {
+    useUTC: false,
+  }
 })
 
 

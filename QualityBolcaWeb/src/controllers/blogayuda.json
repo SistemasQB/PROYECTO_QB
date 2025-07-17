@@ -21,6 +21,16 @@
             "department": "Recursos Humanos",
             "timestamp": "Hace 30 min",
             "replies": []
+          },
+          {
+            "id": "1752694302786",
+            "postId": "1",
+            "replyPath": "0",
+            "content": "no estoy contigo",
+            "author": "oscar",
+            "department": "Tecnologías de la información",
+            "timestamp": "Ahora",
+            "replies": []
           }
         ]
       },

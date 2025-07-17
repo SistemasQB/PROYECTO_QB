@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Mejoras</title>
+    <link href="../styles/calidad/evidencias.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Gestión de Mejoras</h1>
+
+        <div id="cardsContainer" class="list-container">
+            <!-- Las filas de la lista se generarán dinámicamente aquí -->
+        </div>
+    </div>
+
+    <!-- Modal para mostrar PDF -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle">Evidencia</h3>
+            <div class="pdf-container">
+                <!-- <p id="pdfPlaceholder">Aquí se mostraría el PDF: <span id="pdfName"></span></p> -->
+                <div class="pdf-viewer">
+                    <!-- <div class="pdf-placeholder"> -->
+                        <embed src="" type="" id="embedPdf" width="100%" height="100%">
+                    <!-- </div> -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="accept-btn btnAcceptReject" onclick="acceptEvidence()">Aceptar</button>
+                <button class="reject-btn btnAcceptReject" onclick="showRejectSection()">Rechazar</button>
+            </div>
+            <div id="rejectSection" class="reject-section" style="display: none;">
+                <h4>Motivo del rechazo:</h4>
+                <textarea id="rejectComment" placeholder="Ingresa el comentario del rechazo..."></textarea>
+                <button onclick="submitRejection()">Enviar Rechazo</button>
+                <button onclick="cancelRejection()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/calidad/evidencias.js"></script>
+</body>
+
+<script>
+
+    const sampleData = <%- JSON.stringify(obtenerValores) %>;
+
+let currentData = null;
+
+    // Cargar datos automáticamente al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    displayCards(sampleData);
+});
+</script>
+
+</html>

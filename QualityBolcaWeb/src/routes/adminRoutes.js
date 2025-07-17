@@ -16,6 +16,9 @@ const uploadmantenimiento = multer({ storage: storage });
 
 
 router.get('/inicio', protegetRuta, adminController.inicio);
+router.get('/permisosusuarios', protegetRuta, adminController.permisosusuarios);
+router.post('/permisosusuarios', protegetRuta, adminController.permisosusuarios2);
+
 router.get('/enviarfoto', adminController.enviar);
 router.get('/requisicion', adminController.requisicion);
 router.post('/requisicion', adminController.requisicion2);
@@ -52,7 +55,7 @@ router.post('/blogayuda2', adminController.blogayuda3);
 router.get('/subiranalisis/:mejoraid', protegetRuta, adminController.subiranalisis);
 router.post('/subiranalisis/:mejoraid', protegetRuta,upload3.single('analisisFile'), adminController.subiranalisis2);
 router.get('/subirevidencia/:mejoraid', protegetRuta, adminController.subirevidencia);
-router.post('/subirevidencia/:mejoraid', protegetRuta,upload4.single('analisisFile'), adminController.subirevidencia2);
+router.post('/subirevidencia/:mejoraid', protegetRuta,upload4.single('evidenciaFile'), adminController.subirevidencia2);
 router.get('/reuniones', adminController.reuniones);
 router.post('/reuniones', adminController.reuniones2);
 router.get('/glosario', adminController.glosario);

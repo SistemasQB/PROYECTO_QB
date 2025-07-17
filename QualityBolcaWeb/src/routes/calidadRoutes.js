@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.get('/verificacion5s' ,calidadController.verificacion5s);
 router.post('/verificacion5s' ,calidadController.verificacion5s2);
+router.get('/evidencias' ,calidadController.evidencias);
+
 
 
 export default router;

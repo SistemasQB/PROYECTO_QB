@@ -244,6 +244,13 @@ controller.altagch2 = async (req, res) => {
 
 }
 
+controller.comedor = (req, res) => {
+    res.render('admin/capitalhumano/comedor')
+}
+controller.comedor2 = (req, res) => {
+    res.render('admin/capitalhumano/comedor')
+}
+
 export default controller;
 
 

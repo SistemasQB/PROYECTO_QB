@@ -42,7 +42,7 @@ router.post('/enviarCorreo', customerController.enviarCorreo);
 router.get('/juegos', customerController.juegos);
 router.post('/juegos', customerController.juegos2);
 router.get('/documentosControlados', customerController.documentosControlados);
-router.get('/calidad/:documento', customerController.calidadD)
+// router.get('/calidad/:documento', customerController.calidadD)
 
 // router.get('/api/:variable', customerController.api);
 

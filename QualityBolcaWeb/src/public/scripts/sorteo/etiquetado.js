@@ -15,7 +15,7 @@ class VerificacionApp {
       const cantidadStorage = localStorage.getItem("cantidadPiezas")
   
       if (!codigoBaseStorage || !cantidadStorage) {
-        window.location.href = "index.html"
+        // window.location.href = "index.html"
         return
       }
   
@@ -35,9 +35,9 @@ class VerificacionApp {
   
     setupEventListeners() {
       // Botón volver
-      document.getElementById("backBtn").addEventListener("click", () => {
-        window.location.href = "index.html"
-      })
+      // document.getElementById("backBtn").addEventListener("click", () => {
+      //   window.location.href = "index.html"
+      // })
   
       // Input de código con Enter
       const codigoInput = document.getElementById("codigoInput")
@@ -214,7 +214,7 @@ class VerificacionApp {
       // Limpiar localStorage y reiniciar
       localStorage.removeItem("codigoBase")
       localStorage.removeItem("cantidadPiezas")
-      window.location.href = "index.html"
+      // window.location.href = "index.html"
     }
   }
   

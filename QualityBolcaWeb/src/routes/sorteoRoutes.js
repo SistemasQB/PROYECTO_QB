@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.get('/kiosk',sorteoController.kiosk);
 router.post('/kiosk',sorteoController.kiosk2);
-router.get('/etiquetado',sorteoController.etiquetado);
-router.post('/etiquetado',sorteoController.etiquetado2);
+router.get('/honda/etiquetado',sorteoController.etiquetado);
+router.post('/honda/etiquetado',sorteoController.etiquetado2);
 router.get('/cc1/vistatotal',sorteoController.vistatotal);
 router.get('/cc1/checklist',sorteoController.checklist);
 router.post('/cc1/checklist',sorteoController.checklist2);

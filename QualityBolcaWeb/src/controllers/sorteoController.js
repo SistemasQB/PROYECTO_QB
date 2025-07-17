@@ -51,11 +51,11 @@ controller.kiosk2 = (req, res) => {
 }
 
 controller.etiquetado = (req, res) => {
-    res.render('admin/sorteo/etiquetado');
+    res.render('admin/sorteo/honda/etiquetado');
 }
 
 controller.etiquetado2 = (req, res) => {
-    res.render('admin/sorteo/etiquetado');
+    res.render('admin/sorteo/honda/etiquetado');
 }
 
 controller.vistatotal = (req, res) => {

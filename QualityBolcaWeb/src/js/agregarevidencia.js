@@ -9,7 +9,7 @@ import Swal from 'sweetalert2'
 const token = document.querySelector('meta[name="csrf-token"]').content
 //agregar pdf
 
-Dropzone.options.formAnalisis = {
+Dropzone.options.formEvidencia = {
     dictDefaultMessage: 'Sube tu Evidencia aqui',
     acceptedFiles: '.pdf',
     maxFilesize: 10,
@@ -22,7 +22,7 @@ Dropzone.options.formAnalisis = {
     headers: {
         'CSRF-Token': token,
     },
-    paramName: 'analisisFile',
+    paramName: 'evidenciaFile',
 
 
     init: function () {

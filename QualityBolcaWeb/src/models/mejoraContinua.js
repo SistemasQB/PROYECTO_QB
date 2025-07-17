@@ -104,7 +104,7 @@ const Mejora = db.define('mejora', {
     },
     fechaevidencia1: {
         type: DataTypes.DATEONLY,
-        defaultValue: Sequelize.NOW
+        allowNull: true,
     },
     evidencia2: {
         type: DataTypes.STRING(50),
@@ -112,7 +112,7 @@ const Mejora = db.define('mejora', {
     },
     fechaevidencia2: {
         type: DataTypes.DATEONLY,
-        defaultValue: Sequelize.NOW
+        allowNull: true,
     },
     evidencia3: {
         type: DataTypes.STRING(50),
@@ -120,7 +120,15 @@ const Mejora = db.define('mejora', {
     },
     fechaevidencia3: {
         type: DataTypes.DATEONLY,
-        defaultValue: Sequelize.NOW
+        allowNull: true,
+    },
+    evidencia4: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+    },
+    fechaevidencia4: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
     }
 }, {
     timestamps: false,

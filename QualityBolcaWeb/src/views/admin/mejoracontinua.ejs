@@ -7,11 +7,6 @@
     <title>Registro de Mejora Continua</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
 </head>
 
 <style>
@@ -577,27 +572,57 @@
             max-height: 95vh;
         }
     }
+
+
+    /* CSS: Estilo del navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #f7f7f7;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar-logo img {
+  height: 50px;
+  object-fit: contain;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-links li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-links li a:hover {
+  color: #007BFF;
+}
+
+
 </style>
 
 <body>
         <div>
-      <nav class="navbar bg-dark navbar-expand-lg bg-body-tertiary"  data-bs-theme="dark">
-        <div class="container-fluid">
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link active" style="background-color: rgb(29, 211, 211);" aria-current="page" href="#">Mis mejoras</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="mejoracontinuaall">Todas Las mejoras</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="blogayuda">Foro de ayuda</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <!-- HTML: Navbar básico -->
+<nav class="navbar">
+  <div class="navbar-logo">
+    <img src="../img/Quality-BOLCA.png" alt="Logo Empresa">
+  </div>
+  <ul class="navbar-links">
+    <li><a href="#" style="background-color: rgb(29, 211, 211);">Mis mejoras</a></li>
+    <li><a href="mejoracontinuaall">Todas Las mejoras</a></li>
+    <li><a href="blogayuda">Foro de ayuda</a></li>
+  </ul>
+</nav>
+
     </div>
     <!-- Header -->
     <header class="header">
@@ -826,6 +851,11 @@
                             <label for="mejora-ambiente">Mejora el Ambiente Laboral</label>
                         </div>
                         <div class="checkbox-item">
+                            <input type="checkbox" id="entorno-saludable" class="checkboxbeneficios"
+                                value="Crear un entorno más saludable y sostenible">
+                            <label for="entorno-saludable">Crear un entorno más saludable y sostenible</label>
+                        </div>
+                        <div class="checkbox-item">
                             <input type="checkbox" id="ahorro-economico" class="checkboxbeneficios"
                                 value="Genera un Ahorro Económico">
                             <label for="ahorro-economico">Genera un Ahorro Económico</label>
@@ -921,14 +951,15 @@
 
 <script>
 
-    /*
+/*
     0 -- ingresada sin análisis
 1 -- ingresada con análisis
 2 -- modificar
 3 -- Aceptada
 4 -- Rechazada
 5 -- Declinada por falta de seguimiento
-    */
+6 -- Implementada
+    */
 
     const btnRubro = document.querySelectorAll('.btnRubro');
     const nombreEquipo = document.getElementById('nombreEquipo');
@@ -943,6 +974,8 @@
         btnRubro[3].classList.remove('btnselected');
         btnRubro[num1].classList.add('btnselected');
         rubro = btnRubro[num1].innerText
+        console.log(rubro);
+        
     }
 
 
@@ -1033,6 +1066,8 @@
     let mejoras = <%- JSON.stringify(obtenerValores) %>;
     let usuario = <%- JSON.stringify(obtenerDatos) %>;
 
+    console.log(mejoras);
+    
 
     // Elementos del DOM
     const modal = document.getElementById('modal');
@@ -1215,14 +1250,13 @@
         //mostrar boton de envio de evidencias
         let btnEvidenciaS = 'none';
         let fechaComite = 0;
-        if (mejora.fecha_respuesta_comite != null) {
+        if (mejora.estatus == 3 && mejora.fecha_respuesta_comite) {
             const resultado = validarFechas(mejora.fecha_respuesta_comite);
 
-            if (resultado.dentroDe15a20 && !mejora.evidencia1 || resultado.paso1Mes && !mejora.evidencia2 || resultado.paso2Meses && !mejora.evidencia3) {
+            if (resultado.dentroDe15a20 && !mejora.evidencia1 || resultado.paso1Mes && !mejora.evidencia2 || resultado.paso2Meses && !mejora.evidencia3 || resultado.paso3Meses && !mejora.evidencia4   ) {
                 btnEvidenciaS = 'block';
             }
         }
-
 
         function validarFechas(fechaBaseStr) {
             const fechaBase = new Date(fechaBaseStr);
@@ -1245,24 +1279,31 @@
             const fechaMas2Meses = new Date(fechaBase);
             fechaMas2Meses.setMonth(fechaBase.getMonth() + 2);
 
+            const fechaMas3Meses = new Date(fechaBase);
+            fechaMas3Meses.setMonth(fechaBase.getMonth() + 3);
+
             const paso1Mes = hoy >= fechaMas1Mes;
             const paso2Meses = hoy >= fechaMas2Meses;
+            const paso3Meses = hoy >= fechaMas3Meses;
 
             return {
                 diasTranscurridos,
                 dentroDe15a20,
                 paso1Mes,
-                paso2Meses
+                paso2Meses,
+                paso3Meses
             };
         }
 
 
-        const fechaFormateada = new Date(mejora.fecha).toLocaleDateString('es-ES');
+        const fechaFormateada = new Date(mejora.fecha);
         const beneficiosA = mejora.beneficios.split(',');
+        fechaFormateada.setDate(fechaFormateada.getDate() + 1)
         const badgesHtml = beneficiosA.map(tipo =>
             `<span class="badge ${getBadgeClass(tipo)}">${tipo}</span>`
         ).join('');
 
+        
         return `
         <div class="mejora-card" style="${colorcarta}">
             <div class="card-header">
@@ -1270,7 +1311,7 @@
                 <div class="card-meta">
                     <div>
                         <i class="fas fa-calendar"></i>
-                        ${fechaFormateada}
+                        ${fechaFormateada.toLocaleDateString('es-ES')}
                     </div>
                     ${mejora.requiereInversion ? '<span class="badge badge-investment">Requiere Inversión</span>' : ''}
                 </div>

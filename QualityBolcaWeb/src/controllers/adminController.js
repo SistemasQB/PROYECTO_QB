@@ -1,4 +1,5 @@
 import express from "express";
+import cron from "node-cron";
 // import Listas from "../models/listas.js"
 // import Requisicion from "../models/requisicion.js"
 // import Curso from "../models/cursos.js"
@@ -55,8 +56,8 @@ import wavefile from 'wavefile';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-const __filename = fileURLToPath ( import . meta . url ); // obtener la ruta resuelta al archivo 
-const __dirname = path. dirname (__filename); // obtener el nombre del directorio
+const __filename = fileURLToPath(import.meta.url); // obtener la ruta resuelta al archivo 
+const __dirname = path.dirname(__filename); // obtener el nombre del directorio
 // const dataPath = path.join(__dirname, 'data.json');
 import RegistroMa from "../models/registroma.js";
 
@@ -73,9 +74,17 @@ const controller = {};
 controller.inicio = (req, res) => {
     if (req.originalUrl) {
         res.redirect(req.originalUrl);
-    }else{
+    } else {
         res.render('admin/inicio')
     }
+}
+
+controller.permisosusuarios = (req, res) => {
+    res.render('admin/permisosusuarios')
+}
+
+controller.permisosusuarios2 = (req, res) => {
+    res.render('admin/permisosusuarios')
 }
 
 controller.enviar = (req, res) => {
@@ -254,7 +263,6 @@ controller.solicitudServicio = async (req, res) => {
     const obtenerValores = await Solicitudservicio.findAll({ where: { solcitante: obtenerNombre.nombrelargo }, order: [[Sequelize.literal('fecha'), 'DESC']], });
     const obtenerFolio = await Solicitudservicio.count() + 1;
 
-    // console.log(obtenerValores);
 
 
     res.render('admin/solicitudServicio', {
@@ -281,7 +289,6 @@ controller.solicitudServicio2 = async (req, res) => {
             fechaSolucion
         });
 
-        // console.log( cursoDatos.idFolio, solcitante);
 
 
         await emailSolicitud({ idFolio: cursoDatos.idFolio, solcitante: cursoDatos.solcitante })
@@ -413,7 +420,6 @@ controller.vacaciones2 = async (req, res) => {
         return
     } catch (error) {
         res.status(400).send({ msg: error, ok: false });
-        // console.log(error);
 
         return
     }
@@ -432,13 +438,22 @@ controller.valeSalida = (req, res) => {
     res.render('admin/vale')
 }
 
+/*
+    0 -- ingresada sin análisis
+1 -- ingresada con análisis
+2 -- modificar
+3 -- Aceptada
+4 -- Rechazada
+5 -- Declinada por falta de seguimiento
+6 -- Implementada
+    */
+
 controller.mejoracontinua = async (req, res) => {
 
     const { codigoempleado } = req.usuario
 
     const obtenerDatos = await Empleados.findOne({ where: { codigoempleado: codigoempleado } });
     const obtenerValores = await Mejora.findAll({ where: { numero_empleado_registra: codigoempleado }, order: [[Sequelize.literal('fecha'), 'DESC']], });
-
 
     res.render('admin/mejoracontinua', {
         csrfToken: req.csrfToken(),
@@ -553,7 +568,7 @@ controller.mejoracontinua3 = async (req, res) => {
     try {
 
         await Mejora.update(
-            { 
+            {
                 fecha,
                 nombre_mejora,
                 generador_idea,
@@ -571,14 +586,14 @@ controller.mejoracontinua3 = async (req, res) => {
                 situacion_actual,
                 situacion_mejora,
                 mejora_grupal,
-                estatus,
+                estatus: 0,
                 fecha_respuesta_comite,
                 email,
                 motivo,
                 titulo_analisis: ''
-             },
+            },
             { where: { id } }
-          )
+        )
 
         res.status(200).send({ msg: 'Mejora Enviada', ok: true, id: id });
         return
@@ -599,7 +614,7 @@ controller.mejoracontinua4 = async (req, res) => {
     // const { codigoempleado } = req.usuario
 
     // const obtenerDatos = await Empleados.findOne({ where: { codigoempleado: codigoempleado } });
-    const obtenerValores = await Mejora.findAll({ order: [[Sequelize.literal('fecha'), 'DESC']] });
+    const obtenerValores = await Mejora.findAll({ where: { estatus: { [Op.ne]: 0 } }, order: [[Sequelize.literal('fecha'), 'DESC']] });
 
 
     res.render('admin/mejoracontinuaall', {
@@ -616,19 +631,19 @@ controller.subiranalisis = async (req, res) => {
 
     if (obtenerAnalisis.estatus != 0 || !obtenerAnalisis) {
         res.redirect('../../admin/mejoracontinua')
-    }else{
+    } else {
         res.render('admin/subiranalisis', {
             csrfToken: req.csrfToken(),
             mejoraid
         })
     }
 
-    
+
 }
 
 controller.subiranalisis2 = async (req, res) => {
 
-    
+
     const { mejoraid } = req.params
     const obtenerAnalisis = await Mejora.findByPk(mejoraid);
 
@@ -636,7 +651,6 @@ controller.subiranalisis2 = async (req, res) => {
         obtenerAnalisis.titulo_analisis = req.file.filename
         obtenerAnalisis.estatus = 1
 
-        console.log(obtenerAnalisis);
         await obtenerAnalisis.save();
         // next()
         res.status(200).send({ msg: 'Analisis enviado con exito', ok: true });
@@ -651,15 +665,14 @@ controller.subirevidencia = async (req, res) => {
 
     const { mejoraid } = req.params
     const obtenerAnalisis = await Mejora.findByPk(mejoraid);
-    console.log(obtenerAnalisis);
-    
 
-    if (obtenerAnalisis.evidencia1 ==='' && obtenerAnalisis.evidencia2 ==='' && obtenerAnalisis.evidencia3 ==='' || obtenerAnalisis || obtenerAnalisis.estatus !== 5) {
+
+    if (obtenerAnalisis.evidencia1 === '' && obtenerAnalisis.evidencia2 === '' && obtenerAnalisis.evidencia3 === '' || obtenerAnalisis || obtenerAnalisis.estatus !== 5) {
         res.render('admin/subirevidencia', {
             csrfToken: req.csrfToken(),
             mejoraid
         })
-    }else{
+    } else {
         res.redirect('../../admin/mejoracontinua')
     }
 
@@ -667,21 +680,25 @@ controller.subirevidencia = async (req, res) => {
 
 controller.subirevidencia2 = async (req, res) => {
 
-    
+
     const { mejoraid } = req.params
     const obtenerAnalisis = await Mejora.findByPk(mejoraid);
 
     try {
         if (!obtenerAnalisis.evidencia1) {
             obtenerAnalisis.evidencia1 = req.file.filename
-        }else if (!obtenerAnalisis.evidencia2) {
+            obtenerAnalisis.fechaevidencia1 = new Date().toLocaleDateString('es-ES')
+        } else if (!obtenerAnalisis.evidencia2) {
             obtenerAnalisis.evidencia2 = req.file.filename
-        }else{
+            obtenerAnalisis.fechaevidencia2 = new Date().toLocaleDateString('es-ES')
+        } else if (!obtenerAnalisis.evidencia3) {
             obtenerAnalisis.evidencia3 = req.file.filename
+            obtenerAnalisis.fechaevidencia3 = new Date().toLocaleDateString('es-ES')
+        } else {
+            obtenerAnalisis.evidencia4 = req.file.filename
+            obtenerAnalisis.fechaevidencia4 = new Date().toLocaleDateString('es-ES')
         }
-        obtenerAnalisis.titulo_analisis = req.file.filename
 
-        console.log(obtenerAnalisis);
         await obtenerAnalisis.save();
         // next()
         res.status(200).send({ msg: 'Analisis enviado con exito', ok: true });
@@ -760,7 +777,6 @@ controller.valeresguardo = async (req, res) => {
     const { codigoempleado } = req.usuario
 
     const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado } });
-    // console.log(obtenerFolio);
 
     const resultado = await db.query(
         `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
@@ -791,8 +807,6 @@ controller.valeresguardo2 = async (req, res, next) => {
 
     const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado } });
 
-    // console.log(obtenerFolio, req.file.filename);
-
     try {
         obtenerFolio.Firma = req.file.filename
         await obtenerFolio.save()
@@ -813,7 +827,6 @@ controller.valeresguardo3 = async (req, res) => {
 
     const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado } });
 
-    // console.log(obtenerFolio, req.file.filename);
 
     try {
         obtenerFolio.comentarios = comentarios
@@ -840,7 +853,6 @@ controller.mantenimientoautonomo = async (req, res) => {
     const { codigoempleado } = req.usuario
 
     const obtenerNombre = await informaciongch.findOne({ attributes: ['nombrelargo'], where: { codigoempleado: codigoempleado } });
-    // console.log(req.usuario);
 
     res.render('admin/mantenimientoautonomo', {
         csrfToken: req.csrfToken(),
@@ -860,7 +872,7 @@ controller.mantenimientoautonomo2 = async (req, res) => {
         await registroma.update(
             { tipo, region, respuestas },
             { where: { nombre } }
-          )
+        )
         // Enviar email de confirmacion
         await emailMantenimientoA({ region, respuestas, tipo, nombre })
 
@@ -885,12 +897,10 @@ controller.buzonquejas2 = async (req, res) => {
 
     const { fechaIncidente, descripcion, region } = req.body
 
-    console.log(req.body);
 
 
     const obtenerNombre = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } });
 
-    // console.log(obtenerFolio, req.file.filename);
 
     try {
         // BuzonQuejas.comentarios = comentarios
@@ -900,7 +910,6 @@ controller.buzonquejas2 = async (req, res) => {
         return
     } catch (error) {
         res.status(400).send({ msg: error, ok: false });
-        // console.log(error);
 
         return
     }
@@ -917,28 +926,27 @@ controller.publicarEvento2 = (req, res) => {
 }
 
 controller.validarusuario = async (req, res) => {
-    
-    const {codigoEmpleado, pswEmpleado} = req.body
 
-    
-    
+    const { codigoEmpleado, pswEmpleado } = req.body
+
+
+
 }
 
 controller.blogayuda = (req, res) => {
 
-function cargarJSONLocal() {
-  const ruta = path.join(__dirname, 'blogayuda.json');
-  try {
-    const contenido = fs.readFileSync(ruta, 'utf-8');
-    posts = JSON.parse(contenido);
-    // console.log("Posts cargados:", posts);
-    // Aquí puedes usar `posts` como quieras
-  } catch (error) {
-    console.error("Error al leer el archivo JSON:", error);
-  }
-}
+    function cargarJSONLocal() {
+        const ruta = path.join(__dirname, 'blogayuda.json');
+        try {
+            const contenido = fs.readFileSync(ruta, 'utf-8');
+            posts = JSON.parse(contenido);
+            // Aquí puedes usar `posts` como quieras
+        } catch (error) {
+            console.error("Error al leer el archivo JSON:", error);
+        }
+    }
 
-cargarJSONLocal();
+    cargarJSONLocal();
 
     res.render('admin/blogdeayuda', {
         csrfToken: req.csrfToken(),
@@ -947,81 +955,81 @@ cargarJSONLocal();
 }
 controller.blogayuda2 = (req, res) => {
 
-   const nuevoPost = req.body;
+    const nuevoPost = req.body;
 
-  const ruta = path.join(__dirname, 'blogayuda.json');
+    const ruta = path.join(__dirname, 'blogayuda.json');
 
-  try {
-    // Leer el archivo actual
-    const contenido = fs.readFileSync(ruta, 'utf-8');
-    const posts = JSON.parse(contenido);
+    try {
+        // Leer el archivo actual
+        const contenido = fs.readFileSync(ruta, 'utf-8');
+        const posts = JSON.parse(contenido);
 
-    delete nuevoPost._csrf
+        delete nuevoPost._csrf
 
-    nuevoPost.replies = []
+        nuevoPost.replies = []
 
-    // Agregar el nuevo post
-    posts.push(nuevoPost);
+        // Agregar el nuevo post
+        posts.push(nuevoPost);
 
-    // Guardar el archivo actualizado
-    fs.writeFileSync(ruta, JSON.stringify(posts, null, 2), 'utf-8');
+        // Guardar el archivo actualizado
+        fs.writeFileSync(ruta, JSON.stringify(posts, null, 2), 'utf-8');
 
-    res.send({ ok: true, msg: 'Post guardado correctamente' });
-  } catch (error) {
-    console.error('Error al guardar el post:', error);
-    res.status(500).send({ ok: false, msg: 'Error al guardar el post' });
-  }
+        res.send({ ok: true, msg: 'Post guardado correctamente' });
+    } catch (error) {
+        console.error('Error al guardar el post:', error);
+        res.status(500).send({ ok: false, msg: 'Error al guardar el post' });
+    }
 }
 
 
 controller.blogayuda3 = (req, res) => {
-  const nuevoPost = { ...req.body };
-  const { postId, replyPath } = req.body;
+    const nuevoPost = { ...req.body };
+    const { postId, replyPath } = req.body;
 
 
-  const ruta = path.join(__dirname, 'blogayuda.json');
+    const ruta = path.join(__dirname, 'blogayuda.json');
 
-  try {
-    const contenido = fs.readFileSync(ruta, 'utf-8');
-    const posts = JSON.parse(contenido);
+    try {
+        const contenido = fs.readFileSync(ruta, 'utf-8');
+        const posts = JSON.parse(contenido);
 
-    const post = posts.find((p) => p.id == postId);
+        const post = posts.find((p) => p.id == postId);
 
-    // const record = mejoras.find(item => item.id === mejoraId);
+        // const record = mejoras.find(item => item.id === mejoraId);
 
-    // Limpieza de campos innecesarios
-    delete nuevoPost._csrf;
-    delete nuevoPost.currentReplyTarget;
+        // Limpieza de campos innecesarios
+        delete nuevoPost._csrf;
+        delete nuevoPost.currentReplyTarget;
 
-    
 
-    nuevoPost.replies = [];
 
-    if (post) {
-      let targetReplies = post.replies;
+        nuevoPost.replies = [];
 
-      // Navegar hasta el nivel correcto de respuestas anidadas
-      for (let i = 0; i < replyPath.length - 1; i++) {
-        targetReplies = targetReplies[replyPath[i]].replies;
-      }
+        if (post) {
+            let targetReplies = post.replies;
 
-      if (replyPath.length === 0) {
-        post.replies.push(nuevoPost);
-      } else {
-        targetReplies[replyPath[replyPath.length - 1]].replies.push(nuevoPost);
-      }
+            // Navegar hasta el nivel correcto de respuestas anidadas
+            for (let i = 0; i < replyPath.length - 1; i++) {
+                targetReplies = targetReplies[replyPath[i]].replies;
+            }
 
-      // ✅ Guardar el objeto completo actualizado
-      fs.writeFileSync(ruta, JSON.stringify(posts, null, 2), 'utf-8');
+            if (replyPath.length === 0) {
+                post.replies.push(nuevoPost);
+            } else {
+                targetReplies[replyPath[replyPath.length - 1]].replies.push(nuevoPost);
+            }
 
-      res.send({ ok: true, msg: 'Post guardado correctamente' });
-    } else {
-      res.status(404).send({ ok: false, msg: 'Post no encontrado' });
+            // ✅ Guardar el objeto completo actualizado
+            fs.writeFileSync(ruta, JSON.stringify(posts, null, 2), 'utf-8');
+
+            res.send({ ok: true, msg: 'Post guardado correctamente' });
+        } else {
+            res.status(404).send({ ok: false, msg: 'Post no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al guardar el post:', error);
+        res.status(500).send({ ok: false, msg: 'Error al guardar el post' });
     }
-  } catch (error) {
-    console.error('Error al guardar el post:', error);
-    res.status(500).send({ ok: false, msg: 'Error al guardar el post' });
-  }
 };
 
 let posts;
@@ -1034,6 +1042,183 @@ let posts;
 // function guardarDatos(data) {
 //   fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
 // }
+
+
+// 🕒 Ejecuta la verificación todos los días a las 9:00 AM
+// cron.schedule('0 9 * * *', async () => {
+cron.schedule('* * * * *', () => {
+    console.log('Verificando...');
+    verificarMejora();
+});
+
+async function  verificarMejora() {
+    let obtenerValores 
+
+    obtenerValores = await Mejora.findAll({ where:{  [Op.and] : [{ estatus: 3 }, { evidencia1: null }] }});
+    // console.log(obtenerValores[0].nombre_mejora);
+    console.log('15 dias', obtenerValores.length);
+    
+    for (let c = 0; c < obtenerValores.length; c++) {
+
+        const fecha15dias = new Date(obtenerValores[c].fecha_respuesta_comite);
+
+        const fecha10dias = new Date(obtenerValores[c].fecha_respuesta_comite);
+  
+        fecha15dias.setDate(fecha15dias.getDate() + 15);
+        fecha10dias.setDate(fecha10dias.getDate() + 10);
+        console.log(obtenerValores[c].fecha_respuesta_comite);
+        
+
+        console.log(fecha15dias);
+        console.log(fecha10dias);
+
+        console.log(estaEnRango(fecha10dias, fecha15dias));
+
+        if (estaEnRango(fecha10dias, fecha15dias)) {
+            console.log(obtenerValores[c].nombre_mejora, '15 dias');
+        }
+    }
+
+    obtenerValores = await Mejora.findAll({ where:{  [Op.and] : [{  evidencia1: {[Op.ne]: null} }, { evidencia2: null }] }});
+    console.log('1 mes', obtenerValores.length);
+
+    for (let c = 0; c < obtenerValores.length; c++) {
+        let resultado = obtenerRangoSemanaAntesDelMes(new Date(obtenerValores[c].fecha_respuesta_comite), 1);
+        
+        // console.log(estaEnRango(resultado.desde, resultado.hasta));
+        if (estaEnRango(resultado.desde, resultado.hasta)) {
+            console.log(obtenerValores[c].nombre_mejora, '1 mes');
+        }
+    }
+
+    obtenerValores = await Mejora.findAll({ where:{  [Op.and] : [{  evidencia2: {[Op.ne]: null} }, { evidencia3: null }] }});
+    console.log('2 mes', obtenerValores.length);
+    for (let c = 0; c < obtenerValores.length; c++) {
+        let resultado = obtenerRangoSemanaAntesDelMes(new Date(obtenerValores[c].fecha_respuesta_comite), 2);
+        
+        // console.log(estaEnRango(resultado.desde, resultado.hasta));
+        if (estaEnRango(resultado.desde, resultado.hasta)) {
+            console.log(obtenerValores[c].nombre_mejora, '2 mes');
+        }
+    }
+
+    obtenerValores = await Mejora.findAll({ where:{  [Op.and] : [{  evidencia3: {[Op.ne]: null} }, { evidencia4: null }] }});
+    console.log('3 mes', obtenerValores.length);
+    for (let c = 0; c < obtenerValores.length; c++) {
+        let resultado = obtenerRangoSemanaAntesDelMes(new Date(obtenerValores[c].fecha_respuesta_comite), 3);
+        
+        // console.log(estaEnRango(resultado.desde, resultado.hasta));
+        if (estaEnRango(resultado.desde, resultado.hasta)) {
+            console.log(obtenerValores[c].nombre_mejora, '3 mes');
+        }
+    }
+}
+
+function estaEnRango(fechaInicio, fechaFin) {
+  const hoy = new Date();
+  return hoy >= fechaInicio && hoy < fechaFin;
+}
+
+function formatDateToYYYYMMDD(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+    const day = date.getDate().toString().padStart(2, '0');
+
+    return `${year}/${month}/${day}`;
+}
+
+function validarFechas(fechaBaseStr) {
+    const fechaBase = new Date(fechaBaseStr);
+    const hoy = new Date();
+
+    // Normalizamos horas para comparar solo fechas
+    fechaBase.setHours(0, 0, 0, 0);
+    hoy.setHours(0, 0, 0, 0);
+
+    const msPorDia = 1000 * 60 * 60 * 24;
+    const diasTranscurridos = Math.floor((hoy - fechaBase) / msPorDia);
+
+    // Condición 1: más de 15 y menos de 20 días
+    const dentroDe8a15 = diasTranscurridos > 8 && diasTranscurridos < 15;
+
+    const dentroDe23a30 = diasTranscurridos > 23 && diasTranscurridos < 30;
+
+    const dentroDe53a60 = diasTranscurridos > 53 && diasTranscurridos < 60;
+
+    const dentroDe83a90 = diasTranscurridos > 83 && diasTranscurridos < 90;
+
+    // Condición 2: meses completos
+
+    const dentroDe15a20 = diasTranscurridos > 15 && diasTranscurridos < 20;
+
+    const dentroDe30a35 = diasTranscurridos > 30 && diasTranscurridos < 35;
+
+    const dentroDe60a65 = diasTranscurridos > 60 && diasTranscurridos < 65;
+
+    const dentroDe90a95 = diasTranscurridos > 90 && diasTranscurridos < 95;
+
+
+    return {
+        dentroDe8a15,
+        dentroDe23a30,
+        dentroDe53a60,
+        dentroDe83a90,
+        dentroDe15a20,
+        dentroDe30a35,
+        dentroDe60a65,
+        dentroDe90a95
+    };
+}
+
+function obtenerRangoSemanaAntesDelMes(fechaReferencia, meses) {
+  const año = fechaReferencia.getFullYear();
+  const mes = fechaReferencia.getMonth() + meses; // mes siguiente
+  const day = fechaReferencia.getDate() + 1;
+
+  // Si es diciembre, saltamos a enero del siguiente año
+  const fechaInicioMesSiguiente = new Date(año, mes === 12 ? 0 : mes, day);
+  if (mes === 12) fechaInicioMesSiguiente.setFullYear(año + 1);
+
+  const fechaInicioRango = new Date(fechaInicioMesSiguiente);
+  
+  fechaInicioRango.setDate(fechaInicioRango.getDate() - 7);
+  
+
+  return {
+    desde: fechaInicioRango,
+    hasta: fechaInicioMesSiguiente
+  };
+}
+
+// Example usage:
+const currentDate = new Date(); // Get the current date
+const formattedDate = formatDateToYYYYMMDD(currentDate);
+console.log(formattedDate); // Output: e.g., 2025/07/15
+
+/*
+
+const bGch_alta = await informaciongch.findAll({
+        attributes: ['nombrelargo'],
+        where: {
+            [Op.or]:
+                [
+                    {
+                        fechaalta: { [Op.gt]: Sequelize.col('fechabaja') }
+                    },
+                    {
+                        fechareingreso: { [Op.gt]: Sequelize.col('fechabaja') }
+                    },
+                ],
+            [Op.and]:
+                [
+                    {
+                        idpuesto: { [Op.ne]: 45 },
+                    }
+                ]
+        }
+    })
+
+*/
 
 
 

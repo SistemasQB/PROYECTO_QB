@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Escáner QR Empleados</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+</head>
+
+<style>
+
+html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+h2 {
+  color: #555;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 10px;
+}
+
+.scanner-section {
+  margin-bottom: 30px;
+}
+
+#scanner-container {
+  text-align: center;
+}
+
+#camera-view {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  border: 2px solid #ddd;
+  margin: 20px auto;
+  position: relative;
+  background-color: #f9f9f9;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.employee-list-section {
+  margin-top: 30px;
+}
+
+#employee-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  min-height: 100px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  background-color: #fafafa;
+}
+
+#employee-list li {
+  background-color: white;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border-left: 4px solid #4CAF50;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#send-button {
+  background-color: #2196F3;
+  width: 100%;
+  font-size: 18px;
+  padding: 15px;
+}
+
+#send-button:hover {
+  background-color: #1976D2;
+}
+
+.error-message {
+  color: #f44336;
+  text-align: center;
+  margin: 10px 0;
+}
+
+</style>
+
+<body>
+  <div class="container">
+    <h1>Escáner de Códigos QR - Empleados</h1>
+    
+    <div class="scanner-section">
+      <h2>Escanear Código QR</h2>
+      <div id="scanner-container">
+        <div id="camera-view"></div>
+        <button id="start-scanner">Iniciar Escáner</button>
+        <button id="stop-scanner" style="display: none;">Detener Escáner</button>
+      </div>
+    </div>
+
+    <div class="employee-list-section">
+      <h2>Lista de Empleados Escaneados</h2>
+      <ul id="employee-list"></ul>
+      <button id="send-button">Enviar</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+<script>
+
+let employeeList = [];
+let scannerStarted = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const startButton = document.getElementById('start-scanner');
+    const stopButton = document.getElementById('stop-scanner');
+    const sendButton = document.getElementById('send-button');
+    const employeeListEl = document.getElementById('employee-list');
+
+    // Iniciar escáner
+    startButton.addEventListener('click', function() {
+        startScanner();
+    });
+
+    // Detener escáner
+    stopButton.addEventListener('click', function() {
+        stopScanner();
+    });
+
+    // Enviar lista
+    sendButton.addEventListener('click', function() {
+        sendEmployeeList();
+    });
+
+    function startScanner() {
+        if (scannerStarted) return;
+
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector('#camera-view'),
+                constraints: {
+                    width: 400,
+                    height: 300,
+                    facingMode: "environment"
+                }
+            },
+            decoder: {
+                readers: [
+                    "code_128_reader",
+                    "ean_reader",
+                    "ean_8_reader",
+                    "code_39_reader",
+                    "code_39_vin_reader",
+                    "codabar_reader",
+                    "upc_reader",
+                    "upc_e_reader",
+                    "i2of5_reader",
+                    "2of5_reader",
+                    "code_93_reader"
+                ]
+            }
+        }, function(err) {
+            if (err) {
+                console.error('Error al inicializar Quagga:', err);
+                showError('Error al acceder a la cámara. Asegúrate de dar permisos.');
+                return;
+            }
+            
+            Quagga.start();
+            scannerStarted = true;
+            startButton.style.display = 'none';
+            stopButton.style.display = 'inline-block';
+        });
+
+        // Detectar códigos escaneados
+        Quagga.onDetected(function(result) {
+            const code = result.codeResult.code;
+            processScannedCode(code);
+        });
+    }
+
+    function stopScanner() {
+        if (!scannerStarted) return;
+        
+        Quagga.stop();
+        scannerStarted = false;
+        startButton.style.display = 'inline-block';
+        stopButton.style.display = 'none';
+        
+        // Limpiar el contenedor de la cámara
+        const cameraView = document.getElementById('camera-view');
+        cameraView.innerHTML = '';
+    }
+
+    function processScannedCode(code) {
+        try {
+            // Asumir que el código QR contiene datos en formato "numeroEmpleado|nombreEmpleado"
+            // o JSON como {"numero": "123", "nombre": "Juan Pérez"}
+            let employeeData;
+            
+            if (code.includes('|')) {
+                // Formato separado por pipe
+                const parts = code.split('|');
+                if (parts.length >= 2) {
+                    employeeData = {
+                        numero: parts[0].trim(),
+                        nombre: parts[1].trim()
+                    };
+                }
+            } else {
+                // Intentar parsear como JSON
+                try {
+                    employeeData = JSON.parse(code);
+                } catch (e) {
+                    // Si no es JSON válido, asumir que todo el código es el número de empleado
+                    employeeData = {
+                        numero: code,
+                        nombre: "Nombre no especificado"
+                    };
+                }
+            }
+
+            if (employeeData && employeeData.numero) {
+                // Verificar si el empleado ya está en la lista
+                const exists = employeeList.some(emp => emp.numero === employeeData.numero);
+                
+                if (!exists) {
+                    employeeList.push(employeeData);
+                    updateEmployeeListDisplay();
+                    showSuccess(`Empleado agregado: ${employeeData.nombre} (${employeeData.numero})`);
+                } else {
+                    showError('Este empleado ya está en la lista');
+                }
+            } else {
+                showError('Código QR no válido. Formato esperado: numeroEmpleado|nombreEmpleado');
+            }
+        } catch (error) {
+            console.error('Error procesando código:', error);
+            showError('Error al procesar el código QR');
+        }
+    }
+
+    function updateEmployeeListDisplay() {
+        employeeListEl.innerHTML = '';
+        
+        if (employeeList.length === 0) {
+            employeeListEl.innerHTML = '<li style="text-align: center; color: #666;">No hay empleados escaneados</li>';
+            return;
+        }
+
+        employeeList.forEach((employee, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>Empleado #${employee.numero}</strong> - ${employee.nombre}
+                <button onclick="removeEmployee(${index})" style="float: right; background-color: #f44336; padding: 5px 10px; font-size: 12px;">Eliminar</button>
+            `;
+            employeeListEl.appendChild(li);
+        });
+    }
+
+    function sendEmployeeList() {
+        if (employeeList.length === 0) {
+            alert('No hay empleados en la lista para enviar');
+            return;
+        }
+
+        // Concatenar la información en una variable
+        let concatenatedData = "Lista de Empleados Escaneados:\n\n";
+        
+        employeeList.forEach((employee, index) => {
+            concatenatedData += `${index + 1}. Número: ${employee.numero} - Nombre: ${employee.nombre}\n`;
+        });
+
+        concatenatedData += `\nTotal de empleados: ${employeeList.length}`;
+
+        // Mostrar en alerta
+        alert(concatenatedData);
+    }
+
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        
+        const container = document.querySelector('.scanner-section');
+        const existingError = container.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        container.appendChild(errorDiv);
+        
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
+    }
+
+    function showSuccess(message) {
+        const successDiv = document.createElement('div');
+        successDiv.style.color = '#4CAF50';
+        successDiv.style.textAlign = 'center';
+        successDiv.style.margin = '10px 0';
+        successDiv.textContent = message;
+        
+        const container = document.querySelector('.scanner-section');
+        const existingSuccess = container.querySelector('[style*="color: #4CAF50"]');
+        if (existingSuccess) {
+            existingSuccess.remove();
+        }
+        
+        container.appendChild(successDiv);
+        
+        setTimeout(() => {
+            successDiv.remove();
+        }, 3000);
+    }
+
+    // Inicializar la lista vacía
+    updateEmployeeListDisplay();
+});
+
+// Función global para eliminar empleados
+function removeEmployee(index) {
+    employeeList.splice(index, 1);
+    document.getElementById('employee-list').innerHTML = '';
+    
+    if (employeeList.length === 0) {
+        document.getElementById('employee-list').innerHTML = '<li style="text-align: center; color: #666;">No hay empleados escaneados</li>';
+    } else {
+        employeeList.forEach((employee, i) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>Empleado #${employee.numero}</strong> - ${employee.nombre}
+                <button onclick="removeEmployee(${i})" style="float: right; background-color: #f44336; padding: 5px 10px; font-size: 12px;">Eliminar</button>
+            `;
+            document.getElementById('employee-list').appendChild(li);
+        });
+    }
+}
+
+</script>
+</html>
