@@ -1,4 +1,4 @@
-[
+  [
   {
     "id": 1,
     "title": "Actualización del color de los focos en oficinas",
@@ -20,16 +20,6 @@
             "author": "Ana López",
             "department": "Recursos Humanos",
             "timestamp": "Hace 30 min",
-            "replies": []
-          },
-          {
-            "id": "1752694302786",
-            "postId": "1",
-            "replyPath": "0",
-            "content": "no estoy contigo",
-            "author": "oscar",
-            "department": "Tecnologías de la información",
-            "timestamp": "Ahora",
             "replies": []
           }
         ]
@@ -58,45 +48,6 @@
         "author": "Laura Fernández",
         "department": "Contabilidad",
         "timestamp": "Hace 3 horas",
-        "replies": []
-      },
-      {
-        "id": "1752008417970",
-        "postId": "2",
-        "replyPath": "",
-        "content": "porque son gays all",
-        "author": "josa",
-        "department": "Gestión de gastos",
-        "timestamp": "Ahora",
-        "replies": []
-      }
-    ]
-  },
-  {
-    "id": "1752008374136",
-    "title": "necesito coca",
-    "content": "no quiero ir a la tienda tan seguido",
-    "author": "Oscar",
-    "department": "Tecnologías de la información",
-    "timestamp": "Ahora",
-    "replies": []
-  },
-  {
-    "id": "1752009057655",
-    "title": "MAL OLOR EN MI ENTORNO",
-    "content": "AFUERA ESTA LLOVIENDO",
-    "author": "KAREN MUÑOZ",
-    "department": "Planeación y dirección estretégica",
-    "timestamp": "Ahora",
-    "replies": [
-      {
-        "id": "1752009077900",
-        "postId": "1752009057655",
-        "replyPath": "",
-        "content": "PUES BAÑATE",
-        "author": "OSCAR",
-        "department": "Tecnologías de la información",
-        "timestamp": "Ahora",
         "replies": []
       }
     ]
