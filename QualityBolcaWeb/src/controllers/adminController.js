@@ -45,7 +45,7 @@ import {
 // import InformacionpuestoM from "../models/informacionpuesto.js"
 
 // import Gch_alta from "../models/gch_alta.js"
-import Sequelize, { where } from 'sequelize'
+import Sequelize, { DATE, where } from 'sequelize'
 import db from "../config/db.js";
 
 import on from 'sequelize'
@@ -1047,7 +1047,7 @@ let posts;
 // 🕒 Ejecuta la verificación todos los días a las 9:00 AM
 // cron.schedule('0 9 * * *', async () => {
 cron.schedule('* * * * *', () => {
-    console.log('Verificando...');
+    console.log('Verificando...', DATE.now());
     verificarMejora();
 });
 
