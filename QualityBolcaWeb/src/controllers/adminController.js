@@ -50,7 +50,7 @@ import db from "../config/db.js";
 
 import on from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
-import { emailRequisicion, registroCursos, emailMantenimientoA, emailSolicitud } from "../helpers/emails.js";
+import { emailRequisicion, registroCursos, emailMantenimientoA, emailSolicitud, emailMejora } from "../helpers/emails.js";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
@@ -1046,8 +1046,9 @@ let posts;
 
 // 🕒 Ejecuta la verificación todos los días a las 9:00 AM
 // cron.schedule('0 9 * * *', async () => {
-cron.schedule('* * * * *', () => {
+cron.schedule('* 1 * * *', async () => {
     console.log('Verificando...', new Date());
+    await emailMantenimientoA(new Date());
     verificarMejora();
 });
 

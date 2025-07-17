@@ -387,6 +387,27 @@ const emailSolicitud = async (datos) => {
     })
 }
 
+const emailMejora = async (datos) => {
+  const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: {
+            user: process.env.EMAILMC_USER,
+            pass: process.env.EMAILMC_PASS
+        }
+    });
+
+    await transport.sendMail({
+        from: process.env.EMAILMC_USER,
+        to: 'info.sistemas@qualitybolca.com',
+        subject: 'Prueba de las mejoras',
+        text: 'Prueba de las mejoras',
+        html: `
+            <p>Este correo se envio a la 1:00 AM ${datos}</p
+        `
+    })
+}
+
 export {
     emailRegistro,
     emailOlvidePassword,
@@ -395,5 +416,6 @@ export {
     registroCursos,
     emailMantenimientoA,
     enviarQueja,
-    emailSolicitud
+    emailSolicitud,
+    emailMejora
 }
