@@ -1046,7 +1046,7 @@ let posts;
 
 // 🕒 Ejecuta la verificación todos los días a las 9:00 AM
 // cron.schedule('0 9 * * *', async () => {
-cron.schedule('* 9 * * *', async () => {
+cron.schedule('5 9 * * *', async () => {
     console.log('Verificando...', new Date());
     await emailMejora(new Date());
     verificarMejora();
