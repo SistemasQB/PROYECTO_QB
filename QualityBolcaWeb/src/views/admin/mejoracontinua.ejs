@@ -818,11 +818,11 @@
                             <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
                             <option value="Control y mejora del servicio">4. Control y mejora del servicio.</option>
                             <option value="Gestión de infraestructura">5. Gestión de infraestructura.</option>
-                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.
-                            </option>
+                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.</option>
                             <option value="Gestión de capital humano">7. Gestión de capital humano.</option>
                             <option value="Sistema de gestión de calidad">8. Sistema de gestión de calidad.</option>
                             <option value="Administración y finanzas">9. Administración y finanzas.</option>
+                            <option value="Todos">Todos</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -974,7 +974,6 @@
         btnRubro[3].classList.remove('btnselected');
         btnRubro[num1].classList.add('btnselected');
         rubro = btnRubro[num1].innerText
-        console.log(rubro);
         
     }
 
@@ -1033,12 +1032,44 @@
     }
 
     mejoraForm.addEventListener('submit', function (e) {
+
         e.preventDefault();
+
+Swal.fire({
+  title: "Ingresa tu correo para recibir el estado de tu mejora",
+  input: "email",
+  inputAttributes: {
+    autocapitalize: "off"
+  },
+  showCancelButton: true,
+  confirmButtonText: "Aceptar",
+  showLoaderOnConfirm: true,
+  allowOutsideClick: () => !Swal.isLoading(),
+  inputValidator: (value) => {
+    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regexCorreo.test(value)) {
+      return "Por favor, ingresa un correo válido";
+    }
+  }
+}).then((result) => {
+  if (result.isConfirmed) {
+    const correo = result.value; // Aquí capturas el correo
+    enviarMejora(correo);
+  }
+});
+
+    })
+
+
+
+    function enviarMejora(correo) {
+                
         // var contarEquipo = contarEquipo();
         // var concatenarbeneficios = concatenarbeneficios();
         const formData = new FormData(mejoraForm);
         formData.append('generador_idea', document.getElementById('nombre').value);
         formData.append('fecha', obtenerFechaFormato());
+        formData.append('email', correo);
         formData.append('numero_participantes', contarEquipo());
         formData.append('rubro', rubro);
         formData.append('beneficios', concatenarbeneficios());
@@ -1046,7 +1077,7 @@
         formData.append('titulo_analisis', 'nombre.pdf');
         
 
-        // console.log(urlEncoded);
+
 
         if (document.getElementById('indexmejora').value == '') {
             const urlEncoded = new URLSearchParams(formData).toString();
@@ -1056,8 +1087,7 @@
             const urlEncoded = new URLSearchParams(formData).toString();
             alertaFetch(urlEncoded, 'mejoracontinua2', 'subiranalisis');
         }
-
-    })
+    }
 
 
     /* */
@@ -1065,9 +1095,6 @@
     // Estado de la aplicación
     let mejoras = <%- JSON.stringify(obtenerValores) %>;
     let usuario = <%- JSON.stringify(obtenerDatos) %>;
-
-    console.log(mejoras);
-    
 
     // Elementos del DOM
     const modal = document.getElementById('modal');
@@ -1115,7 +1142,6 @@
 
     function openModal2(valores) {
 
-        console.log(valores);
         rubro = valores.rubro
 
         document.getElementById('indexmejora').value = valores.id;
@@ -1343,6 +1369,10 @@
                 <div class="card-section">
                     <div class="section-title">Mejora Propuesta:</div>
                     <div class="section-text">${mejora.situacion_mejora}</div>
+                </div>
+                <div class="card-section">
+                    <div class="section-title">Respuesta del comite:</div>
+                    <div class="section-text">${mejora.motivo}</div>
                 </div>
                 <div class="card-section">
                     <button class="btn btn-primary" style = "display: ${btnActivo}" id="btnAnalisis" onclick= "location.href ='/admin/subiranalisis/${mejora.id}'">Subir Análisis</button>

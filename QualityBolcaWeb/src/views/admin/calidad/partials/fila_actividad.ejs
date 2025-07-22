@@ -1,0 +1,72 @@
+<tr >
+    <td data-label="actividad"><%-datos.minuta%></td>
+    <td data-label="actividad"><%-datos.nombreActividad%></td>
+    <td data-label="Responsable"><%-datos.responsable%></td>
+    <td data-label="Área"><%-datos.area%></td>
+    <%
+        let elemento
+        switch( `${datos.prioridad}`){
+            case 'Baja':
+                elemento = `<td data-label="Prioridad"><span class="priority low">${datos.prioridad}</span></td>`
+                break;
+            case 'Media':
+                elemento = `<td data-label="Prioridad"><span class="priority medium">${datos.prioridad}</span></td>`
+                break;
+            case 'Alta':
+                elemento = `<td data-label="Prioridad"><span class="priority high">${datos.prioridad}</span></td>`
+                break;
+            case 'Crítica':
+                elemento = `<td data-label="Prioridad"><span class="priority critica">${datos.prioridad}</span></td>`
+                break;
+            default:
+                elemento = `<td data-label="Prioridad"><span class="priority low">${datos.prioridad}</span></td>`
+                break;
+        }
+    %>
+    <%-elemento%>
+    <td data-label="Estatus"><span class="status"><%-datos.estatus%></span></td>
+    <td data-label="% Avance">
+        <div class="progress-bar">
+            
+            <div class="progress-fill" style="width: <%-datos.avance%>%"><%-datos.avance %>%</div>
+            
+        </div>
+    </td>
+    <%
+        const fechaObj = new Date(datos.fechaCompromiso);
+        const dia = String(fechaObj.getDate()+1).padStart(2, '0');
+        const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
+        const anio = fechaObj.getFullYear();
+        const fechaFormateada = `${dia}-${mes}-${anio}`;
+    %>
+    <td data-label="Asignada-Compromiso"><%-fechaFormateada%></td>
+    <%
+        elemento = ''
+        switch(datos.evaluacion){
+            case 'Pendiente':
+                elemento = `<td data-label="Evaluación"><span class="evaluation regular">${datos.evaluacion}</span></td>`
+                break;
+            case 'Aceptada':
+                elemento = `<td data-label="Evaluación"><span class="evaluation excellent">${datos.evaluacion}</span></td>`
+                break;
+            case 'Rechazada':
+                elemento = `<td data-label="Evaluación"><span class="evaluation rechazada">${datos.evaluacion}</span></td>`
+                break;
+            default:
+                elemento = `<td data-label="Evaluación"><span class="evaluation regular">${datos.evaluacion}</span></td>`
+                break;
+        }
+    %>
+    <%-elemento%>
+    <td>
+        <button class="btn btn-sm btn-outline-primary me-1" title="Editar" data-idEdicion = '<%=datos.id%>'>
+            <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" title="Eliminar" data-idEliminacion = '<%=datos.id%>'>
+            <i class="fas fa-trash"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-info" title="visualizar" data-idVisualizacion='<%=datos.id%>'>
+            <i class="fa-solid fa-eye"></i>
+        </button>
+    </td>
+</tr>

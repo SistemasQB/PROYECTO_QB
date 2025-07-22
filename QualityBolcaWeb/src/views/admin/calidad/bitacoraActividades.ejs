@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de actividades</title>
+    
+    
+
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/calidad/estilos_bitacora.css">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- <div class="nav-logo">
+                <h2>Sistema</h2>
+            </div> -->
+            <div class="nav-menu" id="nav-menu">
+                <!-- <a href="#dashboard" class="nav-link">S.W.A.T</a>
+                <a href="#proyectos" class="nav-link">CALIDAD</a>
+                 -->
+                <h1 class="titulo">Bitacora de actividades</h1>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid">
+            
+            <!-- caja de busqueda -->
+            <div class="row mb-3">
+                    <!-- caja de botones -->
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-primary">
+                        <i class="fas fa-table me-2"></i>Gestión de Actividades
+                    </h2>
+                    <button type="button" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#modalNuevaMinuta" id="btnModal">
+                        <i class="fas fa-plus me-2"></i>Nueva Actividad
+                    </button>
+                </div>
+                    
+                    <!-- caja de busqueda -->
+                    <div class="col-md-8 ">
+                        <div class="search-container">
+                            <label for="busquedaTabla" class="form-label">
+                                <i class="fas fa-search me-2"></i>Buscar en tabla
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary text-white" >
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="busquedaTabla" 
+                                    placeholder="Buscar por responsable, área, etc..."
+                                    autocomplete="off"
+                                >
+                                <button class="btn btn-outline-secondary" type="button" id="limpiarBusqueda" title="Limpiar búsqueda">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted mt-1 d-block">
+                                <span id="resultadosBusqueda">Mostrando todas las tareas</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            
+            <!-- Table Container -->
+            <div class="table-container">
+                <table class="data-table" id="dataTable">
+                    <thead >
+                        <tr >
+                            <th class="sticky-header">Minutas</th>
+                            <th class="sticky-header">Actividad</th>
+                            <th class="sticky-header">Responsable</th>
+                            <th class="sticky-header">Área</th>
+                            <th class="sticky-header">Prioridad</th>
+                            <th class="sticky-header">Estatus</th>
+                            <th class="sticky-header">% Avance</th>
+                            <th class="sticky-header">Asignada-Compromiso</th>
+                            <th class="sticky-header">Evaluación</th>
+                            <th class="sticky-header">acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>    
+                    <%if(resultados.length > 0){%>
+                        <%resultados.forEach(dato =>{%>
+                            <%-include('./partials/fila_actividad.ejs', {datos: dato})%>
+                        <%})%>
+                    <% }%>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="/scripts/calidad/scrips_bitacora_actividades.js"></script>
+    <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
+    <script>
+        let tok = <%-JSON.stringify(token)%>;
+        let usuarios = <%-JSON.stringify(empleados)%>;
+        let actividades = <%-JSON.stringify(resultados)%>;
+        
+    </script>
+    
+</body>
+</html>

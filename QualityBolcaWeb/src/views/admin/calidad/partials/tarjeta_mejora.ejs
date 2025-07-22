@@ -1,0 +1,61 @@
+<div class="mejora-card">
+    
+            <div class="card-header"
+                
+                <h3 class="card-title"><%=datos.nombre_mejora%></h3>
+                <div class="card-meta">
+                    
+                    <%- datos.inversion > 0 ? '<span class="badge badge-investment">Requiere Inversión</span>': '' %>
+                </div>
+            </div>
+            
+            <div class="card-content"  >
+                <div class="card-info">
+                        <p>fecha registro:</p>
+                        <i class="fas fa-calendar "></i>
+                        <%= datos.fecha %>
+                </div>
+                <div class="card-section">
+                    
+                    <div class="card-info">
+                        <p>inversion:</p>
+                        <i class="fas fa-usd"></i>
+                        <span class="name"><%= datos.monto %></span>
+                    </div>
+                    <div class="card-info">
+                        <p>tiempo recuperacion: </p>
+                        <i class="fa fa-clock-o" ></i>
+                        <span class="name"><%= datos.recuperacion %> Meses</span>
+                    </div>
+                </div>
+
+                
+                
+                <!-- <div class="card-section">
+                    <div class="section-title">Beneficios:</div>
+                    
+                    <div class="badges">
+                        texto a sustituir
+                    </div>
+                </div> -->
+                
+                <div class="card-section">
+                    <div class="section-title">Situación Actual:</div>
+                    <div class="section-text"><%= datos.situacion_actual %></div>
+                </div>
+                
+                <div class="card-section">
+                    <div class="section-title">Mejora Propuesta:</div>
+                    <div class="section-text"><%= datos.situacion_mejora %></div>
+                </div>
+                <div class="card-section">
+                    <button class="btn btn-primary botonModal" data-id=<%=datos.id%>>
+                        <i class="fas fa-plus"></i>
+                        visualizar
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        

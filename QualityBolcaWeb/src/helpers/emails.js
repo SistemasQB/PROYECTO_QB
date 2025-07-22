@@ -2,6 +2,7 @@ import e from "express";
 import nodemailer from "nodemailer";
 // const fs = require("fs");
 import fs from "fs"
+import { DATE } from "sequelize";
 
 
 
@@ -388,25 +389,140 @@ const emailSolicitud = async (datos) => {
 }
 
 const emailMejora = async (datos) => {
-  const transport = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
-        auth: {
-            user: process.env.EMAILMC_USER,
-            pass: process.env.EMAILMC_PASS
-        }
-    });
 
-    await transport.sendMail({
-        from: process.env.EMAILMC_USER,
-        to: 'info.sistemas@qualitybolca.com',
-        subject: 'Prueba de las mejoras',
-        text: 'Prueba de las mejoras',
-        html: `
-            <p>Este correo se envio a la 1:00 AM ${datos}</p
-        `
-    })
+  console.log('Enviado...',datos);
+  
+
+
+  // const transport = nodemailer.createTransport({
+  //       host: process.env.EMAIL_HOST,
+  //       port: process.env.EMAIL_PORT,
+  //       auth: {
+  //           user: process.env.EMAILMC_USER,
+  //           pass: process.env.EMAILMC_PASS
+  //       }
+  //   });
+
+  //   await transport.sendMail({
+  //       from: process.env.EMAILMC_USER,
+  //       to: datos.email,
+  //       subject: cuerpoCorreoMejora[datos.id].asunto + ' ' + datos.nombre_mejora,
+  //       text: 'Prueba de las mejoras',
+  //       html: generarCuerpoEmail(datos)
+  //   })
 }
+
+const emailMejoraRespuesta = async (datos) => {
+
+  console.log('Enviado...',datos);
+  
+
+  // const transport = nodemailer.createTransport({
+  //       host: process.env.EMAIL_HOST,
+  //       port: process.env.EMAIL_PORT,
+  //       auth: {
+  //           user: process.env.EMAILMC_USER,
+  //           pass: process.env.EMAILMC_PASS
+  //       }
+  //   });
+
+  //   await transport.sendMail({
+  //       from: process.env.EMAILMC_USER,
+  //       to: datos.email,
+  //       subject: cuerpoCorreoMejora[datos.id].asunto + ' ' + datos.nombre_mejora,
+  //       text: 'Prueba de las mejoras',
+  //       html: 
+  //       `
+  //         <h5>Buen dia ${datos.generador_idea}</h5>
+  //         <p> El día de hoy se llevó a cabo la revisión de las propuestas de mejora continua en la junta con el Comité de Mejora Continua, 
+  //         en la cual se decidió que la propuesta de mejora '${datos.nombre_mejora}' se encuentra marcada como ${datos.resultado}</p>
+  //         <p>Gracias por enviarnos tu propuesta, te animamos a seguir participando. ¡Saludos! </p>
+  //       `
+  //   })
+}
+
+function generarCuerpoEmail(datos) {
+  
+
+  fechaLimite = datos.fecha_limite
+
+  let cuerpoCorreo ='Buen dia ' + datos.generador_idea + ' ' + cuerpoCorreoMejora[datos.id].cuerpo1 + ' ' + datos.periodo + ' ' + datos.nombre_mejora + ' ' + cuerpoCorreoMejora[datos.id].cuerpo2 + ' ' + cuerpoCorreoMejora[datos.id].cuerpo3 + ' ' + cuerpoCorreoMejora[datos.id].cuerpo4
+
+  return cuerpoCorreo
+}
+
+let fechaLimite
+
+let cuerpoCorreoMejora = 
+[
+  {
+  "id": 1,
+  "asunto": "MEJORA REGISTRADA",
+  "cuerpo1": "te confirmamos que tu mejora",
+  "cuerpo2": "ha sido recibida con exito.",
+  "cuerpo3": "",
+  "cuerpo4": ""
+},
+  {
+  "id": 2,
+  "asunto": "Notificación de falta de evidencia de la mejora",
+  "cuerpo1": "De tu apoyo con él envió de la evidencia de implementación de de tu mejora",
+  "cuerpo2":  ", Dado que el plazo ha vencido, se notifica que cuenta con 5 días hábiles a partir de esta fecha para realizar el envío de la evidencia correspondiente,",
+  "cuerpo3": "en caso de no recibir la evidencia dentro de este periodo será DECLINADA por falta de seguimiento. ",
+  "cuerpo4": "Quedamos a la espera de la evidencia solicitada. ¡Saludos!"
+},
+{
+  "id": 3,
+  "asunto": "DECLINACIÓN DE PROPUESTA",
+  "cuerpo1": "Para informarte que la Mejora ",
+  "cuerpo2":  "se procederá a Declinar en el sistema, esto se debe a la falta de seguimiento adecuado y la no implementación de las acciones necesarias en los plazos establecidos tal cual lo indica nuestro procedimiento de Mejora Continua QB-PR-A-06.",
+  "cuerpo3": "Quedamos atentos para cualquier duda o aclaración. Saludos.",
+  "cuerpo4": ""
+},
+{
+  "id": 4,
+  "asunto": "MEJORA RECHAZADA",
+  "cuerpo1": "El día de hoy se llevó a cabo la revisión de las propuestas de mejora continua en la junta con el Comité de Mejora Continua, en la cual se decidió que la propuesta de mejora'",
+  "cuerpo2":  "",
+  "cuerpo3": "Gracias por enviarnos tu propuesta, te animamos a seguir participando. ¡Saludos! ",
+  "cuerpo4": ""
+},
+{
+  "id": 5,
+  "asunto": "IMPLEMENTACION DE MEJORA",
+  "cuerpo1": "Gracias por compartirnos la evidencia solicitada, te notificamos que tu mejora '",
+  "cuerpo2":  "'se encuentra marcada como implementada, ya que se cumplió con el monitoreo de tres meses, puedes agregarla a tu indicador en el mes de",
+  "cuerpo3": obtenerMes(),
+  "cuerpo4": "Gracias por enviarnos tu propuesta, no obstante, te animamos a seguir participando. ¡Saludos! "
+},
+{
+  "id": 6,
+  "asunto": "EVIDENCIA DE IMPLEMENTACIÓN DE MEJORA",
+  "cuerpo1": "De tu apoyo con él envió de la evidencia de",
+  "cuerpo2":  "Favor de enviar la evidencia a más tardar el ",
+  "cuerpo3": fechaLimite,
+  "cuerpo4": "Quedo a la espera de la evidencia solicitada. ¡Saludos!"
+}
+];
+
+function obtenerMes() {
+  
+const fecha = new Date();
+const numeroMes = fecha.getMonth();
+
+const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+ return meses[numeroMes];
+
+
+   
+}
+
+
+
+
+
+
+
 
 export {
     emailRegistro,

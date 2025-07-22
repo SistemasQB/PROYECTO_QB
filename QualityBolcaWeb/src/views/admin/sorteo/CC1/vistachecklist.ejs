@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualizar Checklists de Báscula</title>
-    <link rel="stylesheet" href="view-styles.css">
+    <!-- <link rel="stylesheet" href="view-styles.css"> -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
@@ -805,7 +805,7 @@ body {
         </div>
     </div>
 
-    <script src="view-script.js"></script>
+    <!-- <script src="view-script.js"></script> -->
 </body>
 
 <script>
@@ -829,63 +829,64 @@ const checklistItems = [
 ]
 
 // Actualizar los datos de ejemplo para que coincidan con el formato proporcionado
-const sampleData = [
-  {
-    id: 8,
-    Area: "Peso y etiquetado",
-    Equipo: "Bascula",
-    fecha: "2025-07-02",
-    turno: 2,
-    elaboro: "karen itzel",
-    reviso: "KAREN ITZEL VAZQUEZ REYES",
-    aprobo: "HERNANDEZ LARA JOSE ENRIQUE",
-    listado: "[true,false,false,true,false,true,true,true,true,true]",
-    anomalias:
-      '[{"fecha":"2025-07-01","anomalia":"tuvo lectura incorrecta","actividad":"reiniciarla","responsable":"karen itzel"}]',
-    observaciones: "se detecto que cuando no se usa se apaga, y esto provoca una lectura de datos incorrecta",
-  },
-  {
-    id: 1,
-    Area: "Producción A",
-    Equipo: "Bascula",
-    fecha: "2024-01-15",
-    turno: 1,
-    elaboro: "Juan Pérez",
-    reviso: "María García",
-    aprobo: "Carlos López",
-    listado: "[true,true,false,true,true,true,true,false,true,true]",
-    anomalias:
-      '[{"fecha":"2024-01-15","anomalia":"Residuos encontrados en la superficie","actividad":"Limpieza completa de la báscula","responsable":"Juan Pérez"},{"fecha":"2024-01-15","anomalia":"Variaciones en la lectura detectadas","actividad":"Calibración del equipo","responsable":"Técnico de mantenimiento"}]',
-    observaciones: "Se encontraron residuos en la superficie y variaciones en la lectura durante la verificación.",
-  },
-  {
-    id: 2,
-    Area: "Producción B",
-    Equipo: "Bascula",
-    fecha: "2024-01-16",
-    turno: 2,
-    elaboro: "Ana Martínez",
-    reviso: "Pedro Rodríguez",
-    aprobo: "Laura Sánchez",
-    listado: "[true,true,true,true,true,true,true,true,true,true]",
-    anomalias: "[]",
-    observaciones: "Equipo funcionando correctamente sin anomalías detectadas.",
-  },
-  {
-    id: 3,
-    Area: "Producción A",
-    Equipo: "Bascula",
-    fecha: "2024-01-17",
-    turno: 3,
-    elaboro: "Roberto Silva",
-    reviso: "Carmen Díaz",
-    aprobo: "Miguel Torres",
-    listado: "[true,false,true,false,true,true,true,true,false,true]",
-    anomalias:
-      '[{"fecha":"2024-01-17","anomalia":"Báscula sucia con residuos","actividad":"Limpieza profunda","responsable":"Roberto Silva"},{"fecha":"2024-01-17","anomalia":"Display con fallas intermitentes","actividad":"Revisión técnica programada","responsable":"Técnico especializado"},{"fecha":"2024-01-17","anomalia":"Humedad detectada en el ambiente","actividad":"Verificar sistema de ventilación","responsable":"Mantenimiento"}]',
-    observaciones: "Múltiples anomalías detectadas. Equipo requiere mantenimiento urgente.",
-  },
-]
+const sampleData = <%- JSON.stringify(rChecks) %>
+// [
+//   {
+//     id: 8,
+//     Area: "Peso y etiquetado",
+//     Equipo: "Bascula",
+//     fecha: "2025-07-02",
+//     turno: 2,
+//     elaboro: "karen itzel",
+//     reviso: "KAREN ITZEL VAZQUEZ REYES",
+//     aprobo: "HERNANDEZ LARA JOSE ENRIQUE",
+//     listado: "[true,false,false,true,false,true,true,true,true,true]",
+//     anomalias:
+//       '[{"fecha":"2025-07-01","anomalia":"tuvo lectura incorrecta","actividad":"reiniciarla","responsable":"karen itzel"}]',
+//     observaciones: "se detecto que cuando no se usa se apaga, y esto provoca una lectura de datos incorrecta",
+//   },
+//   {
+//     id: 1,
+//     Area: "Producción A",
+//     Equipo: "Bascula",
+//     fecha: "2024-01-15",
+//     turno: 1,
+//     elaboro: "Juan Pérez",
+//     reviso: "María García",
+//     aprobo: "Carlos López",
+//     listado: "[true,true,false,true,true,true,true,false,true,true]",
+//     anomalias:
+//       '[{"fecha":"2024-01-15","anomalia":"Residuos encontrados en la superficie","actividad":"Limpieza completa de la báscula","responsable":"Juan Pérez"},{"fecha":"2024-01-15","anomalia":"Variaciones en la lectura detectadas","actividad":"Calibración del equipo","responsable":"Técnico de mantenimiento"}]',
+//     observaciones: "Se encontraron residuos en la superficie y variaciones en la lectura durante la verificación.",
+//   },
+//   {
+//     id: 2,
+//     Area: "Producción B",
+//     Equipo: "Bascula",
+//     fecha: "2024-01-16",
+//     turno: 2,
+//     elaboro: "Ana Martínez",
+//     reviso: "Pedro Rodríguez",
+//     aprobo: "Laura Sánchez",
+//     listado: "[true,true,true,true,true,true,true,true,true,true]",
+//     anomalias: "[]",
+//     observaciones: "Equipo funcionando correctamente sin anomalías detectadas.",
+//   },
+//   {
+//     id: 3,
+//     Area: "Producción A",
+//     Equipo: "Bascula",
+//     fecha: "2024-01-17",
+//     turno: 3,
+//     elaboro: "Roberto Silva",
+//     reviso: "Carmen Díaz",
+//     aprobo: "Miguel Torres",
+//     listado: "[true,false,true,false,true,true,true,true,false,true]",
+//     anomalias:
+//       '[{"fecha":"2024-01-17","anomalia":"Báscula sucia con residuos","actividad":"Limpieza profunda","responsable":"Roberto Silva"},{"fecha":"2024-01-17","anomalia":"Display con fallas intermitentes","actividad":"Revisión técnica programada","responsable":"Técnico especializado"},{"fecha":"2024-01-17","anomalia":"Humedad detectada en el ambiente","actividad":"Verificar sistema de ventilación","responsable":"Mantenimiento"}]',
+//     observaciones: "Múltiples anomalías detectadas. Equipo requiere mantenimiento urgente.",
+//   },
+// ]
 
 // Inicializar la aplicación
 document.addEventListener("DOMContentLoaded", () => {
@@ -895,7 +896,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function setupEventListeners() {
   // Botones de carga de datos
-  document.getElementById("load-sample-btn").addEventListener("click", loadSampleData)
+  // document.getElementById("load-sample-btn").addEventListener("click", loadSampleData)
   document.getElementById("load-sample-btn-2").addEventListener("click", loadSampleData)
 
   // Filtros

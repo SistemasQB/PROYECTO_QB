@@ -521,6 +521,8 @@ controller.mejoracontinua2 = async (req, res) => {
             }
         )
 
+        
+
         res.status(200).send({ msg: 'Mejora Enviada', ok: true, id: Rmejora.id });
         return
     } catch (error) {
@@ -650,9 +652,10 @@ controller.subiranalisis2 = async (req, res) => {
     try {
         obtenerAnalisis.titulo_analisis = req.file.filename
         obtenerAnalisis.estatus = 1
-
         await obtenerAnalisis.save();
+
         // next()
+        await emailMejora({ id: 0, nombre_mejora: obtenerAnalisis.nombre_mejora, email: obtenerAnalisis.email, generador_idea: obtenerAnalisis.generador_idea, periodo: '', fecha_limite: '' });
         res.status(200).send({ msg: 'Analisis enviado con exito', ok: true });
         return
     } catch (error) {
@@ -1046,18 +1049,15 @@ let posts;
 
 // 🕒 Ejecuta la verificación todos los días a las 9:00 AM
 // cron.schedule('0 9 * * *', async () => {
-cron.schedule('5 9 * * *', async () => {
-    console.log('Verificando...', new Date());
-    await emailMejora(new Date());
-    verificarMejora();
-});
+// cron.schedule('* * * * *', () => {
+    // console.log('Verificando...', new Date());
+    // verificarMejora();
+// });
 
-async function  verificarMejora() {
+async function verificarMejora() {
     let obtenerValores 
 
     obtenerValores = await Mejora.findAll({ where:{  [Op.and] : [{ estatus: 3 }, { evidencia1: null }] }});
-    // console.log(obtenerValores[0].nombre_mejora);
-    console.log('15 dias', obtenerValores.length);
     
     for (let c = 0; c < obtenerValores.length; c++) {
 
@@ -1067,57 +1067,108 @@ async function  verificarMejora() {
   
         fecha15dias.setDate(fecha15dias.getDate() + 15);
         fecha10dias.setDate(fecha10dias.getDate() + 10);
-        console.log(obtenerValores[c].fecha_respuesta_comite);
+
+        const { id, nombre_mejora, generador_idea } = obtenerValores[c];
+
         
-
-        console.log(fecha15dias);
-        console.log(fecha10dias);
-
-        console.log(estaEnRango(fecha10dias, fecha15dias));
-
-        if (estaEnRango(fecha10dias, fecha15dias)) {
-            console.log(obtenerValores[c].nombre_mejora, '15 dias');
+        switch (estaEnRango(resultado.desde, resultado.hasta)) {
+            case 1:
+                await emailMejora({ id:5, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '15 dias', fecha_limite:resultado.hasta });
+                break;
+            case 2:
+                await emailMejora({ id:1, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '15 dias', fecha_limite:resultado.hasta });
+                break;
+            case 3:
+                obtenerValores[c].estatus = 5
+                await obtenerValores[c].save()
+                await emailMejora({ id:2, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '15 dias', fecha_limite:resultado.hasta });
+                break;
         }
+
     }
 
     obtenerValores = await Mejora.findAll({ where:{  [Op.and] : [{  evidencia1: {[Op.ne]: null} }, { evidencia2: null }] }});
-    console.log('1 mes', obtenerValores.length);
 
     for (let c = 0; c < obtenerValores.length; c++) {
         let resultado = obtenerRangoSemanaAntesDelMes(new Date(obtenerValores[c].fecha_respuesta_comite), 1);
         
         // console.log(estaEnRango(resultado.desde, resultado.hasta));
-        if (estaEnRango(resultado.desde, resultado.hasta)) {
-            console.log(obtenerValores[c].nombre_mejora, '1 mes');
+        switch (estaEnRango(resultado.desde, resultado.hasta)) {
+            case 1:
+                await emailMejora({ id:5, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '1er mes', fecha_limite:resultado.hasta });
+                break;
+            case 2:
+                await emailMejora({ id:1, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '1er mes', fecha_limite:resultado.hasta });
+                break;
+            case 3:
+                obtenerValores[c].estatus = 5
+                await obtenerValores[c].save()
+                await emailMejora({ id:2, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '1er mes', fecha_limite:resultado.hasta });
+                break;
         }
     }
 
     obtenerValores = await Mejora.findAll({ where:{  [Op.and] : [{  evidencia2: {[Op.ne]: null} }, { evidencia3: null }] }});
-    console.log('2 mes', obtenerValores.length);
     for (let c = 0; c < obtenerValores.length; c++) {
         let resultado = obtenerRangoSemanaAntesDelMes(new Date(obtenerValores[c].fecha_respuesta_comite), 2);
         
         // console.log(estaEnRango(resultado.desde, resultado.hasta));
-        if (estaEnRango(resultado.desde, resultado.hasta)) {
-            console.log(obtenerValores[c].nombre_mejora, '2 mes');
+        switch (estaEnRango(resultado.desde, resultado.hasta)) {
+            case 1:
+                await emailMejora({ id:5, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '2do mes', fecha_limite:resultado.hasta });
+                break;
+            case 2:
+                await emailMejora({ id:1, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '2do mes', fecha_limite:resultado.hasta });
+                break;
+            case 3:
+                obtenerValores[c].estatus = 5
+                await obtenerValores[c].save()
+                await emailMejora({ id:2, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '2do mes', fecha_limite:resultado.hasta });
+                break;
         }
     }
 
     obtenerValores = await Mejora.findAll({ where:{  [Op.and] : [{  evidencia3: {[Op.ne]: null} }, { evidencia4: null }] }});
-    console.log('3 mes', obtenerValores.length);
     for (let c = 0; c < obtenerValores.length; c++) {
         let resultado = obtenerRangoSemanaAntesDelMes(new Date(obtenerValores[c].fecha_respuesta_comite), 3);
         
         // console.log(estaEnRango(resultado.desde, resultado.hasta));
-        if (estaEnRango(resultado.desde, resultado.hasta)) {
-            console.log(obtenerValores[c].nombre_mejora, '3 mes');
+        // if (estaEnRango(resultado.desde, resultado.hasta) == 1) {
+        //     console.log(obtenerValores[c].nombre_mejora, '3 mes');
+        // }else{
+            //declinar
+        // }
+
+        
+
+        switch (estaEnRango(resultado.desde, resultado.hasta)) {
+            case 1:
+                await emailMejora({ id:5, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '3er mes', fecha_limite:resultado.hasta });
+                break;
+            case 2:
+                await emailMejora({ id:1, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '3er mes', fecha_limite:resultado.hasta });
+                break;
+            case 3:
+                obtenerValores[c].estatus = 5
+                await obtenerValores[c].save()
+                await emailMejora({ id:2, nombre_mejora:obtenerValores[c].nombre_mejora, generador_idea:obtenerValores[c].generador_idea, email:obtenerValores[c].email, periodo: '3er mes', fecha_limite:resultado.hasta });
+                break;
         }
+
     }
 }
 
 function estaEnRango(fechaInicio, fechaFin) {
   const hoy = new Date();
-  return hoy >= fechaInicio && hoy < fechaFin;
+  if (hoy >= fechaInicio && hoy < fechaFin) {
+      return 1;
+  }else if (hoy > fechaFin && hoy < fechaFin.setDate(fechaFin.getDate() + 5)) {
+      return 2;
+  }else if(hoy > fechaFin.setDate(fechaFin.getDate() + 5)){
+      return 3;
+  }else{
+    return 0
+  }
 }
 
 function formatDateToYYYYMMDD(date) {
@@ -1196,30 +1247,6 @@ const currentDate = new Date(); // Get the current date
 const formattedDate = formatDateToYYYYMMDD(currentDate);
 console.log(formattedDate); // Output: e.g., 2025/07/15
 
-/*
-
-const bGch_alta = await informaciongch.findAll({
-        attributes: ['nombrelargo'],
-        where: {
-            [Op.or]:
-                [
-                    {
-                        fechaalta: { [Op.gt]: Sequelize.col('fechabaja') }
-                    },
-                    {
-                        fechareingreso: { [Op.gt]: Sequelize.col('fechabaja') }
-                    },
-                ],
-            [Op.and]:
-                [
-                    {
-                        idpuesto: { [Op.ne]: 45 },
-                    }
-                ]
-        }
-    })
-
-*/
 
 
 
