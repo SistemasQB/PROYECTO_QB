@@ -78,6 +78,7 @@ controller.checklist2 = async (req, res) => {
         Equipo,
         fecha,
         turno,
+        reviso,
         elaboro,
         aprobo,
         listado,
@@ -87,21 +88,21 @@ controller.checklist2 = async (req, res) => {
 
     //Validar usuario existente
 
-    const usuario = await Usuario.findOne({ where: { codigoEmpleado } })
-    if (!usuario) {
-        res.status(400).send({ msg: 'El usuario no existe', ok: false });
-        return
-    }
+    // const usuario = await Usuario.findOne({ where: { codigoEmpleado } })
+    // if (!usuario) {
+    //     res.status(400).send({ msg: 'El usuario no existe', ok: false });
+    //     return
+    // }
 
     // Revisar la contrseña
 
-    if (!usuario.verificarPasssword(pswEmpleado)) {
-        res.status(400).send({ msg: 'La contrseña no es correcta', ok: false });
-        return
-    }
+    // if (!usuario.verificarPasssword(pswEmpleado)) {
+    //     res.status(400).send({ msg: 'La contrseña no es correcta', ok: false });
+    //     return
+    // }
 
-    const nomUsuario = await Empleados.findOne({ where: { codigoEmpleado } })
-    const reviso = nomUsuario.nombre + ' ' + nomUsuario.apellidopaterno + ' ' + nomUsuario.apellidomaterno
+    // const nomUsuario = await Empleados.findOne({ where: { codigoEmpleado } })
+    // const reviso = nomUsuario.nombre + ' ' + nomUsuario.apellidopaterno + ' ' + nomUsuario.apellidomaterno
 
     // console.log(req.body);
 

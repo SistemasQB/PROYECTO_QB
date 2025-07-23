@@ -434,6 +434,8 @@
 
 <body>
     <div class="container">
+        <form action="" id="formUsuario">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
         <!-- Header -->
         <div class="card">
             <div class="card-header" style="display: flex;">
@@ -441,15 +443,21 @@
                 <h1><span style="font-size: 200%;">CHECKLIST DE &nbsp;</span><span id="equipoName" style="font-size: 200%;">BÁSCULA</span></h1>
             </div>
             <div class="card-content">
+                
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="area">Área</label>
-                        <input type="text" id="area" placeholder="Ingrese el área" name="area" required>
+                        <!-- <input type="text" id="area" placeholder="Ingrese el área" name="area" required> -->
+                        <select id="turno" name="Area" required>
+                            <option value="" selected disabled>Seleccionar Area</option>
+                            <option value="Linea">Linea</option>
+                            <option value="Almacen">Almacen</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="equipo">Equipo</label>
                         <select id="equipo" name="equipo" required>
-                            <option value="" disabled>Seleccionar Equipo</option>
+                            <option value="" disabled selected>Seleccionar Equipo</option>
                             <option value="BÁSCULA">Báscula</option>
                             <option value="MONTACARGAS">Montacargas</option>
                         </select>
@@ -461,7 +469,7 @@
                     <div class="form-group">
                         <label for="turno">Turno</label>
                         <select id="turno" name="turno" required>
-                            <option value="" disabled>Seleccionar turno</option>
+                            <option value="" selected disabled>Seleccionar turno</option>
                             <option value="1">Turno 1</option>
                             <option value="2">Turno 2</option>
                             <option value="3">Turno 3</option>
@@ -478,7 +486,12 @@
                     </div>
                     <div class="form-group">
                         <label for="reviso">Revisó</label>
-                        <input type="text" id="reviso" placeholder="Nombre" required>
+                        <select id="" name="reviso" required>
+                            <option value="" selected disabled>Seleccionar Encargado</option>
+                            <option value="NORIEGA VILLALOBOS MARIANA">NORIEGA VILLALOBOS MARIANA</option>
+                            <option value="PIZAÑA RODRIGUEZ MIGUEL EDUARDO">PIZAÑA RODRIGUEZ MIGUEL EDUARDO</option>
+                            <option value="LUEVANO CEDILLO FRANCISCO JAVIER">LUEVANO CEDILLO FRANCISCO JAVIER</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="aprobo">Aprobó</label>
@@ -582,11 +595,12 @@
 
         <!-- Action Button -->
         <div class="actions">
-            <button type="button" id="" class="btn btn-primary" onclick="" data-bs-toggle="modal"
-                data-bs-target="#staticBackdrop">
+            <!-- <button type="button" id="btnGuardar" class="btn btn-primary" onclick="" data-bs-toggle="modal" -->
+            <button type="submit" id="btnGuardar" class="btn btn-primary" onclick="" >
                 <i class="fas fa-save"></i> Guardar Checklist
             </button>
         </div>
+        </form>
     </div>
 
     <div id="" class="">
@@ -594,8 +608,8 @@
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
             aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form action="" id="formUsuario">
-                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                <!-- <form action="" id="formUsuario">
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>"> -->
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5" id="staticBackdropLabel">Aprobar Checklist</h1>
@@ -615,10 +629,10 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Enviar</button>
+                            <button type="button" class="btn btn-primary">Enviar</button>
                         </div>
                     </div>
-                </form>
+                <!-- </form> -->
             </div>
         </div>
     </div>
@@ -680,10 +694,10 @@
    
 
         const formData = new FormData(formUsuario)
-        formData.append("Area", document.getElementById("area").value)
+        // formData.append("Area", document.getElementById("area").value)
         formData.append("Equipo", document.getElementById("equipo").value)
         formData.append("fecha", document.getElementById("fecha").value)
-        formData.append("turno", document.getElementById("turno").value)
+        // formData.append("turno", document.getElementById("turno").value)
         formData.append("elaboro", document.getElementById("elaboro").value)
         formData.append("aprobo", document.getElementById("aprobo").value)
         formData.append("listado", arrayChecks2.toString())

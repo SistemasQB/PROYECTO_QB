@@ -414,31 +414,53 @@ const emailMejora = async (datos) => {
 
 const emailMejoraRespuesta = async (datos) => {
 
-  console.log('Enviado...',datos);
-  
+  const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: {
+            user: process.env.EMAILMC_USER,
+            pass: process.env.EMAILMC_PASS
+        }
+    });
 
-  // const transport = nodemailer.createTransport({
-  //       host: process.env.EMAIL_HOST,
-  //       port: process.env.EMAIL_PORT,
-  //       auth: {
-  //           user: process.env.EMAILMC_USER,
-  //           pass: process.env.EMAILMC_PASS
-  //       }
-  //   });
+    await transport.sendMail({
+        from: process.env.EMAILMC_USER,
+        to: datos.email,
+        subject: 'MEJORA' + ' ' + datos.nombre_mejora + ' FUE' + ' ' + datos.resultado,
+        text: 'Prueba de las mejoras',
+        html: cuerpoRespusetaComite(datos)
+        
+    })
+}
 
-  //   await transport.sendMail({
-  //       from: process.env.EMAILMC_USER,
-  //       to: datos.email,
-  //       subject: cuerpoCorreoMejora[datos.id].asunto + ' ' + datos.nombre_mejora,
-  //       text: 'Prueba de las mejoras',
-  //       html: 
-  //       `
-  //         <h5>Buen dia ${datos.generador_idea}</h5>
-  //         <p> El día de hoy se llevó a cabo la revisión de las propuestas de mejora continua en la junta con el Comité de Mejora Continua, 
-  //         en la cual se decidió que la propuesta de mejora '${datos.nombre_mejora}' se encuentra marcada como ${datos.resultado}</p>
-  //         <p>Gracias por enviarnos tu propuesta, te animamos a seguir participando. ¡Saludos! </p>
-  //       `
-  //   })
+function cuerpoRespusetaComite(params) {
+let respuestaComite
+if (!params.fecha_respuesta_comite) {
+    respuestaComite = 
+  `
+          <h5>Buen dia ${params.generador_idea}</h5>
+          <p> El día de hoy se llevó a cabo la revisión de las propuestas de mejora continua en la junta con el Comité de Mejora Continua, 
+          en la cual se decidió que la propuesta de mejora '<b>${params.nombre_mejora}</b>' se encuentra marcada como <b>${params.resultado}</b></p>
+          <p>para ver el resultado de la evaluación de la mejora puedes acceder desde la pagina WEB <a href="www.qualitybolca.net">Pagina Web</a></p>
+          <p>Gracias por enviarnos tu propuesta, te animamos a seguir participando. ¡Saludos! </p>
+        `
+}else{
+  respuestaComite = 
+  `
+          <h5>Buen dia ${params.generador_idea}</h5>
+          <p> El día de hoy se llevó a cabo la revisión de las propuestas de mejora continua en la junta con el Comité de Mejora Continua, 
+          en la cual se decidió que la propuesta de mejora '<b>${params.nombre_mejora}</b>' se encuentra marcada como <b>${params.resultado}</b></p>
+          <p>sin embargo la mejora empezara a ser evaluada a partir de la siguiente fecha <b>${params.fecha_respuesta_comite}</b></p>
+          <p>para ver el resultado de la evaluación de la mejora puedes acceder desde la pagina WEB <a href="www.qualitybolca.net">Pagina Web</a></p>
+          <p>Gracias por enviarnos tu propuesta, te animamos a seguir participando. ¡Saludos! </p>
+        `
+}
+
+
+
+
+
+  return respuestaComite
 }
 
 function generarCuerpoEmail(datos) {
@@ -517,13 +539,6 @@ const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "
    
 }
 
-
-
-
-
-
-
-
 export {
     emailRegistro,
     emailOlvidePassword,
@@ -533,5 +548,6 @@ export {
     emailMantenimientoA,
     enviarQueja,
     emailSolicitud,
-    emailMejora
+    emailMejora,
+    emailMejoraRespuesta
 }

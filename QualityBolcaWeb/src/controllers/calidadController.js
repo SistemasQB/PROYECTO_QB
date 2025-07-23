@@ -3,6 +3,8 @@ import Verificacion5s from "../models/verificacion5s.js"
 import Sequelize, { where } from 'sequelize'
 import fs from 'fs';
 
+import {emailMejoraRespuesta} from "../helpers/emails.js";
+
 import {
     Mejora
 } from "../models/index.js";
@@ -54,18 +56,39 @@ controller.rechazarMejora = async (req, res)=>{
     if (!id || id.trim() == ''){
         return res.statusCode(401).json({msg: 'no se pudo', isValid: false})
     }
-    let campos = {estatus: 4, motivo: motivo}
-    let resultados = await Mejora.update(campos, {where: {id: id}})
-    res.send({ok: true, msg: 'mejora rechazada.'})    
-    
+
+    const obtenerValores = await Mejora.findByPk(id);
+    console.log(obtenerValores);
+
+    obtenerValores.estatus = 4
+    obtenerValores.motivo = motivo
+    // let resultados = await Mejora.update(campos, {where: {id: id}})
+    await obtenerValores.save();
+
+    await emailMejoraRespuesta({ generador_idea: obtenerValores.generador_idea, nombre_mejora: obtenerValores.nombre_mejora, email: obtenerValores.email, resultado: 'Rechazada' });
+
+    res.send({ok: true, msg: 'mejora rechazada.'})
 }
 
 controller.ActualizarMejoras = async (req, res)=>{
     let misDatos =  req.body;
     delete misDatos._csrf;
+    misDatos.fecha_respuesta_comite = new Date.now().toLocaleDateString('es-ES')
     let datos = {}
     for(let clave in misDatos){
         datos[clave] = misDatos[clave]
+    }
+
+    const obtenerValores = await Mejora.findByPk(misDatos.id);
+    switch (misDatos.estatus) {
+        case 2:
+            await emailMejoraRespuesta({ generador_idea: obtenerValores.generador_idea, nombre_mejora: obtenerValores.nombre_mejora, email: obtenerValores.email, resultado: 'En espera de modificacion', fecha_respuesta_comite: datos.fecha_respuesta_comite});
+            break;
+        case 3:
+            await emailMejoraRespuesta({ generador_idea: obtenerValores.generador_idea, nombre_mejora: obtenerValores.nombre_mejora, email: obtenerValores.email, resultado: 'Aceptada', fecha_respuesta_comite: datos.fecha_respuesta_comite});
+            break;
+        default:
+            break;
     }
     let id = datos.id
     delete datos.id;
