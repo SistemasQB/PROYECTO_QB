@@ -1048,11 +1048,11 @@ let posts;
 
 
 // 🕒 Ejecuta la verificación todos los días a las 9:00 AM
-// cron.schedule('0 9 * * *', async () => {
 // cron.schedule('* * * * *', () => {
-    // console.log('Verificando...', new Date());
-    // verificarMejora();
-// });
+cron.schedule('0 9 * * *', async () => {
+    console.log('Verificando...', new Date());
+    verificarMejora();
+});
 
 async function verificarMejora() {
     let obtenerValores 

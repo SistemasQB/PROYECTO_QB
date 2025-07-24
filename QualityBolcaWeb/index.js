@@ -61,6 +61,10 @@ app.use( cookieParser() )
 
 app.use( csurf({cookie: true}))
 
+// Middleware CSRF usando cookies
+// export const csrfProtection = csrf({ cookie: true });
+
+
 
 //conexion a la base de datos
 try {
@@ -83,29 +87,6 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 // 1 Dia
   }
 }));
-
-
-
-export const transporter = nodeMailer.createTransport({
-  host: "smtp.hostinger.com",
-  port: 465,
-  secure: true, // Use `true` for port 465, `false` for all other ports
-  auth: {
-    user: "mantenimiento@qualitybolca.net",
-    pass: "Man.2024Nto",
-  }
-});
-
-
-export function alerta( tipoA, mensaje) {
-  console.log('Entro a la alerta');
-  
-  Swal.fire({
-    title: "Good job!",
-    text: "You clicked the button!",
-    icon: "success"
-  });
-}
 
 // export default upload
 
@@ -134,3 +115,4 @@ app.use(express.json());
 app.listen(PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 })
+

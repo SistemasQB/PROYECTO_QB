@@ -2,7 +2,6 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
-import { transporter } from "../../index.js";
 
 import {
     Cps,
@@ -25,6 +24,7 @@ import {
     RegistroCursos,
     Comunicacion,
     Usuario,
+    Solicitud,
     // Gch_Alta,
     informaciongch,
     informacionpuesto,
@@ -35,7 +35,6 @@ import Swal from 'sweetalert2'
 import multer from "multer";
 import mimeTypes from "mime-types";
 import { check, validationResult } from "express-validator";
-import { alerta } from "../../index.js";
 import { generarJWT, generarId } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
 
@@ -381,6 +380,10 @@ controller.paginaSolicitud = async (req, res) => {
 
 controller.paginaSolicitud2 = async (req, res) => {
 
+
+    const archivo = req.file
+    if(!archivo) return res.json({ok: false, msg: 'no se movieron los archivos'})
+
     const {
         puesto,
         sueldo,
@@ -393,8 +396,7 @@ controller.paginaSolicitud2 = async (req, res) => {
         region,
         cp,
         experiencia,
-        adeudos,
-        cv } = req.body
+        } = req.body
 
     try {
         const resSolcitudM = await Solicitud.create({
@@ -410,10 +412,9 @@ controller.paginaSolicitud2 = async (req, res) => {
             region,
             cp,
             experiencia,
-            adeudos,
-            cv
+            cv: archivo.filename
         })
-        res.json({ ok: true, id: resSolcitudM.id });
+        res.send({ ok: true, msg: 'solicitud enviada'});
         // res.status(200).send({ solId: resSolcitudM.id});
         return
     } catch (error) {
@@ -422,9 +423,6 @@ controller.paginaSolicitud2 = async (req, res) => {
         res.status(400).send({ ok: false, message: error });
         return
     }
-
-
-
 }
 
 controller.paginaSolicitud3 = async (req, res) => {

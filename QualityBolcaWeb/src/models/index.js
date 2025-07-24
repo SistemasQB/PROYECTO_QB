@@ -32,6 +32,7 @@ import { default as Testcleaver } from './atraccion/testcleaver.js';
 import { default as BuzonQuejas } from './buzonQuejas.js';
 import { default as Vacaciones } from './vacaciones.js';
 import { default as Solicitudservicio } from './solicitudservicio.js';
+import { default as Solicitud } from './atraccion/solicitud.js';
 import { default as Empleados } from './empleado.js';
 import { default as Cc1 } from './cc1.js';
 import { default as Checklistcc1 } from './sorteo/cc1/checklistcc1.js';
@@ -113,5 +114,6 @@ export {
   Solicitudservicio,
   Empleados,
   Cc1,
-  Checklistcc1
+  Checklistcc1,
+  Solicitud
 };

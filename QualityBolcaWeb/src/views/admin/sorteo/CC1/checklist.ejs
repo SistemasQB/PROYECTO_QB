@@ -439,7 +439,7 @@
         <!-- Header -->
         <div class="card">
             <div class="card-header" style="display: flex;">
-                <img src="/img/Quality-BOLCA.png" alt="" srcset="" style="width: 5%; height: 5%; margin-right: 2rem;"
+                <img src="/img/Quality-BOLCA.png" alt="" srcset="" style="width: 5%; height: 5%; margin-right: 2rem;">
                 <h1><span style="font-size: 200%;">CHECKLIST DE &nbsp;</span><span id="equipoName" style="font-size: 200%;">BÁSCULA</span></h1>
             </div>
             <div class="card-content">
@@ -641,19 +641,35 @@
 </body>
 
 <script>
-    // Datos del checklist
-    const checklistItems = [
-        "Encendido y apagado correctamente",
-        "Báscula limpia y libre de residuos",
-        "Superficie nivelada y sin objetos encima",
-        "Indicador digital funcionando correctamente",
-        "Lectura en cero al encender (tara correcta)",
-        "Botones de función responden correctamente",
-        "Verificación visual de calibración (sello intacto)",
-        "Lectura sin variaciones anormales",
-        "Condiciones del entorno sin humedad o vibraciones",
-        "Cableado en buen estado (sin cortes o dobleces)",
-    ]
+// Datos de ejemplo
+let checklistMontacargas = [
+"Encendido y apagado correctamente",
+"Nivel de gas / cilindro lleno",
+"Fugas de gas (olfateo o burbujeo)",
+"Llantas en buen estado (sin daño excesivo)",
+"Luces frontales ",
+"Claxon y alarma de reversa",
+"Cinturón de seguridad",
+"Palancas de control (elevación/inclinación)",
+"Fugas de aceite o fluidos",
+"Funcionamiento correcto de frenos"
+]
+
+let checklistBascula = [
+  "Encendido y apagado correctamente",
+  "Báscula limpia y libre de residuos",
+  "Superficie nivelada y sin objetos encima",
+  "Indicador digital funcionando correctamente",
+  "Lectura en cero al encender (tara correcta)",
+  "Botones de función responden correctamente",
+  "Verificación visual de calibración (sello intacto)",
+  "Lectura sin variaciones anormales",
+  "Condiciones del entorno sin humedad o vibraciones",
+  "Cableado en buen estado (sin cortes o dobleces)",
+]
+
+// Items del checklist (deben coincidir con los de la página principal)
+let checklistItems = checklistBascula
 
 
     let anomalias2 = []
@@ -674,7 +690,7 @@
     // Inicializar la aplicación
     document.addEventListener("DOMContentLoaded", () => {
         initializeForm()
-        generateChecklistItems()
+        // generateChecklistItems()
         // setupEventListeners()
     })
 
@@ -700,7 +716,7 @@
         // formData.append("turno", document.getElementById("turno").value)
         formData.append("elaboro", document.getElementById("elaboro").value)
         formData.append("aprobo", document.getElementById("aprobo").value)
-        formData.append("listado", arrayChecks2.toString())
+        formData.append("listado", '[' + arrayChecks2.toString() + ']')
         formData.append("anomalias", JSON.stringify(anomalias2))
         formData.append("observaciones", document.getElementById("observaciones").value)
         const urlEncoded = new URLSearchParams(formData).toString();
@@ -720,10 +736,14 @@
             const imagenEquipo = document.getElementById("imagenEquipo")
             imagenEquipo.src = "/img/bascula.png"
             document.getElementById('equipoName').textContent = 'BÁSCULA'
+            checklistItems = checklistBascula
+            generateChecklistItems()
         } else {
             const imagenEquipo = document.getElementById("imagenEquipo")
             imagenEquipo.src = "/img/montacargas.jpg"
             document.getElementById('equipoName').textContent = 'MONTACARGAS'
+            checklistItems = checklistMontacargas
+            generateChecklistItems()
         }
     })
 
@@ -736,6 +756,8 @@
 
     function generateChecklistItems() {
         const container = document.getElementById("checklist-items")
+
+        container.innerHTML = ""
 
         checklistItems.forEach((item, index) => {
             const itemDiv = document.createElement("div")

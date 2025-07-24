@@ -12,8 +12,8 @@ function alertaFetch(urlEncoded, link, redirect) {
     fetch(link, {
         method: 'POST',
         body: urlEncoded,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+        headers:{
+            'X-CSRF-Token': urlEncoded.get("_csrf")
         }
     })
         .then(response => response.json())

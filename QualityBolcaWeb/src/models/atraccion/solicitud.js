@@ -48,23 +48,22 @@ const Solicitud = db.define('solicitud', {
         allowNull: false
     },
     experiencia:{
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true
-    },
-    adeudos:{
-        type: DataTypes.BOOLEAN,
-        allowNull: false
     },
     cv:{
         type: DataTypes.STRING,
         allowNull: true
-    },comentario: {
+    },
+    comentario: {
         type: DataTypes.STRING,
         allowNull: true
-    },estatus: {
+    },
+    estatus: {
         type: DataTypes.TINYINT,
         defaultValue: 0,
-    },revisado:{
+    },
+    revisado:{
         type: DataTypes.STRING,
         allowNull: true
     }

@@ -8,8 +8,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
+
 <style>
-    * {
+  * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -535,144 +536,7 @@ body {
   }
 }
 
-/* Agregar estilos para las anomalías al final del archivo CSS */
-
-.anomalies-count {
-  background: #fef3c7;
-  color: #92400e;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.anomalies-detail-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.anomaly-detail-card {
-  border: 1px solid #fee2e2;
-  border-radius: 8px;
-  background: #fef2f2;
-  overflow: hidden;
-}
-
-.anomaly-detail-header {
-  background: #fecaca;
-  padding: 0.75rem 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #fee2e2;
-}
-
-.anomaly-number {
-  background: #ef4444;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.anomaly-date {
-  font-size: 0.875rem;
-  color: #991b1b;
-  font-weight: 500;
-}
-
-.anomaly-detail-body {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.anomaly-detail-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.anomaly-detail-item label {
-  font-size: 0.75rem;
-  color: #991b1b;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.anomaly-detail-item span {
-  font-size: 0.875rem;
-  color: #7f1d1d;
-  background: white;
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #fecaca;
-}
-
-.mini-anomalies-list {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.mini-anomaly-item {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  background: #fef2f2;
-  border-radius: 4px;
-  border-left: 3px solid #ef4444;
-}
-
-.mini-anomaly-date {
-  color: #991b1b;
-  font-weight: 500;
-  min-width: 80px;
-}
-
-.mini-anomaly-text {
-  color: #7f1d1d;
-  flex: 1;
-}
-
-.mini-anomaly-more {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-style: italic;
-  text-align: center;
-  padding: 0.25rem;
-}
-
-@media (max-width: 768px) {
-  .anomaly-detail-header {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .mini-anomaly-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-  }
-
-  .mini-anomaly-date {
-    min-width: auto;
-  }
-}
-
 </style>
-
 
 <body>
     <div class="container">
@@ -809,13 +673,28 @@ body {
 </body>
 
 <script>
-    // Datos de ejemplo y estado de la aplicación
+  // Datos de ejemplo y estado de la aplicación
 let allChecklists = []
 let filteredChecklists = []
 let currentView = "list"
 
-// Items del checklist (deben coincidir con los de la página principal)
-const checklistItems = [
+
+
+// Datos de ejemplo
+let checklistMontacargas = [
+"Encendido y apagado correctamente",
+"Nivel de gas / cilindro lleno",
+"Fugas de gas (olfateo o burbujeo)",
+"Llantas en buen estado (sin daño excesivo)",
+"Luces frontales ",
+"Claxon y alarma de reversa",
+"Cinturón de seguridad",
+"Palancas de control (elevación/inclinación)",
+"Fugas de aceite o fluidos",
+"Funcionamiento correcto de frenos"
+]
+
+let checklistBascula = [
   "Encendido y apagado correctamente",
   "Báscula limpia y libre de residuos",
   "Superficie nivelada y sin objetos encima",
@@ -828,8 +707,18 @@ const checklistItems = [
   "Cableado en buen estado (sin cortes o dobleces)",
 ]
 
+// Items del checklist (deben coincidir con los de la página principal)
+let checklistItems = checklistBascula
+
 // Actualizar los datos de ejemplo para que coincidan con el formato proporcionado
-const sampleData = <%- JSON.stringify(rChecks) %>
+let anomalias2 = []
+const sampleData = <%- JSON.stringify(rChecks) %>;
+for (let c = 0; c < sampleData.length; c++) {
+anomalias2[c] = sampleData[c].anomalias
+//   // 2. Reemplaza las diagonales invertidas
+// sampleData[c].anomalias = sampleData[c].anomalias.replace(/\\+/g, "");
+}
+
 // [
 //   {
 //     id: 8,
@@ -888,6 +777,8 @@ const sampleData = <%- JSON.stringify(rChecks) %>
 //   },
 // ]
 
+// console.log(sampleData);
+
 // Inicializar la aplicación
 document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners()
@@ -920,7 +811,9 @@ function processChecklistData(rawData) {
   return rawData.map((item) => {
     // Parsear el listado si es string
     let listado = item.listado
-    if (typeof listado === "string") {
+
+    
+    if (typeof listado == "string") {
       try {
         listado = JSON.parse(listado)
       } catch (e) {
@@ -1070,7 +963,7 @@ function renderListView(container) {
             ${anomaliasCount > 0 ? `<span class="anomalies-count"><i class="fas fa-exclamation-triangle"></i> ${anomaliasCount} anomalía${anomaliasCount > 1 ? "s" : ""}</span>` : ""}
           </div>
           <div class="checklist-actions">
-            <button class="btn btn-sm btn-primary" onclick="showDetail(${item.id})">
+            <button class="btn btn-sm btn-primary" onclick="showDetail(${item.id}, '${item.Equipo}')">
               <i class="fas fa-eye"></i> Ver Detalle
             </button>
           </div>
@@ -1139,6 +1032,12 @@ function renderDetailView(container) {
     .map((item) => {
       const hasAnomalies = item.listado.includes(false)
 
+      if (item.Equipo == 'BÁSCULA') {
+        checklistItems = checklistBascula
+      }else{
+        checklistItems = checklistMontacargas
+      }
+
       return `
       <div class="checklist-item">
         <div class="checklist-header">
@@ -1186,7 +1085,7 @@ function renderDetailView(container) {
 }
 
 // Actualizar la función showDetail para usar Area y Equipo en lugar de area y equipo
-function showDetail(id) {
+function showDetail(id, rEquipo) {
   const item = allChecklists.find((checklist) => checklist.id === id)
   if (!item) return
 
@@ -1195,6 +1094,15 @@ function showDetail(id) {
   const totalCount = item.listado.length
 
   const modalBody = document.getElementById("modal-body")
+
+  
+  if (rEquipo == 'BÁSCULA') {
+        checklistItems = checklistBascula
+      }else{
+        checklistItems = checklistMontacargas
+      }
+
+
   modalBody.innerHTML = `
     <div class="detail-section">
       <h3><i class="fas fa-info-circle"></i> Información General</h3>

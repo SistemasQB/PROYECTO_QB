@@ -1,7 +1,10 @@
 import 'dotenv/config'
 import express from "express";
 import {default as customerController} from './../controllers/customerController.js';
-import upload from "../middleware/subirpdf.js";
+import upload3 from "../middleware/cargarcv.js";
+import csurf from "csurf";
+// import { csrfProtection } from '../../index.js';
+
 
 const router = express.Router();
 
@@ -32,10 +35,10 @@ router.post('/encuestaSatisfaccion', customerController.encuestaSatisfaccion2)
 router.get('/directorio', customerController.paginaDirectorio);
 router.get('/mantenimiento', customerController.paginaMantenimiento);
 router.get('/solicitud', customerController.paginaSolicitud);
-router.post('/solicitud', customerController.paginaSolicitud2);
+router.post('/solicitud', upload3.single('cv'), customerController.paginaSolicitud2);
 // router.post('/solicitud/:cp', customerController.paginaSolicitud3);
 router.get('/subirsolicitud/:id',customerController.subirSolicitud);
-router.post('/subirsolicitud/:id', upload.single('pdfFile'),customerController.subirSolicitud2);
+router.post('/subirsolicitud/:id', upload3.single('pdfFile'),customerController.subirSolicitud2);
 router.post('/enviar', customerController.paginaSolicitud2);
 router.post('/uploader', customerController.uploads);
 router.post('/enviarCorreo', customerController.enviarCorreo);
