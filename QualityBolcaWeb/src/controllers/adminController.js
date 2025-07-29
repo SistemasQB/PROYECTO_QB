@@ -984,7 +984,6 @@ controller.blogayuda2 = (req, res) => {
     }
 }
 
-
 controller.blogayuda3 = (req, res) => {
     const nuevoPost = { ...req.body };
     const { postId, replyPath } = req.body;

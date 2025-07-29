@@ -24,6 +24,7 @@ import { default as sorteoRoutes } from "./src/routes/sorteoRoutes.js";
 import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
 import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
 import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
+import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
 
 import mimeTypes from "mime-types";
 import fetch from 'node-fetch'
@@ -105,6 +106,7 @@ app.use('/calidad', calidadRoutes);
 app.use('/atraccion', atraccionRoutes);
 app.use('/capitalhumano', capitalhumanoRoutes);
 app.use('/sorteo', sorteoRoutes);
+app.use('/nominas', nominasRoutes);
 
 
 

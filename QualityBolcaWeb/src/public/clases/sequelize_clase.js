@@ -14,7 +14,7 @@ class sequelizeClase{
         if (!inserccion) return false;
         return true;}
         catch(e){
-            console.log(ex.toStrin())
+            console.log(e.toString())
             return false;
         }
     }
@@ -26,7 +26,7 @@ class sequelizeClase{
         if (!elim) return false
         return true}
         catch(e){
-            console.log(ex.toStrin())
+            console.log(e.toString())
             return false;
         }
     }

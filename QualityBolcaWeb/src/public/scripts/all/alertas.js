@@ -12,8 +12,8 @@ function alertaFetch(urlEncoded, link, redirect) {
     fetch(link, {
         method: 'POST',
         body: urlEncoded,
-        headers:{
-            'X-CSRF-Token': urlEncoded.get("_csrf")
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
         }
     })
         .then(response => response.json())
@@ -35,7 +35,7 @@ function alertaFetch(urlEncoded, link, redirect) {
                     }else{
                         window.location.href = link
                     }
-                });;
+                });
             } else {
                 Swal.close();
                 Swal.fire({

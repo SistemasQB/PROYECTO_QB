@@ -1,6 +1,7 @@
 
 
 
+
 // DOM Elements
 const navToggle = document.getElementById("nav-toggle")
 const navMenu = document.getElementById("nav-menu")
@@ -300,7 +301,8 @@ btnAgregar.addEventListener("click", ()=>{
     let responsables = ``
 
     for(let i = 0;i<usuarios.length;i++ ){
-      responsables += `<option value="${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}">${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}</option>`
+      
+      responsables += `<option value="${usuarios[i]["codigoempleado"]}-${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}">${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}</option>`
     }
     let modalNuevo = `
     
@@ -437,20 +439,25 @@ btnAgregar.addEventListener("click", ()=>{
     const fechaCompromiso = document.getElementById("fechaCompromiso");
     const evaluacion = document.getElementById("evaluacion");
     const descripcion = document.getElementById("descripcionActividad");
+
+    const codigoEmpleado = responsable.value.split("-")
+
     
+      
     let datos = {
       minuta: minuta.value,
       nombreActividad : titulo.value,
-      responsable: responsable.value,
+      responsable: codigoEmpleado[1],
       area: area.value,
       prioridad: prioridad.value,
       estatus : estatus.value,
       avance: avance.value,
       fechaCompromiso: fechaCompromiso.value,
       evaluacion:evaluacion.value,
-      descripcion: descripcion.value
+      descripcion: descripcion.value,
+      numeroEmpleado: codigoEmpleado[0]
     }
-    await alertaFetchCalidad("http://192.168.10.65:3000/calidad2/procesoActividades",{tipo:"insert", datos: datos, _csrf: tok},"http://192.168.10.65:3000/calidad2/bitacoraActividades")
+    await alertaFetchCalidad("/calidad/procesoActividades",{tipo:"insert", datos: datos, _csrf: tok},"/calidad/bitacoraActividades")
     
   });
 
@@ -529,7 +536,7 @@ function eliminacion({id}){
           confirmButtonText: "Sí, Bórrala!"
         }).then(async (result) => {
           if (result.isConfirmed) {
-            alertaFetchCalidad("http://192.168.10.65:3000/calidad2/procesoActividades",{id:id, _csrf: tok, tipo: 'delete'},"http://192.168.10.65:3000/calidad2/bitacoraActividades")
+            alertaFetchCalidad("/calidad/procesoActividades",{id:id, _csrf: tok, tipo: 'delete'},"/calidad/bitacoraActividades")
             Swal.fire({
               title: "Deleted!",
               text: "Your file has been deleted.",
@@ -549,8 +556,10 @@ async function modalEdicion(btn){
       padre.classList.add('modal', 'modal-fade', 'show'); 
       let responsables = ``
 
+
     for(let i = 0;i<usuarios.length;i++ ){
-      responsables += `<option value="${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}">${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}</option>`
+      
+      responsables += `<option  value="${usuarios[i]["codigoempleado"]}-${usuarios[i]["codigoempleado"]}-${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}">${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}</option>`
     }
       let contenido = `
         <div class="modal-dialog modal-lg">
@@ -703,21 +712,24 @@ async function modalEdicion(btn){
   const btnEnvio = document.getElementById("btnEnvio");
   btnEnvio.addEventListener("click", async ()=>{
   const titulo = document.getElementById("nombreActividad");
+
+  const codigoEmpleado = responsable.value.split("-")
+  
     
     let datos = {
       minuta: minuta.value,
       nombreActividad : titulo.value,
-      responsable: responsable.value,
+      responsable: codigoEmpleado[1],
       area: area.value,
       prioridad: prioridad.value,
       estatus : estatus.value,
       avance: avance.value,
       fechaCompromiso: fechaCompromiso.value,
       evaluacion:evaluacion.value,
-      
+      numeroEmpleado: codigoEmpleado[0]
     }
     
-    await alertaFetchCalidad("http://192.168.10.65:3000/calidad2/procesoActividades",{_csrf: tok, tipo: 'update',datos: datos, id: id},"http://192.168.10.65:3000/calidad2/bitacoraActividades")
+    await alertaFetchCalidad("/calidad/procesoActividades",{_csrf: tok, tipo: 'update',datos: datos, id: id},"/calidad/bitacoraActividades")
     
   });}
 
@@ -824,6 +836,10 @@ function actualizarContadorResultados(visibles, total) {
 }
 
 function modalVisualizar({id}) {
+    let padre = document.createElement("div")  
+    padre.classList.add('modal', 'modal-fade', 'show'); 
+    
+    const actividad = actividades.find((actividad)=>actividad.id == id)
     let miDiv = document.createElement('div');
     miDiv.classList.add('modal', 'modal-fade'); 
     miDiv.setAttribute('id', 'modalNuevo');
@@ -835,93 +851,187 @@ function modalVisualizar({id}) {
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">
-                        <i class="fas fa-plus-circle me-2"></i>Nueva Actividad
+                        <i class="fa-regular fa-eye"></i>${actividad.nombreActividad}
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id='cruz'></button>
                 </div>
                 <div class="modal-body">
                     <form id="formNuevaMinuta">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="area" class="form-label">Minuta</label>
-                                <input type="text" class="form-control" id="minuta" placeholder='' required name = 'minuta' required>
+                                <input type="text" class="form-control" id="minuta" placeholder='' required name = 'minuta' 
+                                value='${actividad.minuta}' disabled>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="minuta" class="form-label">Titulo Nueva Actividad*</label>
-                                <input type="text" class="form-control" id="nombreActividad" placeholder='alias, titulo o nombre de la actividad' required name = 'nombreActividad'>
+                                <label for="minuta" class="form-label">Titulo de la Actividad*</label>
+                                <input type="text" class="form-control" id="nombreActividad" placeholder='alias, 
+                                titulo o nombre de la actividad' required name = 'nombreActividad' value = '${actividad.nombreActividad}' disabled>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="minuta" class="form-label">Descripcion de la actividad</label>
-                                <input type="text" class="form-control" id="descripcionActividad" placeholder='descripcion breve de la actividad' required name = 'descripcionACtividad'>
+                                <textarea type="text" class="form-control" id="descripcionActividad" 
+                                placeholder='descripcion breve de la actividad' required name = 'descripcionACtividad'
+                                value='${actividad.descripcion}' disabled
+                                ></textarea>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="responsable" class="form-label">Responsable</label>
-                                <select class="form-select" id="responsable" required name = 'responsable'>
-                                    ${responsables}
+                                <select class="form-select" id="responsable" required name = 'responsable' disabled>
+                                    <option value="${actividad.responsable}">${actividad.responsable}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="area" class="form-label">Área</label>
-                                <select class="form-select" id="area" required name = 'area'>
-                                    <option value="Calidad" selected>Calidad</option>
-                                    <option value="Sorteo">Sorteo</option>
-                                    <option value="S.W.A.T">S.W.A.T</option>
+                                <select class="form-select" id="area" name = 'area' disabled>
+                                    <option value="${actividad.area}">${actividad.area}</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="prioridad" class="form-label">Prioridad</label>
-                                <select class="form-select" id="prioridad" required name='prioridad'>
-                                    <option value="Crítica" selected>Crítica</option>
-                                    <option value="Alta" >Alta</option>
-                                    <option value="Media" >Media</option>
-                                    <option value="Baja">Baja</option>
+                                <select class="form-select" id="prioridad"  name='prioridad' disabled>
+                                    <option value="${actividad.prioridad}">${actividad.prioridad}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="estatus" class="form-label">Estatus</label>
-                                <select class="form-select" id="estatus" required name='estatus'>
-                                    <option value="Por Iniciar" selected>Por Iniciar</option>
-                                    <option value="En Proceso">En Proceso</option>
-                                    <option value="Terminada">Terminada</option>
-                                    <option value="Completada">Completada</option>
+                                <select class="form-select" id="estatus"  name='estatus' disabled>
+                                    <option value="${actividad.estatus}">${actividad.estatus}</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="avance" class="form-label">% Avance</label>
-                                <input type="number" class="form-control" id="avance" min="0" max="100" value="0" required name = 'avance'>
+                                <input type="number" class="form-control" id="avance" min="0" max="100" value="0" name='avance' disabled>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="compromiso" class="form-label">Asignada-Compromiso</label>
-                                <input type="date" class="form-control" id="fechaCompromiso" required name = 'fechaCompromiso'>
+                                <input type="date" class="form-control" id="fechaCompromiso" name = 'fechaCompromiso'  disabled>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="evaluacion" class="form-label">Evaluación</label>
-                                <select class="form-select" id="evaluacion" required name = 'evaluacion'>
-                                    <option value="Pendiente" selected>Pendiente</option>
+                                <select class="form-select" id="evaluacion" name='evaluacion'>
                                     <option value="Aceptada">Aceptada</option>
                                     <option value="Rechazada">Rechazada</option>
+                                    <option value="Pendiente" selected>Pendiente</option>
                                     
                                 </select>
                             </div>
+                            <div class="col-md-12 mb-3">
+                              <label for="minuta" class="form-label">comentarios de ${actividad.responsable}</label>
+                                <textarea type="text" class="form-control" id="comentariosUsuario" 
+                                 required name = 'comentariosUsuario' disabled>
+                                 </textarea>
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </form>`
+                  
+        let evidencias = JSON.parse(actividad.evidencia)
+        if (evidencias != 'N/A'){
+                for (let i = 0; i<evidencias.length; i++){
+                  const nombreArchivo = evidencias[i]
+                modalNuevo += `
+                <div class = 'form-group'>
+                  <a href='/evidencias/${encodeURIComponent(nombreArchivo)}' class="boton-descarga" download>📄 Descargar evidencia ${nombreArchivo}</a>
+                </div> `
+        }}
+                modalNuevo+= `</div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btnCancelar" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i>Cancelar
                     </button>
                     <button type="button" class="btn btn-primary" id='btnEnvio'>
-                        <i class="fas fa-save me-1"></i>Guardar Minuta
+                        <i class="fas fa-save me-1"></i>Guardar
                     </button>
                 </div>
             </div>
         </div>
     `
-  
+
+    padre.innerHTML = modalNuevo
+    let bodyDoc = document.body
+    bodyDoc.appendChild(padre)
+    
+    const fechaCompromiso = document.getElementById("fechaCompromiso");  
+    let fecha = new Date(actividad.fechaCompromiso)
+    let formatoFecha = fecha.toISOString().split("T")[0]
+    fechaCompromiso.value = formatoFecha
+    let comentariosUsuario = document.getElementById('comentariosUsuario')
+    comentariosUsuario.value= actividad.comentariosUsuario
+    let inputAvance = document.getElementById("avance");  
+    inputAvance.value = actividad.avance
+    const evaluacion = document.getElementById("evaluacion");
+    evaluacion.value = actividad.evaluacion
+    evaluacion.addEventListener("change", (evento)=>{
+      let campo = document.getElementById('campoRechazo')
+      let papito = document.getElementById('formNuevaMinuta')
+
+      if(evaluacion.value == 'Rechazada'){
+        if (!campo){
+          
+          let miDiv = document.createElement('div')
+          miDiv.classList.add('row')
+          miDiv.setAttribute('id','campoRechazo')
+          let contenido = `
+          <div class="col-md-12 mb-3">
+              <label for="descripcionRechazo" class="form-label">Descripcion de rechazo</label>
+              <textarea type="text" class="form-control" id="descripcionRechazo" placeholder="descripcion breve del rechazo" required="" name="descripcionRechazo"></textarea>
+          </div>
+          `
+          miDiv.innerHTML = contenido
+          papito.appendChild(miDiv)
+
+        }
+      }else{
+        if(!campo) return;
+        papito.removeChild(campo)  ;
+      }
+    })
+   
+    padre.addEventListener("click", (evento)=>{
+      if(evento.target.classList.contains("modal")){
+      padre.classList.remove('show');
+      document.body.removeChild(padre)
+      // padre.setAttribute('aria-hidden', 'true');
+      }
+    })
+     // Agregar evento al botón de cerrar
+    const closeButton = padre.querySelector('.btn-close');
+    closeButton.addEventListener('click', () => {
+      padre.classList.remove('show');
+      document.body.removeChild(padre)
+      // padre.setAttribute('aria-hidden', 'true');
+    });
+
+    // Agregar evento al botón de cancelar
+    const cancelButton = padre.querySelector('.btnCancelar');
+    cancelButton.addEventListener('click', () => {
+      padre.classList.remove('show');
+      document.body.removeChild(padre)
+      // padre.setAttribute('aria-hidden', 'true');
+    });
+
+    const btnEnvio = document.getElementById("btnEnvio");
+  btnEnvio.addEventListener("click", async ()=>{
+    const campo = document.getElementById('descripcionRechazo')
+    const evaluacion = document.getElementById("evaluacion");
+    const descripcion = document.getElementById("descripcionActividad");
+
+    let miData = {}
+    miData.evaluacion =  evaluacion.value
+    switch(evaluacion.value){
+      case 'Rechazada':
+        miData.comentariosCalificador= campo.value;
+        break;
+    }
+    await alertaFetchCalidad('/calidad/procesoActividades',{id:id, datos:miData, tipo:'update', _csrf:tok}, '/calidad/bitacoraActividades')
+
+    
+    
+  })
 }

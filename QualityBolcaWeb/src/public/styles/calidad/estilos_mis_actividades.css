@@ -30,6 +30,22 @@ body {
   gap: 1.5rem;
 }
 
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.5rem;
+  /* border: 5px solid var(--gray-300); */
+  border-radius: 4px;
+  font-size: 0.9rem;
+  outline: 1px solid var(--gray-300);
+  
+}
+.form-input:focus,
+.form-select:focus{
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
 /* Card Styles */
 .activity-card {
   background: white;
@@ -107,17 +123,21 @@ body {
   font-weight: 500;
 }
 
-.priority-alta {
+.priority-Crítica {
   background-color: #fef2f2;
-  color: #dc2626;
+  color: #b10000;
+}
+.priority-Alta {
+  background-color: #fef2f2;
+  color: #da4d4d;
 }
 
-.priority-media {
+.priority-Media {
   background-color: #fefce8;
   color: #ca8a04;
 }
 
-.priority-baja {
+.priority-Baja {
   background-color: #f0fdf4;
   color: #16a34a;
 }
@@ -465,4 +485,19 @@ body {
     left: 1rem;
     min-width: auto;
   }
+  .form-input,
+.form-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
 }

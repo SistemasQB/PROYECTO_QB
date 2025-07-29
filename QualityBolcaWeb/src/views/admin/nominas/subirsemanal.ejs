@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dropzone con Vista Previa</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 30px;
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #dropzone {
+        border: 2px dashed #4a90e2;
+        border-radius: 10px;
+        width: 400px;
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background-color: white;
+        color: #555;
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    #dropzone.dragover {
+        background-color: #e0f7fa;
+        border-color: #00bcd4;
+    }
+
+    #dropzone.file-received {
+        background-color: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+    }
+
+    #sendBtn {
+        margin: 20px 0;
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: none;
+    }
+
+    #preview {
+        width: 100%;
+        max-width: 800px;
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th,
+    td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f0f0f0;
+    }
+</style>
+
+
+<body>
+    <h2>Sube aqui el archivo semanal de nominas</h2>
+    <form id="formnominas">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+
+        <div id="dropzone">Arrastra un archivo Excel aquí o haz clic para seleccionar</div>
+        <input type="file" id="fileInput" name="semanal" accept=".xls,.xlsx" />
+        <button id="sendBtn">Enviar archivo</button>
+        <div id="preview"></div>
+    </form>
+</body>
+<script src="../scripts/all/alertas2.js"></script>
+
+<script>
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const preview = document.getElementById("preview");
+    let selectedFile = null;
+
+    dropzone.addEventListener("click", () => fileInput.click());
+
+    dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+    });
+
+    dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("dragover");
+    });
+
+    dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("dragover");
+        handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener("change", (e) => {
+        handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+        if (!file.name.endsWith(".xls") && !file.name.endsWith(".xlsx")) {
+            alert("Por favor sube un archivo .xls o .xlsx");
+            return;
+        }
+
+        selectedFile = file;
+        dropzone.textContent = `Archivo listo: ${file.name}`;
+        dropzone.classList.add("file-received");
+        sendBtn.style.display = "inline-block";
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+
+            // Tomamos la primera hoja del archivo
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const html = XLSX.utils.sheet_to_html(sheet);
+            preview.innerHTML = html;
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    sendBtn.addEventListener("click", (e) => {
+        if (selectedFile) {
+            e.preventDefault();
+
+            const form = document.getElementById('formnominas');
+            const formData = new FormData(form);
+
+            const urlEncoded = new URLSearchParams(formData).toString();
+
+            console.log(urlEncoded);
+            
+
+            alertaFetch(formData, '/nominas/subirsemanal', '', './src/public/semanal/');
+        }
+    });
+</script>
+
+</html>

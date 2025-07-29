@@ -2,7 +2,7 @@ import express from "express";
 import {default as calidadController} from './../controllers/calidadController.js';
 import protegetRuta from "../middleware/protegetRuta.js";
 import miMulter from "../public/clases/multer.js";
-const mimulter = new miMulter() //valor por default es para imegenes, si no se cambian parametros
+const mimulter = new miMulter('src/public/evidencias') 
 
 
 const router = express.Router();
@@ -17,15 +17,15 @@ router.post('/rechazarMejora', calidadController.rechazarMejora);
 router.post("/actualizarMejoras", calidadController.ActualizarMejoras)
 
 // rutas de bitacora
-router.get('/bitacoraActividades', calidadController.bitacoraActividades);
-router.post('/agregarActividad', calidadController.agregarActividad);
-router.post('/procesoActividades', calidadController.actividades)
+router.get('/bitacoraActividades', protegetRuta, calidadController.bitacoraActividades);
+router.post('/agregarActividad',protegetRuta, calidadController.agregarActividad);
+router.post('/procesoActividades',protegetRuta, calidadController.actividades)
 
 
 
 //rutas de actividades de usuario
-router.get('/misActividades', calidadController.misActividades);
-router.post('/asignarAvance',mimulter.multiplesArchivos('evidencia', 5) ,calidadController.asignarAvance);
+router.get('/misActividades',protegetRuta, calidadController.misActividades);
+router.post('/asignarAvance',protegetRuta, mimulter.multiplesArchivos('evidencia', 5), calidadController.asignarAvance);
 
 
 

@@ -11,6 +11,7 @@ const modalOverlay = document.getElementById("modalOverlay");
 const modalTitle = document.getElementById("modalTitle");
 const modalClose = document.getElementById("modalClose");
 const avanceInput = document.getElementById("avance");
+const estatus =  document.getElementById("estatus");
 const currentProgress = document.getElementById("currentProgress");
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -66,12 +67,14 @@ function showToast(message, type = "success") {
 function createActivityCard(actividad) {
   const card = document.createElement("div")
   card.className = `activity-card status-${getStatusText(actividad.estatus)}`
-  card.innerHTML = `
+  
+  let contenido = `
         <div class="card-header">
             <div class="card-title-row">
                 <h3 class="card-title">${actividad.nombreActividad}</h3>
                 <span class="status-badge">${getStatusText(actividad.estatus)}</span>
             </div>
+            
             <p>${actividad.descripcion}</p>
             <div class="priority-row">
                 <span class="priority-badge priority-${actividad.prioridad}">
@@ -102,6 +105,14 @@ function createActivityCard(actividad) {
             </button>
       
     `
+    if(actividad.comentariosCalificador != 'N/A'){
+      contenido += `<div class="date-info">
+                <i class="fas fa-info"></i>
+                <label>retroalimentacion:</label>
+                <b><p>${actividad.comentariosCalificador}</p></b>
+      </div>`
+    }
+    card.innerHTML = contenido
   return card;
 }
 
@@ -204,8 +215,7 @@ async function saveProgress() {
   datos.append('id', selectedActivity.id)
   
   try{
-    
-    await fetchGenerica("http://192.168.10.65:3000/calidad2/asignarAvance", datos ,"http://192.168.10.65:3000/calidad2/misActividades")
+    await fetchGenerica("/calidad/asignarAvance", datos ,"/calidad/misActividades")
   }catch(ex){
     console.log(ex)
   }
@@ -267,6 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
       closeModal()
     }
   })
+
 })
 
 function juntarInformacion(){
@@ -274,11 +285,10 @@ function juntarInformacion(){
   uploadedFiles.forEach((archivo) => {
     formData.append("evidencia", archivo);   
   })
-    
-  
   
   formData.append("avance", avanceInput.value);
   formData.append("comentarios", comentarios.value);
+  formData.append('estatus' , estatus.value)
   formData.append("_csrf", tok);
 
   return formData;

@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import express from "express";
 import {default as customerController} from './../controllers/customerController.js';
-import upload3 from "../middleware/cargarcv.js";
+import upload3 from "../middleware/cargararchivo.js";
 import csurf from "csurf";
 // import { csrfProtection } from '../../index.js';
 

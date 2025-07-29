@@ -46,7 +46,8 @@
     "sweetalert2": "^11.14.1",
     "tedious": "^18.6.1",
     "uuid": "^11.0.4",
-    "wavefile": "^11.0.0"
+    "wavefile": "^11.0.0",
+    "xlsx-populate": "^1.21.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

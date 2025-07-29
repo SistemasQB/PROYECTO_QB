@@ -36,6 +36,7 @@ import { default as Solicitud } from './atraccion/solicitud.js';
 import { default as Empleados } from './empleado.js';
 import { default as Cc1 } from './cc1.js';
 import { default as Checklistcc1 } from './sorteo/cc1/checklistcc1.js';
+import { default as bitacoraActividades } from './bitacoraActividades.js';
 
 // Configuración de Sequelize
 const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
@@ -115,5 +116,6 @@ export {
   Empleados,
   Cc1,
   Checklistcc1,
-  Solicitud
+  Solicitud,
+  bitacoraActividades
 };

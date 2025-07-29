@@ -88,9 +88,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // const csrfToken = document.querySelector('input[name="_csrf"]').value;
         // formData.append('_csrf', csrfToken);
         // const urlEncoded = new URLSearchParams(formData).toString();
-        alert(formData.get('cv'));
+        // alert(formData.get('cv'));
+        // formData.append('ruta', './src/public/cv/');
         
-        alertaFetch(formData, '/solicitud');
+        alertaFetch(formData, '/solicitud', '', './src/public/cv/');
     });
     
     // Función para mostrar mensaje de envío
