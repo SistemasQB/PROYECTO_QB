@@ -36,7 +36,12 @@ import { default as Solicitud } from './atraccion/solicitud.js';
 import { default as Empleados } from './empleado.js';
 import { default as Cc1 } from './cc1.js';
 import { default as Checklistcc1 } from './sorteo/cc1/checklistcc1.js';
+import { default as PersonalCC1 } from './sorteo/cc1/PersonalCC1.js';
+import { default as CotizacionesCC1 } from './sorteo/cc1/cotizacionesCC1.js';
+import { default as Controlpiezas } from './sorteo/cc1/controlpiezas.js';
 import { default as bitacoraActividades } from './bitacoraActividades.js';
+import { default as Semanal } from './nominas/semanal.js';
+
 
 // Configuración de Sequelize
 const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
@@ -117,5 +122,9 @@ export {
   Cc1,
   Checklistcc1,
   Solicitud,
-  bitacoraActividades
+  bitacoraActividades,
+  Semanal,
+  PersonalCC1,
+  CotizacionesCC1,
+  Controlpiezas
 };

@@ -6,7 +6,11 @@ import upload3 from "../middleware/cargararchivo.js";
 
 const router = express.Router();
 
+router.get('/semanal' ,nominasController.semanal);
+router.post('/semanal' ,nominasController.semanal2);
+
 router.get('/subirsemanal' ,nominasController.subirsemanal);
 router.post('/subirsemanal' , upload3.single('semanal'), nominasController.subirsemanal2);
+
 
 export default router;

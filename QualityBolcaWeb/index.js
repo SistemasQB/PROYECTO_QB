@@ -8,6 +8,7 @@ import { dirname } from 'path';
 import { PORT, SECRET_JWT_KEY } from "./src/config.js";
 // import dbSQLS from "./src/config/dbSQLS.js";
 import db from "./src/config/db.js";
+import dbcc1 from "./src/config/dbcc1.js";
 import myConnection from "express-myconnection";
 import mysql from "mysql2";
 import cors from "cors";
@@ -25,6 +26,10 @@ import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
 import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
 import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
 import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
+
+import {
+  Controlpiezas
+} from "./src/models/index.js";
 
 import mimeTypes from "mime-types";
 import fetch from 'node-fetch'
@@ -60,7 +65,9 @@ app.use( cookieParser() )
 
 //Habilitar CSRF
 
-app.use( csurf({cookie: true}))
+// app.use( csurf({cookie: true}))
+
+// app.use(csrfProtection); // Aplicado a todo
 
 // Middleware CSRF usando cookies
 // export const csrfProtection = csrf({ cookie: true });
@@ -71,6 +78,8 @@ app.use( csurf({cookie: true}))
 try {
   await db.authenticate()
   db.sync()
+  await dbcc1.authenticate()
+  dbcc1.sync()
   console.log('Conexion Correcta a la base de datos');
 
 }
@@ -97,16 +106,36 @@ app.use(express.static('./src/public'));
 app.set('views', path.join('\src', 'views'));
 app.set('view engine', 'ejs');
 
+const csrfProtection = csurf({ cookie: true });
 
-app.use('/', customerRoutes);
-app.use('/admin', adminRoutes);
-app.use('/all', allRoutes);
-app.use('/sistemas', sistemasRoutes);
-app.use('/calidad', calidadRoutes);
-app.use('/atraccion', atraccionRoutes);
-app.use('/capitalhumano', capitalhumanoRoutes);
-app.use('/sorteo', sorteoRoutes);
-app.use('/nominas', nominasRoutes);
+
+app.post('/sorteo/cc1/controldepiezas',async (req, res) =>{
+
+const {piezas, mesas, fecha} = req.body;
+
+console.log(piezas, mesas, fecha);
+try {
+  await Controlpiezas.create({
+    piezas,
+    mesas,
+    fecha
+  });
+  res.status(200).send({ msg: 'enviado con exito', ok: true });
+} catch (error) {
+  res.status(400).send({ msg: 'Error al enviar la peticion' + error, ok: false });
+}
+})
+
+
+app.use('/',csrfProtection, customerRoutes);
+app.use('/admin',csrfProtection, adminRoutes);
+app.use('/all',csrfProtection, allRoutes);
+app.use('/sistemas',csrfProtection, sistemasRoutes);
+app.use('/calidad',csrfProtection, calidadRoutes);
+app.use('/atraccion',csrfProtection, atraccionRoutes);
+app.use('/capitalhumano',csrfProtection, capitalhumanoRoutes);
+app.use('/sorteo',csrfProtection, sorteoRoutes);
+app.use('/nominas',csrfProtection, nominasRoutes);
 
 
 

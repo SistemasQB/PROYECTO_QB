@@ -14,6 +14,9 @@ router.get('/cc1/checklist',sorteoController.checklist);
 router.post('/cc1/checklist',sorteoController.checklist2);
 router.get('/cc1/vistachecklist',sorteoController.vistachecklist);
 router.get('/cc1/registromaterial',sorteoController.registromaterial);
+router.get('/cc1/personaloperativo',sorteoController.personaloperativo);
+router.get('/cc1/cotizaciones',sorteoController.cotizaciones);
+router.post('/cc1/cotizaciones',sorteoController.cotizaciones2);
 
 
 export default router;

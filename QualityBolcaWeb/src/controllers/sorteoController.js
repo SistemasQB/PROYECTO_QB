@@ -4,7 +4,10 @@ import {
     Checklistcc1,
     Empleados,
     informaciongch,
-    Usuario
+    Usuario,
+    CotizacionesCC1,
+    Controlpiezas,
+    // PersonalCC1
 } from "../models/index.js";
 import Sequelize from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
@@ -143,5 +146,65 @@ controller.vistachecklist = async (req, res) => {
 controller.registromaterial = (req, res) => {
     res.render('admin/sorteo/cc1/registromaterial');
 }
+
+controller.personaloperativo = (req, res) => {
+
+    let rCotizacionesCC1 = CotizacionesCC1.findAll();
+
+    rCotizacionesCC1 = [{
+        id: 1,
+        numeroCotizacion: '123456789'
+    },
+    {
+        id: 2,
+        numeroCotizacion: '987654321'
+    },
+    {
+        id: 3,
+        numeroCotizacion: '111111111'
+    },
+    {
+        id: 4,
+        numeroCotizacion: '222222222'
+    },
+    {
+        id: 5,
+        numeroCotizacion: '333333333'
+    }]
+
+    res.render('admin/sorteo/cc1/personaloperativo',{
+        rCotizacionesCC1
+    });
+}
+
+controller.personaloperativo2 = (req, res) => {
+
+    const {
+        nombreInspector,
+        ilu,
+        planta,
+        cotizacion
+    } = req.body
+
+    PersonalCC1.create({
+        nombreInspector,
+        ilu,
+        planta,
+        cotizacion
+    })
+}
+
+controller.cotizaciones = (req, res) => {
+    res.render('admin/sorteo/cc1/cotizaciones');
+}
+
+controller.cotizaciones2 = (req, res) => {
+    res.render('admin/sorteo/cc1/cotizaciones');
+}
+
+controller.controldepiezas2 = (req, res) => {
+    res.render('admin/sorteo/cc1/controldepiezas');
+}
+
 
 export default controller;

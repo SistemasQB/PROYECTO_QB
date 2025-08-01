@@ -94,7 +94,7 @@
         <input type="hidden" name="_csrf" value="<%=csrfToken%>">
 
         <div id="dropzone">Arrastra un archivo Excel aquí o haz clic para seleccionar</div>
-        <input type="file" id="fileInput" name="semanal" accept=".xls,.xlsx" />
+        <input type="file" id="fileInput" name="semanal" accept=".xlsm,.xlsx" />
         <button id="sendBtn">Enviar archivo</button>
         <div id="preview"></div>
     </form>
@@ -130,8 +130,8 @@
     });
 
     function handleFile(file) {
-        if (!file.name.endsWith(".xls") && !file.name.endsWith(".xlsx")) {
-            alert("Por favor sube un archivo .xls o .xlsx");
+        if (!file.name.endsWith(".xlsm") && !file.name.endsWith(".xlsx")) {
+            alert("Por favor sube un archivo .xlsm o .xlsx");
             return;
         }
 

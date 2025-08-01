@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Nómina</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+        min-height: 100vh;
+        padding: 1rem;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Header Styles */
+    .header-section {
+        text-align: center;
+    }
+
+    .header-section h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #111827;
+        margin-bottom: 1rem;
+    }
+
+    .week-info-card {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+    }
+
+    .week-info-card h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1e40af;
+        margin-bottom: 1rem;
+    }
+
+    .date-info {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    .date-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .week-badge {
+        background: #f3f4f6;
+        color: #374151;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+    }
+
+    /* Summary Cards */
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+    }
+
+    .summary-card .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #6b7280;
+    }
+
+    .card-header i {
+        color: #9ca3af;
+    }
+
+    .card-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #111827;
+    }
+
+    .card-value.green {
+        color: #059669;
+    }
+
+    .card-value.blue {
+        color: #2563eb;
+    }
+
+    .card-value.purple {
+        color: #7c3aed;
+    }
+
+    /* Filters Card */
+    .filters-card {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+    }
+
+    .card-header-section h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-group label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .filter-input,
+    .filter-select {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .filter-input:focus,
+    .filter-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    button {
+        cursor: pointer;
+        font-weight: 700;
+        transition: all 0.2s;
+        padding: 10px 20px;
+        border-radius: 100px;
+        background: #cfef00;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+    }
+
+    button:hover {
+        background: #c4e201;
+    }
+
+    button>svg {
+        width: 34px;
+        margin-left: 10px;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    button:hover svg {
+        transform: translateX(5px);
+    }
+
+    button:active {
+        transform: scale(0.95);
+    }
+
+
+    /* Table Card */
+    .table-card {
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-top: 1rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+    }
+
+    th {
+        background: #f9fafb;
+        padding: 0.75rem 0.5rem;
+        text-align: left;
+        font-weight: 600;
+        color: #374151;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    th.total-hours-col {
+        background: #faf5ff;
+    }
+
+    th.deductions-col {
+        background: #fef2f2;
+    }
+
+    th.bonus-col {
+        background: #f0fdf4;
+    }
+
+    th.perception-col {
+        background: #eff6ff;
+    }
+
+    th.net-col {
+        background: #f0fdf4;
+    }
+
+    td {
+        padding: 0.75rem 0.5rem;
+        border-bottom: 1px solid #f3f4f6;
+        text-align: center;
+    }
+
+    td:first-child,
+    td:nth-child(2) {
+        text-align: left;
+        font-weight: 500;
+    }
+
+    tr:nth-child(even) {
+        background: #f9fafb;
+    }
+
+    tr:hover {
+        background: #f3f4f6;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border: 1px solid #e5e7eb;
+        background: #f9fafb;
+        color: #374151;
+    }
+
+    .hours-cell {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .total-hours-cell {
+        font-weight: bold;
+        background: #faf5ff;
+        color: #7c3aed;
+    }
+
+    .deductions-cell {
+        font-weight: 500;
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .bonus-cell {
+        font-weight: 500;
+        background: #f0fdf4;
+        color: #059669;
+    }
+
+    .perception-cell {
+        font-weight: bold;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .net-cell {
+        font-weight: bold;
+        background: #f0fdf4;
+        color: #059669;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        body {
+            padding: 0.5rem;
+        }
+
+        .header-section h1 {
+            font-size: 2rem;
+        }
+
+        .week-info-card h2 {
+            font-size: 1.25rem;
+        }
+
+        .date-info {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .summary-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .filters-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-value {
+            font-size: 1.5rem;
+        }
+
+        table {
+            font-size: 0.75rem;
+        }
+
+        th,
+        td {
+            padding: 0.5rem 0.25rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-section h1 {
+            font-size: 1.75rem;
+        }
+
+        .week-info-card {
+            padding: 1rem;
+        }
+
+        .summary-card,
+        .filters-card,
+        .table-card {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<body>
+
+    <form id="semanalform" action="">
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+    </form>
+
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <h1>Sistema de Nómina</h1>
+            <div class="week-info-card">
+                <h2 id="week-title">SEMANA 2 - DEL 30 DE DICIEMBRE AL 05 DE ENERO DEL 2025</h2>
+                <div class="date-info">
+                    <div class="date-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Inicio: <span id="start-date">30/12/2024</span></span>
+                    </div>
+                    <div class="date-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Fin: <span id="end-date">05/01/2025</span></span>
+                    </div>
+                    <div class="week-badge">
+                        Semana <span id="week-number">2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="card-header">
+                    <span class="card-title">Total Empleados</span>
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="card-value" id="total-employees">3</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-header">
+                    <span class="card-title">Nómina Total (Neto)</span>
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="card-value green" id="total-payroll">$5,565.00</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-header">
+                    <span class="card-title">Percepción Total</span>
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="card-value blue" id="total-gross">$6,350.00</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-header">
+                    <span class="card-title">Horas Totales</span>
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="card-value purple" id="total-hours">151h</div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-card">
+            <div class="card-header-section">
+                <h3><i class="fas fa-search"></i> Filtros de Búsqueda</h3>
+            </div>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="search-name">Buscar por nombre</label>
+                    <input type="text" id="filter-name" placeholder="Nombre del empleado..." class="filter-input" value="">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-week">Filtrar por semana</label>
+                    <select id="filter-week" class="filter-select">
+                        <option value="" selected>Todas las semanas</option>
+                        <option value="1">Semana 1</option>
+                        <option value="2">Semana 2</option>
+                        <option value="3">Semana 3</option>
+                        <option value="4">Semana 4</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-date">Filtrar por fecha</label>
+                    <input type="date" id="filter-date" class="filter-input" value="">
+                </div>
+                <div class="filter-group" style="align-items: center; align-self: center;">
+                    <!-- From Uiverse.io by alexmaracinaru -->
+                    <button id="filter-button">
+                        <span>Filtrar</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 74 74" height="34" width="34">
+                            <circle stroke-width="3" stroke="black" r="35.5" cy="37" cx="37"></circle>
+                            <path fill="black"
+                                d="M25 35.5C24.1716 35.5 23.5 36.1716 23.5 37C23.5 37.8284 24.1716 38.5 25 38.5V35.5ZM49.0607 38.0607C49.6464 37.4749 49.6464 36.5251 49.0607 35.9393L39.5147 26.3934C38.9289 25.8076 37.9792 25.8076 37.3934 26.3934C36.8076 26.9792 36.8076 27.9289 37.3934 28.5147L45.8787 37L37.3934 45.4853C36.8076 46.0711 36.8076 47.0208 37.3934 47.6066C37.9792 48.1924 38.9289 48.1924 39.5147 47.6066L49.0607 38.0607ZM25 38.5L48 38.5V35.5L25 35.5V38.5Z">
+                            </path>
+                        </svg>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Payroll Table -->
+        <div class="table-card">
+            <div class="card-header-section">
+                <h3>Detalle de Nómina</h3>
+            </div>
+            <div class="table-container">
+                <table id="payroll-table">
+                    <thead>
+                        <tr>
+                            <th>Clave</th>
+                            <th>Nombre</th>
+                            <th>Puesto</th>
+                            <th>Lun (hrs)</th>
+                            <th>Mar (hrs)</th>
+                            <th>Mié (hrs)</th>
+                            <th>Jue (hrs)</th>
+                            <th>Vie (hrs)</th>
+                            <th>Sáb (hrs)</th>
+                            <th>Dom (hrs)</th>
+                            <th class="total-hours-col">Total Horas</th>
+                            <th>Préstamo</th>
+                            <th>Infonavit</th>
+                            <th>F.C.A</th>
+                            <th>G. Fiscal</th>
+                            <th class="deductions-col">Deducciones</th>
+                            <th class="bonus-col">Bono</th>
+                            <th class="perception-col">Percepción</th>
+                            <th class="net-col">Neto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+    const filterButton = document.getElementById("filter-button");
+
+    filterButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        let filterWeek = document.getElementById("filter-week").value;
+        const filterDate = document.getElementById("filter-date").value;
+        const filtername = document.getElementById("filter-name").value;
+
+        Swal.fire({
+            title: 'Procesando...',
+            html: '<div class="spinner"></div>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+        })
+
+        const semanalform = document.getElementById("semanalform");
+
+        let calcAño = new Date().getFullYear();
+        if (filterDate) {
+            filterWeek = obtenerNumeroSemana(filterDate)
+        }
+
+
+        const formData = new FormData(semanalform)
+        formData.append('nombre', filtername);
+        formData.append('semana', filterWeek);
+        formData.append('fechainicio', calcAño);
+        const urlEncoded = new URLSearchParams(formData).toString();
+
+        console.log(urlEncoded);
+
+
+        fetch('semanal', {
+            method: 'POST',
+            body: urlEncoded,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
+            .then(response => response.json())
+            .then(res => {
+                // console.log(res);
+                if (res.ok) {
+                    Swal.close();
+                    /////**/
+
+                    filteredEmployees = (res.obtenerValores);
+                    // filteredEmployees = [...payrollData]
+                    // console.log(filteredEmployees);
+                    
+                    updateTable()
+                    updateSummaryCards()
+                    const searchName = document.getElementById("filter-name").value= '';
+                    const selectedWeek = document.getElementById("filter-week").value= '';
+                    const selectedDate = document.getElementById("filter-date").value= '';
+                } else {
+                    Swal.close();
+                    Swal.fire({
+                        title: "Error",
+                        icon: "error",
+                        text: res.msg,
+                        allowOutsideClick: false,
+                        button: "OK"
+                    });
+                }
+            })
+
+    });
+
+
+
+
+    // Datos de ejemplo
+    let payrollData = <%- JSON.stringify(obtenerValores) %>;
+
+    // {
+    //   startDate: "30/12/2024",
+    //   endDate: "05/01/2025",
+    //   weekNumber: 2,
+    //   weekTitle: "SEMANA 2 - DEL 30 DE DICIEMBRE AL 05 DE ENERO DEL 2025",
+    //   employees: [
+    //     {
+    //       clave: "123456",
+    //       nombre: "Juan Perez Hernandez Rivera",
+    //       puesto: "Inspector",
+    //       horasLunes: 8,
+    //       horasMartes: 8,
+    //       horasMiercoles: 8,
+    //       horasJueves: 8,
+    //       horasViernes: 8,
+    //       horasSabado: 8,
+    //       horasDomingo: 0,
+    //       totalHoras: 48,
+    //       totalSemana: 1800,
+    //       prestamo: 0,
+    //       infonavit: 0,
+    //       fca: 0,
+    //       gFiscal: 0,
+    //       deducciones: 0,
+    //       bono: 0,
+    //       percepcion: 1800,
+    //       neto: 1800,
+    //     },
+    //     {
+    //       clave: "123457",
+    //       nombre: "Maria Rodriguez Lopez",
+    //       puesto: "Supervisor",
+    //       horasLunes: 10,
+    //       horasMartes: 9,
+    //       horasMiercoles: 8,
+    //       horasJueves: 10,
+    //       horasViernes: 8,
+    //       horasSabado: 6,
+    //       horasDomingo: 4,
+    //       totalHoras: 55,
+    //       totalSemana: 2600,
+    //       prestamo: 200,
+    //       infonavit: 150,
+    //       fca: 50,
+    //       gFiscal: 100,
+    //       deducciones: 500,
+    //       bono: 300,
+    //       percepcion: 2900,
+    //       neto: 2400,
+    //     },
+    //     {
+    //       clave: "123458",
+    //       nombre: "Carlos Martinez Gonzalez",
+    //       puesto: "Operador",
+    //       horasLunes: 8,
+    //       horasMartes: 7,
+    //       horasMiercoles: 8,
+    //       horasJueves: 8,
+    //       horasViernes: 9,
+    //       horasSabado: 8,
+    //       horasDomingo: 0,
+    //       totalHoras: 48,
+    //       totalSemana: 1500,
+    //       prestamo: 100,
+    //       infonavit: 80,
+    //       fca: 30,
+    //       gFiscal: 75,
+    //       deducciones: 285,
+    //       bono: 150,
+    //       percepcion: 1650,
+    //       neto: 1365,
+    //     },
+    //   ],
+    // }
+
+    // Variables globales
+    let filteredEmployees = [...payrollData]
+
+    // Función para formatear moneda
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat("es-MX", {
+            style: "currency",
+            currency: "MXN",
+        }).format(amount)
+    }
+
+    // Función para filtrar empleados
+    function filterEmployees() {
+        const searchName = document.getElementById("search-name").value.toLowerCase()
+        const selectedWeek = document.getElementById("filter-week").value
+        const selectedDate = document.getElementById("filter-date").value
+
+        filteredEmployees = payrollData.filter((employee) => {
+            const matchesName = employee.nombre.toLowerCase().includes(searchName)
+            const matchesWeek = selectedWeek === "all" || selectedWeek === payrollData.weekNumber.toString()
+            // Para fecha, podrías expandir esta lógica según necesites
+            return matchesName && matchesWeek
+        })
+
+        updateTable()
+        updateSummaryCards()
+    }
+
+    // Función para actualizar la tabla
+    function updateTable() {
+        const tableBody = document.getElementById("table-body")
+        tableBody.innerHTML = ""
+
+        filteredEmployees.forEach((employee, index) => {
+            const row = document.createElement("tr")
+            row.innerHTML = `
+            <td class="font-medium">${employee.clave}</td>
+            <td class="font-medium">${employee.nombre}</td>
+            <td><span class="badge">${employee.puesto}</span></td>
+            <td class="hours-cell">${employee.lunes}h</td>
+            <td class="hours-cell">${employee.martes}h</td>
+            <td class="hours-cell">${employee.miercoles}h</td>
+            <td class="hours-cell">${employee.jueves}h</td>
+            <td class="hours-cell">${employee.viernes}h</td>
+            <td class="hours-cell">${employee.sabado}h</td>
+            <td class="hours-cell">${employee.domingo}h</td>
+            <td class="total-hours-cell">${employee.semanatotal}h</td>
+            <td>${formatCurrency(employee.prestamo)}</td>
+            <td>${formatCurrency(employee.infonavit)}</td>
+            <td>${formatCurrency(employee.fca)}</td>
+            <td>${formatCurrency(employee.gfiscal)}</td>
+            <td class="deductions-cell">${formatCurrency(employee.deducciones)}</td>
+            <td class="bonus-cell">${formatCurrency(employee.bono)}</td>
+            <td class="perception-cell">${formatCurrency(employee.percepcion)}</td>
+            <td class="net-cell">${formatCurrency(employee.neto)}</td>
+        `
+            tableBody.appendChild(row)
+        })
+    }
+
+    // Función para actualizar las tarjetas de resumen
+    function updateSummaryCards() {
+        const totalEmployees = filteredEmployees.length
+        const totalPayroll = filteredEmployees.reduce((sum, emp) => sum + emp.neto, 0)
+        const totalGross = filteredEmployees.reduce((sum, emp) => sum + emp.percepcion, 0)
+        const totalHours = filteredEmployees.reduce((sum, emp) => sum + emp.totalHoras, 0)
+
+        document.getElementById("total-employees").textContent = totalEmployees
+        document.getElementById("total-payroll").textContent = formatCurrency(totalPayroll)
+        document.getElementById("total-gross").textContent = formatCurrency(totalGross)
+        document.getElementById("total-hours").textContent = totalHours + "h"
+    }
+
+    // Función para inicializar la aplicación
+    function initApp() {
+        // Actualizar información del header
+        document.getElementById("week-title").textContent = payrollData.weekTitle
+        document.getElementById("start-date").textContent = payrollData.startDate
+        document.getElementById("end-date").textContent = payrollData.endDate
+        document.getElementById("week-number").textContent = payrollData.weekNumber
+
+        // Renderizar tabla inicial
+        updateTable()
+        updateSummaryCards()
+
+        // Agregar event listeners para los filtros
+        // document.getElementById("search-name").addEventListener("input", filterEmployees)
+        // document.getElementById("filter-week").addEventListener("change", filterEmployees)
+        // document.getElementById("filter-date").addEventListener("change", filterEmployees)
+    }
+
+    // Inicializar cuando el DOM esté listo
+    document.addEventListener("DOMContentLoaded", initApp)
+
+
+
+
+    function obtenerNumeroSemana(fechaSeleccionada) {
+        const fecha = new Date(fechaSeleccionada);
+        const inicioDelAño = new Date(fecha.getFullYear(), 0, 1); // 1 de enero
+
+        // Calcular la diferencia en días
+        const diasTranscurridos = Math.floor((fecha - inicioDelAño) / (1000 * 60 * 60 * 24));
+
+        // Dividir por 7 y redondear hacia arriba para obtener la semana
+        const numeroSemana = Math.floor(diasTranscurridos / 7) + 1;
+
+        return numeroSemana;
+    }
+
+</script>
+
+</html>
