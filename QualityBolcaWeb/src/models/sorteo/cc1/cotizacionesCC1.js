@@ -16,31 +16,11 @@ const CotizacionesCC1 = db.define('cotizacionesCC1', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    region: {
+    nombreParte: {
         type: DataTypes.STRING,
-        allowNull: false
-    },
-    planta: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    piezasCotizadas: {
-        type: DataTypes.INTEGER,
         allowNull: false
     },
     rateCotizado: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    i: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    l: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    u: {
         type: DataTypes.INTEGER,
         allowNull: false
     }

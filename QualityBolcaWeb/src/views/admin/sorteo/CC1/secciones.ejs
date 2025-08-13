@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Cotizaciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 24px;
+        }
+
+        .btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-danger {
+            background: #f56565;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-message {
+            color: #f56565;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: #48bb78;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .modal-content {
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal de Acceso Inicial -->
+    <div id="accessModal" class="modal active">
+        <div class="modal-content">
+            <h2>🔐 Acceso al Sistema</h2>
+            <div class="form-group">
+                <label for="accessCode">Código de Acceso:</label>
+                <input type="password" id="accessCode" placeholder="Ingrese el código">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-success" onclick="validateAccess()">Validar</button>
+            </div>
+            <div id="accessError" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- Modal para Añadir Producto -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <h2>➕ Añadir Producto</h2>
+            <div class="form-group">
+                <label for="productCode">Código del Producto:</label>
+                <input type="text" id="productCode" placeholder="Escanee o ingrese el código">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-success" onclick="addProduct()">Añadir</button>
+                <button class="btn" onclick="closeModal('addProductModal')">Cancelar</button>
+            </div>
+            <div id="productError" class="error-message hidden"></div>
+            <div id="productSuccess" class="success-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Producto Terminado -->
+    <div id="finishProductModal" class="modal">
+        <div class="modal-content">
+            <h2>✅ Producto Terminado</h2>
+            <p>Para marcar este producto como terminado, ingrese el código de acceso:</p>
+            <div class="form-group">
+                <label for="finishCode">Código de Acceso:</label>
+                <input type="password" id="finishCode" placeholder="Ingrese el código">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-success" onclick="finishProduct()">Confirmar</button>
+                <button class="btn" onclick="closeModal('finishProductModal')">Cancelar</button>
+            </div>
+            <div id="finishError" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div id="mainContent" class="container hidden">
+        <div class="header">
+            <h1>📊 Sistema de Cotizaciones</h1>
+            <button class="btn" onclick="openModal('addProductModal')">➕ Añadir Producto</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cotización</th>
+                        <th>Número de Lote</th>
+                        <th>Fecha</th>
+                        <th>Código Producto</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="quotationsTable">
+                    <tr>
+                        <td>COT-001</td>
+                        <td>LT-2024-001</td>
+                        <td>2024-01-15</td>
+                        <td>PROD-001</td>
+                        <td><span style="color: #ed8936; font-weight: 600;">En Proceso</span></td>
+                        <td>
+                            <button class="btn btn-success" onclick="openFinishModal(this)">Producto Terminado</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>COT-002</td>
+                        <td>LT-2024-002</td>
+                        <td>2024-01-16</td>
+                        <td>PROD-002</td>
+                        <td><span style="color: #ed8936; font-weight: 600;">En Proceso</span></td>
+                        <td>
+                            <button class="btn btn-success" onclick="openFinishModal(this)">Producto Terminado</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>COT-003</td>
+                        <td>LT-2024-003</td>
+                        <td>2024-01-17</td>
+                        <td>PROD-003</td>
+                        <td><span style="color: #48bb78; font-weight: 600;">Terminado</span></td>
+                        <td>
+                            <span style="color: #a0aec0;">Completado</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Código de acceso válido
+        const VALID_ACCESS_CODE = "1234";
+        let currentRow = null;
+
+        // Función para validar el acceso inicial
+        function validateAccess() {
+            const code = document.getElementById('accessCode').value;
+            const errorDiv = document.getElementById('accessError');
+            
+            if (code === VALID_ACCESS_CODE) {
+                document.getElementById('accessModal').classList.remove('active');
+                document.getElementById('mainContent').classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+            } else {
+                errorDiv.textContent = 'Código incorrecto. Intente nuevamente.';
+                errorDiv.classList.remove('hidden');
+                document.getElementById('accessCode').value = '';
+            }
+        }
+
+        // Función para abrir modales
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            // Limpiar campos
+            if (modalId === 'addProductModal') {
+                document.getElementById('productCode').value = '';
+                document.getElementById('productError').classList.add('hidden');
+                document.getElementById('productSuccess').classList.add('hidden');
+            } else if (modalId === 'finishProductModal') {
+                document.getElementById('finishCode').value = '';
+                document.getElementById('finishError').classList.add('hidden');
+            }
+        }
+
+        // Función para cerrar modales
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Función para añadir producto
+        function addProduct() {
+            const productCode = document.getElementById('productCode').value.trim();
+            const errorDiv = document.getElementById('productError');
+            const successDiv = document.getElementById('productSuccess');
+            
+            if (!productCode) {
+                errorDiv.textContent = 'Por favor ingrese un código de producto.';
+                errorDiv.classList.remove('hidden');
+                successDiv.classList.add('hidden');
+                return;
+            }
+
+            // Generar datos para el nuevo producto
+            const tableBody = document.getElementById('quotationsTable');
+            const rowCount = tableBody.children.length + 1;
+            const newRow = document.createElement('tr');
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            newRow.innerHTML = `
+                <td>COT-${String(rowCount).padStart(3, '0')}</td>
+                <td>LT-2024-${String(rowCount).padStart(3, '0')}</td>
+                <td>${today}</td>
+                <td>${productCode}</td>
+                <td><span style="color: #ed8936; font-weight: 600;">En Proceso</span></td>
+                <td>
+                    <button class="btn btn-success" onclick="openFinishModal(this)">Producto Terminado</button>
+                </td>
+            `;
+            
+            tableBody.appendChild(newRow);
+            
+            successDiv.textContent = 'Producto añadido exitosamente.';
+            successDiv.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            
+            // Cerrar modal después de 1.5 segundos
+            setTimeout(() => {
+                closeModal('addProductModal');
+            }, 1500);
+        }
+
+        // Función para abrir modal de producto terminado
+        function openFinishModal(button) {
+            currentRow = button.closest('tr');
+            openModal('finishProductModal');
+        }
+
+        // Función para finalizar producto
+        function finishProduct() {
+            const code = document.getElementById('finishCode').value;
+            const errorDiv = document.getElementById('finishError');
+            
+            if (code === VALID_ACCESS_CODE) {
+                if (currentRow) {
+                    // Cambiar estado a terminado
+                    const statusCell = currentRow.children[4];
+                    statusCell.innerHTML = '<span style="color: #48bb78; font-weight: 600;">Terminado</span>';
+                    
+                    // Cambiar botón por texto
+                    const actionCell = currentRow.children[5];
+                    actionCell.innerHTML = '<span style="color: #a0aec0;">Completado</span>';
+                }
+                
+                closeModal('finishProductModal');
+                currentRow = null;
+            } else {
+                errorDiv.textContent = 'Código incorrecto. Intente nuevamente.';
+                errorDiv.classList.remove('hidden');
+                document.getElementById('finishCode').value = '';
+            }
+        }
+
+        // Permitir validación con Enter
+        document.getElementById('accessCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                validateAccess();
+            }
+        });
+
+        document.getElementById('productCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addProduct();
+            }
+        });
+
+        document.getElementById('finishCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                finishProduct();
+            }
+        });
+    </script>
+</body>
+</html>

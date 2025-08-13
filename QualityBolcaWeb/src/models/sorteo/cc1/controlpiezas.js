@@ -3,7 +3,11 @@ const sequelize = new Sequelize('sqlite::memory:');
 import dbcc1 from "../../../config/dbcc1.js";
 
 const Controlpiezas = dbcc1.define('controlpiezas', {
-    piezas:{
+    piezasOK:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    piezasNG:{
         type: DataTypes.INTEGER,
         allowNull: false
     },
@@ -12,7 +16,7 @@ const Controlpiezas = dbcc1.define('controlpiezas', {
         allowNull: false
     },
     fecha:{
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
         allowNull: false
     }
 },{

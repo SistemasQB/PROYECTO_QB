@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inspección Rápida</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+</head>
+
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+}
+
+.header-info h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.header-info p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Tabs */
+.tabs-container {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 1rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: #374151;
+  background: #f9fafb;
+}
+
+.tab-button.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  background: #f0f9ff;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: grid;
+}
+
+/* Main Container */
+.main-container {
+  grid-template-columns: 1fr 1fr;
+  height: calc(100vh - 140px);
+  gap: 0;
+}
+
+/* Panels */
+.form-panel {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.history-panel {
+  padding: 1.5rem;
+  background: #f9fafb;
+  overflow-y: auto;
+}
+
+/* Cards */
+.card {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-full-height {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  color: white;
+  padding: 1.5rem;
+}
+
+.card-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.card-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.card-content-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.label-success {
+  color: #059669;
+}
+
+.label-error {
+  color: #dc2626;
+}
+
+/* Inputs */
+.input,
+.select {
+  height: 3rem;
+  padding: 0 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background: white;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.numeric-input {
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.input-success {
+  border-color: #d1fae5;
+}
+
+.input-success:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.input-error {
+  border-color: #fecaca;
+}
+
+.input-error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.numeric-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* Multi Select */
+.multi-select-container {
+  position: relative;
+}
+
+.multi-select-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3rem;
+  padding: 0 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.multi-select-header:hover {
+  border-color: #9ca3af;
+}
+
+.multi-select-header.active {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.multi-select-header .placeholder {
+  color: #6b7280;
+}
+
+.multi-select-header .chevron {
+  transition: transform 0.2s;
+}
+
+.multi-select-header.active .chevron {
+  transform: rotate(180deg);
+}
+
+.multi-select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #d1d5db;
+  border-top: none;
+  border-radius: 0 0 0.5rem 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  display: none;
+}
+
+.multi-select-dropdown.active {
+  display: block;
+}
+
+.multi-select-options {
+  padding: 0.5rem 0;
+}
+
+.multi-select-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.multi-select-option:hover {
+  background: #f9fafb;
+}
+
+.multi-select-option input[type="checkbox"] {
+  margin: 0;
+}
+
+.selected-inspectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.inspector-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.inspector-tag button {
+  background: none;
+  border: none;
+  color: #3730a3;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.inspector-tag button:hover {
+  color: #1e1b4b;
+}
+
+/* Buttons */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.btn-outline {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.btn-outline:hover {
+  background: #f9fafb;
+}
+
+.btn-large {
+  height: 3.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.btn-danger {
+  background: transparent;
+  color: #dc2626;
+  padding: 0.5rem;
+}
+
+.btn-danger:hover {
+  background: #fef2f2;
+}
+
+/* Icons */
+.icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.empty-icon {
+  width: 3rem;
+  height: 3rem;
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+/* Badge */
+.badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+  height: 100%;
+}
+
+.empty-subtitle {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Inspections List */
+.inspections-list {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inspection-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.inspection-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.inspection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.inspection-info {
+  flex: 1;
+}
+
+.inspector-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.mesa-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #7c3aed;
+}
+
+.mesa-inspectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.mesa-inspector-tag {
+  background: #f3e8ff;
+  color: #7c3aed;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.time-badge {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  border: 1px solid #d1d5db;
+}
+
+.part-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.metric {
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.metric-real {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.metric-ok {
+  background: #f0fdf4;
+  color: #059669;
+}
+
+.metric-ng {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.metric-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  margin-top: 0.125rem;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  max-width: 300px;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.success {
+  border-left: 4px solid #059669;
+}
+
+.toast.error {
+  border-left: 4px solid #dc2626;
+}
+
+.error-msg {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Loading state */
+.loading {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .main-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .form-panel {
+    order: 1;
+  }
+
+  .history-panel {
+    order: 2;
+    background: white;
+  }
+
+  .card-full-height {
+    height: auto;
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tab-button {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .header-info h1 {
+    font-size: 1.25rem;
+  }
+
+  .form-panel,
+  .history-panel {
+    padding: 1rem;
+  }
+
+  .numeric-inputs {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card-header {
+    padding: 1rem;
+  }
+
+  .card-content {
+    padding: 1rem;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .inspection-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0.75rem;
+  }
+
+  .header-info h1 {
+    font-size: 1.125rem;
+  }
+
+  .form-panel,
+  .history-panel {
+    padding: 0.75rem;
+  }
+
+  .card-header {
+    padding: 0.75rem;
+  }
+
+  .card-content {
+    padding: 0.75rem;
+  }
+
+  .form {
+    gap: 1rem;
+  }
+
+  .btn-large {
+    height: 3rem;
+    font-size: 1rem;
+  }
+
+  .tabs-container {
+    padding: 0 0.75rem;
+  }
+
+  .tab-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+</style>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-info">
+                <h1>Sistema de Inspección Rápida</h1>
+                <p>Registro de inspecciones en tiempo real</p>
+            </div>
+            <div class="header-actions">
+                <button id="resetInspectorsBtn" class="btn btn-outline">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23,4 23,10 17,10"/>
+                        <path d="M20.49,15a9,9,0,1,1-2.12-9.36L23,10"/>
+                    </svg>
+                    Reiniciar Inspectores
+                </button>
+                <button id="exportBtn" class="btn btn-outline" style="display: none;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Exportar JSON
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="individual">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Inspectores Individuales
+            </button>
+            <button class="tab-button" data-tab="mesas">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Inspección por Mesas
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Content: Individual -->
+    <main class="main-container tab-content active" id="individual-tab">
+        <!-- Panel izquierdo - Formulario Individual -->
+        <section class="form-panel">
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22,4 12,14.01 9,11.01"/>
+                        </svg>
+                        Nuevo Registro Individual
+                    </h2>
+                    <p class="card-description">
+                        Inspectores disponibles: <span id="availableCount">8</span>
+                    </p>
+                </div>
+
+                <div class="card-content">
+                    <form id="inspectionForm" class="form">
+                        <!-- Inspector -->
+                        <div class="form-group">
+                            <label for="inspector" class="label">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Inspector (<span id="availableCountLabel">8</span> disponibles)
+                            </label>
+                            <select id="inspector" class="select" required>
+                                <option value="">Selecciona el inspector</option>
+                            </select>
+                            <div id="noInspectorsMsg" class="error-msg" style="display: none;">
+                                No hay inspectores disponibles.
+                            </div>
+                        </div>
+
+                        <!-- Hora -->
+                        <div class="form-group">
+                            <label for="hora" class="label">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                                Hora
+                            </label>
+                            <select id="hora" class="select" required>
+                                <option value="">Selecciona el horario</option>
+                            </select>
+                        </div>
+
+                        <!-- Número de Parte -->
+                        <div class="form-group">
+                            <label for="numeroParte" class="label">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <rect x="7" y="7" width="10" height="10" rx="1" ry="1"/>
+                                </svg>
+                                Número de Parte
+                            </label>
+                            <select id="numeroParte" class="select" required>
+                                <option value="">Selecciona el número de parte</option>
+                            </select>
+                        </div>
+
+                        <!-- Inputs numéricos -->
+                        <div class="numeric-inputs">
+                            <div class="form-group">
+                                <label for="real" class="label">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="8" x2="12" y2="16"/>
+                                        <line x1="8" y1="12" x2="16" y2="12"/>
+                                    </svg>
+                                    Real
+                                </label>
+                                <input type="number" id="real" class="input numeric-input" min="0" placeholder="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="piezasOk" class="label label-success">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 9V5a3 3 0 0 0-6 0v4"/>
+                                        <rect x="2" y="9" width="20" height="12" rx="2" ry="2"/>
+                                    </svg>
+                                    Piezas OK
+                                </label>
+                                <input type="number" id="piezasOk" class="input numeric-input input-success" min="0" placeholder="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="piezasNg" class="label label-error">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                        <line x1="12" y1="9" x2="12" y2="13"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                    Piezas NG
+                                </label>
+                                <input type="number" id="piezasNg" class="input numeric-input input-error" min="0" placeholder="0" required>
+                            </div>
+                        </div>
+
+                        <!-- Botón de envío -->
+                        <button type="submit" id="submitBtn" class="btn btn-primary btn-large">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22,4 12,14.01 9,11.01"/>
+                            </svg>
+                            Enviar Inspección
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel derecho - Inspecciones individuales guardadas -->
+        <section class="history-panel">
+            <div class="card card-full-height">
+                <div class="card-header">
+                    <h2>Inspecciones Individuales</h2>
+                    <span class="badge" id="recordCount">0 registros</span>
+                    <p class="card-description">Historial de inspecciones individuales</p>
+                </div>
+                <div class="card-content card-content-scrollable">
+                    <div id="emptyState" class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <rect x="7" y="7" width="10" height="10" rx="1" ry="1"/>
+                        </svg>
+                        <p>No hay inspecciones registradas</p>
+                        <p class="empty-subtitle">Los datos aparecerán aquí al enviar el formulario</p>
+                    </div>
+                    <div id="inspectionsList" class="inspections-list"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Tab Content: Mesas -->
+    <main class="main-container tab-content" id="mesas-tab">
+        <!-- Panel izquierdo - Formulario Mesas -->
+        <section class="form-panel">
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Nuevo Registro por Mesa
+                    </h2>
+                    <p class="card-description">
+                        Inspección grupal por mesas de trabajo
+                    </p>
+                </div>
+
+                <div class="card-content">
+                    <form id="mesaForm" class="form">
+                        <!-- Nombre de Mesa -->
+                        <div class="form-group">
+                            <label for="nombreMesa" class="label">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                Nombre de la Mesa
+                            </label>
+                            <select id="nombreMesa" class="select" required>
+                                <option value="" disabled selected>Selecciona la mesa</option>
+                                <option value="Mesa 1" >Mesa 1</option>
+                                <option value="Mesa 2" >Mesa 2</option>
+                                <option value="Mesa 3" >Mesa 3</option>
+                                <option value="Mesa 4" >Mesa 4</option>
+                                <option value="Mesa 5" >Mesa 5</option>
+                                <option value="Mesa 6" >Mesa 6</option>
+                                <option value="Mesa 7" >Mesa 7</option>
+                                <option value="Mesa 8" >Mesa 8</option>
+                                <option value="Mesa 9" >Mesa 9</option>
+                                <option value="Mesa 10" >Mesa 10</option>
+                            </select>
+                        </div>
+
+                        <!-- Inspectores de la Mesa -->
+                        <div class="form-group">
+                            <label for="inspectoresMesa" class="label">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                Inspectores en la Mesa
+                            </label>
+                            <div class="multi-select-container">
+                                <div class="multi-select-header" id="multiSelectHeader">
+                                    <span class="placeholder">Selecciona los inspectores</span>
+                                    <svg class="icon chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6,9 12,15 18,9"/>
+                                    </svg>
+                                </div>
+                                <div class="multi-select-dropdown" id="multiSelectDropdown">
+                                    <div class="multi-select-options" id="multiSelectOptions">
+                                        <!-- Options will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="selected-inspectors" id="selectedInspectors"></div>
+                        </div>
+
+                        <!-- Hora -->
+                        <div class="form-group">
+                            <label for="horaMesa" class="label">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                                Hora
+                            </label>
+                            <select id="horaMesa" class="select" required>
+                                <option value="">Selecciona el horario</option>
+                            </select>
+                        </div>
+
+                        <!-- Número de Parte -->
+                        <div class="form-group">
+                            <label for="numeroParteMesa" class="label">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <rect x="7" y="7" width="10" height="10" rx="1" ry="1"/>
+                                </svg>
+                                Número de Parte
+                            </label>
+                            <select id="numeroParteMesa" class="select" required>
+                                <option value="">Selecciona el número de parte</option>
+                            </select>
+                        </div>
+
+                        <!-- Inputs numéricos -->
+                        <div class="numeric-inputs">
+                            <div class="form-group">
+                                <label for="realMesa" class="label">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="8" x2="12" y2="16"/>
+                                        <line x1="8" y1="12" x2="16" y2="12"/>
+                                    </svg>
+                                    Real
+                                </label>
+                                <input type="number" id="realMesa" class="input numeric-input" min="0" placeholder="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="piezasOkMesa" class="label label-success">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 9V5a3 3 0 0 0-6 0v4"/>
+                                        <rect x="2" y="9" width="20" height="12" rx="2" ry="2"/>
+                                    </svg>
+                                    Piezas OK
+                                </label>
+                                <input type="number" id="piezasOkMesa" class="input numeric-input input-success" min="0" placeholder="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="piezasNgMesa" class="label label-error">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                        <line x1="12" y1="9" x2="12" y2="13"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                    Piezas NG
+                                </label>
+                                <input type="number" id="piezasNgMesa" class="input numeric-input input-error" min="0" placeholder="0" required>
+                            </div>
+                        </div>
+
+                        <!-- Botón de envío -->
+                        <button type="submit" id="submitMesaBtn" class="btn btn-primary btn-large">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22,4 12,14.01 9,11.01"/>
+                            </svg>
+                            Enviar Inspección de Mesa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel derecho - Inspecciones de mesas guardadas -->
+        <section class="history-panel">
+            <div class="card card-full-height">
+                <div class="card-header">
+                    <h2>Inspecciones por Mesa</h2>
+                    <span class="badge" id="mesaRecordCount">0 registros</span>
+                    <p class="card-description">Historial de inspecciones por mesa</p>
+                </div>
+                <div class="card-content card-content-scrollable">
+                    <div id="mesaEmptyState" class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <p>No hay inspecciones de mesa registradas</p>
+                        <p class="empty-subtitle">Los datos aparecerán aquí al enviar el formulario</p>
+                    </div>
+                    <div id="mesaInspectionsList" class="inspections-list"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- <script src="script.js"></script> -->
+</body>
+
+<script>
+    // Datos iniciales
+const inspectoresIniciales = <%- JSON.stringify(rPersonalCC1) %>;
+// [
+//   { id: "1", nombre: "Juan Pérez" },
+//   { id: "2", nombre: "María González" },
+//   { id: "3", nombre: "Carlos Rodríguez" },
+//   { id: "4", nombre: "Ana Martínez" },
+//   { id: "5", nombre: "Luis Hernández" },
+//   { id: "6", nombre: "Roberto Silva" },
+//   { id: "7", nombre: "Carmen López" },
+//   { id: "8", nombre: "Diego Morales" },
+// ]
+
+const numerosParte = <%- JSON.stringify(rCotizacionesCC1) %>;
+// [
+//   { id: "1", numero: "P001-ABC", descripcion: "Componente Motor A" },
+//   { id: "2", numero: "P002-DEF", descripcion: "Válvula Presión B" },
+//   { id: "3", numero: "P003-GHI", descripcion: "Sensor Temperatura C" },
+//   { id: "4", numero: "P004-JKL", descripcion: "Filtro Aire D" },
+//   { id: "5", numero: "P005-MNO", descripcion: "Bomba Combustible E" },
+// ]
+
+const horasDisponibles = [
+  "7:00 - 8:00",
+  "8:00 - 9:00",
+  "9:00 - 10:00",
+  "10:00 - 11:00",
+  "11:00 - 12:00",
+  "12:00 - 13:00",
+  "13:00 - 14:00",
+  "14:00 - 15:00",
+  "15:00 - 16:00",
+  "16:00 - 17:00",
+  "17:00 - 18:00",
+  "18:00 - 19:00",
+]
+
+// Estado de la aplicación
+let inspecciones = JSON.parse(localStorage.getItem("inspecciones")) || []
+let mesaInspecciones = JSON.parse(localStorage.getItem("mesaInspecciones")) || []
+let inspectoresUsados = JSON.parse(localStorage.getItem("inspectoresUsados")) || []
+let selectedInspectors = []
+
+// Elementos del DOM - Individual
+const form = document.getElementById("inspectionForm")
+const inspectorSelect = document.getElementById("inspector")
+const horaSelect = document.getElementById("hora")
+const numeroParteSelect = document.getElementById("numeroParte")
+const realInput = document.getElementById("real")
+const piezasOkInput = document.getElementById("piezasOk")
+const piezasNgInput = document.getElementById("piezasNg")
+const submitBtn = document.getElementById("submitBtn")
+
+// Elementos del DOM - Mesa
+const mesaForm = document.getElementById("mesaForm")
+const nombreMesaInput = document.getElementById("nombreMesa")
+const multiSelectHeader = document.getElementById("multiSelectHeader")
+const multiSelectDropdown = document.getElementById("multiSelectDropdown")
+const multiSelectOptions = document.getElementById("multiSelectOptions")
+const selectedInspectorsDiv = document.getElementById("selectedInspectors")
+const horaMesaSelect = document.getElementById("horaMesa")
+const numeroParteMesaSelect = document.getElementById("numeroParteMesa")
+const realMesaInput = document.getElementById("realMesa")
+const piezasOkMesaInput = document.getElementById("piezasOkMesa")
+const piezasNgMesaInput = document.getElementById("piezasNgMesa")
+const submitMesaBtn = document.getElementById("submitMesaBtn")
+
+// Elementos del DOM - Generales
+const exportBtn = document.getElementById("exportBtn")
+const resetInspectorsBtn = document.getElementById("resetInspectorsBtn")
+const inspectionsList = document.getElementById("inspectionsList")
+const mesaInspectionsList = document.getElementById("mesaInspectionsList")
+const emptyState = document.getElementById("emptyState")
+const mesaEmptyState = document.getElementById("mesaEmptyState")
+const recordCount = document.getElementById("recordCount")
+const mesaRecordCount = document.getElementById("mesaRecordCount")
+const availableCount = document.getElementById("availableCount")
+const availableCountLabel = document.getElementById("availableCountLabel")
+const noInspectorsMsg = document.getElementById("noInspectorsMsg")
+const toast = document.getElementById("toast")
+
+// Elementos de pestañas
+const tabButtons = document.querySelectorAll(".tab-button")
+const tabContents = document.querySelectorAll(".tab-content")
+
+// Inicializar la aplicación
+document.addEventListener("DOMContentLoaded", () => {
+  initializeTabs()
+  initializeSelects()
+  initializeMultiSelect()
+  updateUI()
+  renderInspections()
+  renderMesaInspections()
+})
+
+// Inicializar pestañas
+function initializeTabs() {
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const tabId = button.getAttribute("data-tab")
+      switchTab(tabId)
+    })
+  })
+}
+
+function switchTab(tabId) {
+  // Actualizar botones
+  tabButtons.forEach((btn) => btn.classList.remove("active"))
+  document.querySelector(`[data-tab="${tabId}"]`).classList.add("active")
+
+  // Actualizar contenido
+  tabContents.forEach((content) => content.classList.remove("active"))
+  document.getElementById(`${tabId}-tab`).classList.add("active")
+}
+
+// Inicializar los selects
+function initializeSelects() {
+  // Llenar select de horas - Individual
+  horasDisponibles.forEach((hora) => {
+    const option = document.createElement("option")
+    option.value = hora
+    option.textContent = hora
+    horaSelect.appendChild(option)
+  })
+
+  // Llenar select de horas - Mesa
+  horasDisponibles.forEach((hora) => {
+    const option = document.createElement("option")
+    option.value = hora
+    option.textContent = hora
+    horaMesaSelect.appendChild(option)
+  })
+
+  // Llenar select de números de parte - Individual
+  numerosParte.forEach((parte) => {
+    const option = document.createElement("option")
+    option.value = parte.numeroCotizacion
+    option.innerHTML = `${parte.numeroCotizacion} - ${parte.numeroParte}`
+    numeroParteSelect.appendChild(option)
+  })
+
+  // Llenar select de números de parte - Mesa
+  numerosParte.forEach((parte) => {
+    const option = document.createElement("option")
+    option.value = parte.numeroCotizacion
+    option.innerHTML = `${parte.numeroCotizacion} - ${parte.numeroParte}`
+    numeroParteMesaSelect.appendChild(option)
+  })
+
+  updateInspectorSelect()
+}
+
+// Inicializar multi-select
+function initializeMultiSelect() {
+  // Crear opciones
+  inspectoresIniciales.forEach((inspector) => {
+    const option = document.createElement("div")
+    option.className = "multi-select-option"
+    option.innerHTML = `
+            <input type="checkbox" id="inspector-${inspector.id}" value="${inspector.nombreInspector}">
+            <label for="inspector-${inspector.id}">${inspector.nombreInspector}</label>
+        `
+    multiSelectOptions.appendChild(option)
+
+    // Agregar event listener
+    const checkbox = option.querySelector("input")
+    checkbox.addEventListener("change", handleInspectorSelection)
+  })
+
+  // Toggle dropdown
+  multiSelectHeader.addEventListener("click", () => {
+    multiSelectHeader.classList.toggle("active")
+    multiSelectDropdown.classList.toggle("active")
+  })
+
+  // Cerrar dropdown al hacer click fuera
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".multi-select-container")) {
+      multiSelectHeader.classList.remove("active")
+      multiSelectDropdown.classList.remove("active")
+    }
+  })
+}
+
+function handleInspectorSelection(e) {
+  const inspectorName = e.target.value
+  if (e.target.checked) {
+    if (!selectedInspectors.includes(inspectorName)) {
+      selectedInspectors.push(inspectorName)
+    }
+  } else {
+    selectedInspectors = selectedInspectors.filter((name) => name !== inspectorName)
+  }
+  updateSelectedInspectors()
+}
+
+function updateSelectedInspectors() {
+  selectedInspectorsDiv.innerHTML = ""
+
+  if (selectedInspectors.length === 0) {
+    multiSelectHeader.querySelector(".placeholder").textContent = "Selecciona los inspectores"
+    return
+  }
+
+  multiSelectHeader.querySelector(".placeholder").textContent =
+    `${selectedInspectors.length} inspector(es) seleccionado(s)`
+
+  selectedInspectors.forEach((inspector) => {
+    const tag = document.createElement("div")
+    tag.className = "inspector-tag"
+    tag.innerHTML = `
+            ${inspector}
+            <button type="button" onclick="removeInspector('${inspector}')">×</button>
+        `
+    selectedInspectorsDiv.appendChild(tag)
+  })
+}
+
+function removeInspector(inspectorName) {
+  selectedInspectors = selectedInspectors.filter((name) => name !== inspectorName)
+  const checkbox = document.querySelector(`input[value="${inspectorName}"]`)
+  if (checkbox) checkbox.checked = false
+  updateSelectedInspectors()
+}
+
+// Actualizar select de inspectores individuales
+function updateInspectorSelect() {
+  // Limpiar opciones existentes (excepto la primera)
+  inspectorSelect.innerHTML = '<option value="">Selecciona el inspector</option>'
+
+  // Filtrar inspectores disponibles
+  const inspectoresDisponibles = inspectoresIniciales.filter(
+    (inspector) => !inspectoresUsados.includes(inspector.nombreInspector),
+  )
+
+  // Llenar select con inspectores disponibles
+  inspectoresDisponibles.forEach((inspector) => {
+    const option = document.createElement("option")
+    option.value = inspector.nombreInspector
+    option.textContent = inspector.nombreInspector
+    inspectorSelect.appendChild(option)
+  })
+
+  // Actualizar contadores y mensajes
+  const count = inspectoresDisponibles.length
+  availableCount.textContent = count
+  availableCountLabel.textContent = count
+
+  // Mostrar/ocultar mensaje de no disponibles
+  if (count === 0) {
+    noInspectorsMsg.style.display = "block"
+    submitBtn.disabled = true
+  } else {
+    noInspectorsMsg.style.display = "none"
+    submitBtn.disabled = false
+  }
+}
+
+// Actualizar UI
+function updateUI() {
+  recordCount.textContent = `${inspecciones.length} registros`
+  mesaRecordCount.textContent = `${mesaInspecciones.length} registros`
+
+  const totalInspections = inspecciones.length + mesaInspecciones.length
+
+  if (totalInspections > 0) {
+    exportBtn.style.display = "flex"
+  } else {
+    exportBtn.style.display = "none"
+  }
+
+  // Individual
+  if (inspecciones.length > 0) {
+    emptyState.style.display = "none"
+    inspectionsList.style.display = "block"
+  } else {
+    emptyState.style.display = "flex"
+    inspectionsList.style.display = "none"
+  }
+
+  // Mesa
+  if (mesaInspecciones.length > 0) {
+    mesaEmptyState.style.display = "none"
+    mesaInspectionsList.style.display = "block"
+  } else {
+    mesaEmptyState.style.display = "flex"
+    mesaInspectionsList.style.display = "none"
+  }
+}
+
+// Manejar envío del formulario individual
+form.addEventListener("submit", async (e) => {
+  e.preventDefault()
+
+  // Validar campos
+  if (
+    !inspectorSelect.value ||
+    !horaSelect.value ||
+    !numeroParteSelect.value ||
+    !realInput.value ||
+    !piezasOkInput.value ||
+    !piezasNgInput.value
+  ) {
+    showToast("Por favor completa todos los campos", "error")
+    return
+  }
+
+  // Mostrar estado de carga
+  const originalText = submitBtn.innerHTML
+  submitBtn.innerHTML = `
+        <div class="loading"></div>
+        Enviando...
+    `
+  submitBtn.disabled = true
+
+  try {
+    // Simular delay
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // Crear nueva inspección
+    const nuevaInspeccion = {
+      id: Date.now().toString(),
+      tipo: "individual",
+      inspector: inspectorSelect.value,
+      hora: horaSelect.value,
+      numeroParte: numeroParteSelect.value,
+      real: Number.parseInt(realInput.value),
+      piezasOk: Number.parseInt(piezasOkInput.value),
+      piezasNg: Number.parseInt(piezasNgInput.value),
+      timestamp: new Date().toLocaleString("es-ES"),
+    }
+
+    // Agregar a la lista
+    inspecciones.unshift(nuevaInspeccion)
+    inspectoresUsados.push(inspectorSelect.value)
+
+    // Guardar en localStorage
+    localStorage.setItem("inspecciones", JSON.stringify(inspecciones))
+    localStorage.setItem("inspectoresUsados", JSON.stringify(inspectoresUsados))
+
+    // Actualizar UI
+    updateInspectorSelect()
+    updateUI()
+    renderInspections()
+
+    // Limpiar formulario
+    form.reset()
+
+    showToast("Inspección individual registrada correctamente", "success")
+  } catch (error) {
+    showToast("Hubo un problema al enviar los datos", "error")
+  } finally {
+    submitBtn.innerHTML = originalText
+    submitBtn.disabled = inspectoresUsados.length >= inspectoresIniciales.length
+  }
+})
+
+// Manejar envío del formulario de mesa
+mesaForm.addEventListener("submit", async (e) => {
+  e.preventDefault()
+
+  // Validar campos
+  if (
+    !nombreMesaInput.value ||
+    selectedInspectors.length === 0 ||
+    !horaMesaSelect.value ||
+    !numeroParteMesaSelect.value ||
+    !realMesaInput.value ||
+    !piezasOkMesaInput.value ||
+    !piezasNgMesaInput.value
+  ) {
+    showToast("Por favor completa todos los campos y selecciona al menos un inspector", "error")
+    return
+  }
+
+  // Mostrar estado de carga
+  const originalText = submitMesaBtn.innerHTML
+  submitMesaBtn.innerHTML = `
+        <div class="loading"></div>
+        Enviando...
+    `
+  submitMesaBtn.disabled = true
+
+  try {
+    // Simular delay
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // Crear nueva inspección de mesa
+    const nuevaInspeccionMesa = {
+      id: Date.now().toString(),
+      tipo: "mesa",
+      nombreMesa: nombreMesaInput.value,
+      inspectores: [...selectedInspectors],
+      hora: horaMesaSelect.value,
+      numeroParte: numeroParteMesaSelect.value,
+      real: Number.parseInt(realMesaInput.value),
+      piezasOk: Number.parseInt(piezasOkMesaInput.value),
+      piezasNg: Number.parseInt(piezasNgMesaInput.value),
+      timestamp: new Date().toLocaleString("es-ES"),
+    }
+
+    // Agregar a la lista
+    mesaInspecciones.unshift(nuevaInspeccionMesa)
+
+    // Guardar en localStorage
+    localStorage.setItem("mesaInspecciones", JSON.stringify(mesaInspecciones))
+
+    // Actualizar UI
+    updateUI()
+    renderMesaInspections()
+
+    // Limpiar formulario
+    mesaForm.reset()
+    selectedInspectors = []
+    updateSelectedInspectors()
+    // Desmarcar todos los checkboxes
+    document.querySelectorAll('.multi-select-option input[type="checkbox"]').forEach((cb) => (cb.checked = false))
+
+    showToast("Inspección de mesa registrada correctamente", "success")
+  } catch (error) {
+    showToast("Hubo un problema al enviar los datos", "error")
+  } finally {
+    submitMesaBtn.innerHTML = originalText
+    submitMesaBtn.disabled = false
+  }
+})
+
+// Renderizar inspecciones individuales
+function renderInspections() {
+  inspectionsList.innerHTML = ""
+
+  inspecciones.forEach((inspeccion) => {
+    const card = document.createElement("div")
+    card.className = "inspection-card"
+    card.innerHTML = `
+            <div class="inspection-header">
+                <div class="inspection-info">
+                    <div class="inspector-name">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        ${inspeccion.inspector}
+                        <span class="time-badge">${inspeccion.hora}</span>
+                    </div>
+                    <div class="part-info">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <rect x="7" y="7" width="10" height="10" rx="1" ry="1"/>
+                        </svg>
+                        ${inspeccion.numeroParte}
+                    </div>
+                </div>
+                <button class="btn btn-danger" onclick="eliminarInspeccion('${inspeccion.id}')">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric metric-real">
+                    <div class="metric-value">${inspeccion.real}</div>
+                    <div class="metric-label">Real</div>
+                </div>
+                <div class="metric metric-ok">
+                    <div class="metric-value">${inspeccion.piezasOk}</div>
+                    <div class="metric-label">OK</div>
+                </div>
+                <div class="metric metric-ng">
+                    <div class="metric-value">${inspeccion.piezasNg}</div>
+                    <div class="metric-label">NG</div>
+                </div>
+            </div>
+
+            <div class="timestamp">${inspeccion.timestamp}</div>
+        `
+    inspectionsList.appendChild(card)
+  })
+}
+
+// Renderizar inspecciones de mesa
+function renderMesaInspections() {
+  mesaInspectionsList.innerHTML = ""
+
+  mesaInspecciones.forEach((inspeccion) => {
+    const card = document.createElement("div")
+    card.className = "inspection-card"
+    card.innerHTML = `
+            <div class="inspection-header">
+                <div class="inspection-info">
+                    <div class="mesa-name">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        ${inspeccion.nombreMesa}
+                        <span class="time-badge">${inspeccion.hora}</span>
+                    </div>
+                    <div class="mesa-inspectors">
+                        ${inspeccion.inspectores
+                          .map((inspector) => `<span class="mesa-inspector-tag">${inspector}</span>`)
+                          .join("")}
+                    </div>
+                    <div class="part-info">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <rect x="7" y="7" width="10" height="10" rx="1" ry="1"/>
+                        </svg>
+                        ${inspeccion.numeroParte}
+                    </div>
+                </div>
+                <button class="btn btn-danger" onclick="eliminarMesaInspeccion('${inspeccion.id}')">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric metric-real">
+                    <div class="metric-value">${inspeccion.real}</div>
+                    <div class="metric-label">Real</div>
+                </div>
+                <div class="metric metric-ok">
+                    <div class="metric-value">${inspeccion.piezasOk}</div>
+                    <div class="metric-label">OK</div>
+                </div>
+                <div class="metric metric-ng">
+                    <div class="metric-value">${inspeccion.piezasNg}</div>
+                    <div class="metric-label">NG</div>
+                </div>
+            </div>
+
+            <div class="timestamp">${inspeccion.timestamp}</div>
+        `
+    mesaInspectionsList.appendChild(card)
+  })
+}
+
+// Eliminar inspección individual
+function eliminarInspeccion(id) {
+  const inspeccionAEliminar = inspecciones.find((insp) => insp.id === id)
+  if (inspeccionAEliminar) {
+    // Remover de la lista
+    inspecciones = inspecciones.filter((insp) => insp.id !== id)
+    inspectoresUsados = inspectoresUsados.filter((nombre) => nombre !== inspeccionAEliminar.inspector)
+
+    // Guardar en localStorage
+    localStorage.setItem("inspecciones", JSON.stringify(inspecciones))
+    localStorage.setItem("inspectoresUsados", JSON.stringify(inspectoresUsados))
+
+    // Actualizar UI
+    updateInspectorSelect()
+    updateUI()
+    renderInspections()
+
+    showToast("Inspección individual eliminada correctamente", "success")
+  }
+}
+
+// Eliminar inspección de mesa
+function eliminarMesaInspeccion(id) {
+  const inspeccionAEliminar = mesaInspecciones.find((insp) => insp.id === id)
+  if (inspeccionAEliminar) {
+    // Remover de la lista
+    mesaInspecciones = mesaInspecciones.filter((insp) => insp.id !== id)
+
+    // Guardar en localStorage
+    localStorage.setItem("mesaInspecciones", JSON.stringify(mesaInspecciones))
+
+    // Actualizar UI
+    updateUI()
+    renderMesaInspections()
+
+    showToast("Inspección de mesa eliminada correctamente", "success")
+  }
+}
+
+// Reiniciar inspectores
+resetInspectorsBtn.addEventListener("click", () => {
+  inspectoresUsados = []
+  localStorage.setItem("inspectoresUsados", JSON.stringify(inspectoresUsados))
+  updateInspectorSelect()
+  showToast("Lista de inspectores reiniciada", "success")
+})
+
+// Exportar JSON
+exportBtn.addEventListener("click", () => {
+  const allData = {
+    inspecciones_individuales: inspecciones,
+    inspecciones_mesa: mesaInspecciones,
+    exportado_en: new Date().toLocaleString("es-ES"),
+  }
+
+  const dataStr = JSON.stringify(allData, null, 2)
+  const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr)
+
+  const exportFileDefaultName = `inspecciones_completas_${new Date().toISOString().split("T")[0]}.json`
+
+  const linkElement = document.createElement("a")
+  linkElement.setAttribute("href", dataUri)
+  linkElement.setAttribute("download", exportFileDefaultName)
+  linkElement.click()
+
+  showToast("Archivo JSON descargado", "success")
+})
+
+// Mostrar toast
+function showToast(message, type = "success") {
+  toast.textContent = message
+  toast.className = `toast ${type} show`
+
+  setTimeout(() => {
+    toast.classList.remove("show")
+  }, 3000)
+}
+
+</script>
+
+</html>

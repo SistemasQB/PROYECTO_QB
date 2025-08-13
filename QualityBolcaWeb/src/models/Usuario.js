@@ -23,6 +23,10 @@ const Usuario = db.define('usuario', {
     confirmado: {
         type: DataTypes.BOOLEAN,
         defaultValue: 0
+    },
+    jefedirecto: {
+        type: DataTypes.STRING(30),
+        allowNull: true
     }
 },{
     timestamps: false,

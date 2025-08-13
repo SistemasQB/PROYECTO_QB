@@ -16,7 +16,7 @@ router.post('/buzonquejas',capitalhumanoController.buzonquejas2);
 // router.post('/directorio',capitalhumanoController.directorioGCH2);
 router.get('/subirfoto/:idempleado',capitalhumanoController.subirfoto);
 router.post('/subirfoto/:idempleado', upload.single('directoriofoto'),capitalhumanoController.subirfoto2);
-
+router.get('/asistencia',capitalhumanoController.asistencia);
 router.get('/comedor',capitalhumanoController.comedor);
 router.post('/comedor',capitalhumanoController.comedor2);
 

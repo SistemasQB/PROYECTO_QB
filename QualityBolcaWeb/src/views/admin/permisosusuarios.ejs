@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Colaboradores</title>
-    <!-- <link rel="stylesheet" href="styles.css"> -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
 </head>
 
 <style>
-    * {
+  * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -244,7 +243,7 @@ body {
   background: white;
   border-radius: 12px;
   width: 100%;
-  max-width: 896px;
+  max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -303,110 +302,79 @@ body {
   padding: 24px;
 }
 
-.categoria-section {
-  margin-bottom: 24px;
-}
-
-.categoria-title {
-  font-weight: 600;
-  color: #0f172a;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.permisos-grid {
+/* Checkbox Styles */
+.permisos-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
 }
 
-.permiso-card {
+.permiso-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 16px;
   cursor: pointer;
   transition: all 0.2s;
+  background: white;
 }
 
-.permiso-card:hover {
+.permiso-item:hover {
   background: #f8fafc;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
 }
 
-.permiso-card.active {
-  border-color: #3b82f6;
+.permiso-item.selected {
   background: #eff6ff;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-.permiso-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.checkbox-wrapper {
+  position: relative;
 }
 
-.permiso-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.permiso-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f1f5f9;
-  color: #64748b;
 }
 
-.permiso-card.active .permiso-icon {
-  background: #dbeafe;
-  color: #2563eb;
+.checkbox.checked {
+  background: #3b82f6;
+  border-color: #3b82f6;
 }
 
-.permiso-details h4 {
+.checkbox.checked::after {
+  content: "✓";
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.permiso-info {
+  flex: 1;
+}
+
+.permiso-label {
   font-weight: 500;
   color: #0f172a;
   margin-bottom: 2px;
+  text-transform: capitalize;
 }
 
-.permiso-details p {
+.permiso-description {
   font-size: 12px;
   color: #64748b;
-}
-
-.switch {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  background: #d1d5db;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.switch.active {
-  background: #3b82f6;
-}
-
-.switch::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.2s;
-}
-
-.switch.active::after {
-  transform: translateX(20px);
 }
 
 .modal-footer {
@@ -440,7 +408,7 @@ body {
     padding: 12px 16px;
   }
 
-  .permisos-grid {
+  .permisos-list {
     grid-template-columns: 1fr;
   }
 }
@@ -496,7 +464,7 @@ body {
                     <div id="modalAvatar" class="modal-avatar"></div>
                     <span id="modalTitle">Permisos de Usuario</span>
                 </div>
-                <p class="modal-description">Configura los permisos de acceso organizados por categorías</p>
+                <p class="modal-description">Selecciona los permisos que deseas asignar</p>
                 <button class="modal-close" id="closeModal">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -506,7 +474,7 @@ body {
             </div>
 
             <div class="modal-body" id="modalBody">
-                <!-- Los permisos se cargarán dinámicamente -->
+                <!-- Los checkboxes se cargarán dinámicamente -->
             </div>
 
             <div class="modal-footer">
@@ -515,18 +483,16 @@ body {
             </div>
         </div>
     </div>
-
-    <!-- <script src="script.js"></script> -->
 </body>
 
 <script>
-    // Datos de colaboradores
+  // Datos de colaboradores
 const colaboradores = [
   {
     id: 1,
     nombre: "Ana García",
     puesto: "Gerente de Ventas",
-    permisos: ["ventas", "reportes", "marketing"],
+    permisos: ["ventas", "reportes"],
     iniciales: "AG",
     color: "#a855f7",
   },
@@ -534,7 +500,7 @@ const colaboradores = [
     id: 2,
     nombre: "Carlos López",
     puesto: "Desarrollador Senior",
-    permisos: ["soporte", "usuarios", "administracion"],
+    permisos: ["soporte", "usuarios"],
     iniciales: "CL",
     color: "#3b82f6",
   },
@@ -542,7 +508,7 @@ const colaboradores = [
     id: 3,
     nombre: "María Rodríguez",
     puesto: "Contadora",
-    permisos: ["finanzas", "reportes", "contabilidad"],
+    permisos: ["finanzas", "contabilidad"],
     iniciales: "MR",
     color: "#10b981",
   },
@@ -550,7 +516,7 @@ const colaboradores = [
     id: 4,
     nombre: "Juan Pérez",
     puesto: "Especialista Marketing",
-    permisos: ["marketing", "ventas"],
+    permisos: ["marketing"],
     iniciales: "JP",
     color: "#f59e0b",
   },
@@ -558,121 +524,43 @@ const colaboradores = [
     id: 5,
     nombre: "Laura Martínez",
     puesto: "Administradora",
-    permisos: ["administracion", "usuarios", "reportes", "rrhh"],
+    permisos: ["administracion", "usuarios", "reportes"],
     iniciales: "LM",
     color: "#ec4899",
   },
-  {
-    id: 6,
-    nombre: "Roberto Silva",
-    puesto: "Jefe de Logística",
-    permisos: ["logistica", "inventario", "compras"],
-    iniciales: "RS",
-    color: "#6366f1",
-  },
 ]
 
-// Configuración de permisos
+// Configuración de permisos con descripciones
 const permisosConfig = {
-  ventas: {
-    label: "Ventas",
-    icon: "shopping-cart",
-    categoria: "Comercial",
-    descripcion: "Gestionar ventas y clientes",
-  },
-  inventario: {
-    label: "Inventario",
-    icon: "package",
-    categoria: "Operaciones",
-    descripcion: "Control de stock y productos",
-  },
-  reportes: {
-    label: "Reportes",
-    icon: "bar-chart-3",
-    categoria: "Análisis",
-    descripcion: "Ver reportes y estadísticas",
-  },
-  usuarios: {
-    label: "Usuarios",
-    icon: "users",
-    categoria: "Administración",
-    descripcion: "Gestionar usuarios del sistema",
-  },
-  finanzas: {
-    label: "Finanzas",
-    icon: "dollar-sign",
-    categoria: "Financiero",
-    descripcion: "Acceso a información financiera",
-  },
-  marketing: {
-    label: "Marketing",
-    icon: "megaphone",
-    categoria: "Comercial",
-    descripcion: "Campañas y promociones",
-  },
-  soporte: {
-    label: "Soporte",
-    icon: "headphones",
-    categoria: "Operaciones",
-    descripcion: "Atención al cliente",
-  },
-  administracion: {
-    label: "Admin",
-    icon: "shield",
-    categoria: "Administración",
-    descripcion: "Acceso administrativo completo",
-  },
-  compras: {
-    label: "Compras",
-    icon: "package",
-    categoria: "Operaciones",
-    descripcion: "Gestión de proveedores",
-  },
-  rrhh: {
-    label: "RRHH",
-    icon: "users",
-    categoria: "Administración",
-    descripcion: "Recursos humanos",
-  },
-  contabilidad: {
-    label: "Contabilidad",
-    icon: "dollar-sign",
-    categoria: "Financiero",
-    descripcion: "Registros contables",
-  },
-  logistica: {
-    label: "Logística",
-    icon: "package",
-    categoria: "Operaciones",
-    descripcion: "Envíos y distribución",
-  },
+  ventas: "Gestionar ventas y clientes",
+  inventario: "Control de stock y productos",
+  reportes: "Ver reportes y estadísticas",
+  usuarios: "Gestionar usuarios del sistema",
+  finanzas: "Acceso a información financiera",
+  marketing: "Campañas y promociones",
+  soporte: "Atención al cliente",
+  administracion: "Acceso administrativo completo",
+  compras: "Gestión de proveedores",
+  rrhh: "Recursos humanos",
+  contabilidad: "Registros contables",
+  logistica: "Envíos y distribución",
 }
 
 // Variables globales
 let colaboradorSeleccionado = null
 let permisosTemporales = []
+let permisosDisponibles = [] // Array que recibirá los permisos disponibles
 
 // Función para crear icono SVG
 function createIcon(iconName) {
   const icons = {
     "shopping-cart":
       '<path d="m1 1 4 4 4.68 11h6.64l4.68-11h-15.32z"></path><circle cx="9" cy="22" r="1"></circle><circle cx="20" cy="22" r="1"></circle>',
-    package:
-      '<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>',
-    "bar-chart-3": '<path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path>',
-    users:
-      '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="m22 21-3.5-3.5a4 4 0 1 0-1.41 1.41L21 22z"></path>',
-    "dollar-sign":
-      '<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
-    megaphone: '<path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>',
-    headphones:
-      '<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"></path>',
-    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>',
     settings:
       '<circle cx="12" cy="12" r="3"></circle><path d="m12 1 2.09 6.26L22 9l-6.26 2.09L14 19l-2.09-6.26L4 11l6.26-2.09L12 1z"></path>',
   }
 
-  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[iconName] || icons["package"]}</svg>`
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[iconName] || icons["settings"]}</svg>`
 }
 
 // Función para renderizar colaboradores
@@ -689,16 +577,16 @@ function renderColaboradores(colaboradoresFiltrados = colaboradores) {
 
     let permisosHTML = permisosVisibles
       .map((permiso) => {
-        const config = permisosConfig[permiso]
-        return `<span class="badge badge-secondary">
-                ${createIcon(config.icon)}
-                <span>${config.label}</span>
-            </span>`
+        return `<span class="badge badge-secondary">${permiso}</span>`
       })
       .join("")
 
     if (permisosRestantes > 0) {
       permisosHTML += `<span class="badge badge-outline">+${permisosRestantes} más</span>`
+    }
+
+    if (colaborador.permisos.length === 0) {
+      permisosHTML = `<span class="badge badge-outline">Sin permisos</span>`
     }
 
     row.innerHTML = `
@@ -730,10 +618,28 @@ function renderColaboradores(colaboradoresFiltrados = colaboradores) {
   })
 }
 
-// Función para abrir modal
-function abrirModal(colaboradorId) {
+// Función para abrir modal con array de permisos específico
+function abrirModal(colaboradorId, permisosArray = null) {
   colaboradorSeleccionado = colaboradores.find((c) => c.id === colaboradorId)
-  permisosTemporales = [...colaboradorSeleccionado.permisos]
+
+  // Si no se proporciona un array específico, usar un array de ejemplo
+  if (permisosArray === null) {
+    // Ejemplo de diferentes arrays según el colaborador
+    const ejemplosPermisos = {
+      1: ["ventas", "marketing", "reportes", "usuarios"], // Ana García
+      2: ["soporte", "usuarios", "administracion", "inventario"], // Carlos López
+      3: ["finanzas", "contabilidad", "reportes"], // María Rodríguez
+      4: ["marketing", "ventas", "reportes"], // Juan Pérez
+      5: ["administracion", "usuarios", "reportes", "rrhh", "finanzas"], // Laura Martínez
+    }
+    permisosDisponibles = ejemplosPermisos[colaboradorId] || ["ventas", "reportes", "usuarios"]
+  } else {
+    permisosDisponibles = permisosArray
+  }
+
+  // Inicializar permisos temporales con los permisos actuales del colaborador
+  // pero solo los que están disponibles en el array
+  permisosTemporales = colaboradorSeleccionado.permisos.filter((permiso) => permisosDisponibles.includes(permiso))
 
   // Actualizar título del modal
   document.getElementById("modalTitle").textContent = `Permisos de ${colaboradorSeleccionado.nombre}`
@@ -743,7 +649,7 @@ function abrirModal(colaboradorId) {
   modalAvatar.textContent = colaboradorSeleccionado.iniciales
   modalAvatar.style.backgroundColor = colaboradorSeleccionado.color
 
-  // Renderizar permisos por categoría
+  // Renderizar permisos
   renderPermisosModal()
 
   // Mostrar modal
@@ -755,6 +661,7 @@ function cerrarModal() {
   document.getElementById("permisosModal").classList.remove("active")
   colaboradorSeleccionado = null
   permisosTemporales = []
+  permisosDisponibles = []
 }
 
 // Función para renderizar permisos en el modal
@@ -762,54 +669,30 @@ function renderPermisosModal() {
   const modalBody = document.getElementById("modalBody")
   modalBody.innerHTML = ""
 
-  // Agrupar permisos por categoría
-  const permisosPorCategoria = {}
-  Object.entries(permisosConfig).forEach(([key, config]) => {
-    if (!permisosPorCategoria[config.categoria]) {
-      permisosPorCategoria[config.categoria] = []
-    }
-    permisosPorCategoria[config.categoria].push({ key, ...config })
+  const permisosList = document.createElement("div")
+  permisosList.className = "permisos-list"
+
+  permisosDisponibles.forEach((permiso) => {
+    const isSelected = permisosTemporales.includes(permiso)
+
+    const permisoItem = document.createElement("div")
+    permisoItem.className = `permiso-item ${isSelected ? "selected" : ""}`
+    permisoItem.onclick = () => togglePermiso(permiso)
+
+    permisoItem.innerHTML = `
+      <div class="checkbox-wrapper">
+        <div class="checkbox ${isSelected ? "checked" : ""}" data-permiso="${permiso}"></div>
+      </div>
+      <div class="permiso-info">
+        <div class="permiso-label">${permiso}</div>
+        <div class="permiso-description">${permisosConfig[permiso] || "Permiso del sistema"}</div>
+      </div>
+    `
+
+    permisosList.appendChild(permisoItem)
   })
 
-  // Crear secciones por categoría
-  Object.entries(permisosPorCategoria).forEach(([categoria, permisos]) => {
-    const section = document.createElement("div")
-    section.className = "categoria-section"
-
-    const title = document.createElement("h3")
-    title.className = "categoria-title"
-    title.textContent = categoria
-    section.appendChild(title)
-
-    const grid = document.createElement("div")
-    grid.className = "permisos-grid"
-
-    permisos.forEach(({ key, label, icon, descripcion }) => {
-      const card = document.createElement("div")
-      card.className = `permiso-card ${permisosTemporales.includes(key) ? "active" : ""}`
-      card.onclick = () => togglePermiso(key)
-
-      card.innerHTML = `
-                <div class="permiso-content">
-                    <div class="permiso-info">
-                        <div class="permiso-icon">
-                            ${createIcon(icon)}
-                        </div>
-                        <div class="permiso-details">
-                            <h4>${label}</h4>
-                            <p>${descripcion}</p>
-                        </div>
-                    </div>
-                    <div class="switch ${permisosTemporales.includes(key) ? "active" : ""}" data-permiso="${key}"></div>
-                </div>
-            `
-
-      grid.appendChild(card)
-    })
-
-    section.appendChild(grid)
-    modalBody.appendChild(section)
-  })
+  modalBody.appendChild(permisosList)
 }
 
 // Función para toggle permiso
@@ -828,9 +711,18 @@ function togglePermiso(permiso) {
 function guardarPermisos() {
   if (colaboradorSeleccionado) {
     const index = colaboradores.findIndex((c) => c.id === colaboradorSeleccionado.id)
-    colaboradores[index].permisos = [...permisosTemporales]
 
-    console.log(`Permisos guardados para ${colaboradorSeleccionado.nombre}:`, permisosTemporales)
+    // Mantener permisos que no estaban en el array disponible + nuevos permisos seleccionados
+    const permisosNoDisponibles = colaboradores[index].permisos.filter(
+      (permiso) => !permisosDisponibles.includes(permiso),
+    )
+
+    // Combinar permisos no disponibles con los nuevos seleccionados
+    colaboradores[index].permisos = [...permisosNoDisponibles, ...permisosTemporales]
+
+    console.log(`Permisos guardados para ${colaboradorSeleccionado.nombre}:`)
+    console.log("Array de permisos seleccionados:", permisosTemporales)
+    console.log("Permisos totales del colaborador:", colaboradores[index].permisos)
 
     // Actualizar tabla
     renderColaboradores()
@@ -877,6 +769,14 @@ document.addEventListener("DOMContentLoaded", () => {
     e.stopPropagation()
   })
 })
+
+// Función de ejemplo para usar con un array específico
+function abrirModalConPermisos(colaboradorId, arrayPermisos) {
+  abrirModal(colaboradorId, arrayPermisos)
+}
+
+// Ejemplo de uso:
+// abrirModalConPermisos(1, ["soporte", "usuarios", "administracion"])
 
 </script>
 

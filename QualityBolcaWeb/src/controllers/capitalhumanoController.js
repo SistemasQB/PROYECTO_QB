@@ -251,6 +251,10 @@ controller.comedor2 = (req, res) => {
     res.render('admin/capitalhumano/comedor')
 }
 
+controller.asistencia = (req, res) => {
+    res.render('admin/capitalhumano/asistencia')
+}
+
 export default controller;
 
 

@@ -7,7 +7,8 @@ import {
     Usuario,
     CotizacionesCC1,
     Controlpiezas,
-    // PersonalCC1
+    PersonalCC1,
+    LoteCC1
 } from "../models/index.js";
 import Sequelize from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
@@ -147,64 +148,102 @@ controller.registromaterial = (req, res) => {
     res.render('admin/sorteo/cc1/registromaterial');
 }
 
-controller.personaloperativo = (req, res) => {
+controller.personaloperativo = async(req, res) => {
 
-    let rCotizacionesCC1 = CotizacionesCC1.findAll();
-
-    rCotizacionesCC1 = [{
-        id: 1,
-        numeroCotizacion: '123456789'
-    },
-    {
-        id: 2,
-        numeroCotizacion: '987654321'
-    },
-    {
-        id: 3,
-        numeroCotizacion: '111111111'
-    },
-    {
-        id: 4,
-        numeroCotizacion: '222222222'
-    },
-    {
-        id: 5,
-        numeroCotizacion: '333333333'
-    }]
+    const rCotizacionesCC1 = await CotizacionesCC1.findAll({attributes: ['numeroCotizacion']});
+    // console.log(rCotizacionesCC1);
+    
 
     res.render('admin/sorteo/cc1/personaloperativo',{
-        rCotizacionesCC1
+        rCotizacionesCC1,
+        csrfToken: req.csrfToken()
     });
 }
 
-controller.personaloperativo2 = (req, res) => {
+controller.personaloperativo2 = async(req, res) => {
 
-    const {
-        nombreInspector,
-        ilu,
-        planta,
-        cotizacion
-    } = req.body
-
-    PersonalCC1.create({
-        nombreInspector,
-        ilu,
-        planta,
-        cotizacion
-    })
+    try {
+        
+        // const obtenernombre = JSON.parse(req.body.personas)
+        
+        // console.log(obtenernombre);
+        
+        const json = JSON.parse(req.body.personas);
+        // json.nombreInspector = JSON.stringify(obtenernombre.nombreInspector).toUpperCase();
+        // console.log(json);
+        
+        await PersonalCC1.bulkCreate(json);
+        res.status(200).send({ msg: 'Datos enviados con exito', ok: true });
+    } catch (error) {
+        res.status(400).send({ msg: 'Error al enviar la informacion: ' + error, ok: false });
+    }
 }
 
 controller.cotizaciones = (req, res) => {
-    res.render('admin/sorteo/cc1/cotizaciones');
+    res.render('admin/sorteo/cc1/cotizaciones',{
+        csrfToken: req.csrfToken()
+    });
 }
 
-controller.cotizaciones2 = (req, res) => {
-    res.render('admin/sorteo/cc1/cotizaciones');
+controller.cotizaciones2 = async (req, res) => {
+
+    const { numeroCotizacion, numeroParte, nombreParte,rateCotizado  } = req.body
+
+        try {
+        await CotizacionesCC1.create({ numeroCotizacion, numeroParte, nombreParte,rateCotizado });
+        res.status(200).send({ msg: 'Datos enviados con exito', ok: true });
+    } catch (error) {
+        res.status(400).send({ msg: 'Error al enviar la informacion: ' + error, ok: false });
+    }
 }
 
-controller.controldepiezas2 = (req, res) => {
-    res.render('admin/sorteo/cc1/controldepiezas');
+controller.lote = (req, res) => {
+    res.render('admin/sorteo/cc1/lote',{
+        csrfToken: req.csrfToken()
+    });
 }
 
+controller.lote2 = async (req, res) => {
+        const { lote, cotizacion, cantidadPiezas,numeroCajas  } = req.body
+
+        try {
+        await LoteCC1.create({ lote, cotizacion, cantidadPiezas,numeroCajas  });
+        res.status(200).send({ msg: 'Datos enviados con exito', ok: true });
+    } catch (error) {
+        res.status(400).send({ msg: 'Error al enviar la informacion: ' + error, ok: false });
+    }
+}
+
+controller.controldepiezas = async (req, res) => {
+
+
+    const rCotizacionesCC1 = await CotizacionesCC1.findAll({attributes: ['id','numeroCotizacion','numeroParte']});
+    const rPersonalCC1 = await PersonalCC1.findAll({attributes: ['id','nombreInspector']});
+
+    res.render('admin/sorteo/cc1/controlpiezas',{
+        rCotizacionesCC1,
+        rPersonalCC1,
+        csrfToken: req.csrfToken()
+    });
+}
+
+controller.controldepiezas2 = async (req, res) => {
+            try {
+        const json = JSON.parse(req.body.cotizaciones);
+        await Controlpiezas.bulkCreate(json);
+        res.status(200).send({ msg: 'Datos enviados con exito', ok: true });
+    } catch (error) {
+        res.status(400).send({ msg: 'Error al enviar la informacion: ' + error, ok: false });
+    }
+    
+}
+
+controller.secciones = (req, res) => {
+    res.render('admin/sorteo/cc1/secciones');
+}
+
+controller.secciones2 = (req, res) => {
+    res.render('admin/sorteo/cc1/secciones');
+}
 
 export default controller;

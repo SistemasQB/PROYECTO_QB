@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combinador de Archivos Excel</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .files-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.card-header p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.file-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.file-input:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #059669;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.file-icon {
+  font-size: 1rem;
+}
+
+.file-details {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.file-details p {
+  margin-bottom: 0.25rem;
+}
+
+.process-section {
+  text-align: center;
+}
+
+.process-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.process-button:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.process-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.alert.error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.download-button {
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.download-button:hover {
+  background: #047857;
+}
+
+.table-container {
+  max-height: 24rem;
+  overflow: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+th {
+  background: #f9fafb;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+}
+
+td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+tbody tr:hover {
+  background: #f9fafb;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .results-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .download-button {
+    width: 100%;
+  }
+}
+
+</style>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Combinador de Archivos Excel</h1>
+            <p>Combina información de personal con horarios de entrada</p>
+        </div>
+
+        <div class="files-grid">
+            <!-- Archivo de Personal -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>📋 Archivo de Personal</h3>
+                    <p>Archivo con información del personal (hoja "CONTROL")</p>
+                </div>
+                <div class="card-content">
+                    <div class="input-group">
+                        <label for="personal-file">Seleccionar archivo Excel</label>
+                        <input type="file" id="personal-file" accept=".xlsx,.xls" class="file-input">
+                    </div>
+                    <div id="personal-file-info" class="file-info hidden">
+                        <span class="file-icon">📊</span>
+                        <span id="personal-file-name"></span>
+                    </div>
+                    <div class="file-details">
+                        <p>• Columna C: Código de empleado</p>
+                        <p>• Columna D: Nombre</p>
+                        <p>• Columna N: Correo electrónico</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archivo de Horarios -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🕐 Archivo de Horarios</h3>
+                    <p>Archivo con horarios de entrada del personal</p>
+                </div>
+                <div class="card-content">
+                    <div class="input-group">
+                        <label for="horarios-file">Seleccionar archivo Excel</label>
+                        <input type="file" id="horarios-file" accept=".xlsx,.xls" class="file-input">
+                    </div>
+                    <div id="horarios-file-info" class="file-info hidden">
+                        <span class="file-icon">📊</span>
+                        <span id="horarios-file-name"></span>
+                    </div>
+                    <div class="file-details">
+                        <p>• Columna A: Código o correo del empleado</p>
+                        <p>• Columna B: Horario de entrada</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón de procesamiento -->
+        <div class="process-section">
+            <button id="process-btn" class="process-button" disabled>
+                <span id="process-text">📤 Combinar Archivos</span>
+                <div id="loading-spinner" class="spinner hidden"></div>
+            </button>
+        </div>
+
+        <!-- Error -->
+        <div id="error-alert" class="alert error hidden">
+            <span id="error-message"></span>
+        </div>
+
+        <!-- Resultados -->
+        <div id="results-section" class="card hidden">
+            <div class="card-header">
+                <div class="results-header">
+                    <h3 id="results-title">Resultados</h3>
+                    <button id="download-btn" class="download-button">
+                        💾 Descargar Excel
+                    </button>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-container">
+                    <table id="results-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Horario</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+    // Import the XLSX library
+// const XLSX = require("xlsx")
+
+class ExcelCombiner {
+  constructor() {
+    this.personalFile = null
+    this.horariosFile = null
+    this.result = []
+    this.isProcessing = false
+
+    this.initializeEventListeners()
+  }
+
+  initializeEventListeners() {
+    // File inputs
+    document.getElementById("personal-file").addEventListener("change", (e) => {
+      this.handlePersonalFileChange(e)
+    })
+
+    document.getElementById("horarios-file").addEventListener("change", (e) => {
+      this.handleHorariosFileChange(e)
+    })
+
+    // Process button
+    document.getElementById("process-btn").addEventListener("click", () => {
+      this.processFiles()
+    })
+
+    // Download button
+    document.getElementById("download-btn").addEventListener("click", () => {
+      this.downloadResult()
+    })
+  }
+
+  handlePersonalFileChange(e) {
+    const file = e.target.files[0]
+    if (file) {
+      this.personalFile = file
+      this.showFileInfo("personal-file-info", "personal-file-name", file.name)
+      this.hideError()
+      this.updateProcessButton()
+    }
+  }
+
+  handleHorariosFileChange(e) {
+    const file = e.target.files[0]
+    if (file) {
+      this.horariosFile = file
+      this.showFileInfo("horarios-file-info", "horarios-file-name", file.name)
+      this.hideError()
+      this.updateProcessButton()
+    }
+  }
+
+  showFileInfo(infoId, nameId, fileName) {
+    document.getElementById(infoId).classList.remove("hidden")
+    document.getElementById(nameId).textContent = fileName
+  }
+
+  updateProcessButton() {
+    const processBtn = document.getElementById("process-btn")
+    processBtn.disabled = !this.personalFile || !this.horariosFile || this.isProcessing
+  }
+
+  showError(message) {
+    const errorAlert = document.getElementById("error-alert")
+    const errorMessage = document.getElementById("error-message")
+    errorMessage.textContent = message
+    errorAlert.classList.remove("hidden")
+  }
+
+  hideError() {
+    document.getElementById("error-alert").classList.add("hidden")
+  }
+
+  setProcessing(processing) {
+    this.isProcessing = processing
+    const processBtn = document.getElementById("process-btn")
+    const processText = document.getElementById("process-text")
+    const loadingSpinner = document.getElementById("loading-spinner")
+
+    if (processing) {
+      processText.textContent = "Procesando..."
+      loadingSpinner.classList.remove("hidden")
+    } else {
+      processText.textContent = "📤 Combinar Archivos"
+      loadingSpinner.classList.add("hidden")
+    }
+
+    this.updateProcessButton()
+  }
+
+  async processFiles() {
+    if (!this.personalFile || !this.horariosFile) {
+      this.showError("Por favor selecciona ambos archivos")
+      return
+    }
+
+    this.setProcessing(true)
+    this.hideError()
+
+    try {
+      // Procesar archivo de personal
+      const personalData = await this.readExcelFile(this.personalFile)
+      const personalWorkbook = XLSX.read(personalData, { type: "array" })
+      const controlSheet = personalWorkbook.Sheets["CONTROL"]
+
+      if (!controlSheet) {
+        throw new Error('No se encontró la hoja "CONTROL" en el archivo de personal')
+      }
+
+      const personalJson = XLSX.utils.sheet_to_json(controlSheet, { header: 1 })
+
+      // Crear mapa de empleados
+      const employeeMap = new Map()
+      const employeeEmailMap = new Map()
+
+      for (let i = 1; i < personalJson.length; i++) {
+        const row = personalJson[i]
+        if (row && row[2] && row[3]) {
+          const employee = {
+            codigo: String(row[2]).trim(),
+            nombre: String(row[3]).trim(),
+            correo: row[13] ? String(row[13]).trim() : undefined,
+          }
+          employeeMap.set(employee.codigo, employee)
+          if (employee.correo) {
+            employeeEmailMap.set(employee.correo, employee)
+          }
+        }
+      }
+
+      // Procesar archivo de horarios
+      const horariosData = await this.readExcelFile(this.horariosFile)
+      const horariosWorkbook = XLSX.read(horariosData, { type: "array" })
+      const horariosSheet = horariosWorkbook.Sheets[horariosWorkbook.SheetNames[0]]
+      const horariosJson = XLSX.utils.sheet_to_json(horariosSheet, { header: 1 })
+
+      // Combinar datos
+      const combined = []
+
+      for (let i = 1; i < horariosJson.length; i++) {
+        const row = horariosJson[i]
+        if (row && row[0] && row[1]) {
+          const identifier = String(row[0]).trim()
+          const horario = String(row[1]).trim()
+
+          // Buscar empleado por código o correo
+          let employee = employeeMap.get(identifier)
+          if (!employee) {
+            employee = employeeEmailMap.get(identifier)
+          }
+
+          if (employee) {
+            combined.push({
+              codigo: employee.codigo,
+              nombre: employee.nombre,
+              horario: horario,
+            })
+          }
+        }
+      }
+
+      this.result = combined
+      this.displayResults()
+    } catch (err) {
+      this.showError(err.message || "Error al procesar los archivos")
+    } finally {
+      this.setProcessing(false)
+    }
+  }
+
+  readExcelFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          resolve(e.target.result)
+        } else {
+          reject(new Error("Error al leer el archivo"))
+        }
+      }
+      reader.onerror = () => reject(new Error("Error al leer el archivo"))
+      reader.readAsArrayBuffer(file)
+    })
+  }
+
+  displayResults() {
+    const resultsSection = document.getElementById("results-section")
+    const resultsTitle = document.getElementById("results-title")
+    const resultsTable = document.getElementById("results-tbody")
+
+    resultsTitle.textContent = `Resultados (${this.result.length} registros)`
+
+    // Limpiar tabla
+    resultsTable.innerHTML = ""
+
+    // Llenar tabla
+    this.result.forEach((record) => {
+      const row = document.createElement("tr")
+      row.innerHTML = `
+                <td>${record.codigo}</td>
+                <td>${record.nombre}</td>
+                <td>${record.horario}</td>
+            `
+      resultsTable.appendChild(row)
+    })
+
+    resultsSection.classList.remove("hidden")
+  }
+
+  downloadResult() {
+    if (this.result.length === 0) return
+
+    const worksheet = XLSX.utils.json_to_sheet(
+      this.result.map((record) => ({
+        "Código Empleado": record.codigo,
+        Nombre: record.nombre,
+        Horario: record.horario,
+      })),
+    )
+
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Horarios Combinados")
+
+    const fileName = `horarios_combinados_${new Date().toISOString().split("T")[0]}.xlsx`
+    XLSX.writeFile(workbook, fileName)
+  }
+}
+
+// Inicializar la aplicación cuando se carga la página
+document.addEventListener("DOMContentLoaded", () => {
+  new ExcelCombiner()
+})
+
+</script>
+
+</html>

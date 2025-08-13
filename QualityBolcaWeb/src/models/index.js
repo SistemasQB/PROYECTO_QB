@@ -39,6 +39,7 @@ import { default as Checklistcc1 } from './sorteo/cc1/checklistcc1.js';
 import { default as PersonalCC1 } from './sorteo/cc1/PersonalCC1.js';
 import { default as CotizacionesCC1 } from './sorteo/cc1/cotizacionesCC1.js';
 import { default as Controlpiezas } from './sorteo/cc1/controlpiezas.js';
+import { default as LoteCC1 } from './sorteo/cc1/lote.js';
 import { default as bitacoraActividades } from './bitacoraActividades.js';
 import { default as Semanal } from './nominas/semanal.js';
 
@@ -126,5 +127,6 @@ export {
   Semanal,
   PersonalCC1,
   CotizacionesCC1,
-  Controlpiezas
+  Controlpiezas,
+  LoteCC1
 };

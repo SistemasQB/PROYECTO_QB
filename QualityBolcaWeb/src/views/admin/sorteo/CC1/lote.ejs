@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Llenado Rápido</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-2xl grid grid-cols-1 md:grid-cols-1 gap-8">
+
+        <!-- Formulario -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Llenado de Lote</h2>
+            <form id="formulario" class="space-y-4">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">N° Cotización</label>
+                    <input type="text" id="nCotizacion" required name="cotizacion"
+                        class="datosF w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">N° Lote</label>
+                    <input type="text" id="nParte" required name="cantidadPiezas"
+                       class="datosF w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Cantidad Piezas</label>
+                    <input type="number" id="piezasC" required name="nombreParte"
+                        class="datosF w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Num. Cajas</label>
+                    <input type="number" id="rateC" required name="rateCotizado"
+                        class="datosF w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="pt-4 text-center">
+                    <button type="submit" id="btnRegistrar"
+                        class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition">
+                        Registrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+<script src="../../../scripts/all/alertas.js"></script>
+<script>
+    const formulario = document.getElementById('formulario');
+    const lista = document.getElementById('lista');
+    const btnRegistrar = document.getElementById('btnRegistrar');
+    const btnGuardar = document.getElementById('btnGuardar');
+
+    let cotizaciones = [];
+
+    formulario.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(formulario);
+        const urlEncoded = new URLSearchParams(formData).toString();
+        alertaFetch(urlEncoded, 'cotizaciones', 'cotizaciones')
+    });
+</script>
+
+
+</html>
