@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,7 +86,8 @@
             border-collapse: collapse;
         }
 
-        th, td {
+        th,
+        td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
@@ -135,6 +137,7 @@
                 opacity: 0;
                 transform: translateY(-50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -205,7 +208,8 @@
                 font-size: 14px;
             }
 
-            th, td {
+            th,
+            td {
                 padding: 10px 8px;
             }
 
@@ -215,6 +219,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Modal de Acceso Inicial -->
     <div id="accessModal" class="modal active">
@@ -321,6 +326,14 @@
     </div>
 
     <script>
+
+        window.onload = function () {
+            if (sessionStorage.getItem("validation")) {
+                document.getElementById('accessModal').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+            }
+        }
+
         // Código de acceso válido
         const VALID_ACCESS_CODE = "1234";
         let currentRow = null;
@@ -329,8 +342,9 @@
         function validateAccess() {
             const code = document.getElementById('accessCode').value;
             const errorDiv = document.getElementById('accessError');
-            
+
             if (code === VALID_ACCESS_CODE) {
+                sessionStorage.setItem("validation", true);
                 document.getElementById('accessModal').classList.remove('active');
                 document.getElementById('mainContent').classList.remove('hidden');
                 errorDiv.classList.add('hidden');
@@ -365,7 +379,7 @@
             const productCode = document.getElementById('productCode').value.trim();
             const errorDiv = document.getElementById('productError');
             const successDiv = document.getElementById('productSuccess');
-            
+
             if (!productCode) {
                 errorDiv.textContent = 'Por favor ingrese un código de producto.';
                 errorDiv.classList.remove('hidden');
@@ -377,9 +391,9 @@
             const tableBody = document.getElementById('quotationsTable');
             const rowCount = tableBody.children.length + 1;
             const newRow = document.createElement('tr');
-            
+
             const today = new Date().toISOString().split('T')[0];
-            
+
             newRow.innerHTML = `
                 <td>COT-${String(rowCount).padStart(3, '0')}</td>
                 <td>LT-2024-${String(rowCount).padStart(3, '0')}</td>
@@ -390,13 +404,13 @@
                     <button class="btn btn-success" onclick="openFinishModal(this)">Producto Terminado</button>
                 </td>
             `;
-            
+
             tableBody.appendChild(newRow);
-            
+
             successDiv.textContent = 'Producto añadido exitosamente.';
             successDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
-            
+
             // Cerrar modal después de 1.5 segundos
             setTimeout(() => {
                 closeModal('addProductModal');
@@ -413,18 +427,18 @@
         function finishProduct() {
             const code = document.getElementById('finishCode').value;
             const errorDiv = document.getElementById('finishError');
-            
+
             if (code === VALID_ACCESS_CODE) {
                 if (currentRow) {
                     // Cambiar estado a terminado
                     const statusCell = currentRow.children[4];
                     statusCell.innerHTML = '<span style="color: #48bb78; font-weight: 600;">Terminado</span>';
-                    
+
                     // Cambiar botón por texto
                     const actionCell = currentRow.children[5];
                     actionCell.innerHTML = '<span style="color: #a0aec0;">Completado</span>';
                 }
-                
+
                 closeModal('finishProductModal');
                 currentRow = null;
             } else {
@@ -435,23 +449,24 @@
         }
 
         // Permitir validación con Enter
-        document.getElementById('accessCode').addEventListener('keypress', function(e) {
+        document.getElementById('accessCode').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 validateAccess();
             }
         });
 
-        document.getElementById('productCode').addEventListener('keypress', function(e) {
+        document.getElementById('productCode').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 addProduct();
             }
         });
 
-        document.getElementById('finishCode').addEventListener('keypress', function(e) {
+        document.getElementById('finishCode').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 finishProduct();
             }
         });
     </script>
 </body>
+
 </html>

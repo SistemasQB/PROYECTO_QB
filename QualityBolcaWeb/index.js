@@ -28,7 +28,8 @@ import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes
 import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
 
 import {
-  Controlpiezas
+  Controlpiezas,
+  Controlpiezas2
 } from "./src/models/index.js";
 
 import mimeTypes from "mime-types";
@@ -129,6 +130,31 @@ try {
   res.status(400).send({ msg: 'Error al enviar la peticion' + error, ok: false });
 }
 })
+
+app.post('/sorteo/cc1/controldepiezas2',async (req, res) =>{
+
+
+  const {piezasOK, piezasNG, mesas, inicio} = req.body;
+
+  
+  let fecha = new Date();
+  fecha.setHours(fecha.getHours() - 6);
+  
+  // console.log(piezas, mesas, fecha);
+  try {
+    await Controlpiezas2.create({
+      piezasOK,
+      piezasNG,
+      mesas,
+      inicio,
+      fecha
+    });
+    res.status(200).send({ msg: 'enviado con exito', ok: true });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ msg: 'Error al enviar la peticion' + error, ok: false });
+  }
+  })
 
 
 app.use('/',csrfProtection, customerRoutes);

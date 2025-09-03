@@ -6,6 +6,8 @@ import claseSeq from "../public/clases/sequelize_clase.js";
 import { emailMejoraRespuesta } from "../helpers/emails.js";
 import { Op, QueryTypes } from 'sequelize'
 
+import { format } from "@formkit/tempo"
+
 import {
     Mejora,
     bitacoraActividades,
@@ -77,11 +79,19 @@ controller.rechazarMejora = async (req, res) => {
 controller.ActualizarMejoras = async (req, res) => {
     let misDatos = req.body;
     delete misDatos._csrf;
-    misDatos.fecha_respuesta_comite = new Date.now().toLocaleDateString('es-ES')
+    misDatos.fecha_respuesta_comite =
+        format({
+            date : new Date(),
+            format: "YYYY-MM-DD",
+            tz: "America/Mexico_City",
+        })
     let datos = {}
     for (let clave in misDatos) {
         datos[clave] = misDatos[clave]
     }
+
+    console.log(misDatos.fecha_respuesta_comite);
+    
 
     const obtenerValores = await Mejora.findByPk(misDatos.id);
     switch (misDatos.estatus) {
@@ -138,7 +148,7 @@ controller.bitacoraActividades = async (req, res) => {
 controller.agregarActividad = async (req, res) => {
 
     console.log(req.usuario);
-    
+
     try {
         let { nombreActividad, responsable, area, prioridad, estatus, avance, fechaCompromiso, evaluacion } = req.body
         bitacoraActividades.create({
@@ -196,38 +206,38 @@ controller.misActividades = async (req, res) => {
         }
 
     }
-        let actividades = await clase.obtenerDatosPorCriterio({ criterio: criterios })
-        res.render("admin/calidad/mis_actividades", { actividades: actividades, token: token })
+    let actividades = await clase.obtenerDatosPorCriterio({ criterio: criterios })
+    res.render("admin/calidad/mis_actividades", { actividades: actividades, token: token })
 
 }
-    controller.asignarAvance = async (req, res) => {
-        let archivos = req.files
-        if (!archivos) return res.json({ ok: false, msg: 'no se recibieron los archivos multimedia' })
-        const nombresArchivos = archivos.map(file => file.filename);
-        let { id, avance, comentarios, estatus } = req.body
-        if (!id) return res.json({ msg: 'no se encontro el che id', ok: false })
-        try {
-            let clase = new claseSeq({ modelo: bitacoraActividades });
-            let actualizacion = await clase.actualizarDatos({
-                id: id, datos: { evidencia: nombresArchivos, avance: avance, comentariosUsuario: comentarios, estatus: estatus }
-            })
-            return res.json({
-                ok: actualizacion,
-                msg:'registro de avance exitoso'
-            })
-        } catch (ex) {
-            return res.json({
-                ok: false,
-                msg: 'no se pudo registrar la actualizacion' + ex
-            })
-        }
-
-
-        return res.json({ ok: true, msg: 'finalizo el procedimiento sin hacer nada' })
-
+controller.asignarAvance = async (req, res) => {
+    let archivos = req.files
+    if (!archivos) return res.json({ ok: false, msg: 'no se recibieron los archivos multimedia' })
+    const nombresArchivos = archivos.map(file => file.filename);
+    let { id, avance, comentarios, estatus } = req.body
+    if (!id) return res.json({ msg: 'no se encontro el che id', ok: false })
+    try {
+        let clase = new claseSeq({ modelo: bitacoraActividades });
+        let actualizacion = await clase.actualizarDatos({
+            id: id, datos: { evidencia: nombresArchivos, avance: avance, comentariosUsuario: comentarios, estatus: estatus }
+        })
+        return res.json({
+            ok: actualizacion,
+            msg: 'registro de avance exitoso'
+        })
+    } catch (ex) {
+        return res.json({
+            ok: false,
+            msg: 'no se pudo registrar la actualizacion' + ex
+        })
     }
 
 
+    return res.json({ ok: true, msg: 'finalizo el procedimiento sin hacer nada' })
+
+}
 
 
-    export default controller;
+
+
+export default controller;

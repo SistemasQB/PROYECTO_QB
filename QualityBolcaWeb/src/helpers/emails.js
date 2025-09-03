@@ -393,23 +393,22 @@ const emailMejora = async (datos) => {
   console.log('Enviado...',datos);
   
 
+  const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth: {
+            user: process.env.EMAILMC_USER,
+            pass: process.env.EMAILMC_PASS
+        }
+    });
 
-  // const transport = nodemailer.createTransport({
-  //       host: process.env.EMAIL_HOST,
-  //       port: process.env.EMAIL_PORT,
-  //       auth: {
-  //           user: process.env.EMAILMC_USER,
-  //           pass: process.env.EMAILMC_PASS
-  //       }
-  //   });
-
-  //   await transport.sendMail({
-  //       from: process.env.EMAILMC_USER,
-  //       to: datos.email,
-  //       subject: cuerpoCorreoMejora[datos.id].asunto + ' ' + datos.nombre_mejora,
-  //       text: 'Prueba de las mejoras',
-  //       html: generarCuerpoEmail(datos)
-  //   })
+    await transport.sendMail({
+        from: process.env.EMAILMC_USER,
+        to: datos.email,
+        subject: cuerpoCorreoMejora[datos.id].asunto + ' ' + datos.nombre_mejora,
+        text: 'Prueba de las mejoras',
+        html: generarCuerpoEmail(datos)
+    })
 }
 
 const emailMejoraRespuesta = async (datos) => {
@@ -422,6 +421,20 @@ const emailMejoraRespuesta = async (datos) => {
             pass: process.env.EMAILMC_PASS
         }
     });
+
+
+    if (datos.id == 1) {
+        await transport.sendMail({
+        from: process.env.EMAILMC_USER,
+        to: 'propuestas.mejora@gmail.com',
+        subject: 'Nueva propuesta de MEJORA' + ' ' + datos.nombre_mejora,
+        text: 'Prueba de las mejoras',
+        html: `
+        <p>Buen dia equipos de calidad, tienen una nueva propuesta de mejora continua</p>
+        <p>pueden visualizarla entrando a la pagina web de: <a href="www.qualitybolca.net">www.qualitybolca.net</a></p>
+        `
+    })
+    }
 
     await transport.sendMail({
         from: process.env.EMAILMC_USER,

@@ -54,12 +54,16 @@ import { emailRequisicion, registroCursos, emailMantenimientoA, emailSolicitud, 
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
-import path from 'path';
+import path, { format } from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url); // obtener la ruta resuelta al archivo 
 const __dirname = path.dirname(__filename); // obtener el nombre del directorio
 // const dataPath = path.join(__dirname, 'data.json');
 import RegistroMa from "../models/registroma.js";
+
+// Libreria TEMPO
+
+import { addDay, addMonth, isBefore, isAfter } from "@formkit/tempo"
 
 // Comunicacion.belongsTo(Gch_alta, { foreignKey: 'id', targetKey: 'curp'  });
 // Gch_alta.hasOne(Comunicacion, { foreignKey: 'curp', targetKey: 'id'  })
@@ -79,13 +83,13 @@ controller.inicio = (req, res) => {
     }
 }
 
-controller.permisosusuarios = async(req, res) => {
+controller.permisosusuarios = async (req, res) => {
 
     const { codigoempleado } = req.usuario
 
     const obtenerPermisos = await Usuario.findOne({ attributes: ['permisos'], where: { codigoempleado: codigoempleado } });
 
-    res.render('admin/permisosusuarios',{
+    res.render('admin/permisosusuarios', {
         obtenerPermisos
     })
 }
@@ -662,7 +666,7 @@ controller.subiranalisis2 = async (req, res) => {
         await obtenerAnalisis.save();
 
         // next()
-        await emailMejora({ id: 0, nombre_mejora: obtenerAnalisis.nombre_mejora, email: obtenerAnalisis.email, generador_idea: obtenerAnalisis.generador_idea, periodo: '', fecha_limite: '' });
+        await emailMejora({ id: 1, nombre_mejora: obtenerAnalisis.nombre_mejora, email: obtenerAnalisis.email, generador_idea: obtenerAnalisis.generador_idea, periodo: '', fecha_limite: '' });
         res.status(200).send({ msg: 'Analisis enviado con exito', ok: true });
         return
     } catch (error) {
@@ -718,7 +722,6 @@ controller.subirevidencia2 = async (req, res) => {
         return
     }
 }
-
 
 controller.reuniones = (req, res) => {
     res.render('admin/reuniones')
@@ -874,25 +877,45 @@ controller.mantenimientoautonomo2 = async (req, res) => {
 
     const { nombre, tipo, region, respuestas } = req.body
 
-    // const registromantenimiento = await registroma.findOne({ where: { nombre: nombre } });
+    const registromantenimiento = await registroma.findOne({ where: { nombre: nombre } });
 
+    if (registromantenimiento) {
+        try {
 
-    try {
+            await registroma.update(
+                { tipo, region, respuestas },
+                { where: { nombre } }
+            )
+            // Enviar email de confirmacion
+            await emailMantenimientoA({ region, respuestas, tipo, nombre })
 
-        await registroma.update(
-            { tipo, region, respuestas },
-            { where: { nombre } }
-        )
-        // Enviar email de confirmacion
-        await emailMantenimientoA({ region, respuestas, tipo, nombre })
+            res.status(200).send({ msg: 'Mantenimiento enviado', ok: true });
+            return
+        } catch (error) {
+            console.error("Error al enviar correo o guardar datos:", error);
+            res.status(400).send({ msg: error, ok: false });
+            return
+        }
+    } else {
+        try {
 
-        res.status(200).send({ msg: 'Mantenimiento enviada', ok: true });
-        return
-    } catch (error) {
-        console.error("Error al enviar correo o guardar datos:", error);
-        res.status(400).send({ msg: error, ok: false });
-        return
+            await registroma.create(
+                { nombre, tipo, region, respuestas }
+            )
+            // Enviar email de confirmacion
+            await emailMantenimientoA({ region, respuestas, tipo, nombre })
+
+            res.status(200).send({ msg: 'Mantenimiento enviado', ok: true });
+            return
+        } catch (error) {
+            console.error("Error al enviar correo o guardar datos:", error);
+            res.status(400).send({ msg: error, ok: false });
+            return
+        }
     }
+
+
+
 }
 
 controller.buzonquejas = (req, res) => {
@@ -1056,41 +1079,48 @@ let posts;
 // 🕒 Ejecuta la verificación todos los días a las 9:00 AM
 // cron.schedule('* * * * *', () => {
 cron.schedule('0 9 * * *', async () => {
-    console.log('Verificando...', new Date());
+    // console.log('Verificando...', new Date());
     verificarMejora();
 });
 
 async function verificarMejora() {
     let obtenerValores
 
+    const fechaActual = format(new Date(), 'YYYY-MM-DD');
+
     obtenerValores = await Mejora.findAll({ where: { [Op.and]: [{ estatus: 3 }, { evidencia1: null }] } });
 
     for (let c = 0; c < obtenerValores.length; c++) {
 
-        const fecha15dias = new Date(obtenerValores[c].fecha_respuesta_comite);
+        const repuestacomiteFecha = format(obtenerValores[c].fecha_respuesta_comite, 'YYYY-MM-DD')
+        
+        const fecha15dias = addDay(
+            date = repuestacomiteFecha,
+            amount = 16,
+            dateOverflow = true
+        )
 
-        const fecha10dias = new Date(obtenerValores[c].fecha_respuesta_comite);
+        const fecha10dias = addDay(
+            date = repuestacomiteFecha,
+            amount = 19,
+            dateOverflow = true
+        )
 
-        fecha15dias.setDate(fecha15dias.getDate() + 15);
-        fecha10dias.setDate(fecha10dias.getDate() + 10);
-
-        const { id, nombre_mejora, generador_idea } = obtenerValores[c];
 
 
-        switch (estaEnRango(resultado.desde, resultado.hasta)) {
+        switch (estaEnRango(fecha10dias, fecha15dias, fechaActual)) {
             case 1:
                 await emailMejora({ id: 5, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '15 dias', fecha_limite: resultado.hasta });
                 break;
             case 2:
-                await emailMejora({ id: 1, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '15 dias', fecha_limite: resultado.hasta });
+                await emailMejora({ id: 2, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '15 dias', fecha_limite: resultado.hasta });
                 break;
             case 3:
                 obtenerValores[c].estatus = 5
                 await obtenerValores[c].save()
-                await emailMejora({ id: 2, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '15 dias', fecha_limite: resultado.hasta });
+                await emailMejora({ id: 3, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '15 dias', fecha_limite: resultado.hasta });
                 break;
         }
-
     }
 
     obtenerValores = await Mejora.findAll({ where: { [Op.and]: [{ evidencia1: { [Op.ne]: null } }, { evidencia2: null }] } });
@@ -1098,8 +1128,19 @@ async function verificarMejora() {
     for (let c = 0; c < obtenerValores.length; c++) {
         let resultado = obtenerRangoSemanaAntesDelMes(new Date(obtenerValores[c].fecha_respuesta_comite), 1);
 
+        let mesEvidencia = format(obtenerValores[c].fecha_respuesta_comite, 'YYYY-MM-DD');
+
+        let fechaMes5dias = addDay(addMonth(
+            mesEvidencia, 1
+        ), -5)
+        let fecha1Mes = addMonth(
+            mesEvidencia, 1
+        )
+
+
+
         // console.log(estaEnRango(resultado.desde, resultado.hasta));
-        switch (estaEnRango(resultado.desde, resultado.hasta)) {
+        switch (estaEnRango(fechaMes5dias, fecha1Mes, fechaActual)) {
             case 1:
                 await emailMejora({ id: 5, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '1er mes', fecha_limite: resultado.hasta });
                 break;
@@ -1164,13 +1205,13 @@ async function verificarMejora() {
     }
 }
 
-function estaEnRango(fechaInicio, fechaFin) {
-    const hoy = new Date();
-    if (hoy >= fechaInicio && hoy < fechaFin) {
+function estaEnRango(fechaInicio, fechaFin, fechaActual) {
+
+    if (isAfter(fechaActual, fechaInicio) && isBefore(fechaActual, fechaFin)) {
         return 1;
-    } else if (hoy > fechaFin && hoy < fechaFin.setDate(fechaFin.getDate() + 5)) {
+    } else if (isAfter(fechaActual, fechaFin) && isBefore(fechaActual, addDays(fechaFin, 5))) {
         return 2;
-    } else if (hoy > fechaFin.setDate(fechaFin.getDate() + 5)) {
+    } else if (isAfter(fechaActual, addDays(fechaFin, 5))) {
         return 3;
     } else {
         return 0
