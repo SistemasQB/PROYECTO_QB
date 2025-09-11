@@ -2,6 +2,7 @@ import { where } from "sequelize";
 
 
 class sequelizeClase{
+
     constructor({modelo}){
         this.modelo = modelo
         if (!modelo) throw new Error('se requiere el modelo')
@@ -13,8 +14,8 @@ class sequelizeClase{
         let inserccion =  await this.modelo.create(datosInsertar);
         if (!inserccion) return false;
         return true;}
-        catch(e){
-            console.log(e.toString())
+        catch(ex){
+            console.log(ex.toString())
             return false;
         }
     }
@@ -25,8 +26,8 @@ class sequelizeClase{
         let elim = await dato.destroy({returning: true});
         if (!elim) return false
         return true}
-        catch(e){
-            console.log(e.toString())
+        catch(ex){
+            console.log(ex.toString())
             return false;
         }
     }
@@ -34,10 +35,9 @@ class sequelizeClase{
         try{
         let registro = await this.modelo.findByPk(id);
         if(!registro) return false;
-        console.log('si encontro la actividad seleccionada')
         let actualizacion = await registro.update(datos,{
             where: {id},
-            returning: true
+            returning: true,
         })
         if (actualizacion <= 0 ) return false;
         return true;}
@@ -47,10 +47,15 @@ class sequelizeClase{
         }
     }
 
-    async obtenerDatosPorCriterio({criterio}){
-        let respuesta = await this.modelo.findAll({
+    async obtenerDatosPorCriterio({criterio, ordenamiento = null}){
+        const opciones = {
             where: criterio
-        })
+        }
+        if (ordenamiento){
+            opciones.order = ordenamiento
+        }
+        let respuesta = await this.modelo.findAll(opciones)
+        
         if (!respuesta) return ''
         return respuesta
     }

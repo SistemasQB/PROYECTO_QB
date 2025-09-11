@@ -2,7 +2,10 @@ import express from "express";
 import {default as sorteoController} from './../controllers/sorteoController.js';
 import protegetRuta from "../middleware/protegetRuta.js";
 import upload from "../middleware/subirImagen.js";
+import miMulter from "../public/clases/multer.js";
 
+
+const multer = new miMulter('src/public/evidencias_sorteo');
 const router = express.Router();
 
 router.get('/kiosk',sorteoController.kiosk);
@@ -24,6 +27,17 @@ router.get('/cc1/secciones',sorteoController.secciones);
 router.post('/cc1/secciones',sorteoController.secciones2);
 router.get('/cc1/lote',sorteoController.lote);
 router.post('/cc1/lote',sorteoController.lote2);
+
+// rutas de entrega Material almacen
+
+// router.get("/form-envio",sorteoController.prueba)
+// router.get("/embarques/:cliente", sorteoController.vistaCliente)
+
+//rutas de entrega de material cliente y visualizacion
+router.get("/form-entrega",sorteoController.entregaMaterial) //formulario de entrega de material
+router.post("/envioMaterial", multer.multiplesArchivos('imagenes', 3), sorteoController.envioMaterial) //ruta de envio
+router.get("/admin-entrega-material",sorteoController.adminEntregaMaterial) //gestion de los envios
+  
 
 
 export default router;

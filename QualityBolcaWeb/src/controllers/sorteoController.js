@@ -1,5 +1,10 @@
 import express from "express";
 import db from "../config/db.js";
+import sequelizeClase from "../public/clases/sequelize_clase.js";
+// import modelosSorteo from "../models/sorteo/barrilModelosSorteo.js";
+
+
+
 import {
     Checklistcc1,
     Empleados,
@@ -8,8 +13,12 @@ import {
     CotizacionesCC1,
     Controlpiezas,
     PersonalCC1,
-    LoteCC1
+    LoteCC1,
+    modelosSorteo
 } from "../models/index.js";
+const { modeloEntregaMaterial,
+    modeloNuevoMaterial,
+    modeloEdgewell } = modelosSorteo
 import Sequelize from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
 
@@ -244,6 +253,69 @@ controller.secciones = (req, res) => {
 
 controller.secciones2 = (req, res) => {
     res.render('admin/sorteo/cc1/secciones');
+}
+
+
+//controlador de entrega de material (cliente) ----------------------------------------------------------
+controller.entregaMaterial = async (req, res)=>{
+    let token = req.csrfToken()
+    let clase = new sequelizeClase({modelo: modelosSorteo.modeloNuevoMaterial})
+    // res.render('admin/sorteo/formulario-entrega-material.ejs', {tok: token})
+    let orden = [['numeroParte','ASC']]
+    let productos = await clase.obtenerDatosPorCriterio({criterio: {id: {[Op.gt]: 0}}, ordenamiento: orden})
+    res.render('admin/sorteo/formato-edgewell.ejs', {tok:token, productos: productos})
+}
+
+controller.adminEntregaMaterial = async (req, res)=>{
+    let tok = req.csrfToken();
+    let fecha =  new Date(Date.now());
+    let mes = fecha.getMonth();
+    let dia, mesi, ano 
+    dia = fecha.getDay()
+    mesi = fecha.getMonth()
+    ano = fecha.getFullYear()
+    let fi = new Date(`${ano}-${mes-1}-${dia}`)
+    
+    let clase = new sequelizeClase({modelo: modeloEdgewell});
+    let criterios = {[Op.and]:[
+        {fecha:{[Op.between]: [fi, fecha]}},
+        {estatus:'ENVIADO'}
+    ]}
+    let resultados = await clase.obtenerDatosPorCriterio({criterio: criterios})
+    res.render('admin/sorteo/admin_entrega_material.ejs', {embarques:resultados, tok:tok})
+}
+
+controller.envioMaterial = async (req, res)=>{
+    let archivos = req.files
+    if(!archivos) return res.json({ok:false, msg: "no se subieron las imagenes"});
+    let datos = req.body
+    console.log(datos)
+    delete datos._csrf
+    let firmas = {}
+    
+    archivos.forEach((archivo) =>{
+        if(archivo.originalname.includes('firma entrega')){
+            firmas.entrega = archivo.filename
+        }else if(archivo.originalname.includes('firma recibe')){
+            firmas.recibe = archivo.filename
+        }else{
+            datos.imagenEmbarque = archivo.filename
+        }
+    });
+    datos.firmas = firmas
+    // datos.partidas.cantidadPiezas = parseFloat(datos.cantidad);
+    datos.partidas = JSON.parse(datos.partidas)
+    datos.resumen = JSON.parse(datos.resumen)
+    const seq = new sequelizeClase({modelo: modeloEdgewell})
+    try{
+        let actualizacion = await seq.insertar({datosInsertar: datos})
+       if (actualizacion){
+        return res.json({ok:true, msg: "informacion enviada exitosamente"})
+       }
+
+    }catch(ex){
+        return res.json({msg: `error interno del server. Error: ${ex}`, ok: false})
+    }
 }
 
 export default controller;

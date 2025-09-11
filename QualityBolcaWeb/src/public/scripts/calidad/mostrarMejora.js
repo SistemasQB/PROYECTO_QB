@@ -251,7 +251,7 @@ function modalJustificacion(padre, id , justificacion){
             case 'aceptarRetraso':
                 let fechaRetraso = document.getElementById("fechaRetraso")
                 
-                datos.fecha_respuesta_comite =  fechaRetraso.value;
+                datos.fecha_respuesta_comite = fechaRetraso.value;
                 datos.motivo = dato.value
                 datos.estatus = 3
                 break;

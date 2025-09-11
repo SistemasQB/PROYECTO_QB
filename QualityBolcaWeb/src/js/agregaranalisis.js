@@ -12,7 +12,7 @@ const token = document.querySelector('meta[name="csrf-token"]').content
 Dropzone.options.formAnalisis = {
     dictDefaultMessage: 'Sube tu Analisis aqui',
     acceptedFiles: '.pdf',
-    maxFilesize: 10,
+    maxFilesize: 50,
     maxFiles: 1,
     parallelUploads: 1,
     autoProcessQueue: false,

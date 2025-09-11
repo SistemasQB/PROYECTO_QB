@@ -54,7 +54,7 @@ import { emailRequisicion, registroCursos, emailMantenimientoA, emailSolicitud, 
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
-import path, { format } from 'path';
+import path from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url); // obtener la ruta resuelta al archivo 
 const __dirname = path.dirname(__filename); // obtener el nombre del directorio
@@ -63,7 +63,7 @@ import RegistroMa from "../models/registroma.js";
 
 // Libreria TEMPO
 
-import { addDay, addMonth, isBefore, isAfter } from "@formkit/tempo"
+import { addDay, addMonth, isBefore, isAfter, format } from "@formkit/tempo"
 
 // Comunicacion.belongsTo(Gch_alta, { foreignKey: 'id', targetKey: 'curp'  });
 // Gch_alta.hasOne(Comunicacion, { foreignKey: 'curp', targetKey: 'id'  })
@@ -479,9 +479,9 @@ controller.mejoracontinua2 = async (req, res) => {
 
     const {
         id,
-        fecha,
         nombre_mejora,
         generador_idea,
+        proceso_pertenece,
         nombre_equipo,
         numero_participantes,
         nombre_participantes,
@@ -507,9 +507,9 @@ controller.mejoracontinua2 = async (req, res) => {
         const Rmejora = await Mejora.create(
             {
                 id,
-                fecha,
                 nombre_mejora,
                 generador_idea,
+                proceso_pertenece,
                 nombre_equipo,
                 numero_participantes,
                 nombre_participantes,
@@ -641,8 +641,10 @@ controller.subiranalisis = async (req, res) => {
 
     const { mejoraid } = req.params
     const obtenerAnalisis = await Mejora.findByPk(mejoraid);
+    // console.log(obtenerAnalisis);
+    
 
-    if (obtenerAnalisis.estatus != 0 || !obtenerAnalisis) {
+    if (!obtenerAnalisis || obtenerAnalisis.estatus != 0) {
         res.redirect('../../admin/mejoracontinua')
     } else {
         res.render('admin/subiranalisis', {
@@ -663,13 +665,15 @@ controller.subiranalisis2 = async (req, res) => {
     try {
         obtenerAnalisis.titulo_analisis = req.file.filename
         obtenerAnalisis.estatus = 1
+        obtenerAnalisis.fecha = format(new Date(), 'YYYY-MM-DD')
         await obtenerAnalisis.save();
-
         // next()
-        await emailMejora({ id: 1, nombre_mejora: obtenerAnalisis.nombre_mejora, email: obtenerAnalisis.email, generador_idea: obtenerAnalisis.generador_idea, periodo: '', fecha_limite: '' });
+        // await emailMejora({ id: 0, nombre_mejora: obtenerAnalisis.nombre_mejora, email: obtenerAnalisis.email, generador_idea: obtenerAnalisis.generador_idea, periodo: '', fecha_limite: '' });
+        await emailMejora(obtenerAnalisis);
         res.status(200).send({ msg: 'Analisis enviado con exito', ok: true });
         return
     } catch (error) {
+        
         res.status(400).send({ msg: 'Error al enviar el analisis' + error, ok: false });
         return
     }
@@ -1092,19 +1096,13 @@ async function verificarMejora() {
 
     for (let c = 0; c < obtenerValores.length; c++) {
 
-        const repuestacomiteFecha = format(obtenerValores[c].fecha_respuesta_comite, 'YYYY-MM-DD')
         
-        const fecha15dias = addDay(
-            date = repuestacomiteFecha,
-            amount = 16,
-            dateOverflow = true
-        )
+        const repuestacomiteFecha = format(obtenerValores[c].fecha_respuesta_comite, 'YYYY-MM-DD')
+        let nuevaFecha = repuestacomiteFecha
+        
+        const fecha15dias = addDay( nuevaFecha, 16)
 
-        const fecha10dias = addDay(
-            date = repuestacomiteFecha,
-            amount = 19,
-            dateOverflow = true
-        )
+        const fecha10dias = addDay( nuevaFecha , 19)
 
 
 
@@ -1132,7 +1130,7 @@ async function verificarMejora() {
 
         let fechaMes5dias = addDay(addMonth(
             mesEvidencia, 1
-        ), -5)
+        ), -6)
         let fecha1Mes = addMonth(
             mesEvidencia, 1
         )
@@ -1145,12 +1143,12 @@ async function verificarMejora() {
                 await emailMejora({ id: 5, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '1er mes', fecha_limite: resultado.hasta });
                 break;
             case 2:
-                await emailMejora({ id: 1, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '1er mes', fecha_limite: resultado.hasta });
+                await emailMejora({ id: 2, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '1er mes', fecha_limite: resultado.hasta });
                 break;
             case 3:
                 obtenerValores[c].estatus = 5
                 await obtenerValores[c].save()
-                await emailMejora({ id: 2, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '1er mes', fecha_limite: resultado.hasta });
+                await emailMejora({ id: 3, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '1er mes', fecha_limite: resultado.hasta });
                 break;
         }
     }
@@ -1165,12 +1163,12 @@ async function verificarMejora() {
                 await emailMejora({ id: 5, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '2do mes', fecha_limite: resultado.hasta });
                 break;
             case 2:
-                await emailMejora({ id: 1, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '2do mes', fecha_limite: resultado.hasta });
+                await emailMejora({ id: 2, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '2do mes', fecha_limite: resultado.hasta });
                 break;
             case 3:
                 obtenerValores[c].estatus = 5
                 await obtenerValores[c].save()
-                await emailMejora({ id: 2, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '2do mes', fecha_limite: resultado.hasta });
+                await emailMejora({ id: 3, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '2do mes', fecha_limite: resultado.hasta });
                 break;
         }
     }
@@ -1193,12 +1191,12 @@ async function verificarMejora() {
                 await emailMejora({ id: 5, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '3er mes', fecha_limite: resultado.hasta });
                 break;
             case 2:
-                await emailMejora({ id: 1, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '3er mes', fecha_limite: resultado.hasta });
+                await emailMejora({ id: 2, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '3er mes', fecha_limite: resultado.hasta });
                 break;
             case 3:
                 obtenerValores[c].estatus = 5
                 await obtenerValores[c].save()
-                await emailMejora({ id: 2, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '3er mes', fecha_limite: resultado.hasta });
+                await emailMejora({ id: 3, nombre_mejora: obtenerValores[c].nombre_mejora, generador_idea: obtenerValores[c].generador_idea, email: obtenerValores[c].email, periodo: '3er mes', fecha_limite: resultado.hasta });
                 break;
         }
 
@@ -1209,7 +1207,7 @@ function estaEnRango(fechaInicio, fechaFin, fechaActual) {
 
     if (isAfter(fechaActual, fechaInicio) && isBefore(fechaActual, fechaFin)) {
         return 1;
-    } else if (isAfter(fechaActual, fechaFin) && isBefore(fechaActual, addDays(fechaFin, 5))) {
+    } else if (isAfter(fechaActual, fechaFin) && isBefore(fechaActual, addDays(fechaFin, 6))) {
         return 2;
     } else if (isAfter(fechaActual, addDays(fechaFin, 5))) {
         return 3;

@@ -1,6 +1,7 @@
 import { DataTypes, Sequelize } from "sequelize";
 const sequelize = new Sequelize('sqlite::memory:');
 import db from "../config/db.js";
+import { type } from "os";
 
 const Mejora = db.define('mejora', {
     id: {
@@ -10,7 +11,7 @@ const Mejora = db.define('mejora', {
     },
     fecha: {
         type: DataTypes.DATEONLY,
-        allowNull: false,
+        allowNull: true,
     },
     nombre_mejora: {
         type: DataTypes.STRING(255),
@@ -18,6 +19,10 @@ const Mejora = db.define('mejora', {
     },
     generador_idea: {
         type: DataTypes.STRING(255),
+        allowNull: false,
+    },
+    proceso_pertenece: {
+        type: DataTypes.STRING(100),
         allowNull: false,
     },
     nombre_equipo: {
@@ -98,6 +103,10 @@ const Mejora = db.define('mejora', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    validaranalisis:{
+        type: DataTypes.TINYINT,
+        allowNull: false
+    },
     evidencia1: {
         type: DataTypes.STRING(50),
         allowNull: true,
@@ -105,6 +114,10 @@ const Mejora = db.define('mejora', {
     fechaevidencia1: {
         type: DataTypes.DATEONLY,
         allowNull: true,
+    },
+    validarevidencia1:{
+        type: DataTypes.TINYINT,
+        allowNull: true
     },
     evidencia2: {
         type: DataTypes.STRING(50),
@@ -114,6 +127,10 @@ const Mejora = db.define('mejora', {
         type: DataTypes.DATEONLY,
         allowNull: true,
     },
+        validarevidencia2:{
+        type: DataTypes.TINYINT,
+        allowNull: true
+    },
     evidencia3: {
         type: DataTypes.STRING(50),
         allowNull: true,
@@ -122,6 +139,10 @@ const Mejora = db.define('mejora', {
         type: DataTypes.DATEONLY,
         allowNull: true,
     },
+    validarevidencia3:{
+        type: DataTypes.TINYINT,
+        allowNull: true
+    },
     evidencia4: {
         type: DataTypes.STRING(50),
         allowNull: true,
@@ -129,6 +150,10 @@ const Mejora = db.define('mejora', {
     fechaevidencia4: {
         type: DataTypes.DATEONLY,
         allowNull: true,
+    },
+    validarevidencia4:{
+        type: DataTypes.TINYINT,
+        allowNull: true
     }
 }, {
     timestamps: false,

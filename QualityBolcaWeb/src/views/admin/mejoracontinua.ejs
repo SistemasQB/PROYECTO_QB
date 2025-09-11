@@ -575,53 +575,51 @@
 
 
     /* CSS: Estilo del navbar */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
-  background-color: #f7f7f7;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 24px;
+        background-color: #f7f7f7;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-.navbar-logo img {
-  height: 50px;
-  object-fit: contain;
-}
+    .navbar-logo img {
+        height: 50px;
+        object-fit: contain;
+    }
 
-.navbar-links {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
+    .navbar-links {
+        list-style: none;
+        display: flex;
+        gap: 20px;
+    }
 
-.navbar-links li a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
+    .navbar-links li a {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
 
-.navbar-links li a:hover {
-  color: #007BFF;
-}
-
-
+    .navbar-links li a:hover {
+        color: #007BFF;
+    }
 </style>
 
 <body>
-        <div>
-      <!-- HTML: Navbar básico -->
-<nav class="navbar">
-  <div class="navbar-logo">
-    <img src="../img/Quality-BOLCA.png" alt="Logo Empresa">
-  </div>
-  <ul class="navbar-links">
-    <li><a href="#" style="background-color: rgb(29, 211, 211);">Mis mejoras</a></li>
-    <li><a href="mejoracontinuaall">Todas Las mejoras</a></li>
-    <li><a href="blogayuda">Foro de ayuda</a></li>
-  </ul>
-</nav>
+    <div>
+        <!-- HTML: Navbar básico -->
+        <nav class="navbar">
+            <div class="navbar-logo">
+                <img src="../img/Quality-BOLCA.png" alt="Logo Empresa">
+            </div>
+            <ul class="navbar-links">
+                <li><a href="#" style="background-color: rgb(29, 211, 211);">Mis mejoras</a></li>
+                <li><a href="mejoracontinuaall">Todas Las mejoras</a></li>
+                <li><a href="blogayuda">Foro de ayuda</a></li>
+            </ul>
+        </nav>
 
     </div>
     <!-- Header -->
@@ -653,25 +651,32 @@
                 <h2>Mejoras Registradas</h2>
                 <p id="totalMejoras">Total de mejoras: <span id="totalMejorasCount"></span></p>
                 <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
-                    <div class="coloresExpllicacion" style='background-color: #e8f9ff; border: 2px solid rgb(173, 216, 230);'>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #e8f9ff; border: 2px solid rgb(173, 216, 230);'>
                     </div>
                     <div>Sin analisis</div>
-                    <div class="coloresExpllicacion" style='background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'>
                     </div>
                     <div>En espera</div>
-                    <div class="coloresExpllicacion" style='background-color: #ffead3; border: 2px solid rgb(255, 135, 0);'>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #ffead3; border: 2px solid rgb(255, 135, 0);'>
                     </div>
                     <div>Espera de modificación</div>
-                    <div class="coloresExpllicacion" style='background-color: #dfffe1; border: 2px solid rgb(76, 175, 80);'>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #dfffe1; border: 2px solid rgb(76, 175, 80);'>
                     </div>
                     <div>Aprobada</div>
-                    <div class="coloresExpllicacion" style='background-color: #d9f8f5; border: 4px solid rgb(64, 224, 208);'>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #d9f8f5; border: 4px solid rgb(64, 224, 208);'>
                     </div>
                     <div>Implementada</div>
-                    <div class="coloresExpllicacion" style='background-color: #ffe6e4; border: 2px solid rgb(244, 67, 54);'>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #ffe6e4; border: 2px solid rgb(244, 67, 54);'>
                     </div>
                     <div>Rechazada</div>
-                    <div class="coloresExpllicacion" style='background-color: #ececec; border: 2px solid rgb(105, 105, 105);'>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #ececec; border: 2px solid rgb(105, 105, 105);'>
                     </div>
                     <div>Declinada por falta de seguimiento</div>
                 </div>
@@ -716,45 +721,7 @@
 
             <form id="mejoraForm" class="modal-form">
                 <input type="hidden" name="_csrf" value="<%=csrfToken%>">
-                <div style="background-color: #eee6e691;">
-
-
-                    <input type="hidden" value="" id="indexmejora">
-                    
-                    <div style="display: flex; justify-content: center">
-                        <h2>Rubro</h2>
-                    </div>
-                    <br>
-                    <div style="display: flex; justify-content: space-around;">
-                        <button class="btn btnRubro" onclick="rubroSeleccionado(0)" type="button" style="
-                            background-color: #fed7aa;
-                            color: #ea580c;
-                            border-color: #fdba74;">
-                            Ahorro
-                        </button>
-                        <button class="btn btnRubro" onclick="rubroSeleccionado(1)" type="button" style="
-                    background-color: #e9d5ff;
-        color: #7c3aed;
-        border-color: #c4b5fd;">
-                            Sistema
-                        </button>
-                        <button class="btn btnRubro" onclick="rubroSeleccionado(2)" type="button" style="
-                    background-color: #dbeafe;
-        color: #1e40af;
-        border-color: #93c5fd;
-                    " ;>
-                            Indirecta
-                        </button>
-                        <button class="btn btnRubro" onclick="rubroSeleccionado(3)" type="button" style="
-                    background-color: #dcfce7;
-        color: #166534;
-        border-color: #bbf7d0;
-                    ">
-                            Ambiental
-                        </button>
-                    </div>
-                    <br>
-                </div>
+                
                 <!-- Información Personal -->
                 <div class="form-row">
                     <div class="form-group">
@@ -778,7 +745,7 @@
                     </div>
                     <div class="form-group">
                         <label for="proceso">Proceso al que Perteneces *</label>
-                        <select id="proceso" name="proceso" required>
+                        <select id="proceso" name="proceso_pertenece" required>
                             <option value="Comercialización y ventas">1. Comercialización y ventas</option>
                             <option value="Planeación del servicio">2. Planeación del servicio.</option>
                             <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
@@ -818,7 +785,8 @@
                             <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
                             <option value="Control y mejora del servicio">4. Control y mejora del servicio.</option>
                             <option value="Gestión de infraestructura">5. Gestión de infraestructura.</option>
-                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.</option>
+                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.
+                            </option>
                             <option value="Gestión de capital humano">7. Gestión de capital humano.</option>
                             <option value="Sistema de gestión de calidad">8. Sistema de gestión de calidad.</option>
                             <option value="Administración y finanzas">9. Administración y finanzas.</option>
@@ -831,8 +799,48 @@
                     </div>
                 </div>
 
+                <div style="background-color: #eee6e691;">
+
+
+                    <input type="hidden" value="" id="indexmejora">
+
+                    <div style="display: flex; justify-content: center">
+                        <h2>Rubro</h2>
+                    </div>
+                    <br>
+                    <div style="display: flex; justify-content: space-around;">
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(0)" type="button" style="
+                            background-color: #fed7aa;
+                            color: #ea580c;
+                            border-color: #fdba74;">
+                            Ahorro
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(1)" type="button" style="
+                    background-color: #e9d5ff;
+        color: #7c3aed;
+        border-color: #c4b5fd;">
+                            Sistema
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(2)" type="button" style="
+                    background-color: #dbeafe;
+        color: #1e40af;
+        border-color: #93c5fd;
+                    " ;>
+                            Indirecta
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(3)" type="button" style="
+                    background-color: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
+                    ">
+                            Ambiental
+                        </button>
+                    </div>
+                    <br>
+                </div>
+
                 <!-- Tipo de Mejora -->
-                <div class="form-group">
+                <div class="form-group" style="margin-top: 5%;">
                     <label class="form-label">Tipo de Mejora y Beneficios *</label>
                     <div class="checkbox-grid">
                         <div class="checkbox-item">
@@ -898,11 +906,13 @@
                     <label class="form-label">¿Requiere Inversión? *</label>
                     <div class="radio-group">
                         <div class="radio-item">
-                            <input type="radio" class="inversionSN" id="inversion-si" name="inversion" value="1" required>
+                            <input type="radio" class="inversionSN" id="inversion-si" name="inversion" value="1"
+                                required>
                             <label for="inversion-si">Sí</label>
                         </div>
                         <div class="radio-item">
-                            <input type="radio" class="inversionSN" id="inversion-no" name="inversion" value="0" required>
+                            <input type="radio" class="inversionSN" id="inversion-no" name="inversion" value="0"
+                                required>
                             <label for="inversion-no">No</label>
                         </div>
                     </div>
@@ -951,15 +961,15 @@
 
 <script>
 
-/*
-    0 -- ingresada sin análisis
-1 -- ingresada con análisis
-2 -- modificar
-3 -- Aceptada
-4 -- Rechazada
-5 -- Declinada por falta de seguimiento
-6 -- Implementada
-    */
+    /*
+        0 -- ingresada sin análisis
+    1 -- ingresada con análisis
+    2 -- modificar
+    3 -- Aceptada
+    4 -- Rechazada
+    5 -- Declinada por falta de seguimiento
+    6 -- Implementada
+        */
 
     const btnRubro = document.querySelectorAll('.btnRubro');
     const nombreEquipo = document.getElementById('nombreEquipo');
@@ -974,7 +984,7 @@
         btnRubro[3].classList.remove('btnselected');
         btnRubro[num1].classList.add('btnselected');
         rubro = btnRubro[num1].innerText
-        
+
     }
 
 
@@ -1035,35 +1045,45 @@
 
         e.preventDefault();
 
-Swal.fire({
-  title: "Ingresa tu correo para recibir el estado de tu mejora",
-  input: "email",
-  inputAttributes: {
-    autocapitalize: "off"
-  },
-  showCancelButton: true,
-  confirmButtonText: "Aceptar",
-  showLoaderOnConfirm: true,
-  allowOutsideClick: () => !Swal.isLoading(),
-  inputValidator: (value) => {
-    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regexCorreo.test(value)) {
-      return "Por favor, ingresa un correo válido";
-    }
-  }
-}).then((result) => {
-  if (result.isConfirmed) {
-    const correo = result.value; // Aquí capturas el correo
-    enviarMejora(correo);
-  }
-});
+        Swal.fire({
+            title: "Ingresa tu correo para recibir el estado de tu mejora",
+            input: "email",
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Aceptar",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !Swal.isLoading(),
+            inputValidator: (value) => {
+                const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!regexCorreo.test(value)) {
+                    return "Por favor, ingresa un correo válido";
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const correo = result.value; // Aquí capturas el correo
+                enviarMejora(correo);
+            }
+        });
 
     })
 
+    const inversionSi = document.getElementById('inversion-si');
 
+    inversionSi.addEventListener('change', () => {
+        if (inversionSi.checked) {
+            Swal.fire({
+                title: "Recuerda",
+                text: "Si tu mejora requiere inversión, debes consultarlo con el departamento correspondiente",
+                icon: "info"
+            });
+        }
+    })
 
     function enviarMejora(correo) {
-                
+
         // var contarEquipo = contarEquipo();
         // var concatenarbeneficios = concatenarbeneficios();
         const formData = new FormData(mejoraForm);
@@ -1075,14 +1095,14 @@ Swal.fire({
         formData.append('beneficios', concatenarbeneficios());
         formData.append('mejora_grupal', mejoragrupal);
         formData.append('titulo_analisis', 'nombre.pdf');
-        
+
 
 
 
         if (document.getElementById('indexmejora').value == '') {
             const urlEncoded = new URLSearchParams(formData).toString();
             alertaFetch(urlEncoded, 'mejoracontinua', 'subiranalisis');
-        }else{
+        } else {
             formData.append('id', document.getElementById('indexmejora').value);
             const urlEncoded = new URLSearchParams(formData).toString();
             alertaFetch(urlEncoded, 'mejoracontinua2', 'subiranalisis');
@@ -1134,7 +1154,7 @@ Swal.fire({
     // Funciones
     function openModal() {
         <% nombrelargo = obtenerDatos.nombre + ' ' + obtenerDatos.apellidopaterno + ' ' + obtenerDatos.apellidomaterno %>
-        document.getElementById('nombre').value = '<%=nombrelargo%>';
+            document.getElementById('nombre').value = '<%=nombrelargo%>';
         document.getElementById('puesto').value = '<%= obtenerDatos.descripcion%>';
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
@@ -1145,39 +1165,39 @@ Swal.fire({
         rubro = valores.rubro
 
         document.getElementById('indexmejora').value = valores.id;
-        
+
         btnRubro[0].classList.remove('btnselected');
         btnRubro[1].classList.remove('btnselected');
         btnRubro[2].classList.remove('btnselected');
         btnRubro[3].classList.remove('btnselected');
         switch (valores.rubro) {
             case 'Ahorro':
-        btnRubro[0].classList.add('btnselected');
-        break;
+                btnRubro[0].classList.add('btnselected');
+                break;
             case 'Sistema':
-        btnRubro[1].classList.add('btnselected');
-        break;
+                btnRubro[1].classList.add('btnselected');
+                break;
             case 'Indirecta':
-        btnRubro[2].classList.add('btnselected');
-        break;
+                btnRubro[2].classList.add('btnselected');
+                break;
             case 'Ambiental':
-        btnRubro[3].classList.add('btnselected');
-        break;
-    }
+                btnRubro[3].classList.add('btnselected');
+                break;
+        }
 
-    
 
-    let beneficios = valores.beneficios.split(',');
 
-    let checkboxes = document.getElementsByClassName('checkboxbeneficios');
+        let beneficios = valores.beneficios.split(',');
+
+        let checkboxes = document.getElementsByClassName('checkboxbeneficios');
 
         let valoresConcatenados = ""
 
         for (c = 0; c < checkboxes.length; c++) {
-            for (let c1 = 0; c1 < beneficios.length -1; c1++) {
+            for (let c1 = 0; c1 < beneficios.length - 1; c1++) {
                 if (checkboxes[c].value == beneficios[c1]) {
-                checkboxes[c].checked = true;
-            }
+                    checkboxes[c].checked = true;
+                }
             }
         }
 
@@ -1193,7 +1213,7 @@ Swal.fire({
         //este linea de abajo toma los valores que recibe del servidor y los concatena para obtener el nombre completo
         <% nombrelargo = obtenerDatos.nombre + ' ' + obtenerDatos.apellidopaterno + ' ' + obtenerDatos.apellidomaterno %>
 
-        document.getElementById('nombre_mejora').value = valores.nombre_mejora;
+            document.getElementById('nombre_mejora').value = valores.nombre_mejora;
         document.getElementById('nombre').value = '<%=nombrelargo%>';
         document.getElementById('puesto').value = '<%= obtenerDatos.descripcion%>';
         document.getElementById('nombreEquipo').value = valores.nombre_equipo;
@@ -1206,8 +1226,8 @@ Swal.fire({
         document.getElementById('situacion_actual').value = valores.situacion_actual;
         document.getElementById('situacion_mejora').value = valores.situacion_mejora;
 
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
@@ -1251,7 +1271,7 @@ Swal.fire({
                 colorcarta = 'background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'
                 break;
             case 2:
-                
+
                 btnActivo = 'none';
                 colorcarta = 'background-color: #ffead3; border: 2px solid rgb(255, 135, 0);'
                 btnModificar = 'block'
@@ -1279,7 +1299,7 @@ Swal.fire({
         if (mejora.estatus == 3 && mejora.fecha_respuesta_comite) {
             const resultado = validarFechas(mejora.fecha_respuesta_comite);
 
-            if (resultado.dentroDe15a20 && !mejora.evidencia1 || resultado.paso1Mes && !mejora.evidencia2 || resultado.paso2Meses && !mejora.evidencia3 || resultado.paso3Meses && !mejora.evidencia4   ) {
+            if (resultado.dentroDe15a20 && !mejora.evidencia1 || resultado.paso1Mes && !mejora.evidencia2 || resultado.paso2Meses && !mejora.evidencia3 || resultado.paso3Meses && !mejora.evidencia4) {
                 btnEvidenciaS = 'block';
             }
         }
@@ -1329,7 +1349,7 @@ Swal.fire({
             `<span class="badge ${getBadgeClass(tipo)}">${tipo}</span>`
         ).join('');
 
-        
+
         return `
         <div class="mejora-card" style="${colorcarta}">
             <div class="card-header">

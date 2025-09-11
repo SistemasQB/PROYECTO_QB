@@ -284,15 +284,14 @@ function juntarInformacion(){
   const formData = new FormData();
   uploadedFiles.forEach((archivo) => {
     formData.append("evidencia", archivo);   
-  })
-  
+  })  
   formData.append("avance", avanceInput.value);
   formData.append("comentarios", comentarios.value);
   formData.append('estatus' , estatus.value)
   formData.append("_csrf", tok);
-
   return formData;
 }
+
 // Hacer la función openModal global para que funcione desde el HTML
 window.openModal = openModal
 window.removeFile = removeFile

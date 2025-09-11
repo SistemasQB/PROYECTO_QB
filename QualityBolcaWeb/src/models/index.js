@@ -41,8 +41,11 @@ import { default as CotizacionesCC1 } from './sorteo/cc1/cotizacionesCC1.js';
 import { default as Controlpiezas } from './sorteo/cc1/controlpiezas.js';
 import { default as Controlpiezas2 } from './sorteo/cc1/controlpiezas2.js';
 import { default as LoteCC1 } from './sorteo/cc1/lote.js';
-import { default as bitacoraActividades } from './bitacoraActividades.js';
+// import { default as bitacoraActividades } from './bitacoraActividades.js';
 import { default as Semanal } from './nominas/semanal.js';
+import { default as modeloDirectorioCalidad } from './calidad/directorioPersonal.js';
+import { default as bitacoraActividades } from './calidad/bitacoraActividades.js';
+import modelosSorteo from '../models/sorteo/barrilModelosSorteo.js'
 
 
 // Configuración de Sequelize
@@ -130,5 +133,7 @@ export {
   CotizacionesCC1,
   Controlpiezas,
   LoteCC1,
-  Controlpiezas2
+  Controlpiezas2,
+  modelosSorteo,
+  modeloDirectorioCalidad
 };

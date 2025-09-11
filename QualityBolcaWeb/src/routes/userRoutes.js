@@ -44,7 +44,8 @@ router.post('/uploader', customerController.uploads);
 router.post('/enviarCorreo', customerController.enviarCorreo);
 router.get('/juegos', customerController.juegos);
 router.post('/juegos', customerController.juegos2);
-router.get('/documentosControlados', customerController.documentosControlados);
+// router.get('/documentosControlados', customerController.documentosControlados);
+router.post('/contacto', customerController.contacto);
 // router.get('/calidad/:documento', customerController.calidadD)
 
 // router.get('/api/:variable', customerController.api);

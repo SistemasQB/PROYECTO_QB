@@ -302,7 +302,7 @@ btnAgregar.addEventListener("click", ()=>{
 
     for(let i = 0;i<usuarios.length;i++ ){
       
-      responsables += `<option value="${usuarios[i]["codigoempleado"]}-${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}">${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}</option>`
+      responsables += `<option value="${usuarios[i]["id"]}-${usuarios[i]["nombreCompleto"]}">${usuarios[i]["nombreCompleto"]} </option>`
     }
     let modalNuevo = `
     
@@ -439,7 +439,6 @@ btnAgregar.addEventListener("click", ()=>{
     const fechaCompromiso = document.getElementById("fechaCompromiso");
     const evaluacion = document.getElementById("evaluacion");
     const descripcion = document.getElementById("descripcionActividad");
-
     const codigoEmpleado = responsable.value.split("-")
 
     
@@ -457,7 +456,8 @@ btnAgregar.addEventListener("click", ()=>{
       descripcion: descripcion.value,
       numeroEmpleado: codigoEmpleado[0]
     }
-    await alertaFetchCalidad("/calidad/procesoActividades",{tipo:"insert", datos: datos, _csrf: tok},"/calidad/bitacoraActividades")
+    console.log(datos);
+    await alertaFetchCalidad("procesoActividades",{tipo:"insert", datos: datos, _csrf: tok},"bitacoraActividades")
     
   });
 
@@ -555,11 +555,8 @@ async function modalEdicion(btn){
       const actividad = actividades.find((actividad)=>actividad.id == id)
       padre.classList.add('modal', 'modal-fade', 'show'); 
       let responsables = ``
-
-
-    for(let i = 0;i<usuarios.length;i++ ){
-      
-      responsables += `<option  value="${usuarios[i]["codigoempleado"]}-${usuarios[i]["codigoempleado"]}-${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}">${usuarios[i]["apellidopaterno"]} ${usuarios[i]["apellidomaterno"]} ${usuarios[i]["nombre"]}</option>`
+    for(let i = 0;i<usuarios.length;i++ ){ 
+      responsables += `<option value="${usuarios[i]["id"]}-${usuarios[i]["nombreCompleto"]}">${usuarios[i]["nombreCompleto"]}</option>`
     }
       let contenido = `
         <div class="modal-dialog modal-lg">
@@ -663,8 +660,8 @@ async function modalEdicion(btn){
     bodyDoc.appendChild(padre)
     
     // selectores 
-    let resp = document.getElementById("responsable")
-    resp.value = actividad.responsable
+    let resp = document.getElementById("responsable");
+    resp.value = `${actividad.numeroEmpleado}-${actividad.responsable}`
     const area = document.getElementById("area");
     area.value = actividad.area
     const prioridad = document.getElementById("prioridad");
@@ -740,20 +737,16 @@ function filtrarTabla(termino) {
   const filas = document.querySelectorAll("#dataTable tbody tr")
   const tbody = document.querySelector("#dataTable tbody tr")
   let filasVisibles = 0
-
   // Limpiar resaltados previos
-  limpiarResaltados()
-
+  // limpiarResaltados()
   // Si no hay término de búsqueda, mostrar todas las filas
-  
   if (!termino.trim()) {
     filas.forEach((fila) => {
       fila.classList.remove("fila-oculta")
       fila.classList.add("fila-visible")
     })
-    
-    actualizarContadorResultados(filas.length, filas.length)
-    eliminarFilaSinResultados()
+    actualizarContadorResultados(filas.length, filas.length);
+    eliminarFilaSinResultados();
     return
   }
   
@@ -785,7 +778,9 @@ function filtrarTabla(termino) {
     }
     
 }
+  
   )
+  actualizarContadorResultados(filasVisibles, filas.length)
 }
 
 function limpiarResaltados() {
@@ -833,6 +828,13 @@ function actualizarContadorResultados(visibles, total) {
     filaSinResultados.remove()
   }
 }
+}
+
+function limpiarBusqueda() {
+  const inputBusqueda = document.getElementById("busquedaTabla")
+  inputBusqueda.value = ""
+  filtrarTabla("")
+  inputBusqueda.focus()
 }
 
 function modalVisualizar({id}) {
@@ -1017,7 +1019,7 @@ function modalVisualizar({id}) {
     });
 
     const btnEnvio = document.getElementById("btnEnvio");
-  btnEnvio.addEventListener("click", async ()=>{
+    btnEnvio.addEventListener("click", async ()=>{
     const campo = document.getElementById('descripcionRechazo')
     const evaluacion = document.getElementById("evaluacion");
     const descripcion = document.getElementById("descripcionActividad");
@@ -1029,9 +1031,6 @@ function modalVisualizar({id}) {
         miData.comentariosCalificador= campo.value;
         break;
     }
-    await alertaFetchCalidad('/calidad/procesoActividades',{id:id, datos:miData, tipo:'update', _csrf:tok}, '/calidad/bitacoraActividades')
-
-    
-    
+    await alertaFetchCalidad('/calidad/procesoActividades',{id:id, datos:miData, tipo:'update', _csrf:tok}, '/calidad/bitacoraActividades')   
   })
 }

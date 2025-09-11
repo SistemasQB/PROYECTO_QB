@@ -1027,11 +1027,15 @@
         <div class="mejora-card" style="${colorcarta}">
             <div class="card-header">
                 <h3 class="card-title">${mejora.nombre_mejora}</h3>
+                <div>
+                    <p style="font-weight: bold; background-color: #3D3939; color: #fff;">${mejora.rubro}</p>
+                </div>
                 <div class="card-meta">
                     <div>
                         <i class="fas fa-calendar"></i>
                         ${fechaFormateada.toLocaleDateString('es-ES')}
                     </div>
+                    
                     ${mejora.requiereInversion ? '<span class="badge badge-investment">Requiere Inversión</span>' : ''}
                 </div>
             </div>

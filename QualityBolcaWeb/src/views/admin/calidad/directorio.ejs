@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directorio de Personal - Empresa</title>
+    <link rel="stylesheet" href="/styles/calidad/estilos_directorio.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <a class="add-btn" href="bitacoraActividades">bitacora de actividades</a>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Directorio de Personal</h1>
+            <p class="subtitle">Gestiona y consulta la información de todos los empleados de la empresa</p>
+        </header>
+
+        <div class="controls">
+            <div class="search-section">
+                <input type="text" id="searchInput" placeholder="Buscar empleados..." class="search-input">
+                <div class="filters">
+                    <select id="areaFilter" class="filter-select">
+                        <option value="">Todas las áreas</option>
+                        <!-- <option value="Tecnología">Tecnología</option>
+                        <option value="Recursos Humanos">Recursos Humanos</option>
+                        <option value="Ventas">Ventas</option>
+                        <option value="Finanzas">Finanzas</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Operaciones">Operaciones</option> -->
+                        <option value="CALIDAD">CALIDAD</option>
+                            <option value="SORTEO">SORTEO</option>
+                            <option value="VENTAS">VENTAS</option>
+                            <option value="FINANZAS">FINANZAS</option>
+                            <option value="ADMINISTRACION">ADMINISTRACION</option>
+                    </select>
+                    <select id="departamentoFilter" class="filter-select">
+                        <option value="">Todos los departamentos</option>
+                        <option value="Desarrollo">Desarrollo</option>
+                        <option value="Talento">Talento</option>
+                        <option value="Comercial">Comercial</option>
+                        <option value="Contabilidad">Contabilidad</option>
+                        <option value="Digital">Digital</option>
+                        <option value="Logística">Logística</option>
+                    </select>
+                </div>
+            </div>
+            <button id="addEmployeeBtn" class="add-btn">
+                <span class="add-icon">+</span>
+                Agregar Empleado
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="employee-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Celular</th>
+                        <th>Email</th>
+                        <th>Área</th>
+                        <th>Departamento</th>
+                        <th>Puesto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                     
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+     <!-- Modal para agregar/editar empleado  -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Agregar Nuevo Empleado</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <form id="employeeForm" class="modal-form">
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo *</label>
+                    <input type="text" id="nombre" placeholder="Ej: Ana García López" required maxlength="250">
+                    <span class="error-message" id="nombreError"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="celular">Número Celular *</label>
+                        <input type="text" id="celular" placeholder="Ej: +52 55 1234 5678" required maxlength="10">
+                        <span class="error-message" id="celularError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" placeholder="Ej: ana@empresa.com" required maxlength="250">
+                        <span class="error-message" id="emailError"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="area">Área *</label>
+                        <select id="area" required>
+                            <option value="CALIDAD">CALIDAD</option>
+                            <option value="SORTEO">SORTEO</option>
+                            <option value="VENTAS">VENTAS</option>
+                            <option value="FINANZAS">FINANZAS</option>
+                            <option value="ADMINISTRACION">ADMINISTRACION</option>
+                        </select>
+                        <span class="error-message" id="areaError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="departamento">Departamento *</label>
+                        <select id="departamento" required>
+                            <option value="CALIDAD QB">CALIDAD QB</option>
+                            <option value="CALIDAD CC1">CALIDAD CC1</option>
+                            <option value="MEJORA CONTINUA">MEJORA CONTINUA</option>
+                            <option value="SWAT">SWAT</option>
+                            <option value="TI">TI</option>
+                            <option value="OPERACIONES">OPERACIONES</option>
+                        </select>
+                        <span class="error-message" id="departamentoError"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="puesto">Puesto *</label>
+                    <input type="text" id="puesto" placeholder="Ej: Desarrolladora Senior" required maxlength="250">
+                    <span class="error-message" id="puestoError"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelBtn">Cancelar</button>
+                    <button type="button" class="submit-btn" id="submitBtn" onclick="decision()">Agregar Empleado</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+     <!-- Modal de confirmación para eliminar  -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content delete-modal">
+            <div class="modal-header">
+                <h2>Confirmar Eliminación</h2>
+                <button class="close-btn" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar a <strong id="deleteEmployeeName"></strong>?</p>
+                <p class="warning-text">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" id="cancelDeleteBtn">Cancelar</button>
+                <button type="button" class="delete-btn" id="confirmDeleteBtn">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/calidad/script_directorio.js"></script>
+    <script src="/scripts/calidad/funcion_fetch_Calidad.js"></script>
+
+    <script>
+        let contactos = <%-JSON.stringify(contactos)%>
+        let tok = <%-JSON.stringify(tok)%>
+    </script>
+</body>
+</html>

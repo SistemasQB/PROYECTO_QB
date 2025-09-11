@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de entrega de material</title>
+    <link rel="stylesheet" href="/styles/sorteo/estilos-form-entrega.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="form-container">
+        <!-- Loading overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <p>Cargando formulario...</p>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-industry"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h2>QUALITY BOLCA</h2>
+                        <span>Industrial Solutions</span>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="document-info">
+                <div class="info-card">
+                    <div class="info-item">
+                        <i class="fas fa-code"></i>
+                        <span>QB-FLO-08</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Rev: 01</span>
+                    </div>
+
+                    <div class="info-item">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>21-07-2011</span>
+                    </div>
+                    <div class="info-it<em">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>20-07-2023</span>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+
+        <!-- Title -->
+        <div class="title-section">
+            <div class="title-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <h1 class="form-title">Control de entrega de material</h1>
+            <div class="title-decoration"></div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">0% completado</span>
+        </div>
+
+        <!-- Form -->
+        <form id="materialForm" class="material-form">
+            <!-- Section 1: Basic Information -->
+            <div class="form-section" data-section="1">
+                <div class="section-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Información Básica</h3>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="input-group">
+                        <input type="text" id="folio" name="folio" maxlength="200" required>
+                        <label for="folio">FOLIO</label>
+                        <div class="input-highlight"></div>
+                        <button type="button" class="generate-btn" onclick=generateFolio()>
+                            <i class="fas fa-magic"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="input-group" >
+                        <input type="date" id="fecha" name="fecha" required>
+                        <label for="fecha">FECHA</label>
+                        <div class="input-highlight"></div>
+                    </div>
+                </div>
+
+                <div class="input-group full-width">
+                    <input type="text" id="planta" name="planta" maxlength="250" required>
+                    <label for="planta">PLANTA</label>
+                    <div class="input-highlight"></div>
+                </div>
+            </div>
+
+            <!-- Section 2: Part Information -->
+            <div class="form-section" data-section="2">
+                <div class="section-header">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Información de la Parte</h3>
+                </div>
+
+                <div class="input-group full-width">
+                    <input type="text" id="nombreParte" name="nombreParte" maxlength="250" required>
+                    <label for="nombreParte">NOMBRE DE LA PARTE</label>
+                    <div class="input-highlight"></div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <input type="text" id="numeroParte" name="numeroParte" maxlength="250" required>
+                        <label for="numeroParte">NÚMERO DE LA PARTE</label>
+                        <div class="input-highlight"></div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="number" id="cantidad" name="cantidad" min="1" required>
+                        <label for="cantidad">CANTIDAD</label>
+                        <div class="input-highlight"></div>
+                    </div>
+                </div>
+
+                <div class="input-group full-width">
+                    <input type="text" id="controlCliente" maxlength="250" name="controlCliente">
+                    <label for="controlCliente">CONTROL DEL CLIENTE</label>
+                    <div class="input-highlight"></div>
+                </div>
+            </div>
+
+            <!-- Section 3: Signatures -->
+            <div class="form-section" data-section="3">
+                <div class="section-header">
+                    <i class="fas fa-signature"></i>
+                    <h3>Firmas y Responsables</h3>
+                </div>
+
+                <div class="signature-container">
+                    <div class="signature-card">
+                        <div class="signature-header">
+                            <i class="fas fa-user-check"></i>
+                            <h4>ENTREGÓ</h4>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="entregoNombre" name="entregoNombre" maxlength="250" required>
+                            <label for="entregoNombre">NOMBRE COMPLETO</label>
+                            <div class="input-highlight"></div>
+                        </div>
+                        <div class="signature-pad">
+                            <canvas id="entregaCanvas" width="300" height="120"></canvas>
+                            <div class="signature-controls">
+                                <button type="button" class="clear-signature" onclick="clearSignature('entregaCanvas')">
+                                    <i class="fas fa-eraser"></i> Limpiar
+                                </button>
+                            </div>
+                            <label class="signature-label">FIRMA</label>
+                        </div>
+                    </div>
+
+                    <div class="signature-card">
+                        <div class="signature-header">
+                            <i class="fas fa-user-plus"></i>
+                            <h4>RECIBIÓ</h4>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="recibioNombre" name="recibioNombre" maxlength="250" required>
+                            <label for="recibioNombre">NOMBRE COMPLETO</label>
+                            <div class="input-highlight"></div>
+                        </div>
+                        <div class="signature-pad">
+                            <canvas id="reciboCanvas" width="300" height="120"></canvas>
+                            <div class="signature-controls">
+                                <button type="button" class="clear-signature" onclick="clearSignature('reciboCanvas')">
+                                    <i class="fas fa-eraser"></i> Limpiar
+                                </button>
+                            </div>
+                            <label class="signature-label">FIRMA</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Observations -->
+            <div class="form-section" data-section="4">
+                <div class="section-header">
+                    <i class="fas fa-comment-alt"></i>
+                    <h3>Observaciones</h3>
+                </div>
+
+                <div class="input-group full-width">
+                    <textarea id="observaciones" name="observaciones" rows="4" maxlength="1500"></textarea>
+                    <label for="observaciones">OBSERVACIONES ADICIONALES</label>
+                    <div class="input-highlight"></div>
+                </div>
+            </div>
+            <div class="input-group full-width">
+                    <input type="file" id="fotoEmbarque" name="fotoEmbarque" accept=".jpg, .jpeg, .png" required>
+                    <label for="nombreParte">FOTO DE EMBARQUE</label>
+                    <div class="input-highlight"></div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Limpiar</span>
+                </button>
+                
+                <button type="button" class="btn btn-outline" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    <span>Imprimir</span>
+                </button>
+                
+                <button type="button" class="btn btn-primary" id="btnEnvio">
+                    <i class="fas fa-save"></i>
+                    <span>Guardar</span>
+                    <div class="btn-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </button>
+            </div>
+            
+        </form>
+
+        <!-- Success Modal -->
+        <div class="modal" id="successModal">
+            <div class="modal-content">
+                <div class="modal-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>¡Formulario Guardado!</h3>
+                <p>El control de entrega de material ha sido guardado exitosamente.</p>
+                <button class="btn btn-primary" onclick="closeModal()">Continuar</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Carretera Rojo Blanco #300 Tepatitlán, Jal. México, Aguascalientes C.P. 20608</span>
+                </div>
+                <div class="footer-info">
+                    <i class="fas fa-phone"></i>
+                    <span>Tel/Fax: (+52)378-78-55</span>
+                </div>
+                <div class="footer-info">
+                    <i class="fas fa-envelope"></i>
+                    <span>info@grupobolca.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/sorteo/scrips-formulario-entrega.js"></script>
+    <script src="/scripts/calidad/fetch_generica.js"></script>
+    <script src="/scripts/calidad/fetch_generica.js"></script>
+    <script>
+         let tok = <%-JSON.stringify(tok)%>
+    </script>
+</body>
+</html>

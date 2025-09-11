@@ -3,6 +3,9 @@
 let currentEvidenceField = null;
 let currentCardId = null;
 
+const estatusMejora = ['ingresada sin análisis','ingresada con análisis','modificar','Aceptada','Rechazada','Declinada por falta de seguimiento','Implementada']
+const estatusColores = ['rgb(173, 216, 230)','rgb(255, 223, 100)','rgb(255, 135, 0)','rgb(76, 175, 80)','rgb(244, 67, 54)','rgb(105, 105, 105)','rgb(64, 224, 208)']
+
 
 
 function displayCards(dataArray) {
@@ -27,6 +30,11 @@ function createListItem(data) {
                     <span class="list-date">📅 ${data.fecha}</span>
                     <span class="list-author">👤 ${data.generador_idea}</span>
                     <span class="list-rubro">${data.rubro}</span>
+                    <span id="labelestatus" class="list-rubro" style='color:black; background-color:${estatusColores[data.estatus]}'>${estatusMejora[data.estatus]}</span>
+                </div>
+                <div class="list-details">
+                    <span class="list-date">🗓️ ${data.fecha_respuesta_comite}</span>
+                    <span class="list-author" style='text-transform: uppercase;'>🏢 ${data.proceso_pertenece}</span>
                 </div>
             </div>
             
@@ -43,12 +51,14 @@ function createListItem(data) {
 }
 
 function generateAnalysisButton(data) {
+    // console.log(data);
+    
     if (!data.titulo_analisis || data.titulo_analisis.trim() === '') {
         return `<span class="no-analysis">Sin análisis</span>`;
     }
     
     return `
-        <button class="analysis-btn" onclick="openModal('titulo analisis', '${data.titulo_analisis}', '', '${data.id}')">
+        <button class="analysis-btn" onclick="openModal('analisis', '${data.titulo_analisis}', '${data.validaranalisis}',0, '${data.id}')">
             📊 Ver Análisis
         </button>
     `;
@@ -61,21 +71,25 @@ function generateEvidenceButtons(data) {
         { field: 'evidencia 3', file: data.evidencia3, date: data.fechaevidencia3, label: 'E3' },
         { field: 'evidencia 4', file: data.evidencia4, date: data.fechaevidencia4, label: 'E4' }
     ];
+
+    // console.log(data);
+    
     
     return evidences.map(evidence => {
         if (!evidence.file || evidence.file.trim() === '') {
             return `<span class="evidence-empty">${evidence.label}</span>`;
         }
-        
+        validacionEvidencias = [data.validaranalisis, data.validarevidencia1, data.validarevidencia2, data.validarevidencia3, data.validarevidencia4];
+        numEvidencia = parseInt(evidence.field.substring(10,11));
         return `
-            <button class="evidence-btn-small" onclick="openModal('${evidence.field}', '${evidence.file}', '${evidence.date}', '${data.id}')" title="${evidence.file}">
+            <button class="evidence-btn-small mejoran${data.id} " onclick="openModal('evidencias', '${evidence.file}', validacionEvidencias, '${numEvidencia}', '${data.id}')">
                 ${evidence.label}
             </button>
         `;
     }).join('');
 }
 
-function openModal(field, evidencia, fecha, cardId) {
+function openModal(field, evidencia, validaranalisis, cardId, mejoranid) {
     currentEvidenceField = field;
     currentCardId = cardId;
     
@@ -85,15 +99,21 @@ function openModal(field, evidencia, fecha, cardId) {
 
     const embedPdf = document.getElementById('embedPdf');
 
+    console.log(validaranalisis[cardId]);
+    
 
-    if (field == 'titulo analisis') {
-        embedPdf.src = `../analisis/${evidencia}`;
+    if (field == 'analisis' && validaranalisis[cardId] == 1) {
+        const btnAcceptReject = document.querySelectorAll('.btnAcceptReject');
+        embedPdf.src = `../${field}/${evidencia}`;
+        btnAcceptReject.forEach(btn => btn.style.display = 'none');
+    }else if (field == 'evidencias' &&  validaranalisis[cardId] == 1 ) {
         const btnAcceptReject = document.querySelectorAll('.btnAcceptReject');
         btnAcceptReject.forEach(btn => btn.style.display = 'none');
+        embedPdf.src = `../${field}/${evidencia}`;
     }else{
         const btnAcceptReject = document.querySelectorAll('.btnAcceptReject');
         btnAcceptReject.forEach(btn => btn.style.display = 'block');
-        embedPdf.src = `../evidencias/${evidencia}`;
+        embedPdf.src = `../${field}/${evidencia}`;
     }
 
     
@@ -115,6 +135,7 @@ function closeModal() {
 }
 
 function acceptEvidence() {
+    
     showMessage(`Evidencia ${currentEvidenceField} de la mejora ${currentCardId} aceptada correctamente`, 'success');
     closeModal();
     

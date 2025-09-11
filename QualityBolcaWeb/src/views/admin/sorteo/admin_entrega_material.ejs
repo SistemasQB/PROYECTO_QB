@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Embarques</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/sorteo/estilos-admin-entrega-material.css">
+</head>
+<body>
+     <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-shipping-fast"></i>
+                <span>Control Embarques</span>
+            </div>
+            
+            <!-- Desktop Menu -->
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="form-entrega" class="nav-link active">
+                        <i class="fas fa-box"></i>
+                        Nuevo Embarque
+                    </a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a href="#embarques" class="nav-link" onclick="navigateTo('embarques')">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        Nuevo Num. Parte
+                    </a>
+                </li> -->
+                <!-- <li class="nav-item">
+                    <a href="#reportes" class="nav-link" onclick="navigateTo('reportes')">
+                        <i class="fas fa-chart-bar"></i>
+                        Reportes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#inventario" class="nav-link" onclick="navigateTo('inventario')">
+                        <i class="fas fa-warehouse"></i>
+                        Inventario
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#configuracion" class="nav-link" onclick="navigateTo('configuracion')">
+                        <i class="fas fa-cog"></i>
+                        Configuración
+                    </a>
+                </li> -->
+            </ul>
+
+            <!-- Hamburger Menu -->
+            <div class="hamburger" onclick="toggleMobileMenu()">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- Header -->
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Control de Embarques</h1>
+                    <p>Gestión y seguimiento de entregas de partes y productos</p>
+                </div>
+                <div class="header-actions">
+                    <!-- <button class="btn btn-primary" onclick="openNewEmbarqueModal()">
+                        <i class="fas fa-plus"></i>
+                        Nuevo Embarque
+                    </button> -->
+                    <!-- <button class="btn btn-outline" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        Exportar
+                    </button> -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Total Embarques</span>
+                    <i class="fas fa-box stat-icon"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalEmbarques">4</div>
+                    <p class="stat-description">total de embarques enviados</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Piezas Enviadas</span>
+                    <i class="fas fa-calendar-days stat-icon"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalPiezas">160</div>
+                    <p class="stat-description">Total piezas (acumulado)</p>
+                </div>
+            </div>
+            <!-- <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Plantas Activas</span>
+                    <i class="fas fa-industry stat-icon"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">4</div>
+                    <p class="stat-description">En operación</p>
+                </div>
+            </div> -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-title">Cajas Enviadas</span>
+                    <i class="fas fa-truck stat-icon"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="cajasEntregadas">0</div>
+                    <p class="stat-description">Cajas Enviadas (acumulado)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Card -->
+        <div class="main-card">
+            <div class="card-header">
+                <h2>Registro de Embarques</h2>
+                <p>Lista completa de todos los embarques registrados</p>
+            </div>
+            <div class="card-content">
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <div class="search-input-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Buscar por folio, numero de parte, observaciones..."
+                            onkeyup="filterTable()"
+                        >
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div class="table-container">
+                    <table class="embarques-table" id="embarquesTable">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Folio</th>
+                                <th>Entregó</th>
+                                <th>Recibe</th>
+                                <th>Materiales</th>
+                                <th>Total de piezas</th>
+                                <th>Observaciones</th>
+                                <th>Imagen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="embarquesTableBody">
+                            <!-- Los datos se cargarán dinámicamente con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- No Results Message -->
+                <div id="noResults" class="no-results" style="display: none;">
+                    <p>No se encontraron embarques que coincidan con la búsqueda.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver imagen -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Imagen de Embarque</h3>
+                <span class="close" onclick="closeImageModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="/placeholder.svg" alt="Imagen de embarque">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nuevo embarque -->
+    <div id="newEmbarqueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Embarque</h3>
+                <span class="close" onclick="closeNewEmbarqueModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="newEmbarqueForm" onsubmit="addNewEmbarque(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fecha">Fecha:</label>
+                            <input type="date" id="fecha" name="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="folio">Folio:</label>
+                            <input type="text" id="folio" name="folio" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="planta">Planta:</label>
+                            <select id="planta" name="planta" required>
+                                <option value="">Seleccionar planta</option>
+                                <option value="Planta Norte">Planta Norte</option>
+                                <option value="Planta Sur">Planta Sur</option>
+                                <option value="Planta Este">Planta Este</option>
+                                <option value="Planta Oeste">Planta Oeste</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="numeroParte">Número de Parte:</label>
+                            <input type="text" id="numeroParte" name="numeroParte" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombreParte">Nombre de la Parte:</label>
+                            <input type="text" id="nombreParte" name="nombreParte" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad">Cantidad:</label>
+                            <input type="number" id="cantidad" name="cantidad" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="controlCliente">Control Cliente:</label>
+                            <input type="text" id="controlCliente" name="controlCliente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombreEntrego">Quien Entregó:</label>
+                            <input type="text" id="nombreEntrego" name="nombreEntrego" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombreRecibe">Quien Recibe:</label>
+                            <input type="text" id="nombreRecibe" name="nombreRecibe" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="observaciones">Observaciones:</label>
+                            <textarea id="observaciones" name="observaciones" rows="3"></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="imagenEmbarque">Imagen de Embarque:</label>
+                            <input type="file" id="imagenEmbarque" name="imagenEmbarque" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeNewEmbarqueModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Embarque</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="/scripts/sorteo/scripts-admin-entrega-material.js"></script>
+    <script>
+        let embarques = <%- JSON.stringify(embarques) %>
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</body>
+</html>

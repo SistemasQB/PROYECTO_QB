@@ -36,7 +36,7 @@ import multer from "multer";
 import mimeTypes from "mime-types";
 import { check, validationResult } from "express-validator";
 import { generarJWT, generarId } from "../helpers/tokens.js";
-import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
+import { emailRegistro, emailOlvidePassword, emailContacto } from "../helpers/emails.js";
 
 
 const upload = multer({ dest: 'files/' })
@@ -867,11 +867,15 @@ controller.juegos2 = async (req, res) => {
     // })
 }
 
-controller.documentosControlados = (req, res) => {
-    res.render('auth/documentoscontrolados', {
-        
+controller.contacto = (req, res) => {
+    const { nombre, mensaje } = req.body
+    emailContacto({
+        nombre,
+        mensaje
     })
 }
+
+
 
 
 controller.calidadD = (req, res) =>{
@@ -882,6 +886,10 @@ controller.calidadD = (req, res) =>{
     })
 }
 
+
+controller.contacto = (req, res) => {
+    res.render('auth/contacto', {})
+}
 
 
 export default controller;

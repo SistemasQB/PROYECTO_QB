@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formato de Salida de Material</title>
+    <link rel="stylesheet" href="/styles/sorteo/estilos-formato-edgewell.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Formato de Salida de Material</h1>
+        </header>
+
+        <!-- Primera Sección: Formulario de Entrada -->
+        <section class="form-section">
+            <h2>Datos de la Partida</h2>
+            <form id="materialForm" class="material-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fecha">Fecha</label>
+                        <input type="date" id="fecha" name="fecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numeroParte">Número de Parte</label>
+                        <select id="numeroParte" name="numeroParte" class="form-select" required>
+                            
+                        </select>
+                        <!-- <input type="text" id="numeroParte" name="numeroParte" placeholder="Ej: MP-001" required> -->
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="descripcion">Descripción</label>
+                        <input type="text" id="descripcion" name="descripcion" placeholder="Descripción del material" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numeroCajas">Número de cajas</label>
+                        <input type="number" id="numeroCajas" name="numeroCajas" min="1" placeholder="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cantidadPiezas">Cantidad de Piezas</label>
+                        <input type="number" id="cantidadPiezas" name="cantidadPiezas" min="1" placeholder="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="totalConcatenado">Total (Cajas x Piezas)</label>
+                        <input type="text" id="totalConcatenado" name="totalConcatenado" readonly class="readonly-field">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="totalMultiplicado">Total (Cajas * Piezas)</label>
+                        <input type="number" id="totalMultiplicado" name="totalMultiplicado" readonly class="readonly-field">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <span class="btn-icon">+</span>
+                        Agregar Partida
+                    </button>
+                    <button type="button" id="limpiarForm" class="btn-secondary">
+                        Limpiar Formulario
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Segunda Sección: Tabla de Partidas -->
+        <section class="table-section">
+            <div class="table-header">
+                <h2>Partidas Registradas</h2>
+                <div class="table-actions">
+                    <button id="exportarBtn" class="btn-export" disabled>
+                        Exportar Lista
+                    </button>
+                    <button id="limpiarTabla" class="btn-danger" disabled>
+                        Limpiar Todo
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="partidasTable" class="partidas-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>No. Parte</th>
+                            <th>Descripción</th>
+                            <th>Cajas</th>
+                            <th>Piezas</th>
+                            <th>Total (CxP)</th>
+                            <th>Total (*)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partidasBody">
+                        <!-- Las partidas se agregarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">📦</div>
+                <h3>No hay partidas registradas</h3>
+                <p>Agrega tu primera partida usando el formulario de arriba</p>
+            </div>
+
+            <div class="summary-section" id="summarySection" style="display: none;">
+                <div class="summary-card">
+                    <h3>Resumen Total</h3>
+                    <div class="summary-stats">
+                        <div class="stat">
+                            <span class="stat-label">Total de Partidas:</span>
+                            <span class="stat-value" id="totalPartidas">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Total de Cajas:</span>
+                            <span class="stat-value" id="totalCajas">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Total de Piezas:</span>
+                            <span class="stat-value" id="totalPiezas">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Agregando sección de firmas, observaciones y evidencia -->
+        <section class="signatures-section">
+            <h2>Firmas y Documentación</h2>
+            
+            <!-- Observaciones -->
+            <div class="observations-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" name="observaciones" placeholder="Ingrese observaciones adicionales..." rows="4"></textarea>
+            </div>
+
+            <!-- Evidencia -->
+            <div class="evidence-group">
+                <label for="evidencia">Evidencia (Imágenes)</label>
+                <input type="file" id="evidencia" name="evidencia" accept="image/*" multiple>
+                <div class="file-info">
+                    <small>Solo se permiten archivos de imagen (JPG, PNG, GIF, etc.)</small>
+                </div>
+                <div id="imagePreview" class="image-preview"></div>
+            </div>
+
+            <!-- Firmas -->
+            <div class="signatures-container">
+                <!-- Firma de quien entrega -->
+                <div class="signature-group">
+                    <h3>Quien Entrega</h3>
+                    <div class="form-group">
+                        <label for="nombreEntrega">Nombre Completo</label>
+                        <input type="text" id="nombreEntrega" name="nombreEntrega" placeholder="Nombre completo de quien entrega">
+                    </div>
+                    <div class="signature-canvas-container">
+                        <label>Firma</label>
+                        <canvas id="canvasEntrega" class="signature-canvas" width="400" height="150"></canvas>
+                        <button type="button" class="btn-clear-signature" onclick="clearSignature('canvasEntrega')">
+                            Limpiar Firma
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Firma de quien recibe -->
+                <div class="signature-group">
+                    <h3>Quien Recibe</h3>
+                    <div class="form-group">
+                        <label for="nombreRecibe">Nombre Completo</label>
+                        <input type="text" id="nombreRecibe" name="nombreRecibe" placeholder="Nombre completo de quien recibe">
+                    </div>
+                    <div class="signature-canvas-container">
+                        <label>Firma</label>
+                        <canvas id="canvasRecibe" class="signature-canvas" width="400" height="150"></canvas>
+                        <button type="button" class="btn-clear-signature" onclick="clearSignature('canvasRecibe')">
+                            Limpiar Firma
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Agregando sección de botones finales -->
+        <section class="final-actions-section">
+            <div class="final-buttons">
+                <button type="button" id="limpiarTodo" class="btn-clear-all">
+                    <span class="btn-icon">🗑️</span>
+                    Limpiar Formulario Completo
+                </button>
+                <button type="button" id="enviarInformacion" class="btn-submit-final">
+                    <span class="btn-icon">📤</span>
+                    Enviar Información
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <script src="/scripts/sorteo/scrip-formato-edgewell.js"></script>
+    <script src="/scripts/calidad/fetch_generica.js"></script>
+    <script>
+        let tok = <%- JSON.stringify(tok)%>
+        let productos = <%- JSON.stringify(productos)%>
+        
+    </script>
+</body>
+</html>

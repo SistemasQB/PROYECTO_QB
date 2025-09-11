@@ -3,7 +3,7 @@ import path from "path"
 import fs from "fs"
 
 class miMulter{
-constructor(destino, limite, tiposPermitidos, mimetypesPermitidos ) {
+constructor(destino, limite, tiposPermitidos) { //, mimetypesPermitidos 
     this.destino = destino || 'evidencias';
     this.limite = limite || 5;
     this.tiposPermitidos = tiposPermitidos || /jpeg|jpg|png|xlsx|pdf|pptx|/;
@@ -29,14 +29,15 @@ constructor(destino, limite, tiposPermitidos, mimetypesPermitidos ) {
         const extension = path.extname(file.originalname).toLowerCase();
 
         // Buscar archivos previos con el mismo nombre base y extensión
-        const archivosEnDestino = fs.readdirSync(this.destino);
-        for (const archivo of archivosEnDestino) {
-          if (archivo.includes(nombreOriginal) && archivo.endsWith(extension)) {
-            // Eliminar archivo previo
-            fs.unlinkSync(path.join(this.destino, archivo));
-          }
-        }
-        const nombreUnico = nombreOriginal+ " " +  Date.now() + '-' + Math.round(Math.random() * 1E9);
+
+        // const archivosEnDestino = fs.readdirSync(this.destino);
+        // for (const archivo of archivosEnDestino) {
+        //   if (archivo.includes(nombreOriginal) && archivo.endsWith(extension)) {
+        //     // Eliminar archivo previo
+        //     fs.unlinkSync(path.join(this.destino, archivo));
+        //   }
+        // }
+        const nombreUnico = nombreOriginal + " " +  Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, nombreUnico + path.extname(file.originalname));
       }
     });

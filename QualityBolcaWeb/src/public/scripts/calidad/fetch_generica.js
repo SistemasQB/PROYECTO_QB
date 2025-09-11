@@ -13,8 +13,6 @@ async function fetchGenerica(link, cuerpo, destino) {
         headers:{
             'X-CSRF-Token': cuerpo.get("_csrf")
         }
-        // Importante: no establecer Content-Type manualmente.
-        // El navegador lo hará automáticamente como multipart/form-data
     })
     .then(response => response.json())
     .then(res => {
