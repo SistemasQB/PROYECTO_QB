@@ -275,7 +275,7 @@ controller.adminEntregaMaterial = async (req, res)=>{
     mesi = fecha.getMonth()
     ano = fecha.getFullYear()
     let fi = new Date(`${ano}-${mes-1}-${dia}`)
-    fecha = `${ano}-${mes}-${dia + 1}`
+    fecha = `${ano}-${mes}-${dia+1}`
     let clase = new sequelizeClase({modelo: modeloEdgewell});
     let criterios = {[Op.and]:[
         {fecha:{[Op.between]: [fi, fecha]}},
