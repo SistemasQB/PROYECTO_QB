@@ -37,7 +37,6 @@ router.get('/directorioPersonal', protegetRuta, permisos.permisosCalidad(
     calidadController.directorioPersonal);
 router.post('/crud',protegetRuta ,calidadController.CrudDirectorio);
 
-
 //api de calidad
 router.get('/api/:documento', calidadController.api);
 

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departamento de TI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header con menú hamburguesa -->
+    <header class="header">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <h1 class="header-title">Departamento de Tecnologías de la Información</h1>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menú Principal</h2>
+        </div>
+        
+        <ul class="menu-list">
+            <!-- Dashboard -->
+            <li class="menu-item">
+                <a href="#dashboard" class="menu-link">
+                    <span class="menu-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Infraestructura -->
+            <li class="menu-item has-submenu">
+                <button class="menu-link" data-submenu="infraestructura">
+                    <span class="menu-icon">🖥️</span>
+                    <span>Infraestructura</span>
+                    <span class="chevron">›</span>
+                </button>
+                <ul class="submenu" id="infraestructura">
+                    <li><a href="#servidores">Servidores</a></li>
+                    <li><a href="#redes">Redes y Conectividad</a></li>
+                    <li><a href="#almacenamiento">Almacenamiento</a></li>
+                    <li><a href="#virtualizacion">Virtualización</a></li>
+                    <li><a href="#nube">Servicios en la Nube</a></li>
+                </ul>
+            </li>
+
+            <!-- Seguridad -->
+            <li class="menu-item has-submenu">
+                <button class="menu-link" data-submenu="seguridad">
+                    <span class="menu-icon">🔒</span>
+                    <span>Seguridad</span>
+                    <span class="chevron">›</span>
+                </button>
+                <ul class="submenu" id="seguridad">
+                    <li><a href="#firewall">Firewall y Protección</a></li>
+                    <li><a href="#antivirus">Antivirus Corporativo</a></li>
+                    <li><a href="#backups">Respaldos y Recuperación</a></li>
+                    <li><a href="#politicas">Políticas de Seguridad</a></li>
+                    <li><a href="#auditorias">Auditorías de Seguridad</a></li>
+                </ul>
+            </li>
+
+            <!-- Bases de Datos -->
+            <li class="menu-item has-submenu">
+                <button class="menu-link" data-submenu="bases-datos">
+                    <span class="menu-icon">💾</span>
+                    <span>Bases de Datos</span>
+                    <span class="chevron">›</span>
+                </button>
+                <ul class="submenu" id="bases-datos">
+                    <li><a href="#sql-server">SQL Server</a></li>
+                    <li><a href="#mysql">MySQL / MariaDB</a></li>
+                    <li><a href="#postgresql">PostgreSQL</a></li>
+                    <li><a href="#mongodb">MongoDB</a></li>
+                    <li><a href="#mantenimiento-db">Mantenimiento de BD</a></li>
+                </ul>
+            </li>
+
+            <!-- Gestión de Usuarios -->
+            <li class="menu-item has-submenu">
+                <button class="menu-link" data-submenu="usuarios">
+                    <span class="menu-icon">👥</span>
+                    <span>Gestión de Usuarios</span>
+                    <span class="chevron">›</span>
+                </button>
+                <ul class="submenu" id="usuarios">
+                    <li><a href="#active-directory">Active Directory</a></li>
+                    <li><a href="#permisos">Permisos y Accesos</a></li>
+                    <li><a href="#cuentas">Administración de Cuentas</a></li>
+                    <li><a href="#grupos">Grupos y Roles</a></li>
+                </ul>
+            </li>
+
+            <!-- Soporte Técnico -->
+            <li class="menu-item has-submenu">
+                <button class="menu-link" data-submenu="soporte">
+                    <span class="menu-icon">🛠️</span>
+                    <span>Soporte Técnico</span>
+                    <span class="chevron">›</span>
+                </button>
+                <ul class="submenu" id="soporte">
+                    <li><a href="#tickets">Sistema de Tickets</a></li>
+                    <li><a href="#incidencias">Gestión de Incidencias</a></li>
+                    <li><a href="#mantenimiento">Mantenimiento Preventivo</a></li>
+                    <li><a href="#inventario">Inventario de Equipos</a></li>
+                    <li><a href="#garantias">Garantías y Licencias</a></li>
+                </ul>
+            </li>
+
+            <!-- Reportes -->
+            <li class="menu-item has-submenu">
+                <button class="menu-link" data-submenu="reportes">
+                    <span class="menu-icon">📈</span>
+                    <span>Reportes y Análisis</span>
+                    <span class="chevron">›</span>
+                </button>
+                <ul class="submenu" id="reportes">
+                    <li><a href="#rendimiento">Rendimiento de Sistemas</a></li>
+                    <li><a href="#disponibilidad">Disponibilidad de Servicios</a></li>
+                    <li><a href="#incidentes">Reporte de Incidentes</a></li>
+                    <li><a href="#costos">Análisis de Costos</a></li>
+                </ul>
+            </li>
+
+            <!-- Configuración -->
+            <li class="menu-item has-submenu">
+                <button class="menu-link" data-submenu="configuracion">
+                    <span class="menu-icon">⚙️</span>
+                    <span>Configuración</span>
+                    <span class="chevron">›</span>
+                </button>
+                <ul class="submenu" id="configuracion">
+                    <li><a href="#general">Configuración General</a></li>
+                    <li><a href="#notificaciones">Notificaciones</a></li>
+                    <li><a href="#integraciones">Integraciones</a></li>
+                    <li><a href="#preferencias">Preferencias del Sistema</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Overlay para cerrar el menú en móvil -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <div class="container">
+            <section class="welcome-section">
+                <h2>Bienvenido al Portal de TI</h2>
+                <p>Sistema de gestión y administración del departamento de tecnologías de la información</p>
+            </section>
+
+            <!-- Tarjetas de estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🖥️</div>
+                    <div class="stat-content">
+                        <h3>Servidores Activos</h3>
+                        <p class="stat-number">24</p>
+                        <span class="stat-status status-success">100% Operativos</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🎫</div>
+                    <div class="stat-content">
+                        <h3>Tickets Abiertos</h3>
+                        <p class="stat-number">12</p>
+                        <span class="stat-status status-warning">3 Urgentes</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h3>Usuarios Activos</h3>
+                        <p class="stat-number">342</p>
+                        <span class="stat-status status-success">En línea</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🔒</div>
+                    <div class="stat-content">
+                        <h3>Estado de Seguridad</h3>
+                        <p class="stat-number">98%</p>
+                        <span class="stat-status status-success">Protegido</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de actividad reciente -->
+            <section class="activity-section">
+                <h3>Actividad Reciente</h3>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <span class="activity-time">Hace 5 min</span>
+                        <p>Servidor WEB-01 reiniciado correctamente</p>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">Hace 15 min</span>
+                        <p>Nuevo ticket #1247 - Problema de conectividad</p>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">Hace 1 hora</span>
+                        <p>Backup completado: Base de datos principal</p>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">Hace 2 horas</span>
+                        <p>Actualización de seguridad aplicada a 15 equipos</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

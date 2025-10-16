@@ -1,4 +1,5 @@
 import express from "express";
+import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import {
     registroma,
@@ -262,6 +263,13 @@ controller.mantenimientoautonomo = async (req, res) => {
     });
 }
 
+controller.inicio = (req, res)=>{
+    try {
+        return res.render('')
+    } catch (error) {
+        
+    }
+}
 
 
 export default controller;

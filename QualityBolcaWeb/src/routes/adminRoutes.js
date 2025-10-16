@@ -9,13 +9,12 @@ import upload4 from "../middleware/agregarevidencia.js";
 // import {default as imagenEnviar} from "../../index.js";
 
 const router = express.Router();
-
 // Configurar Multer (para almacenar imagen en memoria)
 const storage = multer.memoryStorage();
 const uploadmantenimiento = multer({ storage: storage });
 
-
 router.get('/inicio', protegetRuta, adminController.inicio);
+//rutas de permisos
 router.get('/permisosusuarios', protegetRuta, adminController.permisosusuarios);
 router.post('/permisosusuarios', protegetRuta, adminController.permisosusuarios2);
 
