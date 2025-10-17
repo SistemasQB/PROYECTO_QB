@@ -194,8 +194,6 @@ controller.programamantenimiento = async (req, res) => {
 
 controller.listadopersonal = async (req, res) => {
     let personal2
-    let cuentaDatos
-
     const personal = await db.query(
         `
             SELECT 
@@ -265,7 +263,8 @@ controller.mantenimientoautonomo = async (req, res) => {
 
 controller.inicio = (req, res)=>{
     try {
-        return res.render('')
+        
+        return res.render('admin/sistemas/mio/inicio.ejs')
     } catch (error) {
         
     }

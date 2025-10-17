@@ -1,4 +1,5 @@
 import { where } from "sequelize";
+import Sequelize from "sequelize";
 
 
 class sequelizeClase{
@@ -58,6 +59,13 @@ class sequelizeClase{
         
         if (!respuesta) return ''
         return respuesta
+    }
+
+    async insertarquery({query}){
+        return await Sequelize.query(query,{
+            model: modelo,
+            mapToModel: true
+        })
     }
 }
 

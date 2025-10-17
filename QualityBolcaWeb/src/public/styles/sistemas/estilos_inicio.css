@@ -136,6 +136,11 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+.sidebar.open {
+  transform: translateX(0%);
+}
+
+
 .sidebar::-webkit-scrollbar {
   width: 6px;
 }

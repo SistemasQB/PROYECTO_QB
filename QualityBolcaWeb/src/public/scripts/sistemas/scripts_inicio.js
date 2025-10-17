@@ -82,8 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
   allLinks.forEach((link) => {
     link.addEventListener("click", function (e) {
       closeSidebar()
-      e.preventDefault()
-      console.log("Navegando a:", this.getAttribute("href"))
+    //   e.preventDefault()
+      
     })
   })
 
