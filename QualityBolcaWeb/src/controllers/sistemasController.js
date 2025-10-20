@@ -270,5 +270,11 @@ controller.inicio = (req, res)=>{
     }
 }
 
-
+controller.levantamientoTicket = async(req, res)=>{
+    try {
+        res.render('admin/sistemas/levantamiento_ticket.ejs')
+    } catch (error) {
+        
+    }
+}
 export default controller;

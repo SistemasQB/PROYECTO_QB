@@ -6,6 +6,11 @@ import protegetRuta from "../middleware/protegetRuta.js";
 const router = express.Router();
 //ruta de inicio
 router.get('/inicio', adminController.inicio);
+
+//rutas de tickets
+router.get('/tickets', adminController.levantamientoTicket)
+
+
 router.get('/registroma',adminController.registroMA);
 router.get('/addinventario',adminController.addinventario);
 router.post('/addinventario',adminController.addinventario2);
