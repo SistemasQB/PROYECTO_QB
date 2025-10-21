@@ -1,7 +1,6 @@
 import { where } from "sequelize";
 import Sequelize from "sequelize";
 
-
 class sequelizeClase{
 
     constructor({modelo}){
@@ -60,7 +59,16 @@ class sequelizeClase{
         if (!respuesta) return ''
         return respuesta
     }
-
+    async obtener1Registro({criterio}){
+        
+    const opciones = {
+            where: criterio
+        }
+    
+        let respuesta = await this.modelo.findOne(opciones)
+        if (!respuesta) return ''
+        return respuesta
+}
     async insertarquery({query}){
         return await Sequelize.query(query,{
             model: modelo,
@@ -68,5 +76,7 @@ class sequelizeClase{
         })
     }
 }
+
+
 
 export default sequelizeClase;

@@ -1,6 +1,9 @@
 import express from "express";
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
+import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
+
+
 import {
     registroma,
     informaciongch,
@@ -263,18 +266,52 @@ controller.mantenimientoautonomo = async (req, res) => {
 
 controller.inicio = (req, res)=>{
     try {
-        
-        return res.render('admin/sistemas/mio/inicio.ejs')
+        return res.render('admin/sistemas/mio/inicio_sistemas.ejs')
     } catch (error) {
         
     }
 }
 
+//controladores de tickets
 controller.levantamientoTicket = async(req, res)=>{
     try {
-        res.render('admin/sistemas/levantamiento_ticket.ejs')
+        const tok = req.csrfToken()
+        res.render('admin/sistemas/levantamiento_ticket.ejs', {tok: tok})
     } catch (error) {
         
     }
+}
+
+controller.crudTickets = async (req, res) => {
+    let clase = new sequelizeClase({modelo: modelosSistemas.modeloTickets})
+    let {tipo, id, datosTicket, folio} = req.body;
+    let usuario = req.usuario;
+    let campos = {
+        folio: folio,
+        datosTicket: JSON.parse(datosTicket)
+    }
+    console.log(usuario)
+    switch(tipo){
+        case 'insert':
+            return res.json({ok: await clase.insertar({datosInsertar: campos, msg: `ticket levantado con exito, el folio de tu ticket es: ` })})
+        case 'delete':
+            if(!id) return res.json({})
+        case 'update':
+
+    }
+}
+controller.administracionTickets = (req, res) => {
+    try {
+        return res.render('admin/sistemas/administracion_tickets.ejs')
+        // res.send('vista de tickets')
+
+    } catch (error) {
+        
+    }
+}
+
+//controladores de inventario
+controller.inventario = async (req, res) => {
+    res.render('admin/sistemas/inventario.ejs')
 }
 export default controller;

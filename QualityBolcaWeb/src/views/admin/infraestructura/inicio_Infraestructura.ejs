@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Bolca - Sistema de Almacén</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/infraestructura/estilos_inicio.css">
+    
+    <%-include('partials/menu-hamburguesa.ejs')%>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="welcome-section">
+                <h1>Bienvenido al Sistema de Almacén</h1>
+                <p>Gestiona tu inventario, órdenes de compra y proveedores de manera eficiente</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Órdenes Activas</span>
+                        <i class="fas fa-shopping-cart stat-icon"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">24</div>
+                        <p class="stat-change positive">+12% desde el mes pasado</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Productos en Stock</span>
+                        <i class="fas fa-boxes stat-icon"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">1,247</div>
+                        <p class="stat-change negative">-3% desde la semana pasada</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Proveedores</span>
+                        <i class="fas fa-users stat-icon"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">18</div>
+                        <p class="stat-change positive">+2 nuevos este mes</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Valor Total</span>
+                        <i class="fas fa-chart-line stat-icon"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number">$45,231</div>
+                        <p class="stat-change positive">+8% desde el mes pasado</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="actions-grid">
+                <div class="action-card" onclick="window.location.href='historicoOrdenesCompra'">
+                    <div class="action-header">
+                        <i class="fas fa-shopping-cart action-icon"></i>
+                        <h3>Órdenes de Compra</h3>
+                    </div>
+                    <p>Gestiona y crea nuevas órdenes de compra</p>
+                    <div class="action-status">
+                        <div class="status-indicator warning"></div>
+                        <span>Tienes 3 órdenes pendientes de aprobación</span>
+                    </div>
+                </div>
+
+                <div class="action-card" onclick="window.location.href='controlInventario'">
+                    <div class="action-header">
+                        <i class="fas fa-boxes action-icon"></i>
+                        <h3>Inventario</h3>
+                    </div>
+                    <p>Controla tu stock y productos</p>
+                    <div class="action-status">
+                        <div class="status-indicator danger"></div>
+                        <span>5 productos con stock bajo</span>
+                    </div>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-header">
+                        <i class="fas fa-chart-bar action-icon"></i>
+                        <h3>Reportes</h3>
+                    </div>
+                    <p>Analiza el rendimiento del almacén</p>
+                    <div class="action-status">
+                        <div class="status-indicator success"></div>
+                        <span>Reporte mensual disponible</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="alert-card">
+                <div class="alert-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Alertas del Sistema</h3>
+                </div>
+                <ul class="alert-list">
+                    <li>
+                        <div class="alert-indicator"></div>
+                        Producto "Tornillos M8" tiene stock crítico (5 unidades restantes)
+                    </li>
+                    <li>
+                        <div class="alert-indicator"></div>
+                        Orden de compra #ORD-2024-001 pendiente de aprobación desde hace 3 días
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script src="/scripts/infraestructura/scripts_global.js"></script>
+</body>
+</html>

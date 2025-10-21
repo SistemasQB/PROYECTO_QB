@@ -136,10 +136,6 @@ controller.resetPassword = async (req, res) => {
     // }
 
     //Buscar el usuario
-
-
-
-
     const { codigoempleado } = req.body
     // res.status(400).send({ msg: req.body, ok: false });
     const usuario = await Usuario.findOne({ where: { codigoempleado: codigoempleado } })
@@ -216,9 +212,6 @@ controller.nuevoPassword = async (req, res) => {
 }
 
 controller.registrar = async (req, res) => {
-
-    console.log('entrando al controller de registro');
-    
     //validaciones
     await check('codigoempleado').notEmpty().withMessage('El Codigo de empleado no puede ir vacio').run(req);
     await check('password').isLength({ min: 6 }).withMessage('La contrseña debe tener minimo 6 caracteres').run(req);
@@ -238,35 +231,20 @@ controller.registrar = async (req, res) => {
 
     //Extraer los datos
     const { codigoempleado, password } = req.body
-    // console.log('nose', codigoempleado);
     
     //Verificar si el usuario ya esta registrado
     const gchUsuario = await informaciongch.findOne({ where: { codigoempleado } })
 
-    console.log(gchUsuario);
-    
-    
     if (!gchUsuario) {
-        // return res.render('auth/registro', {
-        //     errores: [{ok: false, msg: 'El usuario no Existe' }],
-        //     csrfToken: req.csrfToken()
-        // })
         res.status(400).send({ ok: false, msg: 'El usuario no Existe' });
         return
     }
 
-    // console.log('nose2', codigoempleado);
+    
     //Verificar que el usuario existe
     const existeUsuario = await Usuario.findOne({ where: { codigoempleado } })
-    console.log(existeUsuario);
     if (existeUsuario) {
-        // return res.render('auth/registro', {s
-        
-        //     errores: [{ ok: false, msg: 'El usuario ya esta registrado' }],
-        //     csrfToken: req.csrfToken()
-        // })
-        res.status(400).send({ ok: false, msg: 'El usuario ya esta registrado' });
-        return
+        return res.status(400).send({ ok: false, msg: 'El usuario ya esta registrado' });
     }
 
 
@@ -889,6 +867,15 @@ controller.calidadD = (req, res) =>{
 
 controller.contacto = (req, res) => {
     res.render('auth/contacto', {})
+}
+
+
+controller.formularioAlta = (req, res) => {
+    try {
+        res.render('auth/registroBase.ejs')
+    } catch (error) {
+        
+    }
 }
 
 

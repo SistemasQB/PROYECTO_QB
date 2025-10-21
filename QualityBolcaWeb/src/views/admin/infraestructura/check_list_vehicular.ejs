@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspección Vehicular - Sistema Profesional</title>
+    <!-- Eliminando Tailwind CSS y usando CSS vanilla -->
+    <link rel="stylesheet" href="/styles/infraestructura/estilos_check_list_vehicular.css">
+</head>
+<body>
+    <!-- Mobile menu button -->
+    <button id="mobile-menu-btn" class="mobile-menu-btn">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+
+    <!-- Mobile overlay -->
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+
+    <!-- Main container -->
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-header">
+                    <div class="logo-container">
+                        <div class="logo-icon">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="logo-text">
+                            <h1>InspecVehicle</h1>
+                            <p>Sistema Profesional</p>
+                        </div>
+                    </div>
+                    <button id="close-sidebar" class="close-btn">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Progress Indicator -->
+                <div class="progress-section">
+                    <h3>Progreso de Inspección</h3>
+                    <div class="progress-info">
+                        <span>Completado</span>
+                        <span id="progress-text">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="nav-menu">
+                    <a href="#vehiculo" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span>Información del Vehículo</span>
+                    </a>
+                    <a href="#componentes" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span>Componentes</span>
+                    </a>
+                    <!-- <a href="#documentos" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span>Documentación</span>
+                    </a> -->
+                    <a href="#llantas" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                        </svg>
+                        <span>Sistema de Llantas</span>
+                    </a>
+                    <a href="#accesorios" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        <span>Accesorios</span>
+                    </a>
+                    <a href="#fluidos" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                        <span>Fluidos y Limpieza</span>
+                    </a>
+                    <a href="#electrico" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <span>Sistema Eléctrico</span>
+                    </a>
+                    <a href="#fotos" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span>Fotografías</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-container">
+                <form id="inspection-form">
+                    <!-- Header Section -->
+                    <div class="header-section">
+                        <h1>Inspección Vehicular</h1>
+                        <p>Complete todos los campos del formulario para realizar una inspección técnica completa del vehículo</p>
+                    </div>
+
+                    <!-- Información del Vehículo -->
+                    <section id="vehiculo" class="form-section">
+                        <div class="section-card" id="informacionVehiculo">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                Información del Vehículo
+                            </h2>
+                            <div class="grid grid-cols-1 grid-cols-md-2 grid-cols-lg-3">
+                                <div class="form-group">
+                                    <label class="form-label">Unidad</label>
+                                    <select name="unidad" class="form-select" id="unidad">
+                                        
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Placas del Vehículo</label>
+                                    <input type="text" name="placas" id="placas" placeholder="ABC-123-XYZ" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Kilometraje Actual</label>
+                                    <input type="number" name="kilometraje" placeholder="150,000" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Región</label>
+                                    <input type="text" name="region" id="regionUnidad" placeholder="Ciudad de México" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Usuario Responsable</label>
+                                    <input type="text" name="usuario" placeholder="Juan Pérez" class="form-input" >
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Inspector</label>
+                                    <input type="text" name="responsable" placeholder="María González" class="form-input" id="responsable">
+                                </div>
+                                
+
+                            </div>
+                        </div>
+                        <div class="section-card" id="documentacion">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Documentación del Vehículo
+                            </h2>
+                            <div class="grid grid-cols-1 grid-cols-md-2 grid-cols-lg-3">
+                                
+                                <div class="document-card">
+                                    <h3>Tarjeta de Circulación</h3>
+                                    <div class="document-fields">
+                                        <select name="tarjeta_circulacion" class="form-select" id="tarjeta_circulacion">
+                                            <option value="">Seleccionar</option>
+                                            <option value="NO">No Tiene</option>
+                                            <option value="PRESENTE">Presente</option>
+                                        </select>
+                                        <div>
+                                            <label>Vigencia</label>
+                                            <input type="date" name="tarjeta_vigencia" class="form-input" id="vigenciaTarjetaCirculacion">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="document-card">
+                                    <h3>Póliza de Seguro</h3>
+                                    <div class="document-fields">
+                                        <input type="text" name="poliza"  placeholder="Número de póliza" class="form-input" id="numeroPoliza">
+                                        <div>
+                                            <label>Vigencia</label>
+                                            <input type="date" name="poliza_vigencia"  class="form-input" id="vigenciaPoliza">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="document-card">
+                                    <h3>Licencia de Conducir</h3>
+                                    <div class="document-fields">
+                                        <input type="text" name="licencia" placeholder="Número de licencia" class="form-input" id="licencia">
+                                        <div>
+                                            <label>Vigencia</label>
+                                            <input type="date" name="licencia_vigencia" class="form-input" id="vigencia_licencia">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="document-card">
+                                    <h3>Verificación Vehicular</h3>
+                                    <div class="document-fields">
+                                        <input type="text" name="verificacion" placeholder="Folio de verificación" class="form-input">
+                                        <div>
+                                            <label>Vigencia</label>
+                                            <input type="date" name="verificacion_vigencia" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="document-card">
+                                    <h3>Manual del Propietario</h3>
+                                    <div class="document-fields">
+                                        <select name="manual_propietario" class="form-select">
+                                            <option value="">Seleccionar</option>
+                                            <option value="NO">No Tiene</option>
+                                            <option value="SI">Presente</option>
+                                        </select>
+                                        <!-- <div>
+                                            <label>Fecha de revisión</label>
+                                            <input type="date" name="manual_vigencia" class="form-input">
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Componentes Principales -->
+                    <section id="componentes" class="form-section">
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Componentes Principales
+                            </h2>
+                            <div class="grid grid-cols-1 grid-cols-md-2">
+                                <!-- Catalizador -->
+                                <div class="component-section" id="contCat">
+                                    <h3 class="component-title">Catalizador</h3>
+                                    <div class="radio-group">
+                                        <div class="radio-item">
+                                            <input type="radio" name="catalizador_estado" value="ok" id="cat_ok">
+                                            <label for="cat_ok">Funcional</label>
+                                        </div>
+                                        <div class="radio-item">
+                                            <input type="radio" name="catalizador_estado" value="no_tiene" id="cat_no">
+                                            <label for="cat_no">No Tiene</label>
+                                        </div>
+                                    </div>
+                                    <div class="component-fields">
+                                        <div class="component-field">
+                                            <label>Marca del Catalizador</label>
+                                            <input type="text" name="catalizador_marca" placeholder="Bosch, Denso, etc." class="form-input">
+                                        </div>
+                                        <div class="component-field">
+                                            <label>Número de Serie</label>
+                                            <input type="text" name="catalizador_serie" placeholder="CAT-123456789" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Batería -->
+                                <div class="component-section" id="contBat">
+                                    <h3 class="component-title">Batería</h3>
+                                    <div class="radio-group">
+                                        <div class="radio-item">
+                                            <input type="radio" name="bateria_estado" value="ok" id="bat_ok">
+                                            <label for="bat_ok">Funcional</label>
+                                        </div>
+                                        <div class="radio-item">
+                                            <input type="radio" name="bateria_estado" value="no_tiene" id="bat_no">
+                                            <label for="bat_no">Defectuosa</label>
+                                        </div>
+                                    </div>
+                                    <div class="component-fields">
+                                        <div class="component-field">
+                                            <label>Marca de la Batería</label>
+                                            <input type="text" name="bateria_marca" placeholder="LTH, AC Delco, etc." class="form-input">
+                                        </div>
+                                        <div class="component-field">
+                                            <label>Número de Serie</label>
+                                            <input type="text" name="bateria_serie" placeholder="BAT-987654321" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Documentación -->
+                    <!-- <section id="documentos" class="form-section">
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Documentación del Vehículo
+                            </h2>
+                            <div class="grid grid-cols-1 grid-cols-md-2 grid-cols-lg-3">
+                                <div class="document-card">
+                                    <h3>Tarjeta de Circulación</h3>
+                                    <div class="document-fields">
+                                        <input type="text" name="tarjeta_circulacion" placeholder="Número de tarjeta" class="form-input">
+                                        <div>
+                                            <label>Vigencia</label>
+                                            <input type="date" name="tarjeta_vigencia" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="document-card">
+                                    <h3>Póliza de Seguro</h3>
+                                    <div class="document-fields">
+                                        <input type="text" name="poliza" placeholder="Número de póliza" class="form-input">
+                                        <div>
+                                            <label>Vigencia</label>
+                                            <input type="date" name="poliza_vigencia" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="document-card">
+                                    <h3>Verificación Vehicular</h3>
+                                    <div class="document-fields">
+                                        <input type="text" name="verificacion" placeholder="Folio de verificación" class="form-input">
+                                        <div>
+                                            <label>Vigencia</label>
+                                            <input type="date" name="verificacion_vigencia" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="document-card">
+                                    <h3>Manual del Propietario</h3>
+                                    <div class="document-fields">
+                                        <input type="text" name="manual" placeholder="Estado del manual" class="form-input">
+                                        <div>
+                                            <label>Fecha de revisión</label>
+                                            <input type="date" name="manual_vigencia" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="document-card">
+                                    <h3>Licencia de Conducir</h3>
+                                    <div class="document-fields">
+                                        <input type="text" name="licencia" placeholder="Número de licencia" class="form-input">
+                                        <div>
+                                            <label>Vigencia</label>
+                                            <input type="date" name="licencia_vigencia" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section> -->
+
+                    <!-- Sistema de Llantas -->
+                    <section id="llantas" class="form-section">
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                                </svg>
+                                Sistema de Llantas
+                            </h2>
+                            <div class="grid grid-cols-1 grid-cols-md-2">
+                                <!-- Llantas Delanteras -->
+                                <div>
+                                    <h3 class="section-header">Llantas Delanteras</h3>
+                                    
+                                    <!-- Delantera Derecha -->
+                                    <div class="tire-section delantera-derecha mb-4" id="ldd">
+                                        <h4>Delantera Derecha</h4>
+                                        <div class="tire-fields">
+                                            <div>
+                                                <label>Medida</label>
+                                                <input type="text" name="dd_medida" placeholder="205/55R16" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Marca</label>
+                                                <input type="text" name="dd_marca" placeholder="Michelin" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Estado de Vida</label>
+                                                <select name="dd_estado_vida" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="regular">Regular</option>
+                                                    <option value="malo">Malo</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label>Estado del Rin</label>
+                                                <select name="dd_estado_rin" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="dañado">Dañado</option>
+                                                </select>
+                                            </div>
+                                            <div class="full-width">
+                                                <label>Polveras</label>
+                                                <select name="dd_polveras" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="presentes">Presentes</option>
+                                                    <option value="ausentes">Ausentes</option>
+                                                    <option value="dañadas">Dañadas</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Delantera Izquierda -->
+                                    <div class="tire-section delantera-izquierda" id="ldi">
+                                        <h4>Delantera Izquierda</h4>
+                                        <div class="tire-fields">
+                                            <div>
+                                                <label>Medida</label>
+                                                <input type="text" name="di_medida" placeholder="205/55R16" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Marca</label>
+                                                <input type="text" name="di_marca" placeholder="Michelin" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Estado de Vida</label>
+                                                <select name="di_estado_vida" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="regular">Regular</option>
+                                                    <option value="malo">Malo</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label>Estado del Rin</label>
+                                                <select name="di_estado_rin" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="dañado">Dañado</option>
+                                                </select>
+                                            </div>
+                                            <div class="full-width">
+                                                <label>Polveras</label>
+                                                <select name="di_polveras" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="presentes">Presentes</option>
+                                                    <option value="ausentes">Ausentes</option>
+                                                    <option value="dañadas">Dañadas</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Llantas Traseras -->
+                                <div>
+                                    <h3 class="section-header">Llantas Traseras</h3>
+                                    
+                                    <!-- Trasera Derecha -->
+                                    <div class="tire-section trasera-derecha mb-4" id="ltd">
+                                        <h4>Trasera Derecha</h4>
+                                        <div class="tire-fields">
+                                            <div>
+                                                <label>Medida</label>
+                                                <input type="text" name="td_medida" placeholder="205/55R16" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Marca</label>
+                                                <input type="text" name="td_marca" placeholder="Michelin" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Estado de Vida</label>
+                                                <select name="td_estado_vida" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="regular">Regular</option>
+                                                    <option value="malo">Malo</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label>Estado del Rin</label>
+                                                <select name="td_estado_rin" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="dañado">Dañado</option>
+                                                </select>
+                                            </div>
+                                            <div class="full-width">
+                                                <label>Polveras</label>
+                                                <select name="td_polveras" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="presentes">Presentes</option>
+                                                    <option value="ausentes">Ausentes</option>
+                                                    <option value="dañadas">Dañadas</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Trasera Izquierda -->
+                                    <div class="tire-section trasera-izquierda" id="lti">
+                                        <h4>Trasera Izquierda</h4>
+                                        <div class="tire-fields">
+                                            <div>
+                                                <label>Medida</label>
+                                                <input type="text" name="ti_medida" placeholder="205/55R16" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Marca</label>
+                                                <input type="text" name="ti_marca" placeholder="Michelin" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Estado de Vida</label>
+                                                <select name="ti_estado_vida" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="regular">Regular</option>
+                                                    <option value="malo">Malo</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label>Estado del Rin</label>
+                                                <select name="ti_estado_rin" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="dañado">Dañado</option>
+                                                </select>
+                                            </div>
+                                            <div class="full-width">
+                                                <label>Polveras</label>
+                                                <select name="ti_polveras" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="presentes">Presentes</option>
+                                                    <option value="ausentes">Ausentes</option>
+                                                    <option value="dañadas">Dañadas</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Llanta de Refacción -->
+                                <div class="mt-4" id="llr">
+                                    <h3 class="section-header">Llanta de Refacción</h3>
+                                    <div class="tire-section refaccion" style="max-width: 400px;">
+                                        <h4>Refacción</h4>
+                                        <div class="tire-fields">
+                                            <div>
+                                                <label>Medida</label>
+                                                <input type="text" name="refaccion_medida" placeholder="205/55R16" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Marca</label>
+                                                <input type="text" name="refaccion_marca" placeholder="Michelin" class="form-input">
+                                            </div>
+                                            <div>
+                                                <label>Estado de Vida</label>
+                                                <select name="refaccion_estado_vida" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="regular">Regular</option>
+                                                    <option value="malo">Malo</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label>Estado del Rin</label>
+                                                <select name="refaccion_estado_rin" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="excelente">Excelente</option>
+                                                    <option value="bueno">Bueno</option>
+                                                    <option value="dañado">Dañado</option>
+                                                </select>
+                                            </div>
+                                            <div class="full-width">
+                                                <label>Polveras</label>
+                                                <select name="refaccion_polveras" class="form-select">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="presentes">Presentes</option>
+                                                    <option value="ausentes">Ausentes</option>
+                                                    <option value="dañadas">Dañadas</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Accesorios del Vehículo -->
+                    <section id="accesorios" class="form-section">
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                Accesorios del Vehículo
+                            </h2>
+                            <div class="grid grid-cols-1 grid-cols-md-2 grid-cols-lg-3">
+                                <div class="form-group">
+                                    <label class="form-label">Botiquín</label>
+                                    <select name="botiquin" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="presente">Presente</option>
+                                        <option value="ausente">Ausente</option>
+                                        <option value="incompleto">Incompleto</option>
+                                        <option value="vencido">Vencido</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Asientos</label>
+                                    <select name="asientos" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="excelente">Excelente</option>
+                                        <option value="bueno">Bueno</option>
+                                        <option value="regular">Regular</option>
+                                        <option value="malo">Malo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tapetes</label>
+                                    <select name="tapetes" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="presentes">Presentes</option>
+                                        <option value="ausentes">Ausentes</option>
+                                        <option value="dañados">Dañados</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Limpiaparabrisas</label>
+                                    <select name="limpiaparabrisas" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="funcional">Funcional</option>
+                                        <option value="defectuoso">Defectuoso</option>
+                                        <option value="desgastado">Desgastado</option>
+                                        <option value="ausente">Ausente</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Espejos Exteriores</label>
+                                    <select name="espejos_exteriores" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="completos">Completos</option>
+                                        <option value="dañados">Dañados</option>
+                                        <option value="faltantes">Faltantes</option>
+                                        <option value="desajustados">Desajustados</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Espejo Interior</label>
+                                    <select name="espejo_interior" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="presente">Presente</option>
+                                        <option value="ausente">Ausente</option>
+                                        <option value="dañado">Dañado</option>
+                                        <option value="desajustado">Desajustado</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Gato</label>
+                                    <select name="gato" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="presente">Presente</option>
+                                        <option value="ausente">Ausente</option>
+                                        <option value="defectuoso">Defectuoso</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Llave de Cruz</label>
+                                    <select name="llave_cruz" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="presente">Presente</option>
+                                        <option value="ausente">Ausente</option>
+                                        <option value="defectuosa">Defectuosa</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Reflejantes</label>
+                                    <select name="reflejantes" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="completos">Completos</option>
+                                        <option value="incompletos">Incompletos</option>
+                                        <option value="dañados">Dañados</option>
+                                        <option value="ausentes">Ausentes</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Extintor</label>
+                                    <select name="extintor" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="presente">Presente</option>
+                                        <option value="ausente">Ausente</option>
+                                        <option value="vencido">Vencido</option>
+                                        <option value="defectuoso">Defectuoso</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Placas</label>
+                                    <select name="placas_estado" class="form-select">
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="legibles">Legibles</option>
+                                        <option value="deterioradas">Deterioradas</option>
+                                        <option value="ilegibles">Ilegibles</option>
+                                        <option value="faltantes">Faltantes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Fluidos y Limpieza -->
+                    <section id="fluidos" class="form-section">
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                </svg>
+                                Fluidos y Limpieza
+                            </h2>
+                            <div class="fluids-grid">
+                                <!-- Fluidos del Motor -->
+                                <div class="fluid-section">
+                                    <h3>Fluidos del Motor</h3>
+                                    <div class="fluid-fields">
+                                        <div class="form-group">
+                                            <label class="form-label">Nivel de Anticongelante</label>
+                                            <select name="anticongelante" class="form-select">
+                                                <option value="">Seleccionar nivel</option>
+                                                <option value="optimo">Óptimo</option>
+                                                <option value="medio">Medio</option>
+                                                <option value="bajo">Bajo</option>
+                                                <option value="critico">Crítico</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Aceite de Motor</label>
+                                            <select name="aceite_motor" class="form-select">
+                                                <option value="">Seleccionar nivel</option>
+                                                <option value="optimo">Óptimo</option>
+                                                <option value="medio">Medio</option>
+                                                <option value="bajo">Bajo</option>
+                                                <option value="critico">Crítico</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Aceite de Dirección</label>
+                                            <select name="aceite_direccion" class="form-select">
+                                                <option value="">Seleccionar nivel</option>
+                                                <option value="optimo">Óptimo</option>
+                                                <option value="medio">Medio</option>
+                                                <option value="bajo">Bajo</option>
+                                                <option value="critico">Crítico</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Aceite de Transmisión</label>
+                                            <select name="aceite_transmision" class="form-select">
+                                                <option value="">Seleccionar nivel</option>
+                                                <option value="optimo">Óptimo</option>
+                                                <option value="medio">Medio</option>
+                                                <option value="bajo">Bajo</option>
+                                                <option value="critico">Crítico</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Otros Fluidos y Limpieza -->
+                                <div class="fluid-section">
+                                    <h3>Otros Fluidos y Limpieza</h3>
+                                    <div class="fluid-fields">
+                                        <div class="form-group">
+                                            <label class="form-label">Líquido de Frenos</label>
+                                            <select name="liquido_frenos" class="form-select">
+                                                <option value="">Seleccionar nivel</option>
+                                                <option value="optimo">Óptimo</option>
+                                                <option value="medio">Medio</option>
+                                                <option value="bajo">Bajo</option>
+                                                <option value="critico">Crítico</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Líquido de Clutch</label>
+                                            <select name="liquido_clutch" class="form-select">
+                                                <option value="">Seleccionar nivel</option>
+                                                <option value="optimo">Óptimo</option>
+                                                <option value="medio">Medio</option>
+                                                <option value="bajo">Bajo</option>
+                                                <option value="critico">Crítico</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Limpieza Interior</label>
+                                            <select name="limpieza_interior" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="excelente">Excelente</option>
+                                                <option value="bueno">Bueno</option>
+                                                <option value="regular">Regular</option>
+                                                <option value="malo">Malo</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Limpieza Exterior</label>
+                                            <select name="limpieza_exterior" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="excelente">Excelente</option>
+                                                <option value="bueno">Bueno</option>
+                                                <option value="regular">Regular</option>
+                                                <option value="malo">Malo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Sistema Eléctrico -->
+                    <section id="electrico" class="form-section">
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Sistema Eléctrico
+                            </h2>
+                            <div class="fluids-grid">
+                                <!-- Controles y Señales -->
+                                <div class="fluid-section">
+                                    <h3>Controles y Señales</h3>
+                                    <div class="fluid-fields">
+                                        <div class="form-group">
+                                            <label class="form-label">Claxon</label>
+                                            <select name="claxon" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="funcional">Funcional</option>
+                                                <option value="defectuoso">Defectuoso</option>
+                                                <option value="no_funciona">No Funciona</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Luz de Freno</label>
+                                            <select name="luz_freno" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="funcional">Funcional</option>
+                                                <option value="defectuoso">Defectuoso</option>
+                                                <option value="no_funciona">No Funciona</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Intermitentes</label>
+                                            <select name="intermitentes" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="funcional">Funcional</option>
+                                                <option value="defectuoso">Defectuoso</option>
+                                                <option value="no_funciona">No Funciona</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Direccionales</label>
+                                            <select name="direccionales" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="funcional">Funcional</option>
+                                                <option value="defectuoso">Defectuoso</option>
+                                                <option value="no_funciona">No Funciona</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Luz de Reversa</label>
+                                            <select name="luz_reversa" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="funcional">Funcional</option>
+                                                <option value="defectuoso">Defectuoso</option>
+                                                <option value="no_funciona">No Funciona</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sistema de Iluminación -->
+                                <div class="fluid-section">
+                                    <h3>Sistema de Iluminación</h3>
+                                    <div class="fluid-fields">
+                                        <div class="form-group">
+                                            <label class="form-label">Luces de Cuartos</label>
+                                            <select name="luz_cuartos" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="funcional">Funcional</option>
+                                                <option value="defectuoso">Defectuoso</option>
+                                                <option value="no_funciona">No Funciona</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Luces Bajas</label>
+                                            <select name="luces_bajas" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="funcional">Funcional</option>
+                                                <option value="defectuoso">Defectuoso</option>
+                                                <option value="no_funciona">No Funciona</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Luces Altas</label>
+                                            <select name="luces_altas" class="form-select">
+                                                <option value="">Seleccionar estado</option>
+                                                <option value="funcional">Funcional</option>
+                                                <option value="defectuoso">Defectuoso</option>
+                                                <option value="no_funciona">No Funciona</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Fotografías de la Inspección -->
+                    <section id="fotos" class="form-section">
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Fotografías de la Inspección
+                            </h2>
+                            <p style="color: #4b5563; margin-bottom: 24px;">Suba hasta 4 fotografías que documenten el estado del vehículo. Las imágenes deben ser claras y mostrar los aspectos más relevantes de la inspección.</p>
+                            
+                            <div class="photo-grid">
+                                <div class="photo-upload-container">
+                                    <label class="form-label">Fotografía 1</label>
+                                    <div class="photo-upload-area">
+                                        <input type="file" name="foto1" accept="image/*" id="foto1">
+                                        <label for="foto1" style="cursor: pointer;">
+                                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                            <p class="upload-text">Haga clic para subir imagen</p>
+                                            <p class="upload-subtext">PNG, JPG hasta 5MB</p>
+                                        </label>
+                                        <div class="photo-preview">
+                                            <img alt="Vista previa">
+                                            <button type="button" class="remove-photo">Eliminar</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="photo-upload-container">
+                                    <label class="form-label">Fotografía 2</label>
+                                    <div class="photo-upload-area">
+                                        <input type="file" name="foto2" accept="image/*" id="foto2">
+                                        <label for="foto2" style="cursor: pointer;">
+                                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                            <p class="upload-text">Haga clic para subir imagen</p>
+                                            <p class="upload-subtext">PNG, JPG hasta 5MB</p>
+                                        </label>
+                                        <div class="photo-preview">
+                                            <img alt="Vista previa">
+                                            <button type="button" class="remove-photo">Eliminar</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="photo-upload-container">
+                                    <label class="form-label">Fotografía 3</label>
+                                    <div class="photo-upload-area">
+                                        <input type="file" name="foto3" accept="image/*" id="foto3">
+                                        <label for="foto3" style="cursor: pointer;">
+                                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                            <p class="upload-text">Haga clic para subir imagen</p>
+                                            <p class="upload-subtext">PNG, JPG hasta 5MB</p>
+                                        </label>
+                                        <div class="photo-preview">
+                                            <img alt="Vista previa">
+                                            <button type="button" class="remove-photo">Eliminar</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="photo-upload-container">
+                                    <label class="form-label">Fotografía 4</label>
+                                    <div class="photo-upload-area">
+                                        <input type="file" name="foto4" accept="image/*" id="foto4">
+                                        <label for="foto4" style="cursor: pointer;">
+                                            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                            <p class="upload-text">Haga clic para subir imagen</p>
+                                            <p class="upload-subtext">PNG, JPG hasta 5MB</p>
+                                        </label>
+                                        <div class="photo-preview">
+                                            <img alt="Vista previa">
+                                            <button type="button" class="remove-photo">Eliminar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Observaciones Generales -->
+                    <section class="form-section">
+                        <div class="section-card">
+                            <h2 class="section-title">Observaciones Generales</h2>
+                            <textarea id="observaciones" name="observaciones" rows="6" class="form-textarea" placeholder="Escriba aquí cualquier observación adicional sobre el estado del vehículo, problemas encontrados, recomendaciones de mantenimiento, etc."></textarea>
+                        </div>
+                    </section>
+
+                    <!-- Botones de Acción -->
+                    <div class="action-buttons">
+                        <button type="button" id="save-draft" class="btn btn-secondary">
+                            Guardar Borrador
+                        </button>
+                        <button type="button" class="btn btn-primary" id="btnEnvio">
+                            Enviar Inspección
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agregando JavaScript vanilla sin dependencias externas -->
+    <script src="/scripts/infraestructura/scripts_check_list_vehicular.js"></script>
+    <script src="/scripts/calidad/fetch_generica.js"></script>
+    <script>
+        let unidades = <%-JSON.stringify(unidades)%>
+        let tok = <%-JSON.stringify(tok)%>
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Checklist Vehicular</title>
+    <link rel="stylesheet" href="/styles/infraestructura/logistica/estilos_historico_check_list_vehicular.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Sistema de Gestión de Checklist</h1>
+            <p class="subtitle">Visualiza y administra tus registros de vehículos</p>
+        </header>
+
+        <div class="controls">
+            <div class="search-box">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar por fecha, vehículo, solicitante, región o estatus...">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="checklist-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Vehículo</th>
+                        <th>Solicitante</th>
+                        <th>Región</th>
+                        <th>Estatus</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                     
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button id="prevBtn" class="pagination-btn">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Anterior
+            </button>
+            <div id="pageInfo" class="page-info"></div>
+            <button id="nextBtn" class="pagination-btn">
+                Siguiente
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+     <!-- Modal para completar información  -->
+    <div id="completeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Completar Información</h2>
+                <button class="close-btn" onclick="closeModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="observaciones">Observaciones de Logística</label>
+                    <textarea id="observaciones" rows="4" placeholder="Ingrese las observaciones..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="fechaEntrega">Fecha de Entrega</label>
+                    <input type="date" id="fechaEntrega">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button class="btn-primary" onclick="saveCompletion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/infraestructura/logistica/scripts_historico_check_list_vehicular.js"></script>
+    <script src="/scripts/calidad/funcion_fetch_calidad.js"> </script>
+    <script>
+        let checks = <%-JSON.stringify(checks) %>
+        let tok = <%-JSON.stringify(tok) %>
+    </script>
+</body>
+</html>

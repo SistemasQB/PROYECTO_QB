@@ -1,0 +1,514 @@
+/* Reset y configuración base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Header */
+.form-header {
+    background: linear-gradient(135deg, #0d4a8c 0%, #1e5f99 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px 12px 0 0;
+    margin: -20px -20px 30px -20px;
+}
+
+.form-header h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.company-info h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+
+.company-info p {
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.order-number {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.order-number label {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.order-number input {
+    padding: 8px 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #2c3e50;
+    font-weight: 600;
+    min-width: 150px;
+}
+
+/* Secciones del formulario */
+.form-section {
+    margin-bottom: 35px;
+    background: #fafbfc;
+    padding: 25px;
+    border-radius: 10px;
+    border-left: 5px solid #0d4a8c;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.form-section h3 {
+    font-family: 'Montserrat', sans-serif;
+    color: #0d4a8c;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-section h3::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(135deg, #0d4a8c, #1e5f99);
+    border-radius: 2px;
+}
+
+/* Grid del formulario */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px 15px;
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0d4a8c;
+    box-shadow: 0 0 0 3px rgba(13, 74, 140, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Tabla de productos */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.table-container {
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    min-width: 800px;
+}
+
+table th {
+    background: linear-gradient(135deg, #0d4a8c 0%, #1e5f99 100%);
+    color: white;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+table td {
+    padding: 12px;
+    border-bottom: 1px solid #e1e8ed;
+    vertical-align: middle;
+}
+
+table tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.001);
+    transition: all 0.2s ease;
+}
+
+table input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+table input:focus {
+    border-color: #0d4a8c;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(13, 74, 140, 0.1);
+}
+
+.precio-total {
+    font-weight: 600;
+    color: #0d4a8c;
+    text-align: right;
+    font-size: 1.05rem;
+}
+
+/* Botones */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d4a8c 0%, #1e5f99 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(13, 74, 140, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 74, 140, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+}
+
+.btn-remove {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-remove:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+}
+
+/* Sección de totales */
+.totals-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 25px;
+    border-radius: 10px;
+    border: 2px solid #e1e8ed;
+}
+
+.totals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    max-width: 600px;
+    margin-left: auto;
+}
+
+.total-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.total-item label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.total-item span {
+    font-weight: 700;
+    color: #0d4a8c;
+    font-size: 1.1rem;
+}
+
+.total-final {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #0d4a8c 0%, #1e5f99 100%);
+    color: white;
+    font-size: 1.2rem;
+}
+
+.total-final label,
+.total-final span {
+    color: white;
+    font-size: 1.3rem;
+}
+
+/* Sección de firmas */
+.signatures-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.signature-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #e1e8ed;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.signature-box h4 {
+    font-family: 'Montserrat', sans-serif;
+    color: #0d4a8c;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e1e8ed;
+}
+
+.signature-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.signature-fields input {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.signature-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.signature-upload input[type="file"] {
+    display: none;
+}
+
+.signature-upload label {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.signature-upload label:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+}
+
+.signature-preview {
+    min-height: 80px;
+    border: 2px dashed #ddd;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    position: relative;
+}
+
+.signature-preview img {
+    max-width: 100%;
+    max-height: 80px;
+    object-fit: contain;
+}
+
+.signature-preview.empty::after {
+    content: 'Firma aparecerá aquí';
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* Acciones del formulario */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 2px solid #e1e8ed;
+    flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .form-header {
+        padding: 20px;
+        margin: -15px -15px 20px -15px;
+    }
+    
+    .form-header h1 {
+        font-size: 2rem;
+    }
+    
+    .header-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .signatures-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .totals-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+/* Estilos para impresión */
+@media print {
+    body {
+        background: white;
+    }
+    
+    .container {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .form-actions {
+        display: none;
+    }
+    
+    .btn-remove {
+        display: none;
+    }
+    
+    .signature-upload label {
+        display: none;
+    }
+    
+    .form-section {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    table {
+        break-inside: avoid;
+    }
+}

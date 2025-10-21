@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check List de Mantenimiento Autónomo de Vehículos</title>
+    <link rel="stylesheet" href="/styles/infraestructura/estilos_formato_check_list_vehicular.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="document-header">
+            <div class="header-left">
+                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/logistics-company-logo-Z8cJVEsY0uTBxYT1Jp1hn8CDke81cG.png" alt="Logo Empresa" class="company-logo">
+            </div>
+            <div class="header-center">
+                <h1>CHECK LIST DE MANTENIMIENTO</h1>
+                <h2>AUTÓNOMO DE VEHÍCULOS</h2>
+            </div>
+            <div class="header-right">
+                <div class="metadata">
+                    <p><strong>Código:</strong> QB-FR-A-16-02</p>
+                    <p><strong>Rev.:</strong> 01</p>
+                    <p><strong>Fecha de emisión:</strong> 10-04-2023</p>
+                    <p><strong>Fecha de revisión:</strong> 07-09-2023</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Inspection Section -->
+        <div class="section-header">INSPECCIÓN VISUAL DEL VEHÍCULO</div>
+        
+        <div class="subsection-header">DAÑOS, GOLPES, RAYONES Y/O ABOYADURA</div>
+        
+        <div class="primer">
+            <div class="info-grid">
+                <div class="info-row">
+                    <label>FECHA DE RECIBO</label>
+                    <input type="text" class="input-field">
+                </div>
+                <div class="info-row">
+                    <label>UNIDAD</label>
+                    <input type="text" class="input-field">
+                </div>
+                <div class="info-row">
+                    <label>PLACAS</label>
+                    <input type="text" class="input-field">
+                </div>
+                <div class="info-row">
+                    <label>KILOMETRAJE</label>
+                    <input type="text" class="input-field">
+                </div>
+                <div class="info-row">
+                    <label>REGIÓN</label>
+                    <input type="text" class="input-field">
+                </div>
+                <div class="info-row">
+                    <label>USUARIO</label>
+                    <input type="text" class="input-field">
+                </div>
+                <div class="info-row">
+                    <label>RESPONSABLE</label>
+                    <input type="text" class="input-field">
+                </div>
+            </div>
+            <div class="coment">
+                <label for="observacionesLogistica">observaciones logistica vehicular</label>
+                <textarea name="observacionesLogistica" id=""></textarea>
+            </div>
+        </div>        
+        <!-- Tires Table -->
+        <div class="section-header">LLANTAS</div>
+        <div class="table-responsive">
+            <table class="checklist-table">
+                <thead>
+                    <tr>
+                        <th>MEDIDA</th>
+                        <th>DD</th>
+                        <th>DI</th>
+                        <th>TD</th>
+                        <th>TI</th>
+                        <th>REFACCIÓN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>MEDIDA</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>MARCA</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>ESTADO DE VIDA</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>ESTADO DE RIN</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>POLVERAS</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Three Column Table: Accessories, Electrical, Fluids -->
+        <div class="table-responsive">
+            <table class="checklist-table three-column">
+                <thead>
+                    <tr>
+                        <th colspan="1">ACCESORIOS</th>
+                        <th>ESTATUS</th>
+                        <th colspan="1">ELÉCTRICOS</th>
+                        <th>ESTATUS</th>
+                        <th colspan="1">NIVEL DE FLUIDOS</th>
+                        <th>ESTATUS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>BOTIQUÍN</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>CLAXON</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>ANTICONGELANTE</td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>ASIENTOS</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>LUZ DE FRENO</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>ACEITE DE MOTOR</td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>TAPETES</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>INTERMITENTES</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>ACEITE DIRECCIÓN</td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>LIMPIAPARABRISAS</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>DIRECCIONALES</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>ACEITE DE TRANS</td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>ESPEJOS EXTERIORES</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>LUZ DE REVERSA</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>LÍQUIDO DE FRENOS</td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>ESPEJO INTERIOR</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>LUCES (CUARTOS)</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>LÍQUIDO DE FRENOS</td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>GATO</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>LUCES (BAJAS)</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>LÍQUIDO DE CLUTCH</td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>LLAVE DE CRUZ</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>LUCES (ALTAS)</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Reflectors Table -->
+        <div class="table-responsive">
+            <table class="checklist-table">
+                <thead>
+                    <tr>
+                        <th>REFLEJANTES</th>
+                        <th colspan="2">ESTATUS</th>
+                        <th>MARCA</th>
+                        <th>No. SERIE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>EXTINTOR</td>
+                        <td colspan="2"><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>CATALIZADOR</td>
+                        <td colspan="2"><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>PLACAS</td>
+                        <td>BATERÍA</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Documents and Cleaning Table -->
+        <div class="table-responsive">
+            <table class="checklist-table">
+                <thead>
+                    <tr>
+                        <th colspan="2">DOCUMENTOS</th>
+                        <th colspan="3">LIMPIEZA GENERAL DE LA UNIDAD</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th>ESTATUS</th>
+                        <th></th>
+                        <th>ESTATUS</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>T. DE CIRCULACIÓN</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>INTERIOR</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>PÓLIZA DE SEGURO</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td>EXTERIOR</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>VERIFICACIÓN</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>VEHICULAR</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>MANUALES</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>No. LICENCIA DE USUARIO</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- General Observations -->
+        <div class="section-header">OBSERVACIONES GENERALES</div>
+        <div class="observations-area">
+            <textarea class="observations-textarea" rows="6"></textarea>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-grid">
+                <div class="signature-box">
+                    <div class="signature-header">INFORMACIÓN DE ENTREGA</div>
+                    <div class="signature-fields">
+                        <div class="signature-field">
+                            <label>FECHA</label>
+                            <input type="text" class="input-field">
+                        </div>
+                        <div class="signature-field">
+                            <label>HORA</label>
+                            <input type="text" class="input-field">
+                        </div>
+                    </div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-header">FIRMA DEL CONDUCTOR</div>
+                    <div class="signature-area"></div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-header">CAPITAL HUMANO</div>
+                    <div class="signature-area"></div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-header">LOGÍSTICA VEHICULAR</div>
+                    <div class="signature-area"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/infraestructura/scripst_formato_check_list_vehicular.js"></script>
+</body>
+</html>

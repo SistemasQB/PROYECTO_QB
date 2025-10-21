@@ -7,15 +7,12 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { PORT, SECRET_JWT_KEY } from "./src/config.js";
 // import dbSQLS from "./src/config/dbSQLS.js";
-import db from "./src/config/db.js";
-import dbcc1 from "./src/config/dbcc1.js";
-import myConnection from "express-myconnection";
-import mysql from "mysql2";
+import dbs from "./src/config/barril_dbs.js";
+// import myConnection from "express-myconnection";
+// import mysql from "mysql2";
 import cors from "cors";
 
-import multer from "multer";
 
-import Swal from 'sweetalert2'
 // import mariadb from "mariadb";
 import { default as customerRoutes } from "./src/routes/userRoutes.js";
 import { default as adminRoutes } from "./src/routes/adminRoutes.js";
@@ -26,6 +23,7 @@ import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
 import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
 import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
 import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
+import {default as infraestructuraRouter} from "./src/routes/infraestructuraRouter.js";
 
 import {
   Controlpiezas,
@@ -77,12 +75,16 @@ app.use( cookieParser() )
 
 //conexion a la base de datos
 try {
-  await db.authenticate()
-  db.sync()
-  await dbcc1.authenticate()
-  dbcc1.sync()
+  await dbs.db.authenticate()
+  dbs.db.sync()
   console.log('Conexion Correcta a la base de datos');
-
+  await dbs.dbCompras.authenticate()
+  dbs.dbCompras.sync()
+  console.log('Conexion Correcta a la base de datos de compras');
+  await dbs.dbCalidad.authenticate();
+  dbs.dbCalidad.sync()
+  console.log('Conexion Correcta a la base de datos de calidad');
+  dbs.dbSistemas.sync()
 }
 catch (error) {
   console.log(error);
@@ -166,7 +168,7 @@ app.use('/atraccion',csrfProtection, atraccionRoutes);
 app.use('/capitalhumano',csrfProtection, capitalhumanoRoutes);
 app.use('/sorteo',csrfProtection, sorteoRoutes);
 app.use('/nominas',csrfProtection, nominasRoutes);
-
+app.use('/infraestructura', infraestructuraRouter)
 
 
 

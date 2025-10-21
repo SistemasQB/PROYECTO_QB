@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Orden de Compra</title>
+    <link rel="stylesheet" href="/styles/infraestructura/estilos_orden_compra.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="form-header">
+            <h1>ORDEN DE COMPRA</h1>
+            <div class="header-info">
+                <div class="company-info">
+                    <h2>QUALITY BOLCA</h2>
+                    <p>RFC: QBO0902209C9</p>
+                </div>
+                <!-- <div class="order-number">
+                    <label for="orderNumber">No. Orden:</label>
+                    <input type="text" id="orderNumber" name="orderNumber" disabled>
+                </div> -->
+            </div>
+        </header>
+
+        <form id="purchaseOrderForm">
+            <!-- Información General -->
+            <section class="form-section">
+                <h3>Información General</h3>
+                <div class="form-grid">
+                    
+                    <div class="form-group">
+                        <label for="lugar">Lugar:</label>
+                        <input type="text" id="lugar" name="lugar" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Información del Proveedor -->
+            <section class="form-section">
+                <h3>Información del Proveedor</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nombreProveedor">Nombre del Proveedor:</label>
+                        <!-- <input type="text" id="nombreProveedor" name="nombreProveedor" required> -->
+                        <select id="nombreProveedor" name="nombreProveedor"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono:</label>
+                        <input type="tel" id="telefono" name="telefono" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contacto">Contacto:</label>
+                        <input type="text" id="contacto" name="contacto" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fechas y Términos -->
+            <section class="form-section">
+                <h3>Fechas y Términos</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fechaPago">Fecha de Pago:</label>
+                        <input type="date" id="fechaPago" name="fechaPago" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="formaPago">Forma de Pago:</label>
+                        <select id="formaPago" name="formaPago" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="transferencia">Transferencia Bancaria</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="credito">Crédito</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="terminosEntrega">Términos de Entrega:</label>
+                        <input type="text" id="terminosEntrega" name="terminosEntrega" required>
+                    </div>
+                    <!-- <div class="form-group full-width">
+                        <label for="zonaServicio">Zona de Servicio:</label>
+                        <input type="text" id="zonaServicio" name="zonaServicio" required>
+                    </div> -->
+                </div>
+            </section>
+
+            <!-- Productos/Servicios -->
+            <section class="form-section">
+                <div class="section-header">
+                    <h3>Productos/Servicios</h3>
+                    <button type="button" id="addRowBtn" class="btn btn-secondary">+ Agregar Fila</button>
+                </div>
+                
+                <div class="table-container">
+                    <table id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>No. Item</th>
+                                <th>Servicio/Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Precio Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td>1</td>
+                                <td><input type="text" name="producto[]" required></td>
+                                <td><input type="number" name="cantidad[]" min="1" step="1" required></td>
+                                <td><input type="number" name="precioUnitario[]" min="0" step="0.01" required></td>
+                                <td class="precio-total">$0.00</td>
+                                <td><button type="button" class="btn-remove">Eliminar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totales -->
+                <div class="totals-section">
+                    <div class="totals-grid">
+                        <div class="total-item">
+                            <label>Subtotal:</label>
+                            <span id="subtotal">$0.00</span>
+                        </div>
+                        <div class="total-item">
+                            <label>IVA (16%):</label>
+                            <span id="iva">$0.00</span>
+                        </div>
+                        <!-- <div class="total-item">
+                            <label>ISR (10%):</label>
+                            <span id="isr">$0.00</span>
+                        </div> -->
+                        <div class="total-item total-final">
+                            <label>Total:</label>
+                            <span id="total">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Observaciones -->
+            <section class="form-section">
+                <h3>Observaciones</h3>
+                <div class="form-group">
+                    <textarea id="observaciones" name="observaciones" rows="4" placeholder="Ingrese observaciones adicionales..."></textarea>
+                </div>
+            </section>
+
+            <!-- Firmas -->
+            <!-- <section class="form-section">
+                <h3>Firmas y Autorizaciones</h3>
+                <div class="signatures-grid">
+                    <div class="signature-box">
+                        <h4>Solicitante</h4>
+                        <div class="signature-fields">
+                            <input type="text" placeholder="Nombre completo" name="nombreSolicitante">
+                            <input type="text" placeholder="Puesto" name="puestoSolicitante">
+                            <div class="signature-upload">
+                                <input type="file" id="firmaSolicitante" accept="image/*">
+                                <label for="firmaSolicitante">Subir Firma</label>
+                                <div class="signature-preview" id="previewSolicitante"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="signature-box">
+                        <h4>Confirma Pago</h4>
+                        <div class="signature-fields">
+                            <input type="text" placeholder="Nombre completo" name="nombreConfirma">
+                            <input type="text" placeholder="Puesto" name="puestoConfirma">
+                            <div class="signature-upload">
+                                <input type="file" id="firmaConfirma" accept="image/*">
+                                <label for="firmaConfirma">Subir Firma</label>
+                                <div class="signature-preview" id="previewConfirma"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="signature-box">
+                        <h4>Autoriza</h4>
+                        <div class="signature-fields">
+                            <input type="text" placeholder="Nombre completo" name="nombreAutoriza">
+                            <input type="text" placeholder="Puesto" name="puestoAutoriza">
+                            <div class="signature-upload">
+                                <input type="file" id="firmaAutoriza" accept="image/*">
+                                <label for="firmaAutoriza">Subir Firma</label>
+                                <div class="signature-preview" id="previewAutoriza"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> -->
+
+            <!-- Botones de Acción -->
+            <div class="form-actions">
+                <button type="button" id="clearBtn" class="btn btn-secondary">Limpiar Formulario</button>
+                <!-- <button type="button" id="printBtn" class="btn btn-primary">imprimir</button> -->
+                <button type="submit" class="btn btn-primary">Generar Orden</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="/scripts/infraestructura/scripts_orden_compra.js"></script>
+    <script>
+
+        let proveedores = <%- JSON.stringify(proveedores)%>
+        let tok = <%- JSON.stringify(tok)%>
+    </script>
+    <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
+</body>
+</html>

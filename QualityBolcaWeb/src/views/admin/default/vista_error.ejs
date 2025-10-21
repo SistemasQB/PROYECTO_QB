@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo de uso - Plantilla de Error</title>
+    <link rel="stylesheet" href="/styles/default/estilos_vista_error.css">
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-content">
+            <div class="error-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2"/>
+                    <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </div>
+
+            <h1 class="error-code" id="errorCode"></h1>
+            <h2 class="error-title" id="errorTitle">Ups... no se pudo cargar la página solicitada</h2>
+            <p class="error-description" id="errorDescription">
+                Por el motivo: <span class="error-reason" id="errorReason"></span>
+            </p>
+
+            <div class="error-actions">
+                <button class="btn-primary" onclick="goHome()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <polyline points="9,22 9,12 15,12 15,22" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    Ir al inicio
+                </button>
+                <button class="btn-secondary" onclick="goBack()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="15,18 9,12 15,6" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    Regresar
+                </button>
+            </div>
+
+            <div class="error-help">
+                <p>¿Necesitas ayuda? <a href="mailto:soporte@empresa.com" class="help-link">Contacta soporte</a></p>
+            </div>
+        </div>
+
+        <div class="background-pattern"></div>
+    </div>
+
+    <script src="/scripts/default/scripts_vista_error.js"></script>
+    <script>
+        let error = <%-JSON.stringify(error)%>
+    </script>
+    <!-- <script>
+        // Ejemplo de configuración personalizada desde el backend
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Simular datos del backend
+            setTimeout(() => {
+                setErrorDetails(
+                    '500',
+                    'Ups... no se pudo cargar la página solicitada',
+                    'La base de datos no está disponible temporalmente',
+                    {
+                        homeUrl: '/dashboard',
+                        supportEmail: 'ayuda@miempresa.com'
+                    }
+                );
+            }, 100);
+        });
+    </script> -->
+</body>
+</html>

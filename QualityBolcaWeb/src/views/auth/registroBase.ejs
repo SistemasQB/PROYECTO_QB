@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario - Sistema de Administración</title>
+    <link rel="stylesheet" href="/styles/estilos_registro_base.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Registro de Usuario</h1>
+            <p>Sistema de Administración</p>
+        </div>
+
+        <div class="form-card">
+            <form id="userRegistrationForm" novalidate>
+                <!-- Datos Personales -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Datos Personales
+                    </h2>
+                    <div class="form-grid" >
+                        <div class="form-group">
+                            <label for="nombre">Nombre(s)<span class="required">*</span></label>
+                            <input type="text" id="nombre" name="nombre" required>
+                            <span class="error-message" id="nombre-error">Este campo es requerido</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="apellidoPaterno">Apellido Paterno<span class="required">*</span></label>
+                            <input type="text" id="apellidoPaterno" name="apellidoPaterno" required>
+                            <span class="error-message" id="apellidoPaterno-error">Este campo es requerido</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="apellidoMaterno">Apellido Materno</label>
+                            <input type="text" id="apellidoMaterno" name="apellidoMaterno">
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="fechaNacimiento">Fecha de Nacimiento<span class="required">*</span></label>
+                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                            <span class="error-message" id="fechaNacimiento-error">Este campo es requerido</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="curp">CURP<span class="required">*</span></label>
+                            <input type="text" id="curp" name="curp" maxlength="18" pattern="[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9]{2}" required>
+                            <span class="error-message" id="curp-error">CURP inválido (18 caracteres)</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="rfc">RFC</label>
+                            <input type="text" id="rfc" name="rfc" maxlength="13">
+                        </div> -->
+                    </div>
+                </div>
+
+                <!-- Estructura Operativa -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Estructura Operativa
+                    </h2>
+                    <div class="form-grid">
+                        <!-- <div class="form-group">
+                            <label for="numeroEmpleado">Número de Empleado<span class="required">*</span></label>
+                            <input type="text" id="numeroEmpleado" name="numeroEmpleado" required>
+                            <span class="error-message" id="numeroEmpleado-error">Este campo es requerido</span>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="departamento">Departamento<span class="required">*</span></label>
+                            <select id="departamento" name="departamento" required>
+                                <option value="">Seleccione un departamento</option>
+                                <option value="Administracion y finanzas">Administracion y finanzas</option>
+                                <option value="Comercializacion y ventas">Comercializacion y ventas</option>
+                                <option value="Control y Mejora del Servicio">Control y Mejora del Servicio</option>
+                                <option value="Ejecucion del Servicio">Ejecucion del Servicio</option>
+                                <option value="Gestion de Capital Humano">Gestion de Capital Humano</option>
+                                <option value="Gestion de Infraestructura">Gestion de Infraestructura</option>
+                                <option value="Planeacion del servicio">Planeacion del servicio</option>
+                                <option value="Planeacion y Direccion Estrategica">Planeacion y Direccion Estrategica</option>
+                                <option value="Sistema de Gestion de la Calidad">Sistema de Gestion de la Calidad</option>
+                            </select>
+                            <span class="error-message" id="departamento-error">Seleccione un departamento</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="puesto">Puesto<span class="required">*</span></label>
+                            <input type="text" id="puesto" name="puesto" required>
+                            <span class="error-message" id="puesto-error">Este campo es requerido</span>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="nivelAcceso">Nivel de Acceso<span class="required">*</span></label>
+                            <select id="nivelAcceso" name="nivelAcceso" required>
+                                <option value="">Seleccione un nivel</option>
+                                <option value="basico">Básico</option>
+                                <option value="intermedio">Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                                <option value="administrador">Administrador</option>
+                            </select>
+                            <span class="error-message" id="nivelAcceso-error">Seleccione un nivel de acceso</span>
+                        </div> -->
+                        <!-- <div class="form-group">
+                            <label for="fechaIngreso">Fecha de Ingreso<span class="required">*</span></label>
+                            <input type="date" id="fechaIngreso" name="fechaIngreso" required>
+                            <span class="error-message" id="fechaIngreso-error">Este campo es requerido</span>
+                        </div> -->
+                        <!-- <div class="form-group">
+                            <label for="supervisor">Supervisor Directo</label>
+                            <input type="text" id="supervisor" name="supervisor">
+                        </div> -->
+                    </div>
+                </div>
+
+                <!-- Datos de Contacto -->
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Datos de Contacto
+                    </h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico Corporativo<span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required>
+                            <span class="error-message" id="email-error">Ingrese un correo válido</span>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="emailPersonal">Correo Electrónico Personal</label>
+                            <input type="email" id="emailPersonal" name="emailPersonal">
+                            <span class="error-message" id="emailPersonal-error">Ingrese un correo válido</span>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="telefono">Teléfono<span class="required">*</span></label>
+                            <input type="tel" id="telefono" name="telefono" pattern="[0-9]{10}" maxlength="10" required>
+                            <span class="error-message" id="telefono-error">Ingrese 10 dígitos</span>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="extension">Extensión</label>
+                            <input type="text" id="extension" name="extension" maxlength="5">
+                        </div> -->
+                        <!-- <div class="form-group full-width">
+                            <label for="direccion">Dirección</label>
+                            <textarea id="direccion" name="direccion" rows="3"></textarea>
+                        </div> -->
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="button-group">
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span class="spinner" id="spinner"></span>
+                        <span id="submitText">Registrar Usuario</span>
+                    </button>
+                    <button type="button" class="btn-secondary" id="clearBtn">
+                        Limpiar Formulario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <svg class="toast-icon" id="toastIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <div class="toast-content">
+            <div class="toast-title" id="toastTitle">Título</div>
+            <div class="toast-message" id="toastMessage">Mensaje</div>
+        </div>
+    </div>
+
+    <script src="/scripts/scripts_registro_base.js"></script>
+</body>
+</html>

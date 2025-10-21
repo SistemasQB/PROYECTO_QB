@@ -1,0 +1,95 @@
+<link rel="stylesheet" href="/styles/infraestructura/estilos_globales.css">
+    
+</head>
+<body>
+<!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-warehouse"></i>
+                <span>Quality Bolca</span>
+            </div>
+            <button class="nav-home-btn" onclick="goHome()">
+                <i class="fas fa-home"></i>
+                Inicio
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hamburger Menu -->
+    <div class="hamburger-menu" id="hamburgerMenu">
+        <button class="hamburger-btn" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+        <div class="menu-content" id="menuContent">
+            <div class="menu-header">
+                <h3>Menú Principal</h3>
+                <button class="close-btn" onclick="closeMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <ul class="menu-items">
+                <li>
+                    <a href="inicio" class="menu-item">
+                        <i class="fas fa-home"></i>
+                        Inicio
+                    </a>
+                </li>
+                <li class="menu-item-with-submenu">
+                    <button class="menu-item" onclick="toggleSubmenu('ordenes')">
+                        <i class="fas fa-shopping-cart"></i>
+                        Órdenes de Compra
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </button>
+                    <ul class="submenu" id="ordenes-submenu">
+                        <li><a href="ordenCompra">Nueva Orden</a></li>
+                        <li><a href="historicoOrdenesCompra">Órdenes Hechas</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <button class="menu-item" onclick="toggleSubmenu('inventario')">
+                        <i class="fas fa-chart-bar"></i>
+                        Control Inventario
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </button>
+                    <ul class="submenu" id="inventario-submenu">
+                        <li><a href="">Entradas</a></li>
+                        <li><a href="">Salidas</a></li>
+                        <li><a href="">inventario</a></li>
+                        <li><a href="">proveedores</a></li>
+                        <li><a href="">reportes</a></li>
+                        <li><a href="">Pedidos de insumos</a></li>
+                    </ul>  
+                </li>
+                <li class="menu-item-with-submenu">
+                    <button class="menu-item" onclick="toggleSubmenu('reportes')">
+                        <i class="fas fa-chart-bar"></i>
+                        Reportes
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </button>
+                    <ul class="submenu" id="reportes-submenu">
+                        <li><a href="reportes-ventas.html">Ventas</a></li>
+                        <li><a href="reportes-inventario.html">Inventario</a></li>
+                    </ul>
+                </li>
+                <!-- <li>
+                    <a href="proveedores.html" class="menu-item">
+                        <i class="fas fa-users"></i>
+                        Proveedores
+                    </a>
+                </li> -->
+                <li class="menu-item-with-submenu">
+                    <button class="menu-item" onclick="toggleSubmenu('logistica')">
+                        <i class="fa fa-truck"></i>
+                        Logistica
+                        <i class="fas fa-chevron-down submenu-arrow"></i>
+                    </button>
+                    <ul class="submenu" id="logistica-submenu">
+                        <li><a href="">Unidades</a></li>
+                        <li><a href="historico_check_list_vehicular">Historico Check List</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>

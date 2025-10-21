@@ -1,9 +1,3 @@
-// import { NOMBRE, CONTRA } from "../../config";
-// import Swal from 'sweetalert2'
-
-// import { ResNetModel } from "@xenova/transformers"
-
-// const datosMain = [];
 
 const $ = el => document.querySelector(el)
 const logForm = $('#loginBtn')
@@ -12,16 +6,10 @@ const regForm = $('#registerBtn')
 const loginForm = document.getElementById('loginForm')
 const registerForm = $('#register-form')
 const logoutButton = $('#close-session')
-
 const inputEmail = document.getElementById('inputEmail')
-
-
-
-
 
 loginForm?.addEventListener('submit',  e => {
     e.preventDefault()
-    // const checkedR = document.getElementById('checkRemember').checked;
     const formData = new FormData(loginForm)
     const urlEncoded = new URLSearchParams(formData).toString();
     

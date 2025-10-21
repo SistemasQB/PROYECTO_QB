@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Órdenes - Quality Bolca</title>
+    <link rel="stylesheet" href="/styles/infraestructura/estilos_historico_ordenes_compra.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <%- include('partials/menu-hamburguesa.ejs')%>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Histórico de Órdenes de Compra</h1>
+                <p>Gestiona y revisa todas las órdenes de compra realizadas</p>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por fecha, lugar, proveedor..." onkeyup="filterTable()">
+                </div>
+                <button class="btn-primary" id="btnNuevaOrden">
+                    <i class="fas fa-plus"></i>
+                    Nueva Orden
+                </button>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="table-container">
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>numero de Orden</th>
+                            <th>Fecha</th>
+                            <th>Lugar</th>
+                            <th>Proveedor</th>
+                            <th>Solicitudes</th>
+                            <th>Observaciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaOrdenes">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Orden de Compra</h3>
+                <button class="close-btn" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="modal-form" id="editForm">
+                <div class="form-group">
+                    <label for="editFecha">Fecha:</label>
+                    <input type="date" id="editFecha" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLugar">Lugar:</label>
+                    <input type="text" id="editLugar" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProveedor">Proveedor:</label>
+                    <input type="text" id="editProveedor" required>
+                </div>
+                <div class="form-group">
+                    <label for="editSolicitudes">Solicitudes:</label>
+                    <textarea id="editSolicitudes" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editObservaciones">Observaciones:</label>
+                    <textarea id="editObservaciones" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/scripts/infraestructura/scripts_global.js"></script>
+    <script src="/scripts/infraestructura/scripts_historico_ordenes_compra.js"></script>
+    <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
+    <script>
+        let ordenes = <%-JSON.stringify(ordenes);%>
+        let tok = <%-JSON.stringify(tok);%>
+    </script>
+</body>
+</html>

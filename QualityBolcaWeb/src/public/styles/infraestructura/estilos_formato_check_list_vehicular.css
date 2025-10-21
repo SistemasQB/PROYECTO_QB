@@ -1,0 +1,317 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  padding: 20px;
+  line-height: 1.4;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Styles */
+.document-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 2px solid #1e3a5f;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.header-left {
+  flex: 0 0 auto;
+}
+
+.company-logo {
+  width: 120px;
+  height: auto;
+}
+
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+.header-center h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1e3a5f;
+  margin-bottom: 5px;
+}
+
+.header-center h2 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1e3a5f;
+}
+
+.header-right {
+  flex: 0 0 auto;
+}
+
+.metadata {
+  text-align: right;
+  font-size: 12px;
+}
+
+.metadata p {
+  margin-bottom: 4px;
+}
+
+/* Section Headers */
+.section-header {
+  background-color: #1e3a5f;
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.subsection-header {
+  background-color: #4a90e2;
+  color: white;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+}
+
+
+
+.info-row {
+  display: flex;
+  border: 1px solid #333;
+}
+
+.info-row label {
+  background-color: #1e3a5f;
+  color: white;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 12px;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+}
+
+.input-field {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  font-size: 13px;
+}
+
+/* Tables */
+.table-responsive {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.checklist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.checklist-table th {
+  background-color: #1e3a5f;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #333;
+  font-weight: bold;
+}
+
+.checklist-table td {
+  border: 1px solid #333;
+  padding: 8px;
+  text-align: left;
+}
+
+.checklist-table td:first-child {
+  font-weight: bold;
+  background-color: #f8f9fa;
+}
+
+.table-input {
+  width: 100%;
+  border: none;
+  padding: 4px;
+  font-size: 12px;
+  background-color: transparent;
+}
+
+.table-input:focus {
+  outline: 2px solid #4a90e2;
+  background-color: #f0f8ff;
+}
+
+/* Three Column Table Specific */
+.three-column tbody td:nth-child(odd) {
+  font-weight: bold;
+  background-color: #f8f9fa;
+  width: 35%;
+}
+
+.three-column tbody td:nth-child(even) {
+  width: 15%;
+}
+
+/* Observations */
+.observations-area {
+  margin-bottom: 20px;
+}
+
+.observations-textarea {
+  width: 100%;
+  border: 2px solid #333;
+  padding: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.observations-textarea:focus {
+  outline: 2px solid #4a90e2;
+}
+
+/* Signature Section */
+.signature-section {
+  margin-top: 30px;
+}
+
+.signature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.signature-box {
+  border: 2px solid #333;
+}
+
+.signature-header {
+  background-color: #1e3a5f;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.signature-fields {
+  padding: 10px;
+}
+
+.signature-field {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.signature-field label {
+  background-color: #1e3a5f;
+  color: white;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 11px;
+  min-width: 80px;
+}
+
+.signature-area {
+  height: 80px;
+  border-top: 1px solid #ddd;
+  background-color: #fafafa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .document-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header-center h1 {
+    font-size: 16px;
+  }
+
+  .header-center h2 {
+    font-size: 14px;
+  }
+
+  .metadata {
+    text-align: center;
+  }
+
+  .company-logo {
+    width: 80px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checklist-table {
+    font-size: 10px;
+  }
+
+  .checklist-table th,
+  .checklist-table td {
+    padding: 6px 4px;
+  }
+
+  .signature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  body {
+    background-color: white;
+    padding: 0;
+  }
+
+  .container {
+    box-shadow: none;
+    padding: 10px;
+  }
+
+  .table-input,
+  .input-field,
+  .observations-textarea {
+    border: none;
+    border-bottom: 1px solid #333;
+  }
+}

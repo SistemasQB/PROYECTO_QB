@@ -46,6 +46,9 @@ import { default as Semanal } from './nominas/semanal.js';
 import { default as modeloDirectorioCalidad } from './calidad/directorioPersonal.js';
 import { default as bitacoraActividades } from './calidad/bitacoraActividades.js';
 import modelosSorteo from '../models/sorteo/barrilModelosSorteo.js'
+import modelosInfraestructura from './infraestructura/barril_modelo_compras.js';
+import modelosSistemas from './sistemas/barril_modelos_sistemas.js';
+
 
 
 // Configuración de Sequelize
@@ -53,11 +56,14 @@ const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
   host: '86.38.218.253',
   dialect: 'mariadb' // o el dialecto que estés utilizando
 });
+const qb = new Sequelize(process.env.BD_NOMBRE, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: 'mariadb'})
+const compras = new Sequelize(process.env.BD_COMPRAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: 'mariadb'})
+const calidad = new Sequelize(process.env.BD_CALIDAD, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: 'mariadb'})
+const sistemas = new Sequelize(process.env.BD_SISTEMAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: 'mariadb'})
 
 // Definir asociaciones
 // Comunicacion.belongsTo(Gch_Alta, { foreignKey: 'curp', targetKey: 'id' });
 // Gch_Alta.hasOne(Comunicacion, { foreignKey: 'curp', sourceKey: 'id' });
-
 // informacionpuesto.belongsTo(informaciongch, { foreignKey: 'idpuesto', targetKey: 'idpuesto' });
 // informaciongch.hasOne(informacionpuesto, { foreignKey: 'idpuesto', sourceKey: 'idpuesto' });
 
@@ -66,24 +72,20 @@ informacionpuesto.hasOne(informaciongch, { foreignKey: 'idpuesto', sourceKey: 'i
 
 // Vales.belongsTo(informaciongch, { foreignKey: 'numeroEmpleado', targetKey: 'codigoempleado' });
 // Vales.hasOne(informaciongch, { foreignKey: 'numeroEmpleado', targetKey: 'codigoempleado' });
-
-
 // Vales.hasOne(Inventario, { foreignKey: 'IdFolio', targetKey: 'folio' });
-
 // Inventario.belongsTo(Vales, { foreignKey: 'folio', targetKey: 'idFolio' });
 // Vales.hasOne(Inventario, { foreignKey: 'folio', sourceKey: 'idFolio' });
-
-
-
-
-
-
 
 // Sincronizar la base de datos
 (async () => {
   try {
     await sequelize.sync({ force: true });
+    await qb.sync({force: true});
+    await compras.sync({force: true});
+    await calidad.sync({force: true});
+    await sistemas.sync({force: true});
     console.log('Base de datos sincronizada');
+    
   } catch (error) {
     console.error('Error al sincronizar la base de datos:', error);
   }
@@ -135,5 +137,7 @@ export {
   LoteCC1,
   Controlpiezas2,
   modelosSorteo,
-  modeloDirectorioCalidad
+  modeloDirectorioCalidad,
+  modelosInfraestructura,
+  modelosSistemas
 };
