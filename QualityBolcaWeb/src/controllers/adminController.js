@@ -790,11 +790,9 @@ controller.organigrama = (req, res) => {
 
 controller.valeresguardo = async (req, res) => {
     let valeasignacion
-
     const { codigoempleado } = req.usuario
-
     const obtenerFolio = await Vales.findOne({ where: { numeroEmpleado: codigoempleado } });
-
+    if(!obtenerFolio) return res.json({msg: `no hay vale`})
     const resultado = await db.query(
         `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
          FROM inventario i

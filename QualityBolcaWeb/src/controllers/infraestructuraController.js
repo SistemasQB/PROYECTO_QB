@@ -75,6 +75,14 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
                     let campitos = req.body
                     delete campitos._csrf
                     delete campitos.tipo
+                    
+                        let servicios = JSON.parse(campitos.servicios)
+                        let partidas = JSON.parse(servicios.partidas)
+                        servicios.partidas = partidas
+                        campitos.servicios = servicios
+                        campitos.informacionProveedor = JSON.parse(campitos.informacionProveedor)
+                        console.log(campitos)
+                        
                     let respuesta = await clase.insertar({datosInsertar: campitos})
                     if (respuesta) return res.json({ok:respuesta, msg:'informacion almacenada con exito'})
                     return res.json({ok:false, msg:'no se pudo guardar la informacion en la base de datos'})

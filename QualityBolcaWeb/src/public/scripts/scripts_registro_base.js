@@ -1,13 +1,13 @@
-let puestos = {
-  AdministracionyFinanzas:[],
-  ComercializacionyVentas:[],
-  ControlyMejoradelServicio:[],
-  EjecuciondelServicio:[],
-  GestiondeCapitalHumano:[],
-  GestiondeInfraestructura:[],
-  Planeaciondelservicio:[],
-  PlaneacionyDireccionEstrategica:[],
-  SistemadeGestiondelaCalidad:[],
+let departamentos = {
+  AdministracionyFinanzas:['Facturacion y Cobranza'],
+  ComercializacionyVentas:['Comercializacion y Ventas'],
+  ControlyMejoradelServicio:['Control y Mejora del Servicio'],
+  EjecuciondelServicio:['Ejecucion del Servicio', 'Capturacion'],
+  GestiondeCapitalHumano:['Atraccion de capital Humano', 'Gerstion de Capital Humano','Nominas'],
+  GestiondeInfraestructura:['Compras', 'Gastos', 'Logistica Vehicular', 'Tecnologias de la Informacion'],
+  Planeaciondelservicio:['Servicio al Cliente'],
+  PlaneacionyDireccionEstrategica:['Alta Direccion'],
+  SistemadeGestiondelaCalidad:['Sistema de Gestion de la Calidad'],
 }
 
 
@@ -21,6 +21,25 @@ const toast = document.getElementById("toast")
 const toastIcon = document.getElementById("toastIcon")
 const toastTitle = document.getElementById("toastTitle")
 const toastMessage = document.getElementById("toastMessage")
+const puesto = document.getElementById("puesto")
+const departamento = document.getElementById("departamento")
+
+
+//escucha de puestos y departamentos
+departamento.addEventListener('change', (e) => {
+  for (const [dep, valor] of Object.entries(departamentos)){
+    let de = e.target.value.replace(/ /g, '')
+    if(dep == de){
+        let op = valor.map((puesto) => {
+            return `<option value="${puesto}">${puesto}</option>`
+        }).join('')
+        puesto.innerHTML = op
+        break;
+      }
+  }
+  
+    
+})
 
 // Validación en tiempo real
 const inputs = form.querySelectorAll("input, select, textarea")
@@ -140,9 +159,9 @@ form.addEventListener("submit", async (e) => {
   const userData = Object.fromEntries(formData.entries())
 
   // Convertir CURP a mayúsculas
-  if (userData.curp) {
-    userData.curp = userData.curp.toUpperCase()
-  }
+  // if (userData.curp) {
+  //   userData.curp = userData.curp.toUpperCase()
+  // }
 
   // Simular envío al servidor (aquí conectarías con tu API)
   try {
@@ -181,11 +200,11 @@ clearBtn.addEventListener("click", () => {
 })
 
 // Establecer fecha máxima para fecha de nacimiento (18 años atrás)
-const fechaNacimiento = document.getElementById("fechaNacimiento")
-const today = new Date()
-const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
-fechaNacimiento.max = maxDate.toISOString().split("T")[0]
+// const fechaNacimiento = document.getElementById("fechaNacimiento")
+// const today = new Date()
+// const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+// fechaNacimiento.max = maxDate.toISOString().split("T")[0]
 
 // Establecer fecha máxima para fecha de ingreso (hoy)
-const fechaIngreso = document.getElementById("fechaIngreso")
-fechaIngreso.max = today.toISOString().split("T")[0]
+// const fechaIngreso = document.getElementById("fechaIngreso")
+// fechaIngreso.max = today.toISOString().split("T")[0]

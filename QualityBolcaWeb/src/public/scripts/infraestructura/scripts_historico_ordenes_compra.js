@@ -5,34 +5,27 @@
 let currentEditingOrder = null
 
 // Sample orders data
-let ordersData = [
-  {
-    id: 1,
-    fecha: "2024-01-15",
-    lugar: "Almacén Central",
-    proveedor: "Proveedor ABC",
-    solicitudes: "Tornillos, Tuercas",
-    observaciones: "Entrega urgente",
-  },
-  {
-    id: 2,
-    fecha: "2024-01-12",
-    lugar: "Sucursal Norte",
-    proveedor: "Materiales XYZ",
-    solicitudes: "Cables, Conectores",
-    observaciones: "Revisar calidad",
-  },
-  {
-    id: 3,
-    fecha: "2024-01-10",
-    lugar: "Almacén Sur",
-    proveedor: "Suministros DEF",
-    solicitudes: "Herramientas",
-    observaciones: "Completado",
-  },
-]
+
 document.addEventListener('DOMContentLoaded', function() {
+  const btnAgregar = document.getElementById('addRowBtn');
+  btnAgregar.addEventListener('click', (e) => {
+      let tabla = document.getElementById('productsTableBody')
+      let total = tabla.rows.length
+      let fila = document.createElement('tr')
+      fila.setAttribute('id', `row${total+1}`)
+      fila.innerHTML = `
+        <td>${total+1}</td>
+        <td><input type="text" name="producto[]" required></td>
+        <td><input type="number" name="cantidad[]" min="1" step="1" required></td>
+        <td><input type="number" name="precioUnitario[]" min="0" step="1" required></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1"  required></td>
+        <td><button type="button" class="btn-remove" >Eliminar</button></td>
+        `
+    tabla.appendChild(fila)
+  })
+  
   renderTable()
+  agregarListenersEliminacion()
 })
 // Filter table function
 function filterTable() {
@@ -40,7 +33,8 @@ function filterTable() {
   const table = document.getElementById("ordersTable")
   const rows = table.getElementsByTagName("tr")
   const searchTerm = searchInput.value.toLowerCase()
-
+  
+  
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i]
     const cells = row.getElementsByTagName("td")
@@ -57,24 +51,40 @@ function filterTable() {
 
     row.style.display = found ? "" : "none"
   }
+  
 }
 
 // Edit order functions
 function openEditModal(orderId) {
   const order = ordenes.find((o) => o.id === orderId)
   if (!order) return
-
+  
   currentEditingOrder = orderId
-
-  document.getElementById("editFecha").value = order.fecha
+  let informacionPro = JSON.parse(order.informacionProveedor)
+  let servicios = JSON.parse(order.servicios)
+  let filas = servicios.partidas.map((p) => {
+     return `<tr id='row${p.item}'>
+        <td>${p.item}</td>
+        <td><input type="text" name="producto[]" value = '${p.producto}'required></td>
+        <td><input type="number" name="cantidad[]" min="1" step="1" value = '${p.cantidad}'required></td>
+        <td><input type="number" name="precioUnitario[]" min="0" step="1" value = '${p.precioUnitario}' required></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1" value ='${p.precioUnitario}' required></td>
+        <td><button type="button" class="btn-remove">Eliminar</button></td></tr>
+    `
+  }).join('')
+  let tabla = document.getElementById('productsTableBody')
+  tabla.innerHTML = filas
+  
+  document.getElementById("editFecha").value = order.fecha.split("T")[0]
   document.getElementById("editLugar").value = order.lugar
-  document.getElementById("editProveedor").value = order.proveedor
+  document.getElementById("editProveedor").value = informacionPro.proveedor
   document.getElementById("editSolicitudes").value = order.solicitudes
   document.getElementById("editObservaciones").value = order.observaciones
 
   const modal = document.getElementById("editModal")
   modal.classList.add("active")
   document.body.style.overflow = "hidden"
+  agregarListenersEliminacion()
 }
 
 function closeEditModal() {
@@ -92,7 +102,6 @@ document.getElementById("editForm").addEventListener("submit", (e) => {
 
   const orderIndex = ordersData.findIndex((o) => o.id === currentEditingOrder)
   if (orderIndex === -1) return
-
   // Update order data
   ordersData[orderIndex] = {
     ...ordersData[orderIndex],
@@ -136,12 +145,13 @@ function updateTableRow(orderId, orderData) {
 async function sendToProvider(orderId) {
   const order = ordenes.find((o) => o.id === orderId)
   if (!order) return
+  
   let infPro = JSON.parse(order.informacionProveedor)
-  infPro = JSON.parse(infPro)
+  // infPro = JSON.parse(infPro)
 
   let servicios = JSON.parse(order.servicios)
   
-  let partidas = JSON.parse(servicios)
+  // let partidas = JSON.parse(servicios)
   
   if (confirm(`¿Enviar orden de compra a ${infPro.proveedor}?`)) {
     let campos = {
@@ -223,14 +233,11 @@ document.getElementById("editModal").addEventListener("click", function (event) 
 function renderTable(){
   let tabla = document.getElementById('tablaOrdenes')
   let MisOrdenes = ordenes
-  
   let rows = MisOrdenes.map((orden) => {
+    
       let datosP = JSON.parse(orden.informacionProveedor)
-      datosP = JSON.parse(datosP)
       let partidas = JSON.parse(orden.servicios)
-      partidas = JSON.parse(partidas)
-      partidas= JSON.parse(partidas.partidas)
-      
+      partidas = partidas.partidas
       let articulos = partidas.map((orden) => {
         return `${orden.producto}, `
       }).join('')
@@ -261,4 +268,31 @@ function renderTable(){
       `}).join('')
 
   tabla.innerHTML = rows
+  
+}
+
+function calcularPrecio(precio){
+  return precio * 1.16
+}
+
+function eliminarRow(row){
+  alert('esat en la eliminacion')
+  row.remove()
+}
+
+function agregarListenersEliminacion(){
+  alert('esta agregando eventos')
+  let tabla = document.getElementById('productsTableBody')
+  let filas = tabla.querySelectorAll('tr')
+  
+  filas.forEach((fila) => {
+      // let btn = fila.getElementById(fila.getAttribute('id'))
+      let btn = fila.querySelectorAll('button')
+      btn = btn[0]
+      
+      btn.addEventListener('click', (e) => {
+        
+        eliminarRow(fila)    
+      })
+  })
 }

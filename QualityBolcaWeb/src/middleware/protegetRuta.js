@@ -12,25 +12,15 @@ const protegerRuta = async(req, res, next) =>{
 
         
     if(!_token){
-        // console.log('no hay token');
-        // console.log(req.originalUrl);
-        
-        // redireccion = req.originalUrl;
-
         req.session.redirectTo = req.originalUrl;
-
         return res.redirect('/')
-
     }
     
     //Comprobar el token
-
     try {
-        
         const decoded = jwt.verify(_token, process.env.JWT_SECRET)
         const usuario = await Usuario.scope('eliminarPassword').findByPk(decoded.codigoempleado)
-        // console.log(decoded);
-
+        
         //Almacenar el usuario al Req
         if (usuario) {
             req.usuario = usuario

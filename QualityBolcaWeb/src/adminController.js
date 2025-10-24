@@ -808,8 +808,6 @@ controller.valeresguardo = async (req, res) => {
         valeasignacion = resultados;
     });
 
-
-
     res.render('admin/valeresguardo', {
         csrfToken: req.csrfToken(),
         valeasignacion

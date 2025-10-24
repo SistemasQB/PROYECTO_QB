@@ -13,7 +13,7 @@ loginForm?.addEventListener('submit',  e => {
     const formData = new FormData(loginForm)
     const urlEncoded = new URLSearchParams(formData).toString();
     
-     fetch('/login', {
+    fetch('/login', {
         method: 'POST',
         body: urlEncoded,
         headers: {
