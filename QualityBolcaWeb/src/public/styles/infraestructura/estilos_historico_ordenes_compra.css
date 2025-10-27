@@ -258,3 +258,55 @@
   justify-content: flex-end;
   margin-top: 30px;
 }
+
+/* estilos totales */
+.form-group-t {
+    display: flex;
+    flex-direction: column;
+}
+.totals-section {
+    background: linear-gradient(135deg, #151515 0%, #6d6e6e 100%);
+    padding: 25px;
+    border-radius: 10px;
+    border: 2px solid #e1e8ed;
+}
+totals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    max-width: 600px;
+    margin-left: auto;
+}
+.total-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgb(232, 212, 212);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.total-item label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.total-item span {
+    font-weight: 700;
+    color: #0d4a8c;
+    font-size: 1.1rem;
+}
+
+.total-final {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #0d4a8c 0%, #1e5f99 100%);
+    color: white;
+    font-size: 1.2rem;
+}
+
+.total-final label,
+.total-final span {
+    color: white;
+    font-size: 1.3rem;
+}

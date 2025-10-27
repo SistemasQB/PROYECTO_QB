@@ -22,10 +22,15 @@ document.addEventListener('DOMContentLoaded', function() {
         <td><button type="button" class="btn-remove" >Eliminar</button></td>
         `
     tabla.appendChild(fila)
+    let btn = fila.querySelectorAll('button')
+    btn = btn[0]
+    btn.addEventListener(`click`, (e) => {
+        eliminarRow(fila)
+    })
+    
   })
   
   renderTable()
-  agregarListenersEliminacion()
 })
 // Filter table function
 function filterTable() {
@@ -78,13 +83,14 @@ function openEditModal(orderId) {
   document.getElementById("editFecha").value = order.fecha.split("T")[0]
   document.getElementById("editLugar").value = order.lugar
   document.getElementById("editProveedor").value = informacionPro.proveedor
-  document.getElementById("editSolicitudes").value = order.solicitudes
+  // document.getElementById("editSolicitudes").value = order.solicitudes
   document.getElementById("editObservaciones").value = order.observaciones
 
   const modal = document.getElementById("editModal")
   modal.classList.add("active")
   document.body.style.overflow = "hidden"
   agregarListenersEliminacion()
+  
 }
 
 function closeEditModal() {
@@ -276,8 +282,8 @@ function calcularPrecio(precio){
 }
 
 function eliminarRow(row){
-  alert('esat en la eliminacion')
   row.remove()
+  foliando()
 }
 
 function agregarListenersEliminacion(){
@@ -291,8 +297,21 @@ function agregarListenersEliminacion(){
       btn = btn[0]
       
       btn.addEventListener('click', (e) => {
-        
         eliminarRow(fila)    
       })
   })
+}
+
+function foliando(){
+  let tabla = document.getElementById('productsTableBody')
+  let filas = tabla.querySelectorAll('tr')
+  filas.forEach((fila) => {
+      
+  })
+  // totalizando()
+}
+function totalizando(){
+  let totales = filas.reduce((total, fila, ) => {
+      total[fila] = (total[fruta] || 0)+ fila
+  },{})
 }
