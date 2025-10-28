@@ -70,24 +70,34 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
         if(!tipo) return res.json({ok:false, msg:'no se especifico el tipo de accion'})
         const clase = new sequelizeClase({modelo: modelosInfraestructura.modeloOrdenCompra})
         let {id} = req.body || 0;
+        let servicios
+        let partidas
             switch (tipo){
                 case 'insert':
                     let campitos = req.body
                     delete campitos._csrf
                     delete campitos.tipo
-                    
-                        let servicios = JSON.parse(campitos.servicios)
-                        let partidas = JSON.parse(servicios.partidas)
+                        servicios = JSON.parse(campitos.servicios)
+                        partidas = JSON.parse(servicios.partidas)
                         servicios.partidas = partidas
                         campitos.servicios = servicios
                         campitos.informacionProveedor = JSON.parse(campitos.informacionProveedor)
-                        console.log(campitos)
-                        
                     let respuesta = await clase.insertar({datosInsertar: campitos})
                     if (respuesta) return res.json({ok:respuesta, msg:'informacion almacenada con exito'})
                     return res.json({ok:false, msg:'no se pudo guardar la informacion en la base de datos'})
                 case 'update':
-                    break;
+                    let datos = req.body
+                    delete datos._csrf
+                    delete datos.tipo
+                    delete datos.id
+                    delete datos._csrf
+                    
+                    servicios = JSON.parse(datos.servicios)
+                    partidas = JSON.parse(datos.partidas)
+                        servicios.partidas = partidas
+                        campitos.servicios = servicios
+                    return res.json({ok: await clase.actualizarDatos({id:id, datos: datos, msg: ''})})
+                    
                 case 'delete':
                     let resultado = await clase.eliminar({id:id})
                     res.json({ok: resultado, msg:'exito en el proceso'})
@@ -95,9 +105,7 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
                     let campos = req.body
                     delete campos._csrf
                     delete campos.tipo
-                    
                     return res.json({ok: envioOC({datos: campos}), msg:'OC enviada exitosamente'})
-                    
             }    
     } catch (ex) {
         return res.json({ok:false, msg:`surgio un error no controlado:${ex}`})

@@ -15,12 +15,12 @@ async enviarCorreo({Correo}){
                 pass: process.env.PASS_RECORDATORIO,
             }
         }
-        console.log(smtp)
+        
     this.Correo = Correo
     if(!Correo) return 'se necesitan los datos del correo'
 
     try{
-        console.log(`se envio el correo de ${Correo.destinatario}`) 
+        
         const transporter = nd.createTransport(smtp)
         await transporter.sendMail({
         from: process.env.EMAIL_RECORDATORIO,

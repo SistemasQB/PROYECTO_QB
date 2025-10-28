@@ -309,14 +309,12 @@ function handleFormSubmit(event) {
     
     // Recopilar datos del formulario
     const recoleccion = collectFormData();
-    
     if (recoleccion){
         formData.informacionProveedor = JSON.stringify(formData.informacionProveedor);
         formData.servicios.partidas = JSON.stringify(formData.servicios.partidas);
         formData.servicios = JSON.stringify(formData.servicios);
         formData.tipo = 'insert';
         formData.status = 'INGRESADA'
-        
         alertaFetchCalidad('crudOrdenesCompra', formData,'historicoOrdenesCompra')
     }
     

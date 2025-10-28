@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Histórico de Órdenes - Quality Bolca</title>
+    <title>Órdenes de Compra - Quality Bolca</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <%-include('partials/menu-hamburguesa.ejs')%>
@@ -14,7 +15,7 @@
     <main class="main-content">
         <div class="container">
             <div class="page-header">
-                <h1>Histórico de Órdenes de Compra</h1>
+                <h1>Órdenes de Compra</h1>
                 <p>Gestiona y revisa todas las órdenes de compra realizadas</p>
             </div>
 
@@ -86,6 +87,7 @@
                                 <th>Servicio/Producto</th>
                                 <th>Cantidad</th>
                                 <th>Precio Unitario</th>
+                                <th>Precio Total</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>

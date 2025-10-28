@@ -3,12 +3,9 @@ import nodemailer from "../../../clases/nodemailer.js";
 function envioOC({datos}){    
     let basicas = deserializar(datos.basicas)
     let partidas = datos.partidas
-    
-    
-    
     let f = new Date(basicas.fecha)
     const ano = f.getFullYear()
-    
+    let to = deserializar(datos.totales)
     let html = `
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
     <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 40px 20px;">
@@ -21,7 +18,7 @@ function envioOC({datos}){
                     <tr>
                         <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 40px 40px 30px 40px; text-align: center;">
                             <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 600; letter-spacing: -0.5px;">ORDEN DE COMPRA</h1>
-                            <p style="margin: 10px 0 0 0; color: #a8b2d1; font-size: 14px; letter-spacing: 0.5px;">PURCHASE ORDER</p>
+                            <p style="margin: 10px 0 0 0; color: #a8b2d1; font-size: 14px; letter-spacing: 0.5px;">ORDEN DE COMPRA</p>
                         </td>
                     </tr>
 
@@ -62,25 +59,23 @@ function envioOC({datos}){
                         <td style="padding: 0 40px 30px 40px;">
                             <table role="presentation" style="width: 100%; border-collapse: collapse; border: 1px solid #e1e8ed; border-radius: 6px; overflow: hidden;">
                                 <tbody>
-                                <tr style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);">
-                                        <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 8%;">No.</td>
+                                    <tr style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);"></tr>
+                                    <tr>
+                                        <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600;   width: 8%;">No.</td>
                                         <td style="padding: 15px 12px; text-align: left; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%;">Servicio/Producto</td>
                                         <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 13%;">Cantidad</td>
                                         <td style="padding: 15px 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 19%;">Precio Unit.</td>
                                         <td style="padding: 15px 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 20%;">Precio Total</td>
                                     </tr>
                                 `
-                                let to= partidas
-                                partidas = deserializar(partidas.partidas)
-                                     for (let i = 0; i < partidas.length; i++) {
+                                    for (let i = 0; i < partidas.length; i++) {
                                         let parti = partidas[i]
-                                        console.log(`la partida es asi: ${parti}`)
                                         html +=`<tr style="border-bottom: 1px solid #e1e8ed; background-color: #ffffff;">
-                                        <td style="padding: 15px 12px; text-align: center; color: #2c3e50; font-size: 14px;">1</td>
-                                        <td style="padding: 15px 12px; text-align: left; color: #2c3e50; font-size: 14px;">${parti.item}</td>
-                                        <td style="padding: 15px 12px; text-align: center; color: #2c3e50; font-size: 14px;">${parti.producto}</td>
-                                        <td style="padding: 15px 12px; text-align: right; color: #2c3e50; font-size: 14px;">${parti.cantidad}</td>
-                                        <td style="padding: 15px 12px; text-align: right; color: #2c3e50; font-size: 14px; font-weight: 600;">${parti.precioTotal}</td>
+                                        <td style="padding: 15px 12px; text-align: center; color: #2c3e50; font-size: 14px;">${parti.item}</td>
+                                        <td style="padding: 15px 12px; text-align: left; color: #2c3e50; font-size: 14px;">${parti.producto}</td>
+                                        <td style="padding: 15px 12px; text-align: center; color: #2c3e50; font-size: 14px;">${parti.cantidad}</td>
+                                        <td style="padding: 15px 12px; text-align: right; color: #2c3e50; font-size: 14px;">${formatearPesos(parti.precioUnitario)}</td>
+                                        <td style="padding: 15px 12px; text-align: right; color: #2c3e50; font-size: 14px; font-weight: 600;">${formatearPesos(parti.precioTotal)}</td>
                                     </tr>`     
                                      }
 
@@ -143,30 +138,30 @@ function envioOC({datos}){
                                     <td style="width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
                                         <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px; transition: all 0.3s ease;">
                                             <div style="width: 100px; height: 100px; margin: 0 auto 15px auto; border-radius: 5%; overflow: hidden; border: 3px solid #2c3e50; background-color: #ffffff;">
-                                                <img src="[URL_IMAGEN_1]" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                                <img src="https://www.qualitybolca.net/img/JOSA.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                                             </div>
-                                            <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">[NOMBRE_PERSONA_1]</p>
-                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">[CARGO_1]</p>
+                                            <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">SANCHEZ LOPEZ JOSAAT EDUARDO</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">ANALISTA DE GESTION DE GASTOS</p>
                                         </div>
                                     </td>
                                      <!-- Firma 2  -->
                                     <td style="width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
                                         <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px; transition: all 0.3s ease;">
                                             <div style="width: 100px; height: 100px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 3px solid #2c3e50; background-color: #ffffff;">
-                                                <img src="[URL_IMAGEN_2]" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                                <img src="https://www.qualitybolca.net/img/LESS.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                                             </div>
-                                            <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">[NOMBRE_PERSONA_2]</p>
-                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">[CARGO_2]</p>
+                                            <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">REYES NICASIO LESLIE CECILIA</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">AUXILIAR DE COMPRAS Y SUMINISTROS</p>
                                         </div>
                                     </td>
                                      <!-- Firma 3  -->
                                     <td style="width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
                                         <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px; transition: all 0.3s ease;">
                                             <div style="width: 100px; height: 100px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 3px solid #2c3e50; background-color: #ffffff;">
-                                                <img src="[URL_IMAGEN_3]" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                                <img src="https://www.qualitybolca.net/img/GABI.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                                             </div>
-                                            <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">[NOMBRE_PERSONA_3]</p>
-                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">[CARGO_3]</p>
+                                            <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">CADENA MENDOZA EVA GABRIELA</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">JEFE DE COMPRAS Y SUMINISTROS</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -178,7 +173,7 @@ function envioOC({datos}){
                     <tr>
                         <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 25px 40px; text-align: center;">
                             <p style="margin: 0 0 5px 0; font-size: 14px; color: #a8b2d1; line-height: 1.6;">Saludos cordiales</p>
-                            <p style="margin: 0; font-size: 12px; color: #6c7a9d; line-height: 1.6;">[NOMBRE_EMPRESA] | [TELÉFONO] | [EMAIL]</p>
+                            <p style="margin: 0; font-size: 12px; color: #6c7a9d; line-height: 1.6;">QUALITY BOLCA | +52 449 243 5163 | leslie.reyes@qualitybolca.net</p>
                         </td>
                     </tr>
 
@@ -188,22 +183,14 @@ function envioOC({datos}){
     </table>
 </body>
     `
-    // codigo del isr
-    // <tr>
-    //                                 <td style="padding: 10px 0; border-bottom: 1px solid #e1e8ed;">
-    //                                     <span style="font-size: 15px; color: #6c757d; font-weight: 500;">ISR:</span>
-    //                                 </td>
-    //                                 <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e1e8ed;">
-    //                                     <span style="font-size: 15px; color: #2c3e50; font-weight: 600;">$[ISR]</span>
-    //                                 </td>
-    //                             </tr>
+    
     let dato = {
         destinatario: datos.informacionProveedor.correo,
         asunto:'ORDEN DE COMPRA DE QUALITY BOLCA',
         texto:'TEXTO',
         html:html
     }
-    console.log('inicia el proceso de envio')
+    
     try{
     const cor = new nodemailer()
     cor.enviarCorreo({Correo: dato});
@@ -216,6 +203,12 @@ function envioOC({datos}){
 
 function deserializar(dato){
     return   JSON.parse(dato)
+}
+function formatearPesos(monto){
+  return new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN',
+  }).format(monto);
 }
 export default envioOC;
 
