@@ -24,6 +24,7 @@ infraestructuraController.inicio = (req, res)=>{
     
 }
 //controlador de compras
+//controlador de control de inventario
 infraestructuraController.controlInventario = (req, res)=>{
     try{
         res.render('admin/infraestructura/control_de_inventario.ejs')
@@ -91,20 +92,21 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
                     delete datos.tipo
                     delete datos.id
                     delete datos._csrf
-                    
                     servicios = JSON.parse(datos.servicios)
-                    partidas = JSON.parse(datos.partidas)
+                    partidas = servicios.partidas
                         servicios.partidas = partidas
-                        campitos.servicios = servicios
+                        datos.servicios = servicios
                     return res.json({ok: await clase.actualizarDatos({id:id, datos: datos, msg: ''})})
-                    
                 case 'delete':
                     let resultado = await clase.eliminar({id:id})
-                    res.json({ok: resultado, msg:'exito en el proceso'})
+                    return res.json({ok: resultado, msg:'exito en el proceso'})
                 case 'send':
                     let campos = req.body
                     delete campos._csrf
                     delete campos.tipo
+                    let envio = await clase.actualizarDatos({id:id, datos:{status: 'ENVIADA'}})
+                    if (!envio) return res.json({ok:envio, msg:'no se pudo actualizar la OC'})
+                    delete campos.id
                     return res.json({ok: envioOC({datos: campos}), msg:'OC enviada exitosamente'})
             }    
     } catch (ex) {
@@ -112,6 +114,12 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
     }
     
 }
+
+//controladores de pedidos de insumos
+infraestructuraController.pedidoInsumos = (req, res) => {
+    return res.render('admin/infraestructura/formato_pedido_insumos.ejs')
+}
+
 
 //rutas de logistica vehicular
 

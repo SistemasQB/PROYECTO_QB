@@ -7,6 +7,10 @@ let currentEditingOrder = null
 // Sample orders data
 
 document.addEventListener('DOMContentLoaded', function() {
+  const btnNuev = document.getElementById('btnNuevaOrden')
+  btnNuev.addEventListener('click', (e) => {
+      
+  })
   const btnAgregar = document.getElementById('addRowBtn');
   btnAgregar.addEventListener('click', (e) => {
       let tabla = document.getElementById('productsTableBody')
@@ -17,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <td>${total+1}</td>
         <td><input type="text" name="producto[]" required></td>
         <td><input type="number" name="cantidad[]" min="1" step="1" required></td>
-        <td><input type="number" name="precioUnitario[]" min="1" step="1" required></td>
-        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1"  required disabled></td>
+        <td><input type="number" name="precioUnitario[]" min="1" step=".1" required></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step=".5"  required disabled></td>
         <td><button type="button" class="btn-remove" >Eliminar</button></td>
         `
     tabla.appendChild(fila)
@@ -83,7 +87,7 @@ function openEditModal(orderId) {
         <td>${p.item}</td>
         <td><input type="text" name="producto[]" value = '${p.producto}'required></td>
         <td><input type="number" name="cantidad[]" min="1" step="1" value = '${p.cantidad}'  required></td>
-        <td><input type="number" name="precioUnitario[]" min="1" step="1" value = '${p.precioUnitario}'  required></td>
+        <td><input type="number" name="precioUnitario[]" min="1" step=".1" value = '${p.precioUnitario}'  required></td>
         <td><input type="number" name="cantidad[]" min="1" step="1" value ='${p.precioUnitario * p.cantidad}'  required disabled  ></td>
         <td><button type="button" class="btn-remove">Eliminar</button></td></tr>
     `
@@ -117,67 +121,73 @@ function closeEditModal() {
 }
 
 // Handle edit form submission
-document.getElementById("editForm").addEventListener("submit", async (e) => {
+document.getElementById("btnSaveChanges").addEventListener("click", async (e) => {
   if (!currentEditingOrder) return
-  const orden = ordenes.find((o) => o.id === currentEditingOrder)
-  if (!orden) return
-  // Update order data
-  const tabla = document.getElementById('productsTableBody');
-  const filas = tabla.rows
-  let partidas = []
-  let index = 0
+  let formu = document.getElementById('editForm');
+  if (!formu.reportValidity()){
+    showNotification('completa todos los campos','error')
+    return
+  } 
+        const orden = ordenes.find((o) => o.id === currentEditingOrder)
+        if (!orden) return
+        // Update order data
+        const tabla = document.getElementById('productsTableBody');
+        const filas = tabla.rows
+        let partidas = []
+        let index = 0
+        
+          for (let f of filas) {
+            let celda = f.children[1]
+            let input = celda.querySelector('input')
+            let producto = input.value
+            celda = f.children[2]
+            input = celda.querySelector('input')
+            let cantidad = input.value
+            celda = f.children[3]
+            input = celda.querySelector('input')
+            let precioUnitario = input.value
+            celda = f.children[4]
+            input = celda.querySelector('input')
+            let precioTotal = input.value
+            
+            let dato = {
+              item: index + 1 ,
+              producto: producto,
+              cantidad: cantidad,
+              precioUnitario: precioUnitario,
+              precioTotal:precioTotal
+            }
+            partidas.push(dato)
+            index++
+          }
+          let subt = document.getElementById('subtotal')
+          let su= subt.textContent.trim()
+          subt = su.replace(/[$,]/g, '')
+          
+          let servicios = {
+            partidas: partidas,
+            subtotal: parseFloat(subt),
+            iva: parseFloat(subt * .16),
+          }
+          servicios.total =  servicios.iva + servicios.subtotal
+          servicios.total = formatearPesos(servicios.total)
+          servicios.subtotal = formatearPesos(servicios.subtotal)
+          servicios.iva = formatearPesos(servicios.iva)
+
+        let data =  {
+          fecha: document.getElementById("editFecha").value,
+          lugar: document.getElementById("editLugar").value,
+          servicios: JSON.stringify(servicios),
+          observaciones: document.getElementById("editObservaciones").value,
+          id: currentEditingOrder,
+          tipo: 'update',
+          _csrf: tok
+        }
+        closeEditModal();
+        await alertaFetchCalidad('crudOrdenesCompra', data,'historicoOrdenesCompra')
+        console.log(data);
+        
   
-    for (let f of filas) {
-      let celda = f.children[1]
-      let input = celda.querySelector('input')
-      let producto = input.value
-      celda = f.children[2]
-      input = celda.querySelector('input')
-      let cantidad = input.value
-      celda = f.children[3]
-      input = celda.querySelector('input')
-      let precioUnitario = input.value
-      celda = f.children[4]
-      input = celda.querySelector('input')
-      let precioTotal = input.value
-      
-      let dato = {
-        item: index + 1 ,
-        producto: producto,
-        cantidad: cantidad,
-        precioUnitario: precioUnitario,
-        precioTotal:precioTotal
-      }
-      partidas.push(dato)
-      index++
-    }
-    let sub = document.getElementById('subtotal')
-    let servicios = {
-      partidas: partidas,
-      subtotal: parseFloat(sub.textContent.substring(1,sub.textContent.length)),
-      iva: parseFloat(partidas.subtotal * .16),
-      total: partidas.iva + partidas.subtotal
-    }
-    
-  let data =  {
-    fecha: document.getElementById("editFecha").value,
-    lugar: document.getElementById("editLugar").value,
-    servicios: JSON.stringify(servicios),
-    observaciones: document.getElementById("editObservaciones").value,
-    id: currentEditingOrder,
-    tipo: 'update',
-    _csrf: tok
-  }
-
-  // // Update table row
-  // updateTableRow(currentEditingOrder, ordersData[orderIndex])
-
-  // closeEditModal()
-
-  // Show success message
-  // showNotification("Orden actualizada correctamente", "success")
-  
-  await alertaFetchCalidad('crudOrdenesCompra', data,'historicoOrdenesCompra')
 })
 
 function updateTableRow(orderId, orderData) {
@@ -216,8 +226,10 @@ async function sendToProvider(orderId) {
       informacionProveedor: infPro,
       partidas: partidas,
       totales: JSON.stringify({subtotal: servicios.subtotal, iva: servicios.iva, total: servicios.total}),
+      status: 'ENVIADA',
       tipo: 'send',
       _csrf: tok,
+      id: orderId
     }
     
     await alertaFetchCalidad('crudOrdenesCompra',campos,'historicoOrdenesCompra')
@@ -292,7 +304,7 @@ function renderTable(){
   let MisOrdenes = ordenes
   
   let rows = MisOrdenes.map((orden) => {
-      console.log(orden)
+      // console.log(orden)
       let datosP = JSON.parse(orden.informacionProveedor)
       let partidas = JSON.parse(orden.servicios)
       partidas = partidas.partidas

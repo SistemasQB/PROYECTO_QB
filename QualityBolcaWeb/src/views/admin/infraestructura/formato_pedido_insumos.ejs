@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido de Insumos</title>
+    <link rel="stylesheet" href="/styles/infraestructura/estilos_formato_pedido_insumos.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-card">
+            <div class="header">
+                <h1>Pedido de Insumos</h1>
+            </div>
+
+            <form id="pedidoForm">
+                <div class="form-grid">
+                    <!-- <div class="form-group">
+                        <label for="folio">Folio *</label>
+                        <input type="text" id="folio" name="folio" required>
+                    </div> -->
+
+                    <div class="form-group">
+                        <label for="fecha">Fecha *</label>
+                        <input type="date" id="fecha" name="fecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="planta">Planta *</label>
+                        <input type="text" id="planta" name="planta" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="solicitante">Nombre del Solicitante *</label>
+                        <input type="text" id="solicitante" name="solicitante" required>
+                    </div>
+                </div>
+
+                <div class="pedidos-section">
+                    <div class="section-header">
+                        <h2>Pedidos</h2>
+                        <button type="button" class="btn-add" id="agregarItem">+ Agregar Item</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="tablaPedidos">
+                            <thead>
+                                <tr>
+                                    <th>Cantidad Solicitada *</th>
+                                    <th>grupo *</th>
+                                    <th>Descripción *</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pedidosBody">
+                                <tr class="pedido-row">
+                                    <td>
+                                        <input type="number" class="cantidad-input" min="1" required>
+                                    </td>
+                                    <!-- generado dinamicamente -->
+                                    <td>
+                                        <select class="descripcion-select" required id="grupo">
+                                            <option value="">Seleccione un insumo</option>
+                                            <option value="Papel Bond">EQUIPO DE PROTECCION PERSONAL</option>
+                                            <option value="Tinta para Impresora">Tinta para Impresora</option>
+                                            <option value="Carpetas">Carpetas</option>
+                                            <option value="Bolígrafos">Bolígrafos</option>
+                                            <option value="Grapas">Grapas</option>
+                                            <option value="Clips">Clips</option>
+                                            <option value="Marcadores">Marcadores</option>
+                                            <option value="Cuadernos">Cuadernos</option>
+                                            <option value="Sobres">Sobres</option>
+                                            <option value="Etiquetas">Etiquetas</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="descripcion-select" required id="descripcion">
+                                            <option value="">Seleccione un insumo</option>
+                                            <option value="Papel Bond">Papel Bond</option>
+                                            <option value="Tinta para Impresora">Tinta para Impresora</option>
+                                            <option value="Carpetas">Carpetas</option>
+                                            <option value="Bolígrafos">Bolígrafos</option>
+                                            <option value="Grapas">Grapas</option>
+                                            <option value="Clips">Clips</option>
+                                            <option value="Marcadores">Marcadores</option>
+                                            <option value="Cuadernos">Cuadernos</option>
+                                            <option value="Sobres">Sobres</option>
+                                            <option value="Etiquetas">Etiquetas</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn-remove" disabled>Eliminar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Enviar Pedido</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/scripts/infraestructura/scripts_formato_pedido_insumos.js"></script>
+</body>
+</html>

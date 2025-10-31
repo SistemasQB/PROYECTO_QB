@@ -25,10 +25,10 @@
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="searchInput" placeholder="Buscar por fecha, lugar, proveedor..." onkeyup="filterTable()">
                 </div>
-                <button class="btn-primary" id="btnNuevaOrden">
-                    <i class="fas fa-plus"></i>
+                <a class="btn-primary" id="btnNuevaOrden" href="ordenCompra">
+                    
                     Nueva Orden
-                </button>
+                </a>
             </div>
 
             <!-- Orders Table -->
@@ -133,7 +133,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar Cambios</button>
+                    <button type="button" class="btn-primary" id="btnSaveChanges">Guardar Cambios</button>
                 </div>
             </form>
         </div>

@@ -11,8 +11,10 @@ infraestructuraRouter.get('/inicio', infraestructuraController.inicio);
 infraestructuraRouter.get('/ordenCompra', infraestructuraController.ordenCompra);
 infraestructuraRouter.get('/historicoOrdenesCompra', infraestructuraController.historicoOrdenes);
 infraestructuraRouter.get('/controlInventario', infraestructuraController.controlInventario);
+infraestructuraRouter.post('/crudOrdenesCompra', infraestructuraController.crudOrdenesCompra);
 
-infraestructuraRouter.post('/crudOrdenesCompra', infraestructuraController.crudOrdenesCompra)  
+//rutas pedido insumos
+infraestructuraRouter.get('/pedidoInsumos', infraestructuraController.pedidoInsumos);
 
 //rutas de logistica vehicular
 infraestructuraRouter.get('/check-list-vehicular', infraestructuraController.checklistVehicular);
