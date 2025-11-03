@@ -300,9 +300,12 @@ td {
     content: "Cantidad:";
   }
   td:nth-of-type(2):before {
-    content: "Descripción:";
+    content: "Grupo:";
   }
   td:nth-of-type(3):before {
+    content: "Articulo:";
+  }
+  td:nth-of-type(4):before {
     content: "Acciones:";
   }
 }

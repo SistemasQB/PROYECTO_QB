@@ -116,8 +116,12 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
 }
 
 //controladores de pedidos de insumos
-infraestructuraController.pedidoInsumos = (req, res) => {
-    return res.render('admin/infraestructura/formato_pedido_insumos.ejs')
+infraestructuraController.pedidoInsumos = async(req, res) => {
+    let clase = new sequelizeClase({modelo: modelosInfraestructura.modeloComprasInventario})
+    let criterios = {estatus: {[Op.ne]: 'NO ACTIVO'}}
+    let productos = await clase.obtenerDatosPorCriterio({criterio:criterios})
+    
+    return res.render('admin/infraestructura/formato_pedido_insumos.ejs',{productos: productos})
 }
 
 

@@ -1,8 +1,11 @@
 // Inicializar fecha actual
+let grupos = [];
+let articulos = []
 document.addEventListener("DOMContentLoaded", () => {
-  const fechaInput = document.getElementById("fecha")
-  const today = new Date().toISOString().split("T")[0]
-  fechaInput.value = today
+  // const fechaInput = document.getElementById("fecha")
+  // const today = new Date().toISOString().split("T")[0]
+  // fechaInput.value = today
+  cargarInformacion();
 })
 
 // Agregar nuevo item
@@ -10,30 +13,33 @@ document.getElementById("agregarItem").addEventListener("click", () => {
   const tbody = document.getElementById("pedidosBody")
   const newRow = document.createElement("tr")
   newRow.className = "pedido-row"
-
-  newRow.innerHTML = `
+  let opci = grupos
+                .filter(grupo => grupo && grupo.trim())
+                .map(art => `<option value="${art}">${art}</option>` )
+                .join('')
+  let cont = `
         <td>
             <input type="number" class="cantidad-input" min="1" required>
         </td>
         <td>
+          <select class="descripcion-select" data-grupo='grupo' required>
+                    <option value="">Seleccione un Grupo de Insumo</option>
+                    
+                
+          </select>
+        </td>
+        <td>
             <select class="descripcion-select" required>
                 <option value="">Seleccione un insumo</option>
-                <option value="Papel Bond">Papel Bond</option>
-                <option value="Tinta para Impresora">Tinta para Impresora</option>
-                <option value="Carpetas">Carpetas</option>
-                <option value="Bolígrafos">Bolígrafos</option>
-                <option value="Grapas">Grapas</option>
-                <option value="Clips">Clips</option>
-                <option value="Marcadores">Marcadores</option>
-                <option value="Cuadernos">Cuadernos</option>
-                <option value="Sobres">Sobres</option>
-                <option value="Etiquetas">Etiquetas</option>
+                ${opci}
             </select>
         </td>
         <td>
             <button type="button" class="btn-remove">Eliminar</button>
-        </td>
-    `
+        </td>`
+  newRow.innerHTML = cont
+  // logica de evento chage aqui abajito ⬇️
+
 
   tbody.appendChild(newRow)
   actualizarBotonesEliminar()
@@ -144,3 +150,21 @@ function mostrarError(mensaje) {
   errorMessage.classList.add("show")
   errorMessage.scrollIntoView({ behavior: "smooth", block: "nearest" })
 }
+function cargarInformacion(){
+  grupos = [...new Set(productos.map((producto) => {
+      return producto.grupo
+  }))]
+  let input = document.getElementById('grupo');
+  
+  grupos.sort();
+  let pri = `<option value="">Seleccione un Grupo de Insumo</option>`
+  let vali = grupos
+    .filter((grupo) => {return grupo && grupo.trim()})
+    .map((grupo) => {return `<option value="${grupo}">${grupo}</option>`})
+  input.innerHTML = pri + vali 
+  
+  input = document.getElementById('descripcion');
+  input.innerHTML = `<option value="">Seleccione Insumo</option>`
+}
+
+

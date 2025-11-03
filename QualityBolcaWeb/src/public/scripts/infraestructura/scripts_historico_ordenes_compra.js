@@ -7,10 +7,6 @@ let currentEditingOrder = null
 // Sample orders data
 
 document.addEventListener('DOMContentLoaded', function() {
-  const btnNuev = document.getElementById('btnNuevaOrden')
-  btnNuev.addEventListener('click', (e) => {
-      
-  })
   const btnAgregar = document.getElementById('addRowBtn');
   btnAgregar.addEventListener('click', (e) => {
       let tabla = document.getElementById('productsTableBody')
@@ -21,25 +17,12 @@ document.addEventListener('DOMContentLoaded', function() {
         <td>${total+1}</td>
         <td><input type="text" name="producto[]" required></td>
         <td><input type="number" name="cantidad[]" min="1" step="1" required></td>
-        <td><input type="number" name="precioUnitario[]" min="1" step=".1" required></td>
-        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step=".5"  required disabled></td>
+        <td><input type="number" name="precioUnitario[]" min="0" step="1" required></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1"  required></td>
         <td><button type="button" class="btn-remove" >Eliminar</button></td>
         `
     tabla.appendChild(fila)
     let btn = fila.querySelectorAll('button')
-    let num = fila.querySelectorAll('input')
-    
-    num.forEach((el) => {
-      if(el.getAttribute('type') == 'number' && el.getAttribute('name') == 'cantidad[]'){
-        el.addEventListener('change', (e) => {
-            cambioCantidad(fila)
-        })
-      }else if(el.getAttribute('type') == 'number' && el.getAttribute('name') == 'precioUnitario[]'){
-        el.addEventListener('change', (e) => {
-            cambioCantidad(fila)
-        })
-      }
-    })
     btn = btn[0]
     btn.addEventListener(`click`, (e) => {
         eliminarRow(fila)
@@ -55,6 +38,7 @@ function filterTable() {
   const table = document.getElementById("ordersTable")
   const rows = table.getElementsByTagName("tr")
   const searchTerm = searchInput.value.toLowerCase()
+  
   
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i]
@@ -79,6 +63,7 @@ function filterTable() {
 function openEditModal(orderId) {
   const order = ordenes.find((o) => o.id === orderId)
   if (!order) return
+  
   currentEditingOrder = orderId
   let informacionPro = JSON.parse(order.informacionProveedor)
   let servicios = JSON.parse(order.servicios)
@@ -86,9 +71,9 @@ function openEditModal(orderId) {
      return `<tr id='row${p.item}'>
         <td>${p.item}</td>
         <td><input type="text" name="producto[]" value = '${p.producto}'required></td>
-        <td><input type="number" name="cantidad[]" min="1" step="1" value = '${p.cantidad}'  required></td>
-        <td><input type="number" name="precioUnitario[]" min="1" step=".1" value = '${p.precioUnitario}'  required></td>
-        <td><input type="number" name="cantidad[]" min="1" step="1" value ='${p.precioUnitario * p.cantidad}'  required disabled  ></td>
+        <td><input type="number" name="cantidad[]" min="1" step="1" value = '${p.cantidad}'required></td>
+        <td><input type="number" name="precioUnitario[]" min="0" step="1" value = '${p.precioUnitario}' required></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1" value ='${p.precioUnitario}' required></td>
         <td><button type="button" class="btn-remove">Eliminar</button></td></tr>
     `
   }).join('')
@@ -97,15 +82,10 @@ function openEditModal(orderId) {
   
   document.getElementById("editFecha").value = order.fecha.split("T")[0]
   document.getElementById("editLugar").value = order.lugar
-  let pro = document.getElementById("editProveedor")
-  pro.value = informacionPro.proveedor
-  pro.disabled = true
-  document.getElementById('subtotal').textContent = servicios.subtotal
-  document.getElementById('iva').textContent = servicios.iva
-  document.getElementById('total').textContent = servicios.total
+  document.getElementById("editProveedor").value = informacionPro.proveedor
+  // document.getElementById("editSolicitudes").value = order.solicitudes
   document.getElementById("editObservaciones").value = order.observaciones
 
-    
   const modal = document.getElementById("editModal")
   modal.classList.add("active")
   document.body.style.overflow = "hidden"
@@ -121,73 +101,30 @@ function closeEditModal() {
 }
 
 // Handle edit form submission
-document.getElementById("btnSaveChanges").addEventListener("click", async (e) => {
-  if (!currentEditingOrder) return
-  let formu = document.getElementById('editForm');
-  if (!formu.reportValidity()){
-    showNotification('completa todos los campos','error')
-    return
-  } 
-        const orden = ordenes.find((o) => o.id === currentEditingOrder)
-        if (!orden) return
-        // Update order data
-        const tabla = document.getElementById('productsTableBody');
-        const filas = tabla.rows
-        let partidas = []
-        let index = 0
-        
-          for (let f of filas) {
-            let celda = f.children[1]
-            let input = celda.querySelector('input')
-            let producto = input.value
-            celda = f.children[2]
-            input = celda.querySelector('input')
-            let cantidad = input.value
-            celda = f.children[3]
-            input = celda.querySelector('input')
-            let precioUnitario = input.value
-            celda = f.children[4]
-            input = celda.querySelector('input')
-            let precioTotal = input.value
-            
-            let dato = {
-              item: index + 1 ,
-              producto: producto,
-              cantidad: cantidad,
-              precioUnitario: precioUnitario,
-              precioTotal:precioTotal
-            }
-            partidas.push(dato)
-            index++
-          }
-          let subt = document.getElementById('subtotal')
-          let su= subt.textContent.trim()
-          subt = su.replace(/[$,]/g, '')
-          
-          let servicios = {
-            partidas: partidas,
-            subtotal: parseFloat(subt),
-            iva: parseFloat(subt * .16),
-          }
-          servicios.total =  servicios.iva + servicios.subtotal
-          servicios.total = formatearPesos(servicios.total)
-          servicios.subtotal = formatearPesos(servicios.subtotal)
-          servicios.iva = formatearPesos(servicios.iva)
+document.getElementById("editForm").addEventListener("submit", (e) => {
+  e.preventDefault()
 
-        let data =  {
-          fecha: document.getElementById("editFecha").value,
-          lugar: document.getElementById("editLugar").value,
-          servicios: JSON.stringify(servicios),
-          observaciones: document.getElementById("editObservaciones").value,
-          id: currentEditingOrder,
-          tipo: 'update',
-          _csrf: tok
-        }
-        closeEditModal();
-        await alertaFetchCalidad('crudOrdenesCompra', data,'historicoOrdenesCompra')
-        console.log(data);
-        
-  
+  if (!currentEditingOrder) return
+
+  const orderIndex = ordersData.findIndex((o) => o.id === currentEditingOrder)
+  if (orderIndex === -1) return
+  // Update order data
+  ordersData[orderIndex] = {
+    ...ordersData[orderIndex],
+    fecha: document.getElementById("editFecha").value,
+    lugar: document.getElementById("editLugar").value,
+    proveedor: document.getElementById("editProveedor").value,
+    solicitudes: document.getElementById("editSolicitudes").value,
+    observaciones: document.getElementById("editObservaciones").value,
+  }
+
+  // Update table row
+  updateTableRow(currentEditingOrder, ordersData[orderIndex])
+
+  closeEditModal()
+
+  // Show success message
+  showNotification("Orden actualizada correctamente", "success")
 })
 
 function updateTableRow(orderId, orderData) {
@@ -216,27 +153,27 @@ async function sendToProvider(orderId) {
   if (!order) return
   
   let infPro = JSON.parse(order.informacionProveedor)
+  // infPro = JSON.parse(infPro)
+
   let servicios = JSON.parse(order.servicios)
-  let partidas = servicios.partidas;
+  
+  // let partidas = JSON.parse(servicios)
   
   if (confirm(`¿Enviar orden de compra a ${infPro.proveedor}?`)) {
-
     let campos = {
       basicas: JSON.stringify({fecha: order.fecha, lugar: order.lugar, observaciones: order.observaciones, id: orderId}),
       informacionProveedor: infPro,
       partidas: partidas,
-      totales: JSON.stringify({subtotal: servicios.subtotal, iva: servicios.iva, total: servicios.total}),
-      status: 'ENVIADA',
+      totales: JSON.stringify({subtotal: partidas.subtotal, iva: partidas.iva, total: partidas.total}),
       tipo: 'send',
       _csrf: tok,
-      id: orderId
     }
-    
     await alertaFetchCalidad('crudOrdenesCompra',campos,'historicoOrdenesCompra')
   }
 }
+
 // Delete order function
-async function deleteOrder(orderId){
+async function deleteOrder(orderId) {
   if (confirm("¿Estás seguro de que deseas eliminar esta orden?")) {
     let bod = {
       _csrf: tok,
@@ -302,9 +239,8 @@ document.getElementById("editModal").addEventListener("click", function (event) 
 function renderTable(){
   let tabla = document.getElementById('tablaOrdenes')
   let MisOrdenes = ordenes
-  
   let rows = MisOrdenes.map((orden) => {
-      // console.log(orden)
+    
       let datosP = JSON.parse(orden.informacionProveedor)
       let partidas = JSON.parse(orden.servicios)
       partidas = partidas.partidas
@@ -341,92 +277,41 @@ function renderTable(){
   
 }
 
+function calcularPrecio(precio){
+  return precio * 1.16
+}
+
 function eliminarRow(row){
   row.remove()
   foliando()
 }
 
 function agregarListenersEliminacion(){
+  alert('esta agregando eventos')
   let tabla = document.getElementById('productsTableBody')
   let filas = tabla.querySelectorAll('tr')
   
   filas.forEach((fila) => {
+      // let btn = fila.getElementById(fila.getAttribute('id'))
       let btn = fila.querySelectorAll('button')
       btn = btn[0]
+      
       btn.addEventListener('click', (e) => {
         eliminarRow(fila)    
       })
-      let celdas = fila.children
-      for(let el of celdas){
-        const inpt = el.querySelector('input[type="number"]')
-        if(!inpt) continue
-
-        if(inpt.getAttribute('type') == 'number' && inpt.getAttribute('name') == 'cantidad[]'){
-          
-          inpt.addEventListener('change', (e) => {
-          cambioCantidad(fila)
-        })
-      }else if(inpt.getAttribute('type') == 'number' && inpt.getAttribute('name') == 'precioUnitario[]'){
-        
-        inpt.addEventListener('change', (e) => {
-            cambioCantidad(fila)
-        })
-      }
-      }
   })
 }
 
 function foliando(){
   let tabla = document.getElementById('productsTableBody')
   let filas = tabla.querySelectorAll('tr')
-  filas.forEach((fila, index) => {
-    let celdas = fila.children
-    if (celdas.length > 0){
-      celdas[0].textContent = index + 1
-    }
+  filas.forEach((fila) => {
+      
   })
-  totalizando()
+  // totalizando()
 }
 function totalizando(){
-  let tabla = document.getElementById('productsTableBody')
-  let filas = tabla.querySelectorAll('tr')
-  let totales = {
-    iva: 0,
-    subtotal: 0,
-    total: 0
-  }
-  filas.forEach((fila) => {  
-    let celdas = fila.children
-    if(celdas.length > 0){
-      let inp = celdas[4].querySelector('input')
-      totales.subtotal += parseFloat(inp.value) || 0;
-    }
-  })  
-  totales.iva = totales.subtotal * .16
-  totales.total = totales.subtotal + totales.iva
-  
-  document.getElementById('subtotal').textContent = formatearPesos(totales.subtotal.toFixed(2))
-  document.getElementById('iva').textContent = formatearPesos(totales.iva.toFixed(2))
-  document.getElementById('total').textContent = formatearPesos(totales.total.toFixed(2))
-  
-}
-
-function cambioCantidad(fila){
-  let celdas = fila.children
-  let can = parseFloat(celdas[2].querySelector('input').value)
-  let pre = parseFloat(celdas[3].querySelector('input').value)
-  let tot = celdas[4].querySelector('input')
-  
-  if(can && pre){
-    tot.value = can * pre
-    totalizando()
-  }
-  return;
-}
-
-function formatearPesos(monto){
-  return new Intl.NumberFormat('es-MX', {
-    style: 'currency',
-    currency: 'MXN',
-  }).format(monto);
+  let totales = filas.reduce((total, fila, ) => {
+      total[fila] = (total[fruta] || 0)+ fila
+  },{})
 }

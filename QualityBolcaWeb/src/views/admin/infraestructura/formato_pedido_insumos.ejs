@@ -20,20 +20,22 @@
                         <input type="text" id="folio" name="folio" required>
                     </div> -->
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="fecha">Fecha *</label>
                         <input type="date" id="fecha" name="fecha" required>
-                    </div>
+                    </div> -->
 
                     <div class="form-group">
                         <label for="planta">Planta *</label>
-                        <input type="text" id="planta" name="planta" required>
+                        <select name="planta" id="planta" class="descripcion-select">
+                            <option value="opcion 1">opcion 1</option>
+                        </select>
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="solicitante">Nombre del Solicitante *</label>
                         <input type="text" id="solicitante" name="solicitante" required>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="pedidos-section">
@@ -48,7 +50,7 @@
                                 <tr>
                                     <th>Cantidad Solicitada *</th>
                                     <th>grupo *</th>
-                                    <th>Descripción *</th>
+                                    <th>articulo *</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -60,32 +62,12 @@
                                     <!-- generado dinamicamente -->
                                     <td>
                                         <select class="descripcion-select" required id="grupo">
-                                            <option value="">Seleccione un insumo</option>
-                                            <option value="Papel Bond">EQUIPO DE PROTECCION PERSONAL</option>
-                                            <option value="Tinta para Impresora">Tinta para Impresora</option>
-                                            <option value="Carpetas">Carpetas</option>
-                                            <option value="Bolígrafos">Bolígrafos</option>
-                                            <option value="Grapas">Grapas</option>
-                                            <option value="Clips">Clips</option>
-                                            <option value="Marcadores">Marcadores</option>
-                                            <option value="Cuadernos">Cuadernos</option>
-                                            <option value="Sobres">Sobres</option>
-                                            <option value="Etiquetas">Etiquetas</option>
+                                            
                                         </select>
                                     </td>
                                     <td>
                                         <select class="descripcion-select" required id="descripcion">
-                                            <option value="">Seleccione un insumo</option>
-                                            <option value="Papel Bond">Papel Bond</option>
-                                            <option value="Tinta para Impresora">Tinta para Impresora</option>
-                                            <option value="Carpetas">Carpetas</option>
-                                            <option value="Bolígrafos">Bolígrafos</option>
-                                            <option value="Grapas">Grapas</option>
-                                            <option value="Clips">Clips</option>
-                                            <option value="Marcadores">Marcadores</option>
-                                            <option value="Cuadernos">Cuadernos</option>
-                                            <option value="Sobres">Sobres</option>
-                                            <option value="Etiquetas">Etiquetas</option>
+                                            
                                         </select>
                                     </td>
                                     <td>
@@ -107,5 +89,8 @@
     </div>
 
     <script src="/scripts/infraestructura/scripts_formato_pedido_insumos.js"></script>
+    <script>
+        let productos = <%-JSON.stringify(productos)%>
+    </script>
 </body>
 </html>
