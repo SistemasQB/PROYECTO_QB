@@ -117,11 +117,32 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
 
 //controladores de pedidos de insumos
 infraestructuraController.pedidoInsumos = async(req, res) => {
-    let clase = new sequelizeClase({modelo: modelosInfraestructura.modeloComprasInventario})
-    let criterios = {estatus: {[Op.ne]: 'NO ACTIVO'}}
-    let productos = await clase.obtenerDatosPorCriterio({criterio:criterios})
+    try {
+        let tok = req.csrfToken()
+        let clase = new sequelizeClase({modelo: modelosInfraestructura.modeloComprasInventario})
+        let criterios = {estatus: {[Op.ne]: 'NO ACTIVO'}}
+        let productos = await clase.obtenerDatosPorCriterio({criterio:criterios})
+        clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_plantas_gastos})
+        criterios = {id:{[Op.gt]:0}}
+        let plantas = await clase.obtenerDatosPorCriterio({criterio: criterios})    
+        return res.render('admin/infraestructura/formato_pedido_insumos.ejs',{
+            productos: productos, 
+            plantas: plantas,
+            tok: tok
+        })    
+    } catch (ex) {
+        const statusCode = ex.status || ex.statusCode || 500; // Usa el código si existe, si no, 500 por defecto
+        return res.status(statusCode).render('admin/default/vista_error.ejs', {
+        error: {
+            mensaje: ex.message,
+            stack: ex.stack,
+            codigo: statusCode
+        }
+    });
+    }
+}
+infraestructuraController.crudPedidoInsumos = (req, res) => {
     
-    return res.render('admin/infraestructura/formato_pedido_insumos.ejs',{productos: productos})
 }
 
 

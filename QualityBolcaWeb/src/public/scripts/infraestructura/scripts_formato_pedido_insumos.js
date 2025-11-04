@@ -1,11 +1,24 @@
 // Inicializar fecha actual
 let grupos = [];
 let articulos = []
+let estadoFormulario = {}
+
 document.addEventListener("DOMContentLoaded", () => {
   // const fechaInput = document.getElementById("fecha")
   // const today = new Date().toISOString().split("T")[0]
   // fechaInput.value = today
-  cargarInformacion();
+  let tabla = document.getElementById("pedidosBody")
+  let filas = tabla.querySelectorAll('tr')
+  for(const fila of filas){
+    cargarInformacion(fila);
+  }
+  
+  let inpPlanta = document.getElementById('planta')
+  listaPlantas = plantas.map((p) => {
+      return `<option value="${p.planta}">${p.planta}</option>`
+  }).join('')
+  
+  inpPlanta.innerHTML = listaPlantas
 })
 
 // Agregar nuevo item
@@ -24,20 +37,23 @@ document.getElementById("agregarItem").addEventListener("click", () => {
         <td>
           <select class="descripcion-select" data-grupo='grupo' required>
                     <option value="">Seleccione un Grupo de Insumo</option>
-                    
-                
+                ${opci}
           </select>
         </td>
         <td>
-            <select class="descripcion-select" required>
+            <select class="descripcion-select" required data-insumo='insumo'>
                 <option value="">Seleccione un insumo</option>
-                ${opci}
+                
             </select>
         </td>
         <td>
             <button type="button" class="btn-remove">Eliminar</button>
         </td>`
   newRow.innerHTML = cont
+    let input = newRow.querySelector('[data-grupo]')
+    input.addEventListener('change',(e) => {
+        eventoChange(e.target.value,newRow)
+    })
   // logica de evento chage aqui abajito ⬇️
 
 
@@ -72,12 +88,12 @@ document.getElementById("pedidoForm").addEventListener("submit", (e) => {
   errorMessage.textContent = ""
 
   // Validar campos principales
-  const folio = document.getElementById("folio").value.trim()
-  const fecha = document.getElementById("fecha").value
+  // const folio = document.getElementById("folio").value.trim()
+  // const fecha = document.getElementById("fecha").value
   const planta = document.getElementById("planta").value.trim()
-  const solicitante = document.getElementById("solicitante").value.trim()
+  // const solicitante = document.getElementById("solicitante").value.trim()
 
-  if (!folio || !fecha || !planta || !solicitante) {
+  if (!planta ) {
     mostrarError("Por favor, complete todos los campos obligatorios del formulario.")
     return
   }
@@ -115,10 +131,7 @@ document.getElementById("pedidoForm").addEventListener("submit", (e) => {
 
   // Si todo es válido, preparar datos
   const datosPedido = {
-    folio: folio,
-    fecha: fecha,
     planta: planta,
-    solicitante: solicitante,
     pedidos: pedidos,
   }
 
@@ -128,13 +141,7 @@ document.getElementById("pedidoForm").addEventListener("submit", (e) => {
   // Mostrar confirmación
   alert(
     "Pedido enviado correctamente!\n\nFolio: " +
-      folio +
-      "\nFecha: " +
-      fecha +
-      "\nPlanta: " +
       planta +
-      "\nSolicitante: " +
-      solicitante +
       "\nTotal de items: " +
       pedidos.length,
   )
@@ -144,27 +151,41 @@ document.getElementById("pedidoForm").addEventListener("submit", (e) => {
   // location.reload();
 })
 
-function mostrarError(mensaje) {
+function mostrarError( mensaje) {
   const errorMessage = document.getElementById("errorMessage")
   errorMessage.textContent = mensaje
   errorMessage.classList.add("show")
   errorMessage.scrollIntoView({ behavior: "smooth", block: "nearest" })
 }
-function cargarInformacion(){
+function cargarInformacion(fila){
   grupos = [...new Set(productos.map((producto) => {
       return producto.grupo
   }))]
-  let input = document.getElementById('grupo');
-  
+  let input = fila.querySelector('[data-grupo]');
   grupos.sort();
   let pri = `<option value="">Seleccione un Grupo de Insumo</option>`
   let vali = grupos
     .filter((grupo) => {return grupo && grupo.trim()})
     .map((grupo) => {return `<option value="${grupo}">${grupo}</option>`})
   input.innerHTML = pri + vali 
+  input.addEventListener('change', (e) => {
+    eventoChange(e.target.value, fila)
+  })
   
-  input = document.getElementById('descripcion');
-  input.innerHTML = `<option value="">Seleccione Insumo</option>`
 }
 
+function eventoChange(texto, fila){
+  let insumos = productos
+  .filter((insumo) => insumo.grupo == texto )
+  .map((insumo) => insumo.articulo)
+  let inpIns= fila.querySelector('[data-insumo]')
+  let cont = insumos.map((ele) => {
+      return `<option value="${ele}">${ele}</option>`
+  }).join('')
+  
+  inpIns.innerHTML = cont
+    
+    
+
+}
 

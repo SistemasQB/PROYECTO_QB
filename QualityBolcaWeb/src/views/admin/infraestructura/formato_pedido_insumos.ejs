@@ -61,13 +61,13 @@
                                     </td>
                                     <!-- generado dinamicamente -->
                                     <td>
-                                        <select class="descripcion-select" required id="grupo">
+                                        <select class="descripcion-select" data-grupo = 'grupo' required >
                                             
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="descripcion-select" required id="descripcion">
-                                            
+                                        <select class="descripcion-select" data-insumo='insumo' required>
+                                            <option value="">Seleccione un Insumo</option>
                                         </select>
                                     </td>
                                     <td>
@@ -91,6 +91,7 @@
     <script src="/scripts/infraestructura/scripts_formato_pedido_insumos.js"></script>
     <script>
         let productos = <%-JSON.stringify(productos)%>
+        let plantas = <%-JSON.stringify(plantas)%>
     </script>
 </body>
 </html>
