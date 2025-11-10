@@ -1,11 +1,8 @@
 import express from "express";
-import Verificacion5s from "../models/verificacion5s.js"
 import Sequelize, { where } from 'sequelize'
-import fs from 'fs';
 import claseSeq from "../public/clases/sequelize_clase.js";
 import { emailMejoraRespuesta } from "../helpers/emails.js";
 import { Op, QueryTypes } from 'sequelize'
-
 import { format } from "@formkit/tempo"
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 
@@ -322,6 +319,42 @@ controller.CrudDirectorio = async (req, res)=>{
 controller.api = (req, res) => {
     const { documento } = req.params
     res.render('admin/calidad/calidadD', { documento })
+}
+
+//rutas de 5´s
+controller.verificacion5s = async(req, res)=>{
+    try{
+        const tok = req.csrfToken()
+        const nomina = req.usuario.codigoempleado
+        console.log(nomina)
+        let clase = new sequelizeClase({modelo: modelosCalidad.modeloDirectorioCalidad})
+        let usuario = await clase.obtener1Registro({criterio:{numeroEmpleado: nomina}})
+        res.render('admin/calidad/formato_verificacion_5s.ejs',{nombre: usuario.nombreCompleto, tok: tok})
+    }catch(ex){
+        res.send(`algo salio muy mal y no se pudo cargar la informacion el error fue: ${ex}`)
+    }
+    
+}
+controller.ingresarRegistro5s = (req, res) => {
+    try{
+        
+        let archivos = req.files;
+        if(!archivos) return res.send('no hay archivos procesados')
+        let campos = req.body
+        delete campos.department
+        delete campos._csrf
+        
+        campos.images = archivos.map((file) => {return file.filename}).join(', ')
+        let clase = new sequelizeClase({modelo: modelosCalidad.modeloFormato5s})
+        return res.json({msg:'ingreso exitoso', ok: clase.insertar({datosInsertar: campos})})
+        
+    }catch(ex){
+        res.send('algo salio muy mal')
+    }
+    
+}
+controller.inicio= (req, res)=>{
+    res.render('admin/calidad/inicio.ejs')
 }
 
 

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación 5S - Sistema de Control de Calidad</title>
+    <link rel="stylesheet" href="/styles/calidad/estilos_formato_verificacion_5s.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Evaluación 5S</h1>
+            <p>Sistema de Control de Calidad</p>
+            <div class="total-score">
+                <span class="score-badge">Puntuación Total: <span id="totalScore">0.00</span>/5.00</span>
+            </div>
+        </div>
+
+        <form id="evaluationForm" class="form">
+            <!-- Información General -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Información General</h2>
+                    <p>Completa los datos básicos de la evaluación</p>
+                </div>
+                <div class="card-content general-info">
+                    <div class="form-group">
+                        <label for="evaluator">Nombre del Evaluador *</label>
+                        <input type="text" id="evaluator" name="evaluator" placeholder="Ingresa tu nombre completo" required>
+                        <span class="error-message" id="evaluator-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Departamento *</label>
+                        <select id="department" name="department" required>
+                            <option value='ATRACCIÓN DE CAPITAL HUMANO'>ATRACCIÓN DE CAPITAL HUMANO</option>
+                            <option value='CAPTURA DE DATOS'>CAPTURA DE DATOS</option>
+                            <option value='COMPRAS Y SUMINISTROS'>COMPRAS Y SUMINISTROS</option>
+                            <option value='DIRECCIÓN'>DIRECCIÓN</option>
+                            <option value='DIRECCIÓN DE ADMINISTRACIÓN'>DIRECCIÓN DE ADMINISTRACIÓN</option>
+                            <option value='DIRECCIÓN DE SORTEO'>DIRECCIÓN DE SORTEO</option>
+                            <option value='FACTURACIÓN Y COBRANZA'>FACTURACIÓN Y COBRANZA</option>
+                            <option value='GERENCIA DE COMERCIALIZACIÓN Y VENTAS'>GERENCIA DE COMERCIALIZACIÓN Y VENTAS</option>
+                            <option value='GERENCIA DE SORTEO'>GERENCIA DE SORTEO</option>
+                            <option value='GESTIÓN DE CALIDAD'>GESTIÓN DE CALIDAD</option>
+                            <option value='GESTIÓN DE CAPITAL HUMANO'>GESTIÓN DE CAPITAL HUMANO</option>
+                            <option value='GESTIÓN DE GASTOS'>GESTIÓN DE GASTOS</option>
+                            <option value='LIMPIEZA '>LIMPIEZA </option>
+                            <option value='LOGÍSTICA VEHICULAR'>LOGÍSTICA VEHICULAR</option>
+                            <option value='RENTABILIDAD'>RENTABILIDAD</option>
+                            <option value='SERVICIO AL CLIENTE'>SERVICIO AL CLIENTE</option>
+                            <option value='TECNOLOGÍAS DE LA INFORMACIÓN'>TECNOLOGÍAS DE LA INFORMACIÓN</option>
+                            <option value='VIGILANCIA'>VIGILANCIA</option>
+
+
+                        </select>
+                        <span class="error-message" id="department-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Fecha de Evaluación *</label>
+                        <input type="date" id="date" name="date" required>
+                        <span class="error-message" id="date-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secciones 5S -->
+            <div id="sectionsContainer"></div>
+
+            <!-- Evidencia Fotográfica -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📷 Evidencia Fotográfica</h2>
+                    <p>Sube imágenes que documenten la evaluación (mínimo 1, máximo 10 imágenes)</p>
+                </div>
+                <div class="card-content">
+                    <div class="form-group">
+                        <label for="images">Seleccionar Imágenes *</label>
+                        <div class="file-input-container">
+                            <input type="file" id="images" name="images" multiple accept="image/*" >
+                            <span class="image-counter"><span id="imageCount">0</span>/10</span>
+                        </div>
+                        <span class="error-message" id="images-error"></span>
+                        <p class="help-text">Formatos permitidos: JPG, PNG, GIF, WebP</p>
+                    </div>
+
+                    <div id="imagePreview" class="image-preview"></div>
+                    
+                    <div id="noImagesPlaceholder" class="no-images-placeholder">
+                        <div class="upload-icon">📤</div>
+                        <p>No hay imágenes seleccionadas</p>
+                        <p class="small">Selecciona archivos usando el botón de arriba</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="form-actions">
+                <button  class="btn btn-primary" id="btnEnvio" >
+                    📤 Enviar Evaluación
+                </button>
+                <button type="button" id="resetBtn" class="btn btn-secondary">
+                    🔄 Limpiar Formulario
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="/scripts/calidad/scripts_formato_verificacion_5s.js"></script>
+    <script>
+    let nombre = <%-JSON.stringify(nombre)%>
+    let tok = <%-JSON.stringify(tok)%>
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/scripts/calidad/fetch_generica.js"></script>
+
+</body>
+</html>
