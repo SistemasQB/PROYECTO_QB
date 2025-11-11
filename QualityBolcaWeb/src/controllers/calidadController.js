@@ -2,9 +2,10 @@ import express from "express";
 import Sequelize, { where } from 'sequelize'
 import claseSeq from "../public/clases/sequelize_clase.js";
 import { emailMejoraRespuesta } from "../helpers/emails.js";
-import { Op, QueryTypes } from 'sequelize'
+import { Op } from 'sequelize'
 import { format } from "@formkit/tempo"
 import sequelizeClase from "../public/clases/sequelize_clase.js";
+import barrilcalidad from '../models/calidad/barrilCalidad.js'
 
 import {
     Mejora,
@@ -133,7 +134,7 @@ controller.ActualizarMejoras = async (req, res) => {
         return res.json({ ok: false, msg: "no se pudo realizar la solicitud" })
     }
 }
-//rutas de actividades
+//controlador de actividades
 controller.bitacoraActividades = async (req, res)=>{
 
 
@@ -327,7 +328,7 @@ controller.verificacion5s = async(req, res)=>{
         const tok = req.csrfToken()
         const nomina = req.usuario.codigoempleado
         console.log(nomina)
-        let clase = new sequelizeClase({modelo: modelosCalidad.modeloDirectorioCalidad})
+        let clase = new sequelizeClase({modelo: barrilcalidad.modeloDirectorioCalidad})
         let usuario = await clase.obtener1Registro({criterio:{numeroEmpleado: nomina}})
         res.render('admin/calidad/formato_verificacion_5s.ejs',{nombre: usuario.nombreCompleto, tok: tok})
     }catch(ex){
@@ -335,27 +336,34 @@ controller.verificacion5s = async(req, res)=>{
     }
     
 }
-controller.ingresarRegistro5s = (req, res) => {
+controller.ingresarRegistro5s = async(req, res) => {
     try{
-        
         let archivos = req.files;
         if(!archivos) return res.send('no hay archivos procesados')
         let campos = req.body
         delete campos.department
         delete campos._csrf
-        
+        campos.secciones = JSON.parse(campos.secciones)
         campos.images = archivos.map((file) => {return file.filename}).join(', ')
-        let clase = new sequelizeClase({modelo: modelosCalidad.modeloFormato5s})
-        return res.json({msg:'ingreso exitoso', ok: clase.insertar({datosInsertar: campos})})
+        let clase = new sequelizeClase({modelo: barrilcalidad.modeloFormato5s})
+        return res.json({msg:'ingreso exitoso', ok: await clase.insertar({datosInsertar: campos})})
         
     }catch(ex){
-        res.send('algo salio muy mal')
+        return res.send(`algo salio muy mal, error: ${ex}`)
     }
     
 }
+//controladores de inicio
 controller.inicio= (req, res)=>{
-    res.render('admin/calidad/inicio.ejs')
+    res.render('admin/calidad/inicioCalidad.ejs')
 }
+
+//controladores de auditorias
+controller.agregarAuditoria = (req, res) => {
+ return res.render('admin/calidad/agregarAuditoria.ejs')   
+}
+controller
 
 
 export default controller;
+

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Auditorías - Gestión de Calidad</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>Sistema de Gestión de Auditorías</h1>
+                <p>Registro y seguimiento de auditorías de calidad</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Formulario de Auditorías -->
+            <section class="form-section">
+                <div class="section-header">
+                    <h2>Nueva Auditoría</h2>
+                    <p class="last-saved" id="lastSaved"></p>
+                </div>
+
+                <form id="auditForm" class="audit-form">
+                    <div class="form-grid">
+                        <!-- Auditores -->
+                        <div class="form-group">
+                            <label for="auditores">Auditores *</label>
+                            <select id="auditores" name="auditores" required>
+                                <option value="">Seleccionar auditor</option>
+                                <option value="Juan García">Juan García</option>
+                                <option value="María López">María López</option>
+                                <option value="Carlos Rodríguez">Carlos Rodríguez</option>
+                                <option value="Ana Martínez">Ana Martínez</option>
+                                <option value="Luis Fernández">Luis Fernández</option>
+                            </select>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Mes Programado -->
+                        <div class="form-group">
+                            <label for="mes">Mes Programado *</label>
+                            <select id="mes" name="mes" required>
+                                <option value="">Seleccionar mes</option>
+                                <option value="Enero">Enero</option>
+                                <option value="Febrero">Febrero</option>
+                                <option value="Marzo">Marzo</option>
+                                <option value="Abril">Abril</option>
+                                <option value="Mayo">Mayo</option>
+                                <option value="Junio">Junio</option>
+                                <option value="Julio">Julio</option>
+                                <option value="Agosto">Agosto</option>
+                                <option value="Septiembre">Septiembre</option>
+                                <option value="Octubre">Octubre</option>
+                                <option value="Noviembre">Noviembre</option>
+                                <option value="Diciembre">Diciembre</option>
+                            </select>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Año -->
+                        <div class="form-group">
+                            <label for="anio">Año *</label>
+                            <select id="anio" name="anio" required>
+                                <option value="">Seleccionar año</option>
+                                <option value="2023">2023</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Tipo de Auditoría -->
+                        <div class="form-group">
+                            <label for="tipoAuditoria">Tipo de Auditoría *</label>
+                            <select id="tipoAuditoria" name="tipoAuditoria" required>
+                                <option value="">Seleccionar tipo</option>
+                                <option value="Interna">Auditoría Interna</option>
+                                <option value="Externa">Auditoría Externa</option>
+                                <option value="Seguimiento">Auditoría de Seguimiento</option>
+                                <option value="Integrada">Auditoría Integrada</option>
+                                <option value="Sorpresa">Auditoría Sorpresa</option>
+                            </select>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Proceso/Departamento -->
+                        <div class="form-group">
+                            <label for="proceso">Proceso/Departamento *</label>
+                            <select id="proceso" name="proceso" required>
+                                <option value="">Seleccionar proceso</option>
+                                <option value="Producción">Producción</option>
+                                <option value="Calidad">Calidad</option>
+                                <option value="Recursos Humanos">Recursos Humanos</option>
+                                <option value="Ventas">Ventas</option>
+                                <option value="Logística">Logística</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Finanzas">Finanzas</option>
+                            </select>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <!-- Auditado -->
+                        <div class="form-group">
+                            <label for="auditado">Auditado *</label>
+                            <select id="auditado" name="auditado" required>
+                                <option value="">Seleccionar responsable</option>
+                                <option value="Pedro Sánchez">Pedro Sánchez</option>
+                                <option value="Patricia González">Patricia González</option>
+                                <option value="Roberto Díaz">Roberto Díaz</option>
+                                <option value="Gabriela López">Gabriela López</option>
+                                <option value="Fernando Ruiz">Fernando Ruiz</option>
+                            </select>
+                            <span class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="form-buttons">
+                        <button type="submit" class="btn btn-primary">
+                            Enviar Auditoría
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            Limpiar Formulario
+                        </button>
+                    </div>
+
+                    <!-- Mensaje de Estado -->
+                    <div id="statusMessage" class="status-message"></div>
+                </form>
+            </section>
+
+            <!-- Lista de Auditorías Registradas -->
+            <section class="audits-section">
+                <div class="section-header">
+                    <h2>Auditorías Registradas</h2>
+                    <span class="audit-count" id="auditCount">0</span>
+                </div>
+
+                <div id="auditsList" class="audits-list">
+                    <p class="empty-message">No hay auditorías registradas aún</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Sistema de Gestión de Calidad. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

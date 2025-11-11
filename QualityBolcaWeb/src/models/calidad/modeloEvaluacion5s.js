@@ -9,17 +9,17 @@ const modeloFormato5s = dbCalidad.define('tablaFormatoVerificacion5s', {
             autoIncrement: true
     },
     folio: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.CHAR(255),
         defaultValue: "foio sin declarar",
         allowNull: false,
     },
     evaluador: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.CHAR(255),
         defaultValue: "nombre sin declarar",
         allowNull: false,
     },
     departamento: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.CHAR(255),
         defaultValue: "departamento sin declarar",
         allowNull: false,
     },

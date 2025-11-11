@@ -123,7 +123,6 @@ controller.directorio = async (req, res) => {
     ).then((resultados) => {
         Rcomunicacion2 = resultados;
     });
-
     res.render('admin/directorio', {
         Rcomunicacion2
     })

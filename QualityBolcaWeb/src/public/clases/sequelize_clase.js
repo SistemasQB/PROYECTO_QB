@@ -15,7 +15,7 @@ class sequelizeClase{
         if (!inserccion) return false;
         return true;}
         catch(ex){
-            console.log(ex.toString())
+            console.log(`sucedio un error en la clase sequelize,error: ${ex}`)
             return false;
         }
     }

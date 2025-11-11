@@ -46,5 +46,7 @@ router.get('/api/:documento', calidadController.api);
 router.get('/formatoVerificacion', protegetRuta,calidadController.verificacion5s)
 router.post('/ingresarFormatoVerificacion', protegetRuta, multer5S.multiplesArchivos('evidencia',10),calidadController.ingresarRegistro5s)
 
+//rutas de auditorias
+router.get('/agregarAuditoria', calidadController.agregarAuditoria)
 
 export default router;

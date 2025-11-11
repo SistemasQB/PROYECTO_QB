@@ -506,11 +506,10 @@ async function envioInformacion(){
        const lastDotIndex = nombreOriginal.lastIndexOf('.');
        const extension = lastDotIndex === -1 ? '' : nombreOriginal.substring(lastDotIndex + 1); 
        const nuevoNombre = `evidencia ${folio} ${i}.${extension}`
-
+      
       data.append('evidencia', img, nuevoNombre)
   })
-  
-   await fetchGenerica('/calidad2/ingresarFormatoVerificacion', data, '/calidad2/formatoVerificacion')
+   await fetchGenerica('/calidad/ingresarFormatoVerificacion', data, '/calidad/formatoVerificacion')
 }
 
 function generarFolio(){
