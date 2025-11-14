@@ -174,8 +174,8 @@ body {
 /* Three Column Table Specific */
 .three-column tbody td:nth-child(odd) {
   font-weight: bold;
-  background-color: #f8f9fa;
-  width: 35%;
+  /* background-color: #f8f9fa; */
+  width: 5%;
 }
 
 .three-column tbody td:nth-child(even) {
@@ -246,6 +246,12 @@ body {
   height: 80px;
   border-top: 1px solid #ddd;
   background-color: #fafafa;
+}
+
+.subtitulo{
+  background-color: #1e3a5f;
+  color: #fafafa;
+  
 }
 
 /* Responsive Design */

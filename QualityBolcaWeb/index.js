@@ -24,6 +24,7 @@ import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
 import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
 import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
 import {default as infraestructuraRouter} from "./src/routes/infraestructuraRouter.js";
+import routerContabilidad from "./src/routes/contabilidadRoutes.js";
 
 import {
   Controlpiezas,
@@ -40,6 +41,7 @@ import path from "path";
 import { pipeline } from '@xenova/transformers';
 import wavefile from 'wavefile';
 import fs from 'fs';
+import contabilidadController from "./src/controllers/contabilidadController.js";
 
 
 const app = express();
@@ -169,6 +171,9 @@ app.use('/capitalhumano',csrfProtection, capitalhumanoRoutes);
 app.use('/sorteo',csrfProtection, sorteoRoutes);
 app.use('/nominas',csrfProtection, nominasRoutes);
 app.use('/infraestructura', infraestructuraRouter)
+app.use('/contabilidad', routerContabilidad)
+
+
 
 
 

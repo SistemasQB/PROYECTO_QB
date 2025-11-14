@@ -22,7 +22,6 @@ const fields = {
 
 // ===== INICIALIZACIÓN =====
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("[v0] Inicializando formulario de auditorías")
   loadFormDraft()
   loadAuditsRegistry()
   setupEventListeners()

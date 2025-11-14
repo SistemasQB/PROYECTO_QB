@@ -145,6 +145,10 @@ infraestructuraController.crudPedidoInsumos = (req, res) => {
     
 }
 
+infraestructuraController.gestionPedidosInsumos = (req, res) => {
+        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs')
+}
+
 
 //rutas de logistica vehicular
 

@@ -16,6 +16,7 @@ infraestructuraRouter.post('/crudOrdenesCompra', infraestructuraController.crudO
 //rutas pedido insumos
 infraestructuraRouter.get('/pedidoInsumos', infraestructuraController.pedidoInsumos);
 infraestructuraRouter.get('/crudPedidosInsumos', infraestructuraController.crudPedidoInsumos);
+infraestructuraRouter.get('/gestionPedidosInsumos', infraestructuraController.gestionPedidosInsumos);
 
 
 //rutas de logistica vehicular

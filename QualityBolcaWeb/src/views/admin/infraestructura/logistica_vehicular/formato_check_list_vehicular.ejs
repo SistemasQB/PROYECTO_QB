@@ -63,9 +63,18 @@
                     <input type="text" class="input-field">
                 </div>
             </div>
-            <div class="coment">
-                <label for="observacionesLogistica">observaciones logistica vehicular</label>
-                <textarea name="observacionesLogistica" id=""></textarea>
+            <!-- <div class="section-header">OBSERVACIONES GENERALES</div>
+                <div class="observations-area">
+                <textarea class="observations-textarea" rows="6"></textarea>
+            </div> -->
+            <div class="observations-area">
+                <div class="section-header">
+                    <label for="observacionesLogistica">observaciones logistica vehicular</label>
+                </div>
+                <div class="observations-area">
+                    <textarea class="observations-textarea" name="observacionesLogistica" id=""></textarea>
+                </div>
+                
             </div>
         </div>        
         <!-- Tires Table -->
@@ -83,14 +92,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>MEDIDA</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                    </tr>
+                    
                     <tr>
                         <td>MARCA</td>
                         <td><input type="text" class="table-input"></td>
@@ -133,11 +135,11 @@
                 <thead>
                     <tr>
                         <th colspan="1">ACCESORIOS</th>
-                        <th>ESTATUS</th>
+                        <th colspan="1">ESTATUS</th>
                         <th colspan="1">ELÉCTRICOS</th>
-                        <th>ESTATUS</th>
+                        <th colspan="1">ESTATUS</th>
                         <th colspan="1">NIVEL DE FLUIDOS</th>
-                        <th>ESTATUS</th>
+                        <th colspan="1">ESTATUS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -186,7 +188,7 @@
                         <td><input type="text" class="table-input"></td>
                         <td>LUCES (CUARTOS)</td>
                         <td><input type="text" class="table-input"></td>
-                        <td>LÍQUIDO DE FRENOS</td>
+                        <td>LÍQUIDO DE CLUTCH</td>
                         <td><input type="text" class="table-input"></td>
                     </tr>
                     <tr>
@@ -194,8 +196,8 @@
                         <td><input type="text" class="table-input"></td>
                         <td>LUCES (BAJAS)</td>
                         <td><input type="text" class="table-input"></td>
-                        <td>LÍQUIDO DE CLUTCH</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>LLAVE DE CRUZ</td>
@@ -205,44 +207,36 @@
                         <td></td>
                         <td></td>
                     </tr>
+                    <tr>
+                        <td>REFLEJANTES</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td class="subtitulo"></td>
+                        <td colspan="1" class="subtitulo">ESTATUS</td>
+                        <td colspan="1" class="subtitulo">MARCA</td>
+                        <td colspan="1" class="subtitulo">No. SERIE</td>
+                        
+                    </tr>
+                    <tr>
+                        <td>EXTINTOR</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td colspan="1" >BATERIA</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td colspan="1"><input type="text" class="table-input"></td>
+                        <td colspan="1"><input type="text" class="table-input"></td>
+                    </tr>
+                    <tr>
+                        <td>PLACAS</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td colspan="1" >CATALIZADOR</td>
+                        <td><input type="text" class="table-input"></td>
+                        <td colspan="1"><input type="text" class="table-input"></td>
+                        <td colspan="1"><input type="text" class="table-input"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Reflectors Table -->
-        <div class="table-responsive">
-            <table class="checklist-table">
-                <thead>
-                    <tr>
-                        <th>REFLEJANTES</th>
-                        <th colspan="2">ESTATUS</th>
-                        <th>MARCA</th>
-                        <th>No. SERIE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>EXTINTOR</td>
-                        <td colspan="2"><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                    </tr>
-                    <tr>
-                        <td>CATALIZADOR</td>
-                        <td colspan="2"><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                    </tr>
-                    <tr>
-                        <td>PLACAS</td>
-                        <td>BATERÍA</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        
 
         <!-- Documents and Cleaning Table -->
         <div class="table-responsive">
@@ -276,14 +270,7 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td>VERIFICACIÓN</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>VEHICULAR</td>
+                        <td>VERIFICACIÓN VEHICULAR</td>
                         <td><input type="text" class="table-input"></td>
                         <td></td>
                         <td></td>
