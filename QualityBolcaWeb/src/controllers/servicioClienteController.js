@@ -1,7 +1,13 @@
 
 const controllerServicioCliente = {}
 
-controllerServicioCliente.formularioCotizacion = (parameters) => {
+controllerServicioCliente.formularioHorasCobro = (req, res) => {
+    try {
+        return res.render("admin/servicioCliente/registroHorasCobro.ejs");    
+    } catch (error) {
+        return res.send()    
+    }
+
     
 }
 

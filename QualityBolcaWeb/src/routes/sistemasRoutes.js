@@ -13,28 +13,35 @@ router.get('/admin-tickets', protegetRuta,adminController.administracionTickets)
 router.post('/crudTickets', protegetRuta,adminController.crudTickets)
 
 //rutas de inventario
-router.get('/inventario', adminController.inventario)
+router.get('/inventario', protegetRuta,adminController.inventario)
 
-router.get('/addinventario',adminController.addinventario); //para abrir la pagina de asignacion o de generar vale
-router.post('/addinventario',adminController.addinventario2);
-router.get('/tablainventario',adminController.tablainventario); 
+router.get('/addinventario', protegetRuta, adminController.addinventario); //para abrir la pagina de asignacion o de generar vale
+router.post('/addinventario',protegetRuta,adminController.addinventario2);
+router.get('/tablainventario',protegetRuta,adminController.tablainventario); 
 
 //rutas de vales
-router.get('/listadopersonal',adminController.listadopersonal); //visualizar los vales del personal
+router.get('/listadopersonal',protegetRuta ,adminController.listadopersonal); //visualizar los vales del personal
 
 //rutas de los vales
-router.get('/addvales',adminController.addvales);
-router.post('/addvales',adminController.addvales2);
+router.get('/addvales',protegetRuta,adminController.addvales);
+router.post('/addvales',protegetRuta,adminController.addvales2);
 
 
 //rutas de mantenimiento
-router.get('/registroma',adminController.registroMA); //lista de mantenimientos autonomos (realizados)
-router.get('/registromantenimiento',adminController.registromantenimiento); //vista de mantenimientos autonomos realizados (mejor que el anterior)
-router.get('/programamantenimiento',adminController.programamantenimiento); // vista de mantenimiento (formato controlado)
-router.get('/listadosolicitudes',adminController.listadosolicitudes);
-router.get('/mantenimientoautonomo',adminController.mantenimientoautonomo); //vista de los mantenimientos que se han hecho
+router.get('/registroma',protegetRuta,adminController.registroMA); //lista de mantenimientos autonomos (realizados)
+router.get('/registromantenimiento',protegetRuta,adminController.registromantenimiento); //vista de mantenimientos autonomos realizados (mejor que el anterior)
+router.get('/programamantenimiento',protegetRuta,adminController.programamantenimiento); // vista de mantenimiento (formato controlado)
+router.get('/listadosolicitudes',protegetRuta,adminController.listadosolicitudes);
+router.get('/mantenimientoautonomo',protegetRuta,adminController.mantenimientoautonomo); //vista de los mantenimientos que se han hecho
 
+//api de documentos
 router.get('/api/:query2',adminController.api);
+
+//rutas de requisicion de equipos
+router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos)  
+
+
+
 
 
 export default router;

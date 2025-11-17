@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Cotización</title>
+    <link rel="stylesheet" href="/styles/servicioCliente/styles_registroHorasCobro.css">
+</head>
+<body>
+    <main class="main-container">
+        <div class="form-wrapper">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">Formulario de Cotización</h1>
+                    <p class="card-description">Complete todos los campos requeridos para registrar la cotización</p>
+                </div>
+
+                <div class="card-content">
+                    <!-- Alertas -->
+                    <div id="successAlert" class="alert alert-success" style="display: none;">
+                        <span id="successMessage">✓ Progreso guardado automáticamente</span>
+                        <button class="alert-close" onclick="closeAlert('successAlert')">&times;</button>
+                    </div>
+
+                    <div id="errorAlert" class="alert alert-error" style="display: none;">
+                        <span id="errorMessage">Error</span>
+                        <button class="alert-close" onclick="closeAlert('errorAlert')">&times;</button>
+                    </div>
+
+                    <!-- Formulario -->
+                    <form id="quotationForm" class="form">
+                        <!-- Fila 1: Fechas -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fecha" class="label">
+                                    Fecha
+                                    <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="fecha" 
+                                    name="fecha"
+                                    class="input"
+                                >
+                                <span class="error-message" id="error-fecha"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fechaCotizacion" class="label">
+                                    Fecha de Cotización
+                                    <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="date" 
+                                    id="fechaCotizacion" 
+                                    name="fechaCotizacion"
+                                    class="input"
+                                >
+                                <span class="error-message" id="error-fechaCotizacion"></span>
+                            </div>
+                        </div>
+
+                        <!-- Fila 2: Cliente y Responsable -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cliente" class="label">
+                                    Cliente
+                                    <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="cliente" 
+                                    name="cliente"
+                                    placeholder="Nombre del cliente"
+                                    class="input"
+                                >
+                                <span class="error-message" id="error-cliente"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="responsable" class="label">
+                                    Responsable
+                                    <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="responsable" 
+                                    name="responsable"
+                                    placeholder="Nombre del responsable"
+                                    class="input"
+                                >
+                                <span class="error-message" id="error-responsable"></span>
+                            </div>
+                        </div>
+
+                        <!-- Fila 3: Planta y Gasto -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="planta" class="label">
+                                    Planta
+                                    <span class="required">*</span>
+                                </label>
+                                <select id="planta" name="planta" class="select">
+                                    <option value="">Seleccionar planta</option>
+                                    <option value="Planta A">Planta A</option>
+                                    <option value="Planta B">Planta B</option>
+                                    <option value="Planta C">Planta C</option>
+                                    <option value="Planta D">Planta D</option>
+                                </select>
+                                <span class="error-message" id="error-planta"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gasto" class="label">
+                                    Tipo de Gasto
+                                    <span class="required">*</span>
+                                </label>
+                                <select id="gasto" name="gasto" class="select">
+                                    <option value="">Seleccionar tipo de gasto</option>
+                                    <option value="Operativo">Operativo</option>
+                                    <option value="Mantenimiento">Mantenimiento</option>
+                                    <option value="Capacitación">Capacitación</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                                <span class="error-message" id="error-gasto"></span>
+                            </div>
+                        </div>
+
+                        <!-- Fila 4: Horas -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="horas" class="label">
+                                    Horas
+                                    <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="horas" 
+                                    name="horas"
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.5"
+                                    class="input"
+                                >
+                                <span class="error-message" id="error-horas"></span>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="form-buttons">
+                            <button type="submit" id="submitBtn" class="btn btn-primary">
+                                Enviar
+                            </button>
+                            <button type="button" id="cancelBtn" class="btn btn-secondary">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="form-footer">
+                <p>Los datos se guardan automáticamente mientras completas el formulario</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="/scripts/servicioCliente/scrtiptsRegistroHorasCobro"></script>
+</body>
+</html>

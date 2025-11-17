@@ -14,6 +14,7 @@ import {
 } from "../models/index.js";
 
 import { Op, QueryTypes } from 'sequelize'
+import { applyOffset } from "@formkit/tempo";
 
 
 const app = express();
@@ -313,5 +314,18 @@ controller.administracionTickets = (req, res) => {
 //controladores de inventario
 controller.inventario = async (req, res) => {
     res.render('admin/sistemas/inventario.ejs')
+}
+
+
+//controladores de equisicion de equipos
+controller.requisicionEquipos = (req, res)=>{
+    try {
+        let {codigoempleado} = req.usuario
+        //aqui se declara la clase sequelize para poder realizar la consulta a la nom1001
+        res.render('admin/sistemas/requisicionEquipos.ejs')    
+    } catch (error) {
+        
+    }
+    
 }
 export default controller;

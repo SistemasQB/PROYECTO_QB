@@ -25,6 +25,7 @@ import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes
 import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
 import {default as infraestructuraRouter} from "./src/routes/infraestructuraRouter.js";
 import routerContabilidad from "./src/routes/contabilidadRoutes.js";
+import routerServicioCliente from "./src/routes/servicioClienteRoutes.js";
 
 import {
   Controlpiezas,
@@ -172,6 +173,7 @@ app.use('/sorteo',csrfProtection, sorteoRoutes);
 app.use('/nominas',csrfProtection, nominasRoutes);
 app.use('/infraestructura', infraestructuraRouter)
 app.use('/contabilidad', routerContabilidad)
+app.use('/servicioCliente', routerServicioCliente);
 
 
 

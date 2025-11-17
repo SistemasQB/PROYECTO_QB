@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requisición de Equipos</title>
+    <link rel="stylesheet" href="/styles/sistemas/styles_requisicionEquipos.css">
+</head>
+<body>
+    <main class="main-container">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">
+                    <div class="dot dot-primary"></div>
+                    <h1 class="title">Requisición de Equipos</h1>
+                    <div class="dot dot-accent"></div>
+                </div>
+                <p class="subtitle">Sistema centralizado para solicitar equipos e infraestructura</p>
+            </div>
+
+            <div class="grid-layout">
+                <!-- Main Form -->
+                <div class="form-section">
+                    <!-- Requester Information -->
+                    <div class="card">
+                        <h2 class="section-header">👤 Información del Solicitante</h2>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="requesterName">Nombre Completo</label>
+                                <input type="text" id="requesterName" class="input-field" placeholder="Juan Pérez García">
+                                <span class="error-message" id="error-requesterName"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="department">Departamento</label>
+                                <input type="text" id="department" class="input-field" placeholder="Ej: Informática, RH, Ventas">
+                                <span class="error-message" id="error-department"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Correo Electrónico</label>
+                                <input type="email" id="email" class="input-field" placeholder="correo@empresa.com">
+                                <span class="error-message" id="error-email"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Teléfono</label>
+                                <input type="tel" id="phone" class="input-field" placeholder="+1 (555) 000-0000">
+                                <span class="error-message" id="error-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equipment Items -->
+                    <div>
+                        <div class="equipment-header">
+                            <h2 class="section-header">🖥️ Equipos Solicitados</h2>
+                            <span class="equipment-count" id="equipmentCount">0 equipos</span>
+                        </div>
+
+                        <span class="error-message" id="error-items"></span>
+
+                        <div class="equipment-list" id="equipmentList">
+                            <!-- Items will be added here dynamically -->
+                        </div>
+
+                        <button class="btn btn-outline btn-block" id="addEquipmentBtn">
+                            ➕ Agregar Equipo
+                        </button>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-large" id="submitBtn">
+                            ✈️ Enviar Requisición
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Summary Sidebar -->
+                <aside class="summary-sidebar">
+                    <div class="card summary-card">
+                        <h3 class="summary-title">📊 Resumen de Requisición</h3>
+                        
+                        <div class="summary-section">
+                            <h4 class="summary-subtitle">Información</h4>
+                            <div class="summary-item">
+                                <span class="summary-label">Solicitante:</span>
+                                <span class="summary-value" id="summaryRequester">Sin especificar</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Departamento:</span>
+                                <span class="summary-value" id="summaryDepartment">Sin especificar</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-section">
+                            <h4 class="summary-subtitle">Equipos</h4>
+                            <div class="summary-item">
+                                <span class="summary-label">Total de equipos:</span>
+                                <span class="summary-value summary-highlight" id="summaryTotal">0</span>
+                            </div>
+                            <div id="equipmentSummaryList" class="equipment-summary-list">
+                                <!-- Equipment summary items will be added here -->
+                            </div>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-progress">
+                            <h4 class="summary-subtitle">Progreso del Formulario</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <p class="progress-text" id="progressText">0% completo</p>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <script src="/scripts/sistemas/scriptsRequisicionEquipos.js"></script>
+</body>
+</html>
