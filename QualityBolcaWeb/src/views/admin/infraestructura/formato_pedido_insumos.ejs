@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedido de Insumos</title>
     <link rel="stylesheet" href="/styles/infraestructura/estilos_formato_pedido_insumos.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -51,6 +52,8 @@
                                     <th>Cantidad Solicitada *</th>
                                     <th>grupo *</th>
                                     <th>articulo *</th>
+                                    <th>precio unitario</th>
+                                    <th>precio total</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -59,7 +62,6 @@
                                     <td>
                                         <input type="number" class="cantidad-input" min="1" required>
                                     </td>
-                                    <!-- generado dinamicamente -->
                                     <td>
                                         <select class="descripcion-select" data-grupo = 'grupo' required >
                                             
@@ -71,6 +73,12 @@
                                         </select>
                                     </td>
                                     <td>
+                                        <input type="number" data-precioUnitario="unitario" class="input-precio" disabled>
+                                    </td>
+                                    <td>
+                                        <input type="number" data-preciototal="total" class="input-precio" disabled>
+                                    </td>
+                                    <td>
                                         <button type="button" class="btn-remove" disabled>Eliminar</button>
                                     </td>
                                 </tr>
@@ -80,18 +88,23 @@
                 </div>
 
                 <div class="error-message" id="errorMessage"></div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-submit">Enviar Pedido</button>
+                <div class="form-group">
+                    <div>total</div>
+                    <div  id="totalL" class="btn-add"></div>
+                </div>
+                <div class="form-actions">    
+                    <button type="button" class="btn-submit" id="btnEnvio">Enviar Pedido</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script src="/scripts/infraestructura/scripts_formato_pedido_insumos.js"></script>
+    <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
     <script>
         let productos = <%-JSON.stringify(productos)%>
         let plantas = <%-JSON.stringify(plantas)%>
+        let tok = <%-JSON.stringify(tok)%>
     </script>
 </body>
 </html>

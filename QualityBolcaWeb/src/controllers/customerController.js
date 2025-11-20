@@ -31,9 +31,7 @@ import {
     Glosario
 } from "../models/index.js";
 
-import Swal from 'sweetalert2'
 import multer from "multer";
-import mimeTypes from "mime-types";
 import { check, validationResult } from "express-validator";
 import { generarJWT, generarId } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword, emailContacto } from "../helpers/emails.js";
@@ -54,17 +52,13 @@ controller.formularioLogin = (req, res) => {
 }
 
 controller.autenticar = async (req, res) => {
-    // await check('email').isEmail().withMessage('El correo es obligatorio').run(req);
-    // await check('password').notEmpty().withMessage('La contrseña es obligatoria').run(req);
         const { codigoempleado, password } = req.body
-        
     if (codigoempleado == '' || password == '') {
         res.status(400).send({ msg: 'Completa los campos', ok: false });
         return
     }
-
+    
    //comporbar si el usuario existe
-
     const usuario = await Usuario.findOne({ where: { codigoempleado } })
     if (!usuario) {
         res.status(400).send({ msg: 'El usuario no existe', ok: false });
@@ -93,13 +87,7 @@ controller.autenticar = async (req, res) => {
         httpOnly: true,
         secure: false,
     })
-
-    console.log(req.session.redirectTo);
-    
-
     let redireccionar = ''
-
-    
         redireccionar =  req.session.redirectTo || '/inicio';
         delete req.session.redirectTo;
 

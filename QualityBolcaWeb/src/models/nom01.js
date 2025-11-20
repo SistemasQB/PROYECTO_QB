@@ -104,6 +104,6 @@ const Vales = db.define('vales', {
     sequelize,
     freezeTableName: true, // Desactiva la pluralización automática
     timestamps: false
-})
+});
 
 export default Vales;

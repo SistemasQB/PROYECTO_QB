@@ -44,25 +44,14 @@ import wavefile from 'wavefile';
 import fs from 'fs';
 import contabilidadController from "./src/controllers/contabilidadController.js";
 
-
 const app = express();
-
 app.use(cors());
-
-// Configurar almacenamiento de archivos con Multer
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-
 //Habilitar cookie parser
-
 app.use( cookieParser() )
 
 //Habilitar CSRF
