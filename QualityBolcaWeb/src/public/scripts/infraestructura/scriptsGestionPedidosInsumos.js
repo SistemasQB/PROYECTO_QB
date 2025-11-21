@@ -1,40 +1,11 @@
 // Data Storage
-let orders = [
-  {
-    id: "1001",
-    date: "2024-11-12",
-    plant: "Planta Centro",
-    status: "pending",
-    items: [
-      { id: "1", quantity: 10, group: "Grupo A", article: "Tornillos M8", unitPrice: 5.5 },
-      { id: "2", quantity: 5, group: "Grupo B", article: "Arandelas", unitPrice: 2.25 },
-    ],
-    suppliedItems: [],
-  },
-  {
-    id: "1002",
-    date: "2024-11-11",
-    plant: "Planta Norte",
-    status: "partially_supplied",
-    items: [
-      { id: "3", quantity: 20, group: "Grupo C", article: "Tuercas", unitPrice: 1.75 },
-      { id: "4", quantity: 15, group: "Grupo D", article: "Pernos", unitPrice: 3.0 },
-    ],
-    suppliedItems: [{ id: "3", suppliedQuantity: 15 }],
-  },
-  {
-    id: "1003",
-    date: "2024-11-10",
-    plant: "Planta Sur",
-    status: "supplied",
-    items: [{ id: "5", quantity: 25, group: "Grupo E", article: "Remaches", unitPrice: 0.5 }],
-    suppliedItems: [{ id: "5", suppliedQuantity: 25 }],
-  },
-]
+
 
 let currentEditingOrder = null
 let currentRejectingOrderId = null
 let currentSupplyingOrder = null
+let partidas = []
+let surtido = []
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
@@ -44,31 +15,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Render Orders Table
 function renderOrders() {
+  
   const tbody = document.getElementById("ordersTableBody")
   const emptyState = document.getElementById("emptyState")
 
   tbody.innerHTML = ""
 
-  if (orders.length === 0) {
+  if (resultados.length === 0) {
     emptyState.style.display = "block"
     return
   }
 
   emptyState.style.display = "none"
-
-  orders.forEach((order) => {
+  resultados.forEach((order) => {
     const row = document.createElement("tr")
+    let articulosSolicitados= JSON.parse(order.solicitado)
     row.innerHTML = `
             <td><span class="order-id">#${order.id}</span></td>
-            <td>${formatDate(order.date)}</td>
-            <td>${order.plant}</td>
-            <td><span class="order-items">${order.items.length} artículos</span></td>
-            <td class="text-right"><span class="order-total">${formatCurrency(calculateOrderTotal(order))}</span></td>
-            <td class="text-right"><span class="order-total supplied">${formatCurrency(calculateOrderSuppliedTotal(order))}</span></td>
-            <td class="text-center"><span class="status-badge ${getStatusClass(order.status)}">${getStatusLabel(order.status)}</span></td>
+            <td>${ order.createdAt.split("T")[0]}</td>
+            <td>${order.planta}</td>
+            <td><span class="order-items">${articulosSolicitados.length -1} artículos</span></td>
+            <td class="text-right"><span class="order-total">${formatCurrency( articulosSolicitados[articulosSolicitados.length-1].total)}</span></td>
+            <td class="text-right"><span class="order-total supplied">${order.solicitante}</span></td> 
+            <td class="text-center"><span class="status-badge ${getStatusClass(order.estatus)}">${getStatusLabel(order.estatus)}</span></td>
             <td class="text-center">
                 <div class="action-buttons">
-                    <button class="action-btn edit" title="Editar" onclick="openEditModal('${order.id}')">✏️</button>
+                    <button class="action-btn edit" title="Editar" onclick="openEditModal('${order.id}')">🔍</button>
                     <button class="action-btn reject" title="Rechazar" onclick="openRejectModal('${order.id}')">✕</button>
                     <button class="action-btn supply" title="Surtir" onclick="openSupplyModal('${order.id}')">✓</button>
                     <button class="action-btn delete" title="Eliminar" onclick="deleteOrder('${order.id}')">🗑️</button>
@@ -81,11 +53,16 @@ function renderOrders() {
 
 // Update Totals
 function updateTotals() {
-  const totalRequested = orders.reduce((sum, order) => sum + calculateOrderTotal(order), 0)
-  const totalSupplied = orders.reduce((sum, order) => sum + calculateOrderSuppliedTotal(order), 0)
+  let total = 0
+  resultados.forEach((order) => {
+    let partidas = JSON.parse(order.solicitado)
+    total += parseFloat(partidas[partidas.length-1].total)
+  })
+  
+  // const totalSupplied = orders.reduce((sum, order) => sum + calculateOrderSuppliedTotal(order), 0)
 
-  document.getElementById("totalRequested").textContent = formatCurrency(totalRequested)
-  document.getElementById("totalSupplied").textContent = formatCurrency(totalSupplied)
+  document.getElementById("totalRequested").textContent = formatCurrency(total)
+  // document.getElementById("totalSupplied").textContent = formatCurrency(totalSupplied)
 }
 
 // Calculate Order Total
@@ -111,6 +88,7 @@ function formatCurrency(amount) {
 
 // Format Date
 function formatDate(dateString) {
+  console.log(dateString)
   const date = new Date(dateString + "T00:00:00")
   return new Intl.DateTimeFormat("es-MX", {
     year: "numeric",
@@ -131,7 +109,7 @@ function getStatusLabel(status) {
 }
 
 // Get Status Class
-function getStatusClass(status) {
+function getStatusClass(status){
   return `status-${status}`
 }
 
@@ -154,10 +132,9 @@ function clearFormErrors() {
 
 // Edit Order Modal
 function openEditModal(orderId) {
-  currentEditingOrder = orders.find((o) => o.id === orderId)
-
+  currentEditingOrder = resultados.find((o) => o.id == orderId)
   document.getElementById("editModalTitle").textContent = `Editar Pedido #${orderId}`
-  document.getElementById("editPlant").value = currentEditingOrder.plant
+  document.getElementById("editPlant").value = currentEditingOrder.planta
 
   renderEditItems()
   updateEditOrderTotal()
@@ -168,41 +145,43 @@ function openEditModal(orderId) {
 function renderEditItems() {
   const container = document.getElementById("editItemsContainer")
   container.innerHTML = ""
-
-  currentEditingOrder.items.forEach((item, index) => {
-    const itemDiv = document.createElement("div")
+  let solicitado = JSON.parse(currentEditingOrder.solicitado)
+  solicitado.forEach((item, index) => {
+    if(index < solicitado.length-1){
+      const itemDiv = document.createElement("div")
     itemDiv.className = "item-box"
     itemDiv.innerHTML = `
             <div class="item-grid">
                 <div class="item-field">
                     <label>Cantidad</label>
-                    <input type="number" value="${item.quantity}" onchange="updateEditItem(${index}, 'quantity', this.value)" class="edit-item-input" min="1">
+                    <input type="number" value="${item.cantidad}" onchange="updateEditItem(${index}, 'quantity', this.value)" class="edit-item-input" min="1">
                     <span class="error-message edit-item-error-${index}"></span>
                 </div>
                 <div class="item-field">
                     <label>Grupo</label>
-                    <input type="text" value="${item.group}" onchange="updateEditItem(${index}, 'group', this.value)" class="edit-item-input">
+                    <input type="text" value="${item.grupo}" onchange="updateEditItem(${index}, 'group', this.value)" class="edit-item-input">
                     <span class="error-message edit-item-error-${index}"></span>
                 </div>
                 <div class="item-field">
                     <label>Artículo</label>
-                    <input type="text" value="${item.article}" onchange="updateEditItem(${index}, 'article', this.value)" class="edit-item-input">
+                    <input type="text" value="${item.descripcion}" onchange="updateEditItem(${index}, 'article', this.value)" class="edit-item-input">
                     <span class="error-message edit-item-error-${index}"></span>
                 </div>
                 <div class="item-field">
                     <label>Precio Unitario</label>
-                    <input type="number" value="${item.unitPrice}" onchange="updateEditItem(${index}, 'unitPrice', this.value)" class="edit-item-input" step="0.01" min="0">
+                    <input type="number" value="${item.precioUnitario}" onchange="updateEditItem(${index}, 'unitPrice', this.value)" class="edit-item-input" step="0.01" min="0">
                     <span class="error-message edit-item-error-${index}"></span>
                 </div>
             </div>
             <div class="item-footer">
-                <span class="item-subtotal">Subtotal: $${(item.quantity * item.unitPrice).toFixed(2)}</span>
+                <span class="item-subtotal">Subtotal: $${(item.cantidad * item.precioUnitario).toFixed(2)}</span>
                 <div class="item-actions">
                     <button class="btn btn-outline btn-small" onclick="removeEditItem(${index})">Eliminar</button>
                 </div>
             </div>
         `
-    container.appendChild(itemDiv)
+        container.appendChild(itemDiv)
+    }
   })
 }
 
@@ -223,6 +202,7 @@ function removeEditItem(index) {
 }
 
 function addEditItem() {
+  console.log(currentEditingOrder)
   currentEditingOrder.items.push({
     id: Math.random().toString(),
     quantity: 0,
@@ -235,7 +215,10 @@ function addEditItem() {
 }
 
 function updateEditOrderTotal() {
-  const total = currentEditingOrder.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
+  let articulosSolicitados = JSON.parse(currentEditingOrder.solicitado)
+  const total = parseFloat(articulosSolicitados[articulosSolicitados.length-1].total)
+
+  //  currentEditingOrder.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
   document.getElementById("editOrderTotal").textContent = formatCurrency(total)
 }
 
@@ -333,8 +316,8 @@ function submitRejectOrder() {
 
 // Supply Order Modal
 function openSupplyModal(orderId) {
-  currentSupplyingOrder = orders.find((o) => o.id === orderId)
-
+  currentSupplyingOrder = resultados.find((o) => o.id == orderId)
+  partidas = JSON.parse(currentSupplyingOrder.solicitado)
   document.getElementById("supplyModalTitle").textContent = `Surtir Pedido #${orderId}`
 
   renderSupplyItems()
@@ -346,79 +329,83 @@ function openSupplyModal(orderId) {
 function renderSupplyItems() {
   const container = document.getElementById("supplyItemsContainer")
   container.innerHTML = ""
-
-  currentSupplyingOrder.items.forEach((item, index) => {
-    const supplied = currentSupplyingOrder.suppliedItems.find((s) => s.id === item.id)
-    const suppliedQuantity = supplied ? supplied.suppliedQuantity : 0
-
+  partidas.forEach((item, index) => {
+    if(index == partidas.length-1) return
     const itemDiv = document.createElement("div")
     itemDiv.className = "item-box"
-    itemDiv.innerHTML = `
-            <div class="item-grid">
+    let texto = `
+    <div class="item-grid">
                 <div class="item-field">
                     <label>Grupo</label>
-                    <p>${item.group}</p>
+                    <p>${item.grupo}</p>
                 </div>
                 <div class="item-field">
                     <label>Artículo</label>
-                    <p>${item.article}</p>
+                    <p>${item.descripcion}</p>
                 </div>
                 <div class="item-field">
                     <label>Cantidad Solicitada</label>
-                    <p>${item.quantity} pzas</p>
+                    <p>${item.cantidad} pzas</p>
                 </div>
                 <div class="item-field">
                     <label>Precio Unitario</label>
-                    <p>$${item.unitPrice.toFixed(2)}</p>
+                    <p>$${parseFloat(item.precioUnitario).toFixed(2)}</p>
                 </div>
             </div>
             <div class="item-grid">
                 <div class="item-field">
                     <label>Cantidad Surtida</label>
-                    <input type="number" value="${suppliedQuantity}" onchange="updateSupplyItem(${index}, this.value)" min="0" max="${item.quantity}" class="supply-item-input">
-                    <span class="error-message supply-item-error-${index}"></span>
+                    <input type="number" value="${item.surtido}" onchange="updateSupplyItem(${index}, this.value)" min="0" max="${item.cantidad}" class="supply-item-input">
                 </div>
             </div>
             <div class="item-footer">
-                <span class="item-subtotal">Subtotal surtido: $${(suppliedQuantity * item.unitPrice).toFixed(2)}</span>
-            </div>
-        `
+                <span class="item-subtotal">Subtotal surtido: $${(item.surtido * item.precioUnitario).toFixed(2)}</span>
+            </div>`
+    itemDiv.innerHTML = texto
     container.appendChild(itemDiv)
   })
 }
 
 function updateSupplyItem(index, value) {
-  const quantity = Number.parseInt(value) || 0
-  const item = currentSupplyingOrder.items[index]
+  const cantidad = Number.parseInt(value) || 0
+  const item = partidas[index] //se define item actual
 
-  const suppliedIndex = currentSupplyingOrder.suppliedItems.findIndex((s) => s.id === item.id)
-
-  if (quantity > 0) {
+  const suppliedIndex = partidas.findIndex((s) => s.descripcion === item.descripcion)
+  
+  if (cantidad > 0) {
     if (suppliedIndex !== -1) {
-      currentSupplyingOrder.suppliedItems[suppliedIndex].suppliedQuantity = quantity
+      partidas[suppliedIndex].surtido = cantidad
     } else {
-      currentSupplyingOrder.suppliedItems.push({
-        id: item.id,
-        suppliedQuantity: quantity,
+      partidas.push({
+        cantidad: 150,
+        grupo: item.grupo,
+        descripcion: item.descripcion,
+        precioUnitario: item.precioUnitario,
+        precioTotal: cantidad * item.precioUnitario,
+        surtido: "",
+        surtido: cantidad,
       })
     }
   } else {
     if (suppliedIndex !== -1) {
-      currentSupplyingOrder.suppliedItems.splice(suppliedIndex, 1)
+      showNotification(`el numero de surtido debe ser mayor a 0`)
+      // partidas.splice(suppliedIndex, 1)
     }
   }
-
+  
   renderSupplyItems()
   updateSupplyTotals()
 }
 
 function updateSupplyTotals() {
-  const requestedTotal = currentSupplyingOrder.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
-  const suppliedTotal = currentSupplyingOrder.suppliedItems.reduce((sum, supplied) => {
-    const item = currentSupplyingOrder.items.find((i) => i.id === supplied.id)
-    return sum + supplied.suppliedQuantity * (item ? item.unitPrice : 0)
-  }, 0)
-
+  let solicitado = JSON.parse(currentSupplyingOrder.solicitado)
+  console.log(solicitado)
+  
+  let partidasF = partidas.slice(0,-1)
+  const requestedTotal = partidasF.reduce((sum, item) => sum + item.cantidad * item.precioUnitario, 0)
+  const suppliedTotal = partidasF.reduce((sum, item) => sum + (item.surtido * item.precioUnitario), 0)
+  console.log(suppliedTotal)
+  
   document.getElementById("supplyTotalRequested").textContent = formatCurrency(requestedTotal)
   document.getElementById("supplyTotalSupplied").textContent = formatCurrency(suppliedTotal)
 }
@@ -481,8 +468,6 @@ function deleteOrder(orderId) {
 
 // Notification
 function showNotification(message) {
-  // Simple notification (could be enhanced with a toast library)
-  console.log("Notificación:", message)
   alert(message)
 }
 

@@ -145,9 +145,11 @@ infraestructuraController.crudPedidoInsumos = async(req, res) => {
     
 }
 
-infraestructuraController.gestionPedidosInsumos = (req, res) => {
+infraestructuraController.gestionPedidosInsumos = async(req, res) => {
     try {
-        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs')
+        let clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_pedido_insumos})
+        let resultados = await clase.obtenerDatosPorCriterio({criterio:{estatus: 'PENDIENTE'}})
+        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', {pendientes: resultados})
     } catch (error) {
         manejadorErrores(res,ex)
     }

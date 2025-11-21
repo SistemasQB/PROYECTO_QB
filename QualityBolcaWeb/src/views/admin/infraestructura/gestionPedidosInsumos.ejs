@@ -26,10 +26,10 @@
                     <p class="total-label">Total Solicitado</p>
                     <p class="total-amount" id="totalRequested">$0.00</p>
                 </div>
-                <div class="total-card accent">
+                <!-- <div class="total-card accent">
                     <p class="total-label">Total Surtido</p>
                     <p class="total-amount" id="totalSupplied">$0.00</p>
-                </div>
+                </div> -->
             </div>
 
             <!-- Orders Table -->
@@ -42,7 +42,7 @@
                             <th>Planta</th>
                             <th>Artículos</th>
                             <th class="text-right">Total Solicitado</th>
-                            <th class="text-right">Total Surtido</th>
+                            <th class="text-right">Solicitante</th>
                             <th class="text-center">Estado</th>
                             <th class="text-center">Acciones</th>
                         </tr>
@@ -95,8 +95,8 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeModal('editOrderModal')">Cancelar</button>
-                <button class="btn btn-primary" onclick="submitEditOrder()">Confirmar Cambios</button>
+                <!-- <button class="btn btn-outline" onclick="closeModal('editOrderModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="submitEditOrder()">Confirmar Cambios</button> -->
             </div>
         </div>
     </div>
@@ -169,5 +169,9 @@
     </div>
 
     <script src="/scripts/infraestructura/scriptsGestionPedidosInsumos.js"></script>
+    <script>
+        let resultados = <%- JSON.stringify(pendientes)%>
+        
+    </script>
 </body>
 </html>

@@ -82,6 +82,7 @@ document.getElementById("pedidosBody").addEventListener("click", (e) => {
   if (e.target.classList.contains("btn-remove")) {
     e.target.closest("tr").remove()
     actualizarBotonesEliminar()
+    totalizar();
   }
 })
 
@@ -120,6 +121,8 @@ btnEnvio.addEventListener("click", async (e) => {
       const cantidad = row.querySelector(".cantidad-input").value
       const grupo = row.querySelector(".descripcion-select").value
       const descripcion = row.querySelector("[data-insumo]").value
+      const pUnitario = row.querySelector("[data-precioUnitario]").value
+      const pTotal = row.querySelector("[data-preciototal]").value
 
       if (!cantidad || cantidad <= 0) {
         mostrarError(`Por favor, ingrese una cantidad válida en el pedido ${index + 1}.`)
@@ -137,6 +140,10 @@ btnEnvio.addEventListener("click", async (e) => {
         cantidad: Number.parseInt(cantidad),
         grupo: grupo,
         descripcion: descripcion,
+        precioUnitario: Number.parseFloat(pUnitario),
+        precioTotal: Number.parseFloat(pTotal),
+        surtio: "",
+        surtido: 0
       })
     })
 
@@ -145,10 +152,12 @@ btnEnvio.addEventListener("click", async (e) => {
     }
 
     // Si todo es válido, preparar datos
+    pedidos.push({total: document.getElementById('totalL').textContent})
     const datosPedido = {
       _csrf: tok,
       planta: planta,
       solicitado: pedidos,
+
       tipo: 'insert'
     }
     console.log(datosPedido)
@@ -179,7 +188,14 @@ function cargarInformacion(fila){
   input.addEventListener('change', (e) => {
     eventoChange(e.target.value, fila)
   })
-  
+  let inputCant = fila.querySelector('.cantidad-input')
+  inputCant.addEventListener('input', (e) => {
+    cambioCantidad(e.target.value, fila)
+  })
+  let inpArt = fila.querySelector('[data-insumo]')
+  inpArt.addEventListener('change', (e) => {
+    cambioArticulo(e.target.value, fila)
+  })
 }
 
 function eventoChange(texto, fila){
@@ -201,7 +217,7 @@ function cambioArticulo(nombreArticulo, row){
   let inpCan = row.querySelectorAll('.cantidad-input')
   
   inpUni[0].value = art.costoUnitario
-  inpTot[0].value = parseFloat(inpCan[0].value) * parseFloat(inpUni[0].value)
+  inpTot[0].value = parseFloat(inpCan[0].value) * parseFloat(inpUni[0].value) || 0
   totalizar()
 }
 function totalizar(){
@@ -210,17 +226,16 @@ function totalizar(){
   let total = 0
   
   for (const input of inputs){
-    console.log(input.value)
    total +=  parseFloat(input.value)
   }
-  labelT.textContent = total.toFixed(2)
+  labelT.textContent = total.toFixed(2) || 0
 }
 
 
 function cambioCantidad(cantidad, row){
   let inputs = row.querySelector('[data-preciototal]')
   let inpUni = row.querySelector('[data-preciounitario]')
-  inputs.value = cantidad * parseFloat(inpUni.value);
+  inputs.value = cantidad * parseFloat(inpUni.value) || 0;
   totalizar()
 }
 

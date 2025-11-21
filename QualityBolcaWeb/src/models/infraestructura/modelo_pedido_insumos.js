@@ -21,22 +21,23 @@ const modelo_pedido_insumos = dbCompras.define('pedidosInsumos',{
     solicitado: {
         type: DataTypes.JSON,
         allowNull: false,
-        defaultValue: {}
-    },
-    surtido: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: {}
+        defaultValue: []
     },
     observaciones: {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: "sin declarar"
+    },
+    estatus: {
+        type: DataTypes.CHAR(30),
+        allowNull: false,
+        defaultValue: "PENDIENTE"
     }
+
         
 },{
     tablename:"pedidoInsumos",
-    timestamps:false,
+    timestamps:true,
 })  
 
 export default modelo_pedido_insumos;
