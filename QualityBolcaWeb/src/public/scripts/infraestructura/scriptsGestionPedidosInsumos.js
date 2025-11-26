@@ -6,11 +6,14 @@ let currentRejectingOrderId = null
 let currentSupplyingOrder = null
 let partidas = []
 let surtido = []
+let agregados = []
+
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
   renderOrders()
   updateTotals()
+  agregarEventos()
 })
 
 // Render Orders Table
@@ -28,8 +31,15 @@ function renderOrders() {
 
   emptyState.style.display = "none"
   resultados.forEach((order) => {
+    
     const row = document.createElement("tr")
-    let articulosSolicitados= JSON.parse(order.solicitado)
+    let articulosSolicitados
+    try {
+      articulosSolicitados= JSON.parse(order.solicitado)  
+    } catch (error) {
+      articulosSolicitados = partidas
+    }
+    
     row.innerHTML = `
             <td><span class="order-id">#${order.id}</span></td>
             <td>${ order.createdAt.split("T")[0]}</td>
@@ -66,15 +76,19 @@ function updateTotals() {
 }
 
 // Calculate Order Total
-function calculateOrderTotal(order) {
-  return order.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
+//posible eliminacion
+function calculateOrderTotal(orden) {
+
+  console.log(partidas);
+  return partidas.reduce((sum, item) => sum + item.cantidad * item.precioUnitario, 0)
 }
 
 // Calculate Order Supplied Total
+//posible eliminacion
 function calculateOrderSuppliedTotal(order) {
-  return order.suppliedItems.reduce((sum, supplied) => {
-    const item = order.items.find((i) => i.id === supplied.id)
-    return sum + supplied.suppliedQuantity * (item ? item.unitPrice : 0)
+  return order.solicitado.reduce((sum, supplied) => {
+    const item = partidas.find((i) => i.id === supplied.id)
+    return sum + supplied.cantidad * (item ? item.precioUnitario : 0)
   }, 0)
 }
 
@@ -88,7 +102,6 @@ function formatCurrency(amount) {
 
 // Format Date
 function formatDate(dateString) {
-  console.log(dateString)
   const date = new Date(dateString + "T00:00:00")
   return new Intl.DateTimeFormat("es-MX", {
     year: "numeric",
@@ -133,6 +146,13 @@ function clearFormErrors() {
 // Edit Order Modal
 function openEditModal(orderId) {
   currentEditingOrder = resultados.find((o) => o.id == orderId)
+  
+  try {
+    partidas= JSON.parse(currentEditingOrder.solicitado)  
+  } catch (error) {
+    partidas = currentEditingOrder.solicitado
+  }
+  
   document.getElementById("editModalTitle").textContent = `Editar Pedido #${orderId}`
   document.getElementById("editPlant").value = currentEditingOrder.planta
 
@@ -145,40 +165,40 @@ function openEditModal(orderId) {
 function renderEditItems() {
   const container = document.getElementById("editItemsContainer")
   container.innerHTML = ""
-  let solicitado = JSON.parse(currentEditingOrder.solicitado)
-  solicitado.forEach((item, index) => {
-    if(index < solicitado.length-1){
-      const itemDiv = document.createElement("div")
-    itemDiv.className = "item-box"
-    itemDiv.innerHTML = `
+  partidas.forEach((item, index) => {
+    if(index < partidas.length-1){
+        const itemDiv = document.createElement("div")
+        itemDiv.className = "item-box"
+        itemDiv.innerHTML = `
             <div class="item-grid">
                 <div class="item-field">
                     <label>Cantidad</label>
-                    <input type="number" value="${item.cantidad}" onchange="updateEditItem(${index}, 'quantity', this.value)" class="edit-item-input" min="1">
+                    <input type="number" value="${item.cantidad}" onchange="updateEditItem(${index}, 'quantity', this.value)" class="edit-item-input" min="1" data-cantidad disabled>
                     <span class="error-message edit-item-error-${index}"></span>
                 </div>
                 <div class="item-field">
                     <label>Grupo</label>
-                    <input type="text" value="${item.grupo}" onchange="updateEditItem(${index}, 'group', this.value)" class="edit-item-input">
+                    <input type="text" value="${item.grupo}" onchange="updateEditItem(${index}, 'group', this.value)" class="edit-item-input" data-grupo  disabled>
                     <span class="error-message edit-item-error-${index}"></span>
                 </div>
                 <div class="item-field">
                     <label>Artículo</label>
-                    <input type="text" value="${item.descripcion}" onchange="updateEditItem(${index}, 'article', this.value)" class="edit-item-input">
+                    <input type="text" value="${item.descripcion}" onchange="updateEditItem(${index}, 'article', this.value)" class="edit-item-input" data-articulo disabled>
                     <span class="error-message edit-item-error-${index}"></span>
                 </div>
                 <div class="item-field">
                     <label>Precio Unitario</label>
-                    <input type="number" value="${item.precioUnitario}" onchange="updateEditItem(${index}, 'unitPrice', this.value)" class="edit-item-input" step="0.01" min="0">
+                    <input type="number" value="${item.precioUnitario}" onchange="updateEditItem(${index}, 'unitPrice', this.value)" class="edit-item-input" step="0.01" min="0" data-precioUnitario disabled>
                     <span class="error-message edit-item-error-${index}"></span>
                 </div>
             </div>
             <div class="item-footer">
-                <span class="item-subtotal">Subtotal: $${(item.cantidad * item.precioUnitario).toFixed(2)}</span>
+                <span class="item-subtotal" data-subtotal disabled>Subtotal: $${(item.cantidad * item.precioUnitario).toFixed(2)}</span>
                 <div class="item-actions">
-                    <button class="btn btn-outline btn-small" onclick="removeEditItem(${index})">Eliminar</button>
+                    <button class="btn btn-outline btn-small" onclick="borrarPartida(${index})">Eliminar</button>
                 </div>
             </div>
+            
         `
         container.appendChild(itemDiv)
     }
@@ -196,27 +216,26 @@ function updateEditItem(index, field, value) {
 }
 
 function removeEditItem(index) {
-  currentEditingOrder.items.splice(index, 1)
+  partidas.splice(index, 1)
   renderEditItems()
   updateEditOrderTotal()
 }
 
-function addEditItem() {
-  console.log(currentEditingOrder)
-  currentEditingOrder.items.push({
-    id: Math.random().toString(),
-    quantity: 0,
-    group: "",
-    article: "",
-    unitPrice: 0,
-  })
-  renderEditItems()
-  updateEditOrderTotal()
-}
+// function addEditItem() {
+//   currentEditingOrder.items.push({
+//     id: Math.random().toString(),
+//     quantity: 0,
+//     group: "",
+//     article: "",
+//     unitPrice: 0,
+//   })
+//   renderEditItems()
+//   updateEditOrderTotal()
+// }
 
 function updateEditOrderTotal() {
-  let articulosSolicitados = JSON.parse(currentEditingOrder.solicitado)
-  const total = parseFloat(articulosSolicitados[articulosSolicitados.length-1].total)
+  
+  const total = parseFloat(partidas[partidas.length-1].total)
 
   //  currentEditingOrder.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
   document.getElementById("editOrderTotal").textContent = formatCurrency(total)
@@ -251,24 +270,41 @@ function validateEditForm() {
   if (errors.plant) {
     plantError.textContent = errors.plant
   }
-
   return Object.keys(errors).length === 0
 }
 
-function submitEditOrder() {
-  if (validateEditForm()) {
-    currentEditingOrder.plant = document.getElementById("editPlant").value
-
-    const orderIndex = orders.findIndex((o) => o.id === currentEditingOrder.id)
-    if (orderIndex !== -1) {
-      orders[orderIndex] = currentEditingOrder
-    }
-
-    renderOrders()
-    updateTotals()
-    closeModal("editOrderModal")
+function actualizarPedido() {
+  let formu = document.getElementById('editOrderModal')
+  if (!formu.checkValidity()){
+    formu.reportValidity()
+    return;
   }
+    let contenedor = document.getElementById('editOrderModal')
+    partidas = []
+    let total = 0
+    for(const div of contenedor.querySelectorAll('.item-box')){
+      total += parseFloat(div.querySelector('[data-subtotal]').textContent.split('$')[1])
+      partidas.push({
+        cantidad : div.querySelector('[data-cantidad]').value,
+        grupo : div.querySelector('[data-grupo]').value,
+        descripcion : div.querySelector('[data-articulo]').value,
+        precioUnitario : div.querySelector('[data-precioUnitario]').value,
+        precioTotal : div.querySelector('[data-subtotal]').textContent.split('$')[1],
+        surtio: '',
+        surtido: 0
+      })
+    }
+    partidas.push({total: total.toFixed(2)})
+    const orderIndex = resultados.findIndex((o) => o.id == currentEditingOrder.id)
+    if (orderIndex !== -1) {
+      
+      resultados[orderIndex].solicitado = partidas
+    }
+    closeModal("editOrderModal")
 }
+
+
+
 
 // Reject Order Modal
 function openRejectModal(orderId) {
@@ -314,10 +350,20 @@ function submitRejectOrder() {
   }
 }
 
-// Supply Order Modal
+
+
+
+
+// funciones de  Modal supply
 function openSupplyModal(orderId) {
   currentSupplyingOrder = resultados.find((o) => o.id == orderId)
-  partidas = JSON.parse(currentSupplyingOrder.solicitado)
+  
+  try {
+    partidas = JSON.parse(currentSupplyingOrder.solicitado)  
+  } catch (error) {
+    partidas = currentSupplyingOrder.solicitado
+  }
+  
   document.getElementById("supplyModalTitle").textContent = `Surtir Pedido #${orderId}`
 
   renderSupplyItems()
@@ -355,7 +401,7 @@ function renderSupplyItems() {
             <div class="item-grid">
                 <div class="item-field">
                     <label>Cantidad Surtida</label>
-                    <input type="number" value="${item.surtido}" onchange="updateSupplyItem(${index}, this.value)" min="0" max="${item.cantidad}" class="supply-item-input">
+                    <input type="number" value="${item.surtido}" onchange="updateSupplyItem(${index}, this.value)" min="0" max="${item.cantidad}" class="supply-item-input" required data-surtido>
                 </div>
             </div>
             <div class="item-footer">
@@ -398,61 +444,60 @@ function updateSupplyItem(index, value) {
 }
 
 function updateSupplyTotals() {
-  let solicitado = JSON.parse(currentSupplyingOrder.solicitado)
-  console.log(solicitado)
-  
+  // let solicitado = partidas
   let partidasF = partidas.slice(0,-1)
   const requestedTotal = partidasF.reduce((sum, item) => sum + item.cantidad * item.precioUnitario, 0)
   const suppliedTotal = partidasF.reduce((sum, item) => sum + (item.surtido * item.precioUnitario), 0)
-  console.log(suppliedTotal)
+  
   
   document.getElementById("supplyTotalRequested").textContent = formatCurrency(requestedTotal)
   document.getElementById("supplyTotalSupplied").textContent = formatCurrency(suppliedTotal)
 }
 
 function validateSupplyForm() {
-  const errors = {}
-
-  currentSupplyingOrder.items.forEach((item, index) => {
-    const supplied = currentSupplyingOrder.suppliedItems.find((s) => s.id === item.id)
-    const suppliedQuantity = supplied ? supplied.suppliedQuantity : 0
-
-    if (suppliedQuantity < 0) {
-      errors[`supplied-${index}`] = "La cantidad no puede ser negativa"
+  const formu = document.getElementById("supplyOrderModal")
+  if(!formu.checkValidity()){
+    showNotification("debes completar todos los campos")
+    return false;
+  }
+  const surtidos = formu.querySelectorAll("[data-surtido]")
+  for (const [index, cs] of surtidos.entries()) {
+    if (cs.value <= 0) {
+      showNotification("hay campos vacios y/o valores negativos en los campos de cantidad surtida")
+      return false;
     }
-    if (suppliedQuantity > item.quantity) {
-      errors[`supplied-${index}`] = `No puede exceder la cantidad solicitada (${item.quantity})`
+    partidas[index].surtido = parseInt(cs.value)
+
+    if(cs.value >= partidas[index].cantidad){
+      partidas[index].estatus = "SURTIDO"
+    }else{
+      partidas[index].estatus = "PARCIALMENTE SURTIDO"
     }
-  })
-
-  // Display errors
-  clearFormErrors()
-
-  return Object.keys(errors).length === 0
+  }
+  return true;
 }
 
 function submitSupplyOrder() {
   if (validateSupplyForm()) {
-    const orderIndex = orders.findIndex((o) => o.id === currentSupplyingOrder.id)
+    const orderIndex = resultados.findIndex((o) => o.id === currentSupplyingOrder.id)
     if (orderIndex !== -1) {
-      orders[orderIndex].suppliedItems = currentSupplyingOrder.suppliedItems
-
+      resultados[orderIndex].solicitado = partidas
       // Update status
-      const totalRequested = calculateOrderTotal(orders[orderIndex])
-      const totalSupplied = calculateOrderSuppliedTotal(orders[orderIndex])
+      let ap = partidas.slice(0,-1)
+      const totalRequested =  ap.reduce((sum, item) => sum + item.cantidad, 0) 
+      const totalSupplied = ap.reduce((sum, item) => sum + item.surtido, 0) 
 
       if (totalSupplied >= totalRequested) {
-        orders[orderIndex].status = "supplied"
+        resultados[orderIndex].estatus = "SURTIDO"
       } else if (totalSupplied > 0) {
-        orders[orderIndex].status = "partially_supplied"
+        resultados[orderIndex].estatus = "PARCIALMENTE SURTIDO"
       }
     }
-
-    renderOrders()
-    updateTotals()
+    // renderOrders()
+    // updateTotals()
     closeModal("supplyOrderModal")
-
     showNotification(`Pedido #${currentSupplyingOrder.id} surtido correctamente`)
+    console.log(resultados[orderIndex]);
   }
 }
 
@@ -480,3 +525,109 @@ document.addEventListener("keydown", (e) => {
     })
   }
 })
+
+
+
+
+//funciones de modal edicion
+function agregarEventos(){
+  const btnAgregar = document.getElementById("btnAgregarInsumo")
+  btnAgregar.addEventListener("click",(e) => {
+    agregarNueoItem()
+  })
+}
+function agregarNueoItem(){
+  const container = document.getElementById("editItemsContainer")
+  let totalHijos = container.childNodes.length - 1
+  const itemDiv = document.createElement("div")
+    itemDiv.className = "item-box"
+    let articulos = productos.map((p) => {
+        return `<option value="${p.articulo}">${p.articulo}</option>`
+    }).join('')
+
+    let texto = `
+    <div class="item-grid">
+                <div class="item-field">
+                    <label>Cantidad</label>
+                    <input type="number" value="1"  class="edit-item-input" min="1" data-cantidad>
+                </div>
+                <div class="item-field">
+                    <label>Grupo</label>
+                    <input type='text' data-grupo required disabled></input>
+                </div>
+                <div class="item-field">
+                    <label>Artículo</label>
+                    <select  name="descripcion" data-articulo  class='input-modal select-modal' required>
+                    <option value="" selected>Seleccionar una opcion</option>
+                        ${articulos}
+                    </select>
+                </div>
+                <div class="item-field">
+                    <label>Precio Unitario</label>
+                    <input type='text' data-precioUnitario required disabled></p>
+                </div>
+            </div>
+            
+            <div class="item-footer">
+                <span class="item-subtotal" data-subtotal disabled>Subtotal: $0</span>
+                <div class="item-actions">
+                    <button class="btn btn-outline btn-small" onclick="borrarPartida(${totalHijos+1})">Eliminar</button>
+                </div>
+            </div>
+            `
+            
+    itemDiv.innerHTML = texto
+    container.appendChild(itemDiv)
+    let articulo = itemDiv.querySelector("[data-articulo]")  
+    articulo.addEventListener("change", (e) => {
+      seleccionandoGrupo(e.target.value, itemDiv)  
+    } 
+    
+)
+let cant = itemDiv.querySelector("[data-cantidad]")  
+    cant.addEventListener("change", (e) => {
+      subtotalizarNuevoItem(itemDiv)  
+    })
+}
+
+function seleccionandoGrupo(art, fila){
+  let arti = productos.find((p) => p.articulo == art)
+  let input = fila.querySelector('[data-grupo]')
+  let precio = fila.querySelector('[data-precioUnitario]')
+  input.value = arti.grupo
+  precio.value = arti.costoUnitario.toFixed(2)
+  subtotalizarNuevoItem(fila);
+    totalizarEditModal();
+
+}
+
+function subtotalizarNuevoItem(fila){
+  let cantidad = fila.querySelector('[data-cantidad]')
+  let precio = fila.querySelector('[data-precioUnitario]')
+  let subtotal = fila.querySelector('.item-subtotal')
+  subtotal.textContent = `$${(cantidad.value * precio.value ).toFixed(2)}`
+  totalizarEditModal()
+}
+
+function totalizarEditModal(){
+  let total = 0
+  let container = document.getElementById("editItemsContainer")
+  let items = container.querySelectorAll(".item-subtotal")
+  items.forEach((item) => {
+    total += parseFloat(item.textContent.split("$")[1]) ||0
+  })
+  document.getElementById("editOrderTotal").textContent = `$${total.toFixed(2)}` || 0
+}
+function borrarPartida(id){
+  let container = document.getElementById("editItemsContainer")
+  let totalHijos = container.childNodes.length
+  if (totalHijos == 1) {
+    showNotification("No puedes eliminar el único insumo")
+    return;
+  }
+  container.children[id].remove()
+  totalizarEditModal()
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

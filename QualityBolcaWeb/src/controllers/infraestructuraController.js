@@ -149,7 +149,10 @@ infraestructuraController.gestionPedidosInsumos = async(req, res) => {
     try {
         let clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_pedido_insumos})
         let resultados = await clase.obtenerDatosPorCriterio({criterio:{estatus: 'PENDIENTE'}})
-        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', {pendientes: resultados})
+        clase = new sequelizeClase({modelo: modelosInfraestructura.modeloComprasInventario})
+        let criterios = {estatus: {[Op.ne]: 'NO ACTIVO'}}
+        let productos = await clase.obtenerDatosPorCriterio({criterio:criterios})
+        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', {pendientes: resultados, productos: productos})
     } catch (error) {
         manejadorErrores(res,ex)
     }

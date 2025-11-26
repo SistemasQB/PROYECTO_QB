@@ -54,7 +54,16 @@ body {
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-
+.select-modal{
+  padding: 0.75rem;
+  border: 1.5px solid var(--muted-foreground);
+  border-radius: 6px;
+  /* font-size: 1rem; */
+  /* font-family: inherit; */
+  transition: var(--transition);
+  background-color: var(--background);
+  color: var(--foreground);
+}
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -118,6 +127,14 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   margin-bottom: 30px;
+}
+
+.miform{
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  overflow: hidden;
 }
 
 .total-card {
@@ -355,10 +372,19 @@ body {
   animation: modalFadeIn 0.2s ease;
 }
 
+.input-modal{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease-in-out;
+}
+
 .modal.active {
   display: flex;
   align-items: center;
   justify-content: center;
+  
+
 }
 
 @keyframes modalFadeIn {
@@ -387,6 +413,7 @@ body {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   cursor: pointer;
+  
 }
 
 .modal-content {
@@ -401,6 +428,9 @@ body {
   display: flex;
   flex-direction: column;
   animation: modalSlideIn 0.3s ease;
+  justify-content: center;
+  z-index: 1;
+  
 }
 
 .edit-modal-content {
@@ -560,6 +590,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
+  overflow: hidden;
 }
 
 .item-grid {
@@ -779,6 +810,7 @@ body {
   .modal-content {
     width: 95%;
     max-height: 95vh;
+    
   }
 
   .item-grid {
@@ -809,11 +841,16 @@ body {
   .header-subtitle {
     font-size: 0.85rem;
   }
+  .orders-table{
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
 
-  .table-header th:not(:first-child):not(:nth-child(2)):not(:nth-child(3)),
+  }
+  /* .table-header th:not(:first-child):not(:nth-child(2)):not(:nth-child(3)),
   .orders-table td:not(:first-child):not(:nth-child(2)):not(:nth-child(3)) {
     display: none;
-  }
+  } */
 
   .modal-footer {
     flex-direction: column-reverse;
