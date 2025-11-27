@@ -2,16 +2,11 @@ import express from "express";
 import csurf from "csurf";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-// import uuidv4 from "uuid/v4";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { PORT, SECRET_JWT_KEY } from "./src/config.js";
-// import dbSQLS from "./src/config/dbSQLS.js";
 import dbs from "./src/config/barril_dbs.js";
-// import myConnection from "express-myconnection";
-// import mysql from "mysql2";
 import cors from "cors";
-
 
 // import mariadb from "mariadb";
 import { default as customerRoutes } from "./src/routes/userRoutes.js";
@@ -32,16 +27,14 @@ import {
   Controlpiezas2
 } from "./src/models/index.js";
 
-import mimeTypes from "mime-types";
-import fetch from 'node-fetch'
-
-import urlencoded from "body-parser";
-import nodeMailer from 'nodemailer';
+// import mimeTypes from "mime-types";
+// import fetch from 'node-fetch'
+// import urlencoded from "body-parser";
+// import nodeMailer from 'nodemailer';
 import path from "path";
-
-import { pipeline } from '@xenova/transformers';
-import wavefile from 'wavefile';
-import fs from 'fs';
+// import { pipeline } from '@xenova/transformers';
+// import wavefile from 'wavefile';
+// import fs from 'fs';
 import contabilidadController from "./src/controllers/contabilidadController.js";
 
 const app = express();
@@ -160,15 +153,9 @@ app.use('/atraccion',csrfProtection, atraccionRoutes);
 app.use('/capitalhumano',csrfProtection, capitalhumanoRoutes);
 app.use('/sorteo',csrfProtection, sorteoRoutes);
 app.use('/nominas',csrfProtection, nominasRoutes);
-app.use('/infraestructura', infraestructuraRouter)
-app.use('/contabilidad', routerContabilidad)
-app.use('/servicioCliente', routerServicioCliente);
-
-
-
-
-
-
+app.use('/infraestructura', csrfProtection,infraestructuraRouter);
+app.use('/contabilidad',  csrfProtection,routerContabilidad);
+app.use('/servicioCliente',  csrfProtection,routerServicioCliente);
 app.use(express.json());
 
 app.listen(PORT, () => {

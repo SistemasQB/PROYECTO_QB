@@ -6,7 +6,7 @@ return  (req, res, next) => {
     if (!permisosUsuario || (!roles || !permisos || !jerarquia)) {
       return res.status(401).json({ error: 'Usuario no autenticado o sin datos de acceso' });
     }
-    if (roles.includes('administrador')) {
+    if (permisosUsuario.roles.includes('administrador')) {
       return next();
     }
     const tieneRol = roles.length === 0 || roles.some(rol => permisosUsuario.roles?.includes(rol));

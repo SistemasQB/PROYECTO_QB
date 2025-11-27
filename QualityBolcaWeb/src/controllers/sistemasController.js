@@ -117,7 +117,6 @@ controller.api = async (req, res) => {
 }
 
 controller.addvales = async (req, res) => {
-
     res.render('admin/sistemas/addvales', {
         csrfToken: req.csrfToken()
     });
@@ -125,7 +124,6 @@ controller.addvales = async (req, res) => {
 
 
 controller.addvales2 = async (req, res) => {
-
     const {
         idFolio,
         numeroEmpleado,

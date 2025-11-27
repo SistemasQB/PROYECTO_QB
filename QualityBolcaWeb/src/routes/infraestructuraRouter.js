@@ -2,6 +2,7 @@ import express from 'express'
 import infraestructuraController from '../controllers/infraestructuraController.js';
 import miMulter from '../public/clases/multer.js';
 import protegerRuta from '../middleware/protegetRuta.js';
+import validarAcceso from '../middleware/validacion-permisos/calidad/permisos.js';
 
 const multer = new miMulter('src/public/evidencias/check_List_Vehicular')
 const infraestructuraRouter = express.Router();
@@ -24,7 +25,8 @@ infraestructuraRouter.get('/gestionPedidosInsumos', protegerRuta,infraestructura
 infraestructuraRouter.get('/check-list-vehicular', protegerRuta,infraestructuraController.checklistVehicular);
 infraestructuraRouter.post('/crudCheck-list-vehicular', protegerRuta, multer.multiplesArchivos('evidencias', 5) ,infraestructuraController.crudCheckListVehicular);
 infraestructuraRouter.get('/check-list-vehicular/:id', protegerRuta,infraestructuraController.vistaCheckListVehicular);
-infraestructuraRouter.get('/historico_check_list_vehicular', protegerRuta,infraestructuraController.historicoCheckListVehicular);
-
+infraestructuraRouter.get('/historico_check_list_vehicular', protegerRuta, validarAcceso({
+    roles: ['logistica vehicular'], permisos: ['analista logistica vehicular',"auxiliar logistica vehicular"], jerarquia: 4
+}),infraestructuraController.historicoCheckListVehicular);
 
 export default infraestructuraRouter;

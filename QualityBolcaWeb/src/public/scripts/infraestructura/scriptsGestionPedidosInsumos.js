@@ -135,7 +135,7 @@ function openModal(modalId) {
 function closeModal(modalId) {
   document.getElementById(modalId).classList.remove("active")
   document.body.style.overflow = "auto"
-  clearFormErrors()
+  // clearFormErrors()
 }
 
 function clearFormErrors() {
@@ -146,7 +146,6 @@ function clearFormErrors() {
 // Edit Order Modal
 function openEditModal(orderId) {
   currentEditingOrder = resultados.find((o) => o.id == orderId)
-  
   try {
     partidas= JSON.parse(currentEditingOrder.solicitado)  
   } catch (error) {
@@ -338,7 +337,6 @@ function submitRejectOrder() {
     if (orderIndex !== -1) {
       orders[orderIndex].status = "rejected"
     }
-
     const reason = document.getElementById("rejectReason").value
     console.log(`Pedido #${currentRejectingOrderId} rechazado. Motivo: ${reason}`)
 
@@ -357,18 +355,14 @@ function submitRejectOrder() {
 // funciones de  Modal supply
 function openSupplyModal(orderId) {
   currentSupplyingOrder = resultados.find((o) => o.id == orderId)
-  
   try {
     partidas = JSON.parse(currentSupplyingOrder.solicitado)  
   } catch (error) {
     partidas = currentSupplyingOrder.solicitado
   }
-  
   document.getElementById("supplyModalTitle").textContent = `Surtir Pedido #${orderId}`
-
   renderSupplyItems()
   updateSupplyTotals()
-
   openModal("supplyOrderModal")
 }
 
@@ -466,8 +460,8 @@ function validateSupplyForm() {
       showNotification("hay campos vacios y/o valores negativos en los campos de cantidad surtida")
       return false;
     }
+    partidas[index].surtio = usuario
     partidas[index].surtido = parseInt(cs.value)
-
     if(cs.value >= partidas[index].cantidad){
       partidas[index].estatus = "SURTIDO"
     }else{
@@ -493,10 +487,9 @@ function submitSupplyOrder() {
         resultados[orderIndex].estatus = "PARCIALMENTE SURTIDO"
       }
     }
-    // renderOrders()
-    // updateTotals()
+    
     closeModal("supplyOrderModal")
-    showNotification(`Pedido #${currentSupplyingOrder.id} surtido correctamente`)
+    
     console.log(resultados[orderIndex]);
   }
 }

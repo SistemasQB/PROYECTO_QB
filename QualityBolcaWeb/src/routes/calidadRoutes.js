@@ -3,6 +3,7 @@ import {default as calidadController} from './../controllers/calidadController.j
 import protegetRuta from "../middleware/protegetRuta.js";
 import miMulter from "../public/clases/multer.js";
 import permisos from '../middleware/validacion-permisos/barril_permisos.js'
+import protegerRuta from "../middleware/protegetRuta.js";
 
 const mimulter = new miMulter('src/public/evidencias')
 const multer5S = new miMulter("src/public/evidencias/5s")
@@ -13,18 +14,17 @@ router.get('/inicio', calidadController.inicio);
 // rutas de 5s
 // router.get('/verificacion5s' ,calidadController.verificacion5s);
 // router.post('/verificacion5s' ,calidadController.verificacion5s2);
-// router.get('/evidencias' ,calidadController.evidencias);
-// router.post('/evidencias', calidadController.evidencias2);
+router.get('/evidencias' ,protegetRuta ,calidadController.evidencias);
+router.post('/evidencias',calidadController.evidencias2);
 
 // rutas de mejora continua
-router.get('/administracionmejoras', calidadController.mejoracontinua);
+router.get('/administracionmejoras', protegerRuta,calidadController.mejoracontinua);
 router.post('/rechazarMejora', calidadController.rechazarMejora);
 router.post("/actualizarMejoras", calidadController.ActualizarMejoras)
 
-
 // rutas de bitacora
 router.get('/bitacoraActividades', protegetRuta,permisos.permisosCalidad(
-    {   roles: ['calidad'], permisos: ['administrador','jefe calidad', 'permitido'], jerarquia: 3}),calidadController.bitacoraActividades);
+    {roles: ['calidad'], permisos: ['administrador','jefe calidad', 'permitido'], jerarquia: 3}),calidadController.bitacoraActividades);
 router.post('/agregarActividad', protegetRuta,calidadController.agregarActividad);
 router.post('/procesoActividades',protegetRuta ,calidadController.actividades)
 // router.get('/recordatorio',protegetRuta ,calidadController.recordatorio);

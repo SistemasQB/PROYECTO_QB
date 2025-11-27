@@ -6,6 +6,7 @@ import { Op } from 'sequelize'
 import { format } from "@formkit/tempo"
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import barrilcalidad from '../models/calidad/barrilCalidad.js'
+import barrilmodelosgenerales from '../models/generales/barrilModelosGenerales.js'
 
 import {
     Mejora,
@@ -327,10 +328,9 @@ controller.verificacion5s = async(req, res)=>{
     try{
         const tok = req.csrfToken()
         const nomina = req.usuario.codigoempleado
-        console.log(nomina)
-        let clase = new sequelizeClase({modelo: barrilcalidad.modeloDirectorioCalidad})
-        let usuario = await clase.obtener1Registro({criterio:{numeroEmpleado: nomina}})
-        res.render('admin/calidad/formato_verificacion_5s.ejs',{nombre: usuario.nombreCompleto, tok: tok})
+        let clase = new sequelizeClase({modelo: barrilmodelosgenerales.modelonom10001})
+        let usuario = await clase.obtener1Registro({criterio:{codigoempleado: nomina}})
+        res.render('admin/calidad/formato_verificacion_5s.ejs',{nombre: usuario.nombrelargo, tok: tok})
     }catch(ex){
         res.send(`algo salio muy mal y no se pudo cargar la informacion el error fue: ${ex}`)
     }

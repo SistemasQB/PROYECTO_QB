@@ -125,20 +125,21 @@ infraestructuraController.pedidoInsumos = async(req, res) => {
 infraestructuraController.crudPedidoInsumos = async(req, res) => {
     try {
         let campos = req.body
-    delete campos._csrf
-    let usuario = req.usuario.codigoempleado
-    let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
-    let datosUsuario =  await clase.obtener1Registro({criterio:{codigoempleado:usuario}})
-    clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_pedido_insumos})
-    switch(campos.tipo){
-        case 'insert':
-            campos.solicitante = datosUsuario.nombrelargo
-            return res.json({ok:  await clase.insertar({datosInsertar: campos}), msg: 'informacion enviada exitosamente'})
-        case 'update':
-            break;
-        case 'delete':
-            break;
-    }    
+        delete campos._csrf
+        let usuario = req.usuario.codigoempleado
+        let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
+        let datosUsuario =  await clase.obtener1Registro({criterio:{codigoempleado:usuario}})
+        clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_pedido_insumos})
+        switch(campos.tipo){
+            case 'insert':
+                campos.solicitante = datosUsuario.nombrelargo
+                return res.json({ok:  await clase.insertar({datosInsertar: campos}), msg: 'informacion enviada exitosamente'})
+            case 'update':
+                
+                return res.json({ok:  await clase.actualizarDatos({id: campos.id, datos: campos}), msg: 'informacion actualizada exitosamente'})
+            case 'delete':
+                break;
+        }    
     } catch (error) {
         manejadorErrores(res,ex)
     }
@@ -152,7 +153,10 @@ infraestructuraController.gestionPedidosInsumos = async(req, res) => {
         clase = new sequelizeClase({modelo: modelosInfraestructura.modeloComprasInventario})
         let criterios = {estatus: {[Op.ne]: 'NO ACTIVO'}}
         let productos = await clase.obtenerDatosPorCriterio({criterio:criterios})
-        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', {pendientes: resultados, productos: productos})
+        let usuario = req.usuario.codigoempleado
+        clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
+        let datosUsuario =  await clase.obtener1Registro({criterio:{codigoempleado:usuario}})
+        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', {pendientes: resultados, productos: productos, usuario: datosUsuario.nombrelargo, tok: req.csrfToken()})
     } catch (error) {
         manejadorErrores(res,ex)
     }

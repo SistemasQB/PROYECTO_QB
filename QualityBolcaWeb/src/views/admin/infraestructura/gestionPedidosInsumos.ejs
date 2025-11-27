@@ -12,8 +12,8 @@
         <header class="header">
             <div class="header-content">
                 <div>
-                    <h1 class="header-title">Gestión de Pedidos</h1>
-                    <p class="header-subtitle">Administra y controla tus pedidos de insumos</p>
+                    <h1 class="header-title">Gestión de Pedidos de Insumos </h1>
+                    <p class="header-subtitle">Bienvenid@ (<%= usuario%>)</p>
                 </div>
             </div>
         </header>
@@ -109,7 +109,7 @@
         <div class="modal-content reject-modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">Rechazar Pedido</h2>
-                <button class="modal-close" onclick="closeModal('rejectOrderModal')">×</button>
+                <button class="modal-close" onclick="closeModal('rejectOrderModal')" type="button">×</button>
             </div>
 
             <div class="modal-body">
@@ -127,7 +127,7 @@
 
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal('rejectOrderModal')">Cancelar</button>
-                <button class="btn btn-destructive" onclick="submitRejectOrder()">Enviar Rechazo</button>
+                <button class="btn btn-destructive" onclick="submitRejectOrder()" type="button">Enviar Rechazo</button>
             </div>
         </div>
     </div>
@@ -139,7 +139,7 @@
         <div class="modal-content supply-modal-content">
             <div class="modal-header">
                 <h2 class="modal-title" id="supplyModalTitle">Surtir Pedido</h2>
-                <button class="modal-close" onclick="closeModal('supplyOrderModal')">×</button>
+                <button class="modal-close" onclick="closeModal('supplyOrderModal')" type="button">×</button>
             </div>
 
             <div class="modal-body">
@@ -178,7 +178,9 @@
     <script>
         let resultados = <%- JSON.stringify(pendientes)%>
         let productos = <%- JSON.stringify(productos)%>
+        let usuario = <%- JSON.stringify(usuario)%>
         
     </script>
+    <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
 </body>
 </html>

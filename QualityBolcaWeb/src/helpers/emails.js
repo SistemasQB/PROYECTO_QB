@@ -11,6 +11,7 @@ import { format, isAfter } from "@formkit/tempo"
 
 
 const emailRegistro = async (datos) => {
+  console.log(datos)
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
