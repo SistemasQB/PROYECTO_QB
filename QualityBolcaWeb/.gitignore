@@ -1,0 +1,18 @@
+# Ignorar archivos de configuración sensibles
+.env
+.env.local
+.env.production
+
+# Ignorar carpetas generadas por la aplicación
+src/public/2025
+src/public/2026
+src/public/cv
+src/public/evidencias_sorteo
+src/public/evidencias
+src/public/firmas
+
+# Ignorar logs
+*.log
+
+# Ignorar dependencias
+node_modules/
