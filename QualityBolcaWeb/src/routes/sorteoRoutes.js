@@ -30,6 +30,8 @@ router.post('/cc1/lote',sorteoController.lote2);
 
 // rutas de entrega Material almacen
 
+
+
 router.get("/form-envio",sorteoController.prueba)
 router.get("/embarques/:cliente", sorteoController.vistaCliente)
 
