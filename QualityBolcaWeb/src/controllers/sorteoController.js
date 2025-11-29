@@ -318,4 +318,49 @@ controller.envioMaterial = async (req, res)=>{
     }
 }
 
+controller.adminAlmacen = async (req, res)=>{
+    try{
+        let tok = req.csrfToken();
+        let fecha =  new Date(Date.now());
+        let mes = fecha.getMonth();
+        let dia, mesi, ano 
+        dia = fecha.getDay()
+        mesi = fecha.getMonth()
+        ano = fecha.getFullYear()
+        let fi = new Date(`${ano}-${mes-1}-${dia}`)
+        
+        fecha = `${ano}-${mesi}-${dia+1}`
+        console.log(fecha)
+        let clase = new sequelizeClase({modelo: modeloEdgewell});
+        let criterios = {[Op.and]:[
+            {fecha:{[Op.between]: [fi, fecha]}},
+            {estatus:'ENVIADO'}
+        ]}
+        let embarques = await clase.obtenerDatosPorCriterio({criterio: criterios})
+        res.render('admin/sorteo/inicio_almacen.ejs', {embarques: embarques, tok: tok})
+    }
+    catch (ex ){
+        console.log(ex);
+    }
+}
+
+controller.puntoEntrada = async (req, res)=>{
+    let tok = req.csrfToken()
+    let id = req.params.id;
+    console.log(`el id de consulta es ${id}`)
+    let clase = new sequelizeClase({modelo: modelosSorteo.modeloEdgewell})
+    let criterios = {id:id}
+    let embarquito = await clase.obtener1Registro({criterio :criterios})
+    return res.render('admin/sorteo/formulario_ingreso_almacen.ejs', {embarque: embarquito, tok:tok})
+}
+controller.vistaCliente = (req, res)=>{
+    
+}
+
+controller.prueba = (req, res)=>{
+    let tok = req.csrfToken()
+    res.render('admin/sorteo/formulario-entrega-material.ejs', {tok:tok})
+}
+
+
 export default controller;

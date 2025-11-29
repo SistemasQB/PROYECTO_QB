@@ -30,14 +30,17 @@ router.post('/cc1/lote',sorteoController.lote2);
 
 // rutas de entrega Material almacen
 
-// router.get("/form-envio",sorteoController.prueba)
-// router.get("/embarques/:cliente", sorteoController.vistaCliente)
+router.get("/form-envio",sorteoController.prueba)
+router.get("/embarques/:cliente", sorteoController.vistaCliente)
 
 //rutas de entrega de material cliente y visualizacion
 router.get("/form-entrega",sorteoController.entregaMaterial) //formulario de entrega de material
 router.post("/envioMaterial", multer.multiplesArchivos('imagenes', 3), sorteoController.envioMaterial) //ruta de envio
 router.get("/admin-entrega-material",sorteoController.adminEntregaMaterial) //gestion de los envios
   
+//rutas de inventario de almacen
+router.get("/admin-almacen",sorteoController.adminAlmacen) //gestion de almacen
+router.get("/ingreso/:id",sorteoController.puntoEntrada) 
 
 
 export default router;

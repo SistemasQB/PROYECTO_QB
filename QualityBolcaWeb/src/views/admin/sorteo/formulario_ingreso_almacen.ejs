@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlmacénPro - Plantilla</title>
+    <!-- Added external CSS file reference -->
+    <link rel="stylesheet" href="/styles/sorteo/estilos_formulario_ingreso_almacen.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <!-- Menú Hamburguesa -->
+            <button class="menu-button" onclick="toggleMenu()">
+                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            
+            <!-- Logo AlmacénPro -->
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg class="logo-svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"></path>
+                        <path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <span class="logo-text">AlmacénPro</span>
+            </div>
+            
+            <!-- Espacio vacío para mantener el logo centrado -->
+            <div class="spacer"></div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="container">
+        <!-- Tabla de Inventario -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Inventario de Materiales</h2>
+            </div>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Número de Parte</th>
+                            <th>Descripción</th>
+                            <th>Cajas</th>
+                            <th>Piezas</th>
+                            <th>Total (C×P)</th>
+                            <th>Total de Piezas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partidasBody">
+                        
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sección de Firmas y Documentación -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Firmas y Documentación</h2>
+            </div>
+            
+            <div class="form-section">
+                <!-- Campo de Observaciones -->
+                <div class="form-group">
+                    <label for="observaciones" class="form-label">Observaciones</label>
+                    <textarea 
+                        id="observaciones" 
+                        class="form-textarea"
+                        placeholder="Ingrese sus observaciones aquí...">
+                    </textarea>
+                </div>
+
+                <!-- Recuadro para Imagen Principal -->
+                <div class="form-group">
+                    <label class="form-label">Imagen de Documentación</label>
+                    <div class="image-upload" id="contenedorPadre">
+                        <div class="image-upload-content">
+                            <svg id="imagenEvidencia" class="image-upload-icon" stroke="currentColor" fill="none" viewBox="0 0 48 48" >
+                                <path id="logoDefault" d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <!-- <p class="image-upload-text">Imagen de documentación</p> -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjetas de Firmas -->
+                <div class="grid grid-cols-2">
+                    <!-- Tarjeta 1 -->
+                    <div class="signature-card">
+                        <h3 class="signature-title">Firma de Quien Recibe</h3>
+                        <div class="signature-field">
+                            <label for="nombre1" class="signature-label">Nombre</label>
+                            <input 
+                                type="text" 
+                                id="nombreEntrega"
+                                class="form-input"
+                                placeholder="Nombre del supervisor">
+                        </div>
+                        <div class="signature-field">
+                            <label class="signature-label">Firma</label>
+                            <svg class="signature-area" id="canvasEntrega">
+                                <!-- <span class="signature-placeholder">Área de firma</span> -->
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2 -->
+                    <div class="signature-card">
+                        <h3 class="signature-title">Firma de Quien Recibe</h3>
+                        <div class="signature-field">
+                            <label for="nombre2" class="signature-label">Nombre</label>
+                            <input 
+                                type="text" 
+                                id="nombreRecibe"
+                                class="form-input"
+                                placeholder="Nombre del operador">
+                        </div>
+                        <div class="signature-field">
+                            <label class="signature-label">Firma</label>
+                            <div class="signature-area" id="firmaRecibe">
+                                <!-- <rect width="100%" height="100%" fill="white" /> -->
+
+                                <!-- <span class="signature-placeholder">Área de firma</span> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="button-container">
+            <button class="button button-secondary" onclick="salir()">
+                Salir
+            </button>
+            <button class="button button-primary" onclick="aceptar()">
+                Aceptar
+            </button>
+        </div>
+    </main>
+
+    <!-- Added external JavaScript file reference -->
+    <script src="/scripts/sorteo/scripts_formulario_ingreso_almacen.js"></script>
+    <script>
+        let embarque = <%-JSON.stringify(embarque)%>
+        let tok = <%-JSON.stringify(tok)%>
+    </script>
+</body>
+</html>
