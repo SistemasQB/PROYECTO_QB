@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+// const sequelize = new Sequelize('sqlite::memory:');
 import db from "../config/db.js";
 
 const Gch_Alta = db.define('gch_alta2', {
@@ -110,7 +110,7 @@ const Gch_Alta = db.define('gch_alta2', {
     }
 },{
     tableName: 'gch_alta2',
-    sequelize,
+    
     freezeTableName: true, // Desactiva la pluralización automática
 })
 

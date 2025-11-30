@@ -34,8 +34,6 @@ import {
 import path from "path";
 // import { pipeline } from '@xenova/transformers';
 // import wavefile from 'wavefile';
-// import fs from 'fs';
-import contabilidadController from "./src/controllers/contabilidadController.js";
 
 const app = express();
 app.use(cors());

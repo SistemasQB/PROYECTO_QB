@@ -11,7 +11,7 @@ const infraestructuraController = {}
 //controlador de inicio
 infraestructuraController.inicio = (req, res)=>{
     try{
-        res.render('admin/infraestructura/inicio_infraestructura.ejs')
+        return res.render('admin/infraestructura/inicio_infraestructura.ejs')
     }
     catch(ex){
         manejadorErrores(res,ex)

@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+// const sequelize = new Sequelize('sqlite::memory:');
 import db from "../config/db.js";
 import { type } from "os";
 
@@ -163,27 +163,3 @@ const Mejora = db.define('mejora', {
 
 export default Mejora 
 
-
-// id,
-// fecha,
-// nombre_mejora,
-// generador_idea,
-// nombre_equipo,
-// numero_participantes,
-// nombre_participantes,
-// numero_empleado_registra,
-// proceso_aplica_mejora,
-// region_aplica_mejora,
-// rubro,
-// beneficios,
-// inversion,
-// monto,
-// recuperacion,
-// situacion_actual,
-// situacion_mejora,
-// mejora_grupal,
-// estatus,
-// fecha_respuesta_comite,
-// email,
-// motivo,
-// titulo_analisis
