@@ -2,6 +2,8 @@ import express from "express";
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
+import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
+import Empleados from "../models/empleado.js";
 
 
 import {
@@ -10,7 +12,8 @@ import {
     informacionpuesto,
     Inventario,
     Solicitudservicio,
-    Vales
+    Vales,
+    Departamentos
 } from "../models/index.js";
 
 import { Op, QueryTypes } from 'sequelize'
@@ -316,13 +319,21 @@ controller.inventario = async (req, res) => {
 
 
 //controladores de equisicion de equipos
-controller.requisicionEquipos = (req, res)=>{
+controller.requisicionEquipos =async (req, res)=>{
     try {
         let {codigoempleado} = req.usuario
-        //aqui se declara la clase sequelize para poder realizar la consulta a la nom1001
-        res.render('admin/sistemas/requisicionEquipos.ejs')    
+        let empleado = await Empleados.findOne({where: {codigoempleado:codigoempleado}})
+        let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
+        let criterios = {codigoempleado:codigoempleado}
+        let datosEmpleado = await clase.obtener1Registro({criterio: criterios})
+        let datos = {
+            nombreCompleto: datosEmpleado.nombrelargo,
+            departamento: empleado.descripcion,
+            email: datosEmpleado.correoelectronico
+        }
+        return res.render('admin/sistemas/requisicionEquipos.ejs', {info: datos})    
     } catch (error) {
-        
+        console.log(error)
     }
     
 }

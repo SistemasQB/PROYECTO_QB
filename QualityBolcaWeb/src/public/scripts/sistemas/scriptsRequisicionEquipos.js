@@ -8,30 +8,32 @@ const formState = {
 };
 
 const equipmentTypes = [
-    'Teléfono',
-    'Computadora',
-    'Laptop',
-    'Microscopio',
-    'Monitor',
-    'Impresora',
-    'Proyector',
-    'Mouse',
-    'Teclado',
-    'Escáner',
-    'Tinta',
-    'Cartucho',
-    'Cable',
-    'Conector',
     'Adaptador',
-    'Cargador',
-    'Línea Telefónica',
-    'Disco Duro',
-    'Memoria RAM',
-    'DVR',
-    'Cámara',
-    'Cámara IP',
-    'Otro'
+'Cable',
+'Cámara IP',
+'Cámara',
+'Cargador',
+'Cartucho',
+'Computadora',
+'Conector',
+'Disco Duro',
+'DVR',
+'Escáner',
+'Impresora',
+'Laptop',
+'Línea Telefónica',
+'Memoria RAM',
+'Microscopio',
+'Monitor',
+'Mouse',
+'Otro',
+'Proyector',
+'Teclado',
+'Tinta',
+'Teléfono',
+
 ];
+
 
 // DOM Elements
 const requesterNameInput = document.getElementById('requesterName');
@@ -303,3 +305,20 @@ function handleSubmit() {
 // Initialize
 renderEquipmentList();
 updateSummary();
+
+
+document.addEventListener('DOMContentLoaded', (e) => {
+    cargarInfo()
+})
+
+function cargarInfo(){
+    requesterNameInput.value = informacion.nombreCompleto
+    departmentInput.value = informacion.departamento
+    emailInput.value = informacion.email
+
+    formState.requesterName =informacion.nombreCompleto
+    formState.department = informacion.departamento
+    formState.email = informacion.email
+    updateSummary()
+    
+}
