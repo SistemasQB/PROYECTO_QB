@@ -54,10 +54,48 @@
                         <span class="error-message" id="categoriaError"></span>
                     </div>
 
+                    <!-- Evaluación del ticket: unico afectado -->
+                    <div class="form-group">
+                        <label for="affected">Numero de personas afectadas *</label>
+                        <select id="numAfectacion" name="numAfectacion" required>
+                            <option value="">Seleccione un número</option>
+                            <option value="1">1 (solo yo)</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5 o más</option>
+                        </select>
+                        <span class="error-message" id="numAfectacionError"></span>
+                    </div>
+
+                    <!-- Evaluación del ticket: porcentaje de impacto al trabajo -->
+                    <div class="form-group">
+                        <label for="percentage">En que porcentaje afecta mi trabajo? *</label>
+                        <select id="porcentaje" name="porcentaje" required>
+                            <option value="">Seleccione un porcentaje</option>
+                            <option value="1">0 - 30%</option>
+                            <option value="2">30% - 50%</option>
+                            <option value="3">50% - 90%</option>
+                            <option value="4">90% - 100%</option>
+                        </select>
+                        <span class="error-message" id="porcentajeError"></span>
+                    </div>
+
+                    <!-- Evaluación del ticket: cantidad de procesos afectados -->
+                    <div class="form-group">
+                        <label for="process-affected">Cantidad de procesos afectados *</label>
+                        <select id="procesos" name="procesos" required>
+                            <option value="">Seleccione un número</option>
+                            <option value="1">1</option>
+                            <option value="4">2 o más</option>
+                        </select>
+                        <span class="error-message" id="procesosError"></span>
+                    </div>
+
                     <div class="form-group">
                         <label for="priority">Prioridad *</label>
                         <select id="prioridad" name="prioridad" required>
-                            <option value="">Seleccione la prioridad</option>
+                            <option value="">Prioridad</option>
                             <option value="low">Baja - Puede esperar</option>
                             <option value="medium">Media - Importante</option>
                             <option value="high">Alta - Urgente</option>

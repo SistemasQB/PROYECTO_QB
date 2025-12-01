@@ -135,7 +135,7 @@
                                 </svg>
                                 Remover
                             </button>
-                            <button class="btn btn-destructive">
+                            <button class="btn btn-destructive btn-dar-baja" data-id="<%= datos.folio %>" data-datos="<%= JSON.stringify(datos) %>">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor"
@@ -166,6 +166,7 @@
         </div>
     </div>
 
+    <input type="hidden" id="csrfToken" value="<%= csrfToken %>">
     <script src="../scripts/sistemas/listadopersonal.js"></script>
 
     <script>

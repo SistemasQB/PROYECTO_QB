@@ -119,7 +119,7 @@ controller.formularioRegistro = (req, res) => {
 controller.formularioOlvidePassword = (req, res) => {
     res.render('auth/olvide-password', {
         csrfToken: req.csrfToken(),
-        errores: ''
+        errores: '' 
     })
 }
 
@@ -146,7 +146,7 @@ controller.resetPassword = async (req, res) => {
         res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
         return
     }
-    const usuario2 = await Informaciongch.findOne({ where: { codigoempleado: codigoempleado } })
+    const usuario2 = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } })
     //Generar un token y enviar email
     usuario.token = generarId();
     await usuario.save();
@@ -233,7 +233,7 @@ controller.registrar = async (req, res) => {
     const { codigoempleado, password } = req.body
     
     //Verificar si el usuario ya esta registrado
-    const gchUsuario = await informaciongch.findOne({ where: { codigoempleado } })
+    const gchUsuario = await informaciongch.findOne({ where: { codigoempleado }, attributes: { exclude: ['idtipoperiodo'] } })
 
     if (!gchUsuario) {
         res.status(400).send({ ok: false, msg: 'El usuario no Existe' });

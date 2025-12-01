@@ -494,6 +494,31 @@ body {
     color: #6b7280;
 }
 
+#tituloBaja {
+    text-align: center;
+}
+
+#folioBaja {
+    text-align: center;
+    color: #b91c1c;
+}
+
+#confirmarBaja {
+    padding: 10px 25px;
+}
+
+#cancelarBaja {
+    padding: 10px 25px;
+}
+
+.modal-buttons {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 30px;
+    margin-top: 25px !important;
+}
+
+
 .hidden {
             display: none;
         }

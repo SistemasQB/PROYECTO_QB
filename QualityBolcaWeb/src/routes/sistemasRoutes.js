@@ -21,6 +21,7 @@ router.get('/tablainventario',adminController.tablainventario);
 
 //rutas de vales
 router.get('/listadopersonal',adminController.listadopersonal); //visualizar los vales del personal
+router.put('/darBaja/:folio', adminController.darBajaVale); //dar de baja un vale
 
 //rutas de los vales
 router.get('/addvales',adminController.addvales);

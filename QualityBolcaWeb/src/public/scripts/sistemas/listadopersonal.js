@@ -6,11 +6,11 @@ const closeBtn = document.querySelector('.close');
 
 
 closeBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', function (event) {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
+window.addEventListener('click', function (event) {
+    if (event.target === modal) {
+        closeModal();
+    }
+});
 
 function verEquipos(colaboradorId) {
     const colaborador = colaboradores.find(c => c.id === colaboradorId);
@@ -182,4 +182,75 @@ function showModal(colaborador) {
 
 function closeModal() {
     modal.style.display = 'none';
+}
+
+function showSuccessModal(mensaje) {
+    modalBody.innerHTML = `
+        <h3 style="color: green; text-align:center;">✔ ${mensaje}</h3>
+        <div class="modal-buttons" style="margin-top:20px; display:flex; justify-content:center;">
+            <button id="btnCerrarExito" class="btn btn-outline">Aceptar</button>
+        </div>
+    `;
+
+    modal.style.display = "block";
+
+    document.getElementById("btnCerrarExito").addEventListener("click", () => {
+        closeModal();
+        location.reload(); // Recargar tabla
+    }, { once: true });
+
+}
+
+colaboradoresGrid.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-dar-baja');
+    if (!btn) return;
+
+    const datos = btn.dataset.datos;
+
+    showConfirmacionDarBaja(datos);
+})
+
+function showConfirmacionDarBaja(datosJSON) {
+
+    vLista = JSON.parse(datosJSON);
+
+    modalBody.innerHTML = `
+        <h3 id="tituloBaja">¿Estás seguro que quieres dar de baja este vale?</h3>
+        <p id="folioBaja" style="margin-top:8px;">(Folio:<strong> ${vLista.folio})<strong></p>
+        <div class="modal-buttons" style="margin-top:20px; display:flex; justify-content:space-around;">
+            <button id="confirmarBaja" class="btn btn-destructive">Sí</button>
+            <button id="cancelarBaja" class="btn btn-outline">No</button>
+        </div>
+    `;
+
+    modal.style.display = 'block'
+    const csrfToken = document.getElementById("csrfToken").value;
+
+    document.getElementById("cancelarBaja").addEventListener("click", closeModal, { once: true });
+    document.getElementById("confirmarBaja").addEventListener("click", async () => {
+        try {
+            const respuesta = await fetch(`/sistemas/darBaja/${vLista.folio}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "CSRF-Token": csrfToken
+                },
+                body: JSON.stringify({})
+
+            });
+
+            const data = await respuesta.json();
+
+            if (data.ok) {
+                showSuccessModal("El vale fue dado de baja correctamente.");
+
+            } else {
+                alert("Error: " + data.message);
+            }
+
+        } catch (err) {
+            console.error("Error al dar de baja:", err);
+            alert("Error inesperado al dar de baja");
+        }
+    }, { once: true });
 }

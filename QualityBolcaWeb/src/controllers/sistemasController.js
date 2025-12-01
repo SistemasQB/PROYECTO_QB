@@ -13,7 +13,7 @@ import {
     Vales
 } from "../models/index.js";
 
-import { Op, QueryTypes } from 'sequelize'
+import { Op, QueryTypes, where } from 'sequelize'
 
 
 const app = express();
@@ -269,6 +269,40 @@ controller.inicio = (req, res)=>{
         return res.render('admin/sistemas/mio/inicio_sistemas.ejs')
     } catch (error) {
         
+    }
+}
+
+//controladores de baja de vale
+controller.darBajaVale = async(req, res) => {
+    const { folio } = req.params;
+
+    try {
+        //buscar el inventario que coincide con el folio
+        const inventarios = await Inventario.findAll({
+            where: { folio: folio }
+        });
+
+        if (inventarios.length === 0) {
+            return res.json({ ok:false, message: `No existe inventario con folio ${folio}`});
+        }
+
+        //Actualizar cambio de firma en null para la tabla de vales
+        await Vales.update(
+            { Firma: null},
+            {where: {idFolio: folio}}
+        )
+
+        //Actualizar el inventario en 0 todos los registros encontrados
+        await Inventario.update(
+            {folio: 0},
+            {where: { folio: folio} }
+        );
+
+        return res.json({ ok: true, message: "Todos los objetos del inventario fueron dados de baja correctamente" });
+
+    } catch (error) {
+        console.log('Error al dar de baja el vale', error);
+        return res.status(500).json({ok: false, message: error.message})
     }
 }
 
