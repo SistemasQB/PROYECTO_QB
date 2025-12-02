@@ -7,7 +7,7 @@ let estadoFormulario = {
 
 // Validación en tiempo real
 const form = document.getElementById("ticketForm")
-const fields = ["titulo", "categoria", "descripcion", "numAfectacion", "porcentaje", "procesos"]
+const fields = ["titulo", "categoria", "descripcion", "prioridad"]
 
 // Agregar listeners para validación en tiempo real
 fields.forEach((fieldName) => {
@@ -121,7 +121,6 @@ btnEnvio.addEventListener("click", async (e) => {
     numeroAfectados: numAfectacion.value,
     porcentajeAfectacion: porcentaje.value,
     procesosAfectados: procesos.value,
-    prioridad: prioridad.value
   }
 
   estadoFormulario.datosTicket = JSON.stringify({
