@@ -36,31 +36,31 @@
             <div class="info-grid">
                 <div class="info-row">
                     <label>FECHA DE RECIBO</label>
-                    <input type="text" class="input-field">
+                    <input type="text" class="input-field" name="fecha">
                 </div>
                 <div class="info-row">
                     <label>UNIDAD</label>
-                    <input type="text" class="input-field">
+                    <input type="text" class="input-field" name="unidad">
                 </div>
                 <div class="info-row">
                     <label>PLACAS</label>
-                    <input type="text" class="input-field">
+                    <input type="text" class="input-field" name="placas">
                 </div>
                 <div class="info-row">
                     <label>KILOMETRAJE</label>
-                    <input type="text" class="input-field">
+                    <input type="text" class="input-field" name="kilometraje">
                 </div>
                 <div class="info-row">
                     <label>REGIÓN</label>
-                    <input type="text" class="input-field">
+                    <input type="text" class="input-field" name="region">
                 </div>
                 <div class="info-row">
                     <label>USUARIO</label>
-                    <input type="text" class="input-field">
+                    <input type="text" class="input-field" name="usuario">
                 </div>
                 <div class="info-row">
                     <label>RESPONSABLE</label>
-                    <input type="text" class="input-field">
+                    <input type="text" class="input-field" name="responsable">
                 </div>
             </div>
             <!-- <div class="section-header">OBSERVACIONES GENERALES</div>
@@ -91,46 +91,46 @@
                         <th>REFACCIÓN</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
+                <tbody id="tablaLlantas">
+                    <tr >
                         <td>MEDIDA</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="dd_medida"></td>
+                        <td><input type="text" class="table-input" name="di_medida"></td >
+                        <td><input type="text" class="table-input" name="td_medida"></td > 
+                        <td><input type="text" class="table-input" name="ti_medida"></td >
+                        <td><input type="text" class="table-input" name="refaccion_medida"></td >
                     </tr>
                     <tr>
                         <td>MARCA</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="dd_marca"></td >
+                        <td><input type="text" class="table-input" name="di_marca"></td>
+                        <td><input type="text" class="table-input" name="td_marca"></td>
+                        <td><input type="text" class="table-input" name="ti_marca"></td>
+                        <td><input type="text" class="table-input" name="refaccion_marca"></td>
                     </tr>
                     <tr>
                         <td>ESTADO DE VIDA</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name = 'dd_estado_vida'></td>
+                        <td><input type="text" class="table-input" name = 'di_estado_vida'></td>
+                        <td><input type="text" class="table-input" name = 'td_estado_vida'></td>
+                        <td><input type="text" class="table-input" name = 'ti_estado_vida'></td>
+                        <td><input type="text" class="table-input" name = 'refaccion_estado_vida'></td>
                     </tr>
                     <tr>
                         <td>ESTADO DE RIN</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="dd_estado_rin"></td>
+                        <td><input type="text" class="table-input" name="di_estado_rin"></td>
+                        <td><input type="text" class="table-input" name="td_estado_rin"></td>
+                        <td><input type="text" class="table-input" name="ti_estado_rin"></td>
+                        <td><input type="text" class="table-input" name="refaccion_estado_rin"></td>
                     </tr>
                     <tr>
                         <td>POLVERAS</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="dd_polveras"></td>
+                        <td><input type="text" class="table-input" name="di_polveras"></td>
+                        <td><input type="text" class="table-input" name="td_polveras"></td>
+                        <td><input type="text" class="table-input" name="ti_polveras"></td>
+                        <td><input type="text" class="table-input" name="refaccion_polveras"></td>
                     </tr>
                 </tbody>
             </table>
@@ -149,74 +149,74 @@
                         <th colspan="1">ESTATUS</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tablaAccesorios">
                     <tr>
                         <td>BOTIQUÍN</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="botiquin"></td>
                         <td>CLAXON</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="claxon"></td>
                         <td>ANTICONGELANTE</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="anticongelante"></td>
                     </tr>
                     <tr>
                         <td>ASIENTOS</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="asientos"></td>
                         <td>LUZ DE FRENO</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="luz_freno"></td>
                         <td>ACEITE DE MOTOR</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="aceite_motor"></td>
                     </tr>
                     <tr>
                         <td>TAPETES</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="tapetes"></td>
                         <td>INTERMITENTES</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="intermitentes"></td>
                         <td>ACEITE DIRECCIÓN</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="aceite_direccion"></td>
                     </tr>
                     <tr>
                         <td>LIMPIAPARABRISAS</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="limpiaparabrisas"></td>
                         <td>DIRECCIONALES</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="direccionales"></td>
                         <td>ACEITE DE TRANS</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="aceite_transmision"></td>
                     </tr>
                     <tr>
                         <td>ESPEJOS EXTERIORES</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="espejos_exteriores"></td>
                         <td>LUZ DE REVERSA</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="luz_reversa"></td>
                         <td>LÍQUIDO DE FRENOS</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="liquido_frenos"></td>
                     </tr>
                     <tr>
                         <td>ESPEJO INTERIOR</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="espejo_interior"></td>
                         <td>LUCES (CUARTOS)</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="luz_cuartos"></td>
                         <td>LÍQUIDO DE CLUTCH</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="liquido_clutch"></td>
                     </tr>
                     <tr>
                         <td>GATO</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="gato"></td>
                         <td>LUCES (BAJAS)</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="luces_bajas"></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>LLAVE DE CRUZ</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="llave_cruz"></td>
                         <td>LUCES (ALTAS)</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="luces_altas"></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>REFLEJANTES</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="reflejantes"></td>
                         <td class="subtitulo"></td>
                         <td colspan="1" class="subtitulo">ESTATUS</td>
                         <td colspan="1" class="subtitulo">MARCA</td>
@@ -225,19 +225,19 @@
                     </tr>
                     <tr>
                         <td>EXTINTOR</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="extintor"></td>
                         <td colspan="1" >BATERIA</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td colspan="1"><input type="text" class="table-input"></td>
-                        <td colspan="1"><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="funcional" data-bateria></td>
+                        <td colspan="1"><input type="text" class="table-input" name="marca" data-bateria></td>
+                        <td colspan="1"><input type="text" class="table-input" name="serie" data-bateria></td>
                     </tr>
                     <tr>
                         <td>PLACAS</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="placas_estado" ></td>
                         <td colspan="1" >CATALIZADOR</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td colspan="1"><input type="text" class="table-input"></td>
-                        <td colspan="1"><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="funcional_catalizador" data-catalizador></td>
+                        <td colspan="1"><input type="text" class="table-input" name="marca_catalizador" data-catalizador></td>
+                        <td colspan="1"><input type="text" class="table-input" name="serie_catalizador" data-catalizador></td>
                     </tr>
                 </tbody>
             </table>
@@ -345,6 +345,9 @@
         </div>
     </div>
 
-    <script src="/scripts/infraestructura/scripst_formato_check_list_vehicular.js"></script>
+    <script src="/scripts/infraestructura/scripts_formato_check_list_vehicular.js"></script>
+    <script> 
+        let datos = <%-JSON.stringify(resultados)%>
+    </script>
 </body>
 </html>

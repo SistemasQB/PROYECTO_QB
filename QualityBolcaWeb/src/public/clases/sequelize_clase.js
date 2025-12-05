@@ -60,11 +60,9 @@ class sequelizeClase{
         return respuesta
     }
     async obtener1Registro({criterio}){
-        
     const opciones = {
             where: criterio
         }
-    
         let respuesta = await this.modelo.findOne(opciones)
         if (!respuesta) return ''
         return respuesta

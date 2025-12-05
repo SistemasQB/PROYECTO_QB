@@ -24,7 +24,8 @@ infraestructuraRouter.get('/gestionPedidosInsumos', protegerRuta,infraestructura
 //rutas de logistica vehicular
 infraestructuraRouter.get('/check-list-vehicular', protegerRuta,infraestructuraController.checklistVehicular);
 infraestructuraRouter.post('/crudCheck-list-vehicular', protegerRuta, multer.multiplesArchivos('evidencias', 5) ,infraestructuraController.crudCheckListVehicular);
-infraestructuraRouter.get('/check-list-vehicular/:id', protegerRuta,infraestructuraController.vistaCheckListVehicular);
+infraestructuraRouter.get('/check-list-vehicular/:id', protegerRuta,validarAcceso({
+    roles: ['logistica vehicular'], permisos: ['analista logistica vehicular',"auxiliar logistica vehicular"], jerarquia: 4}),infraestructuraController.vistaCheckListVehicular);
 infraestructuraRouter.get('/historico_check_list_vehicular', protegerRuta, validarAcceso({
     roles: ['logistica vehicular'], permisos: ['analista logistica vehicular',"auxiliar logistica vehicular"], jerarquia: 4
 }),infraestructuraController.historicoCheckListVehicular);

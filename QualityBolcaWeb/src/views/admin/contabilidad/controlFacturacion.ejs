@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Facturas</title>
+    <link rel="stylesheet" href="/styles/contabilidad/estilos_controlFacturacion.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1 class="title">Gestión de Facturas</h1>
+                    <p class="subtitle">Administra facturas y sus pagos correspondientes</p>
+                </div>
+                <div class="header-actions">
+                    <span class="badge" id="invoice-count">0 facturas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros y búsqueda -->
+        <div class="card">
+            <div class="card-content">
+                <div class="filters">
+                    <div class="search-container">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            class="search-input" 
+                            placeholder="Buscar por número, cliente o descripción..."
+                        >
+                    </div>
+                    <div class="filter-actions">
+                        <select id="status-filter" class="status-select">
+                            <option value="all">Todos los estados</option>
+                            <option value="paid">Pagadas</option>
+                            <option value="pending">Pendientes</option>
+                            <option value="overdue">Vencidas</option>
+                            <option value="cancelled">Canceladas</option>
+                        </select>
+                        <button class="btn btn-outline">
+                            <i data-lucide="filter"></i>
+                            Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de facturas -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i data-lucide="file-text"></i>
+                    Facturas y Pagos
+                </h2>
+            </div>
+            <div class="card-content table-container">
+                <div class="table-wrapper">
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>Factura</th>
+                                <th>Cliente</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th>Vencimiento</th>
+                                <th>Estado</th>
+                                <th>Pagado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-tbody">
+                            <!-- Las filas se generarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menú contextual -->
+    <div id="context-menu" class="context-menu hidden">
+        <div class="context-menu-content">
+            <button class="context-menu-item" data-action="view">
+                <i data-lucide="eye"></i>
+                Ver detalles
+            </button>
+            <button class="context-menu-item" data-action="edit">
+                <i data-lucide="edit"></i>
+                Editar factura
+            </button>
+            <button class="context-menu-item context-menu-danger" data-action="cancel">
+                <i data-lucide="trash-2"></i>
+                Cancelar factura
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="delete-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i data-lucide="alert-triangle" class="text-destructive"></i>
+                    Confirmar Cancelación
+                </h3>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas cancelar la factura <strong id="invoice-to-delete"></strong>?</p>
+                <br>
+                <p>Esta acción marcará la factura como cancelada y no se podrá deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-delete">Cancelar</button>
+                <button class="btn btn-destructive" id="confirm-delete">Sí, cancelar factura</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="/scripts/contabilidad/scriptsControlFacturacion.js"></script>
+</body>
+</html>

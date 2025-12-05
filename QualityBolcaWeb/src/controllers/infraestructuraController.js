@@ -242,9 +242,11 @@ infraestructuraController.crudCheckListVehicular = async(req, res)=>{
 infraestructuraController.vistaCheckListVehicular = async(req, res)=>{
  try {
     let {id} = req.params
+    console.log('el id es',id);
     let clase = new sequelizeClase({modelo: modelosInfraestructura.modeloCheckListVehicular})
-    let resultado = await clase.obtener1Registro({id:id})
-    res.render('admin/infraestructura/logistica_vehicular/formato_check_list_vehicular.ejs', {resultado})
+    let criterios = {id:parseInt(id)}
+    let resultado = await clase.obtener1Registro({criterio:criterios})
+    res.render('admin/infraestructura/logistica_vehicular/formato_check_list_vehicular.ejs', {resultados:resultado})
  } catch (error) {
     manejadorErrores(res,ex)   
  }   
