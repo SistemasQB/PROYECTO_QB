@@ -21,11 +21,12 @@ class sequelizeClase{
     }
     async eliminar ({id}) {
         try{
-        let dato = await this.modelo.findByPk(id);
-        if(!dato) return false
-        let elim = await dato.destroy({returning: true});
-        if (!elim) return false
-        return true}
+            let dato = await this.modelo.findByPk(id);
+            if(!dato) return false
+            let elim = await dato.destroy({returning: true});
+            if (!elim) return false
+            return true
+        }
         catch(ex){
             console.log(ex.toString())
             return false;
@@ -47,22 +48,32 @@ class sequelizeClase{
         }
     }
 
-    async obtenerDatosPorCriterio({criterio, ordenamiento = null}){
+    async obtenerDatosPorCriterio({criterio, ordenamiento = null, atributos = null, limites = null}){
         const opciones = {
             where: criterio
         }
         if (ordenamiento){
             opciones.order = ordenamiento
         }
+        if(atributos){
+            opciones.attributes = atributos
+        }
+        if(limites){
+            opciones.limit = limites.limite
+            opciones.offset = limites.offset
+        }
         let respuesta = await this.modelo.findAll(opciones)
         
         if (!respuesta) return ''
         return respuesta
     }
-    async obtener1Registro({criterio}){
+    async obtener1Registro({criterio, atributos = null}){
     const opciones = {
             where: criterio
         }
+    if(atributos){
+        opciones.attributes = atributos
+    }
         let respuesta = await this.modelo.findOne(opciones)
         if (!respuesta) return ''
         return respuesta

@@ -254,7 +254,7 @@
                         <th colspan="2">LIMPIEZA GENERAL DE LA UNIDAD</th>
                     </tr>
                     <tr>
-                        <th></th>
+                        <th>DOCUMENTO</th>
                         <th>ESTATUS</th>
                         <th>VIGENCIA</th>
                         <th></th>
@@ -262,43 +262,43 @@
                         
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="contenedorDocumentos">
                     <tr>
                         <td>T. DE CIRCULACIÓN</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td></td>
+                        <td><input type="text" class="table-input" name="tarjeta_circulacion"></td>
+                        <td><input type="text" class="table-input" name="tarjeta_vigencia"></td>
                         <td>INTERIOR</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="limpieza_interior"></td>
                         
                     </tr>
                     <tr>
                         <td>PÓLIZA DE SEGURO</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td></td>
+                        <td><input type="text" class="table-input" name="poliza"></td>
+                        <td><input type="text" class="table-input" name="poliza_vigencia"></td>
                         <td>EXTERIOR</td>
-                        <td><input type="text" class="table-input"></td>
+                        <td><input type="text" class="table-input" name="limpieza_exterior"></td>
                         
                     </tr>
                     <tr>
                         <td>VERIFICACIÓN VEHICULAR</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td></td>
+                        <td><input type="text" class="table-input" name="verificacion"></td>
+                        <td><input type="text" class="table-input" name="verificacion_vigencia"></td>
                         <td></td>
                         <td></td>
                         
                     </tr>
                     <tr>
                         <td>MANUALES</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td></td>
+                        <td><input type="text" class="table-input" name="manual_propietario"></td>
+                        <td>N/A</td>
                         <td></td>
                         <td></td>
                         
                     </tr>
                     <tr>
                         <td>No. LICENCIA DE USUARIO</td>
-                        <td><input type="text" class="table-input"></td>
-                        <td></td>
+                        <td><input type="text" class="table-input" name="licencia"></td>
+                        <td><input type="text" class="table-input" name="licencia_vigencia"></td>
                         <td></td>
                         <td></td>
                         
@@ -310,7 +310,7 @@
         <!-- General Observations -->
         <div class="section-header">OBSERVACIONES GENERALES</div>
         <div class="observations-area">
-            <textarea class="observations-textarea" rows="6"></textarea>
+            <textarea class="observations-textarea" rows="6" id="observacionesUsuario"></textarea>
         </div>
 
         <!-- Signature Section -->
@@ -321,17 +321,17 @@
                     <div class="signature-fields">
                         <div class="signature-field">
                             <label>FECHA</label>
-                            <input type="text" class="input-field">
+                            <input type="text" class="input-field" id="fechaEntrega">
                         </div>
                         <div class="signature-field">
                             <label>HORA</label>
-                            <input type="text" class="input-field">
+                            <input type="text" class="input-field" id="horaEntrega">
                         </div>
                     </div>
                 </div>
                 <div class="signature-box">
                     <div class="signature-header">FIRMA DEL CONDUCTOR</div>
-                    <div class="signature-area"></div>
+                    <div class="signature-area"><p id="firmaConductor"></p></div>
                 </div>
                 <!-- <div class="signature-box">
                     <div class="signature-header">CAPITAL HUMANO</div>

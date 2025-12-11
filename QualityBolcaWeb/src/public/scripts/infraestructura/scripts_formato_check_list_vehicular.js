@@ -8,10 +8,12 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch (error) {
     
   }
-  console.log(datos)
+  console.log(datos);
   renderDatosUnidad();
   renderLlantas();
   renderAccesorios();
+  renderDocs()
+  renderDatosFinales()
 })
 
 function renderDatosUnidad(){
@@ -67,45 +69,73 @@ function renderAccesorios(){
   inputs = contenedor.querySelectorAll('[data-bateria], [data-catalizador]')
   
   for (const [i, input] of inputs.entries()) {
-    if(i <3){
-      input.value = datos.componentesPrincipales.bateria[i]
+    if(i < 3){
+      if(input.name == 'funcional'){
+        let funcionalidad = datos.componentesPrincipales.bateria.funcional
+        if(funcionalidad){
+          input.value = "FUNCIONAL"
+          input.disabled=true
+          continue
+        }else{
+          input.value = "DEFECTUOSA"
+          input.disabled=true
+          continue
+        }
+      }
+      input.value = datos.componentesPrincipales.bateria[input.name]
+      input.disabled=true
     }else{
-      input.value = datos.componentesPrincipales.catalizador[i]
+      switch(i){
+        case 3:
+          let funcionalidad = datos.componentesPrincipales.catalizador.funcional
+          if(funcionalidad){
+          input.value = "FUNCIONAL"
+          input.disabled=true
+          continue
+        }else{
+          input.value = "DEFECTUOSA"
+          input.disabled=true
+          continue
+        }
+        case 4:
+          input.value = datos.componentesPrincipales.catalizador.marca
+          input.disabled=true
+          break;
+        case 5:
+          input.value = datos.componentesPrincipales.catalizador.serie
+          input.disabled=true
+          break;
+      }
     }
     
   }
   
 }
-  // // Auto-guardar en localStorage
-  // const inputs = document.querySelectorAll("input, textarea")
-  // // Cargar datos guardados
-  // inputs.forEach((input) => {
-  //   const savedValue = localStorage.getItem(input.name || input.id)
-  //   if (savedValue) {
-  //     input.value = savedValue
-  //   }
-  // })
 
-  // Guardar datos al cambiar
-  // inputs.forEach((input) => {
-  //   input.addEventListener("change", function () {
-  //     if (this.name || this.id) {
-  //       localStorage.setItem(this.name || this.id, this.value)
-  //     }
-  //   })
-  // })
+function renderDocs(){
+  let documentos = datos.datosUnidad.documentacion
+  documentos.limpieza_exterior =  datos.fluidos.limpieza_exterior
+  documentos.limpieza_interior =  datos.fluidos.limpieza_interior
+  
+  let contenedor = document.getElementById('contenedorDocumentos')
+  let inputs = contenedor.querySelectorAll('input')
 
-  // // Función para limpiar formulario
-  // window.clearForm = () => {
-  //   if (confirm("¿Está seguro de que desea limpiar todos los campos?")) {
-  //     inputs.forEach((input) => {
-  //       input.value = ""
-  //       localStorage.removeItem(input.name || input.id)
-  //     })
-  //   }
-  // }
+  for (const input of inputs){
+    let name = input.getAttribute('name')
+    input.value = documentos[name]
+  }
+}
 
-  // // Función para imprimir
-  // window.printChecklist = () => {
-  //   window.print()
-  // }
+function renderDatosFinales(){
+  let campoObservaciones = document.getElementById('observacionesUsuario')
+  campoObservaciones.value = datos.observaciones
+  campoObservaciones.disabled = true
+  let fecha = new Date(datos.createdAt).toLocaleDateString('en-GB', {year: 'numeric', month: 'numeric', day: 'numeric'})
+  document.getElementById('fechaEntrega').value = fecha
+  document.getElementById('fechaEntrega').disabled = true
+  document.getElementById('horaEntrega').value = datos.createdAt.split("T")[1].split(".")[0]
+  
+  document.getElementById('firmaConductor').innerText = datos.datosUnidad.usuario
+
+}
+ 

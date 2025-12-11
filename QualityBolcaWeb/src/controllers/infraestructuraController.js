@@ -130,13 +130,24 @@ infraestructuraController.crudPedidoInsumos = async(req, res) => {
         let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
         let datosUsuario =  await clase.obtener1Registro({criterio:{codigoempleado:usuario}})
         clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_pedido_insumos})
+
         switch(campos.tipo){
             case 'insert':
+                delete campos.tipo
                 campos.solicitante = datosUsuario.nombrelargo
+                let respuesta = await clase.insertar({datosInsertar: campos})
+                if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
                 return res.json({ok:  await clase.insertar({datosInsertar: campos}), msg: 'informacion enviada exitosamente'})
             case 'update':
+                console.log(campos)
+                let id = campos.id
+                delete campos.id
+                delete campos.tipo
+                delete campos.razon
                 
-                return res.json({ok:  await clase.actualizarDatos({id: campos.id, datos: campos}), msg: 'informacion actualizada exitosamente'})
+                let actualizado = await clase.actualizarDatos({id: id, datos: campos})
+                if (!actualizado) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
+                return res.json({ok:actualizado, msg: 'informacion actualizada exitosamente'})
             case 'delete':
                 break;
         }    
@@ -166,6 +177,7 @@ infraestructuraController.gestionPedidosInsumos = async(req, res) => {
 
 //controladores de logistica vehicular
 
+// controladores de check list vehicular
 infraestructuraController.checklistVehicular = async(req, res)=>{
     try{
     const tok = req.csrfToken()
@@ -192,15 +204,9 @@ infraestructuraController.crudCheckListVehicular = async(req, res)=>{
         delete datos.tipo
         delete datos._csrf
         Object.entries(datos).forEach(([key, value]) => {
-            try {
-                let parseo = JSON.parse(value)
-                if(typeof parseo === 'object'){
-                    datos[key] = parseo
-                }    
-            } catch (error) {
-
-            }
-            
+            try {let parseo = JSON.parse(value)
+                if(typeof parseo === 'object'){datos[key] = parseo}    
+            } catch (error) {}
         });
         
         if (archivos.length > 0){
@@ -213,7 +219,8 @@ infraestructuraController.crudCheckListVehicular = async(req, res)=>{
         let mi = await clase.insertar({datosInsertar: datos})
         return res.json({ok:mi, msg:'informacion guarda con exito'})
     case 'delete':
-        break;
+        let idE = req.body.id
+        return res.json({ok: await clase.eliminar({id: idE}), msg:'informacion eliminada con exito'})
     case 'update':
         let {id} = req.body
         let camp = req.body
@@ -257,8 +264,9 @@ infraestructuraController.historicoCheckListVehicular = async(req, res)=>{
         const tok = req.csrfToken()
         let clase = new sequelizeClase({modelo: modelosInfraestructura.modeloCheckListVehicular})
         let criterios = {estatus: {[Op.ne]: ''}};
-        let lista = await clase.obtenerDatosPorCriterio({criterio: criterios})
-        res.render('admin/infraestructura/logistica_vehicular/historico_check_list_vehicular.ejs',{
+        let atributos = ['id','datosUnidad','createdAt', 'estatus']
+        let lista = await clase.obtenerDatosPorCriterio({criterio: criterios, atributos: atributos})
+        return res.render('admin/infraestructura/logistica_vehicular/historico_check_list_vehicular.ejs',{
             checks: lista,
             tok: tok
         })    

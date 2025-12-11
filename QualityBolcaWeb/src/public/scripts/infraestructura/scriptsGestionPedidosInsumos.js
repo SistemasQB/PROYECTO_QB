@@ -331,20 +331,18 @@ function validateRejectForm() {
   return true
 }
 
-function submitRejectOrder() {
+async function submitRejectOrder() {
   if (validateRejectForm()) {
-    const orderIndex = orders.findIndex((o) => o.id === currentRejectingOrderId)
-    if (orderIndex !== -1) {
-      orders[orderIndex].status = "rejected"
-    }
     const reason = document.getElementById("rejectReason").value
-    console.log(`Pedido #${currentRejectingOrderId} rechazado. Motivo: ${reason}`)
-
-    renderOrders()
-    updateTotals()
+    let actualizado = {
+      id : currentRejectingOrderId,
+      estatus : "RECHAZADA",
+      razon : reason,
+      tipo: 'update',
+      _csrf: tok
+    }
+    alertaFetchCalidad('crudPedidosInsumos',actualizado,'gestionPedidosInsumos')
     closeModal("rejectOrderModal")
-
-    showNotification(`Pedido #${currentRejectingOrderId} rechazado correctamente`)
   }
 }
 
@@ -471,26 +469,29 @@ function validateSupplyForm() {
   return true;
 }
 
-function submitSupplyOrder() {
+async function submitSupplyOrder() {
   if (validateSupplyForm()) {
     const orderIndex = resultados.findIndex((o) => o.id === currentSupplyingOrder.id)
+    let actualizacion = {solicitado: {}, estatus: ""};
     if (orderIndex !== -1) {
-      resultados[orderIndex].solicitado = partidas
+      actualizacion.solicitado = partidas
       // Update status
       let ap = partidas.slice(0,-1)
       const totalRequested =  ap.reduce((sum, item) => sum + item.cantidad, 0) 
       const totalSupplied = ap.reduce((sum, item) => sum + item.surtido, 0) 
 
       if (totalSupplied >= totalRequested) {
-        resultados[orderIndex].estatus = "SURTIDO"
+        actualizacion.estatus = "SURTIDO"
       } else if (totalSupplied > 0) {
-        resultados[orderIndex].estatus = "PARCIALMENTE SURTIDO"
+        actualizacion.estatus = "PARCIALMENTE SURTIDO"
       }
     }
-    
+    actualizacion.tipo = "update"
+    actualizacion._csrf = tok
+    actualizacion.id = orderIndex.id
+
+    await alertaFetchCalidad('crudPedidosInsumos',actualizacion,'gestionPedidosInsumos')
     closeModal("supplyOrderModal")
-    
-    console.log(resultados[orderIndex]);
   }
 }
 
