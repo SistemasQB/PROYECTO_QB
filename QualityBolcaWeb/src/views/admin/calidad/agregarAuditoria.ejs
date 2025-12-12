@@ -3,48 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Auditorías - Gestión de Calidad</title>
+    <title>Sistema de Gestión de Auditorías</title>
     <link rel="stylesheet" href="/styles/calidad/estilosAgregarAuditoria.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1>Sistema de Gestión de Auditorías</h1>
-                <p>Registro y seguimiento de auditorías de calidad</p>
+                <h1 class="title">Sistema de Gestión de Auditorías</h1>
+                <p class="subtitle">Registra y gestiona tu plan de auditorías</p>
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Formulario de Auditorías -->
+            <!-- Formulario de Registro -->
             <section class="form-section">
-                <div class="section-header">
-                    <h2>Nueva Auditoría</h2>
-                    <p class="last-saved" id="lastSaved"></p>
+                <div class="form-header">
+                    <h2 class="section-title">Registrar Nueva Auditoría</h2>
                 </div>
-
+                
                 <form id="auditForm" class="audit-form">
-                    <div class="form-grid">
-                        <!-- Auditores -->
-                        <div class="form-group">
-                            <label for="auditores">Auditores *</label>
-                            <select id="auditores" name="auditores" required>
-                                <option value="">Seleccionar auditor</option>
-                                <option value="Juan García">Juan García</option>
-                                <option value="María López">María López</option>
-                                <option value="Carlos Rodríguez">Carlos Rodríguez</option>
-                                <option value="Ana Martínez">Ana Martínez</option>
-                                <option value="Luis Fernández">Luis Fernández</option>
-                            </select>
-                            <span class="error-message"></span>
-                        </div>
+                    <!-- Auditores -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Auditores <span class="required">*</span>
+                            <span class="label-hint">(Mínimo 1, Máximo 5)</span>
+                        </label>
+                        <div id="auditoresContainer" class="auditores-container"></div>
+                        <button type="button" id="addAuditor" class="btn-add-auditor">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            Agregar Auditor
+                        </button>
+                        <div class="error-message" id="auditoresError"></div>
+                    </div>
 
+                    <div class="form-row">
                         <!-- Mes Programado -->
                         <div class="form-group">
-                            <label for="mes">Mes Programado *</label>
-                            <select id="mes" name="mes" required>
+                            <label for="mes" class="form-label">
+                                Mes Programado <span class="required">*</span>
+                            </label>
+                            <select id="mes" class="form-input" required>
                                 <option value="">Seleccionar mes</option>
                                 <option value="Enero">Enero</option>
                                 <option value="Febrero">Febrero</option>
@@ -59,115 +62,186 @@
                                 <option value="Noviembre">Noviembre</option>
                                 <option value="Diciembre">Diciembre</option>
                             </select>
-                            <span class="error-message"></span>
+                            <div class="error-message" id="mesError"></div>
                         </div>
 
                         <!-- Año -->
                         <div class="form-group">
-                            <label for="anio">Año *</label>
-                            <select id="anio" name="anio" required>
-                                <option value="">Seleccionar año</option>
-                                <option value="2023">2023</option>
-                                <option value="2024">2024</option>
-                                <option value="2025">2025</option>
-                                <option value="2026">2026</option>
-                                <option value="2027">2027</option>
-                            </select>
-                            <span class="error-message"></span>
+                            <label for="anio" class="form-label">
+                                Año <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="anio" 
+                                class="form-input" 
+                                placeholder="2024"
+                                min="2020"
+                                max="2100"
+                                required
+                            >
+                            <div class="error-message" id="anioError"></div>
                         </div>
-                        <!-- planta -->
-                        <div class="form-group">
-                            <label for="planta">Planta</label>
-                            <select id="planta" name="planta" required>
-                                <option value="">Seleccionar tipo</option>
-                                <option value="bodega">Auditoría Interna</option>
-                                <option value="cc1">cc1</option>
-                                <option value="oficinas">oficinas</option>
-                                <option value="yazaki arnecon">yazaki arnecon</option>
-                                <option value="chihuahua">chihuahua</option>
-                            </select>
-                            <span class="error-message"></span>
-                        </div>
+                    </div>
 
-                        <!-- Tipo de Auditoría -->
-                        <div class="form-group">
-                            <label for="tipoAuditoria">Tipo de Auditoría *</label>
-                            <select id="tipoAuditoria" name="tipoAuditoria" required>
-                                <option value="">Seleccionar tipo</option>
-                                <option value="Interna">Auditoría Interna</option>
-                                <option value="Externa">Auditoría Externa</option>
-                                <option value="Seguimiento">Auditoría de Seguimiento</option>
-                                <option value="Integrada">Auditoría Integrada</option>
-                                <option value="Sorpresa">Auditoría Sorpresa</option>
-                            </select>
-                            <span class="error-message"></span>
-                        </div>
+                    <!-- Tipo de Auditoría -->
+                    <div class="form-group">
+                        <label for="tipoAuditoria" class="form-label">
+                            Tipo de Auditoría <span class="required">*</span>
+                        </label>
+                        <select id="tipoAuditoria" class="form-input" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="Proceso">Proceso</option>
+                            <option value="Sistema">Sistema</option>
+                        </select>
+                        <div class="error-message" id="tipoAuditoriaError"></div>
+                    </div>
 
-                        <!-- Proceso/Departamento -->
-                        <div class="form-group">
-                            <label for="proceso">Proceso/Departamento *</label>
-                            <select id="proceso" name="proceso" required>
-                                <option value="">Seleccionar proceso</option>
-                                <option value="Producción">Producción</option>
-                                <option value="Calidad">Calidad</option>
-                                <option value="Recursos Humanos">Recursos Humanos</option>
-                                <option value="Ventas">Ventas</option>
-                                <option value="Logística">Logística</option>
-                                <option value="Mantenimiento">Mantenimiento</option>
-                                <option value="Finanzas">Finanzas</option>
-                            </select>
-                            <span class="error-message"></span>
-                        </div>
+                    <!-- Campo Condicional (Planta / Procesos/Dpto) -->
+                    <div class="form-group" id="campoCondicionalGroup" style="display: none;">
+                        <label for="campoCondicional" class="form-label" id="campoCondicionalLabel">
+                            Planta <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="campoCondicional" 
+                            class="form-input" 
+                            placeholder="Ingrese la planta"
+                        >
+                        <div class="error-message" id="campoCondicionalError"></div>
+                    </div>
 
-                        <!-- Auditado -->
-                        <div class="form-group">
-                            <label for="auditado">Auditado *</label>
-                            <select id="auditado" name="auditado" required>
-                                <option value="">Seleccionar responsable</option>
-                                <option value="Pedro Sánchez">Pedro Sánchez</option>
-                                <option value="Patricia González">Patricia González</option>
-                                <option value="Roberto Díaz">Roberto Díaz</option>
-                                <option value="Gabriela López">Gabriela López</option>
-                                <option value="Fernando Ruiz">Fernando Ruiz</option>
-                            </select>
-                            <span class="error-message"></span>
-                        </div>
+                    <!-- Auditado -->
+                    <div class="form-group">
+                        <label for="auditado" class="form-label">
+                            Auditado <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="auditado" 
+                            class="form-input" 
+                            placeholder="Nombre del auditado"
+                            required
+                        >
+                        <div class="error-message" id="auditadoError"></div>
                     </div>
 
                     <!-- Botones -->
                     <div class="form-buttons">
-                        <button type="submit" class="btn btn-primary">
-                            Enviar Auditoría
-                        </button>
-                        <button type="reset" class="btn btn-secondary">
+                        <button type="button" id="clearBtn" class="btn btn-secondary">
                             Limpiar Formulario
                         </button>
+                        <button type="submit" class="btn btn-primary">
+                            Registrar Auditoría
+                        </button>
                     </div>
-
-                    <!-- Mensaje de Estado -->
-                    <div id="statusMessage" class="status-message"></div>
                 </form>
             </section>
 
-            <!-- Lista de Auditorías Registradas -->
-            <section class="audits-section">
-                <div class="section-header">
-                    <h2>Auditorías Registradas</h2>
-                    <span class="audit-count" id="auditCount">0</span>
+            <!-- Lista de Auditorías -->
+            <section class="list-section">
+                <div class="list-header">
+                    <h2 class="section-title">Auditorías Registradas</h2>
+                    <div class="audit-count" id="auditCount">0 auditorías</div>
                 </div>
 
-                <div id="auditsList" class="audits-list">
-                    <p class="empty-message">No hay auditorías registradas aún</p>
+                <!-- Filtros -->
+                <div class="filters">
+                    <div class="filter-group">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="filter-input" 
+                            placeholder="Buscar por auditor o auditado..."
+                        >
+                    </div>
+                    
+                    <div class="filter-row">
+                        <select id="filterTipo" class="filter-select">
+                            <option value="">Todos los tipos</option>
+                            <option value="Proceso">Proceso</option>
+                            <option value="Sistema">Sistema</option>
+                        </select>
+
+                        <select id="filterMes" class="filter-select">
+                            <option value="">Todos los meses</option>
+                            <option value="Enero">Enero</option>
+                            <option value="Febrero">Febrero</option>
+                            <option value="Marzo">Marzo</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Mayo">Mayo</option>
+                            <option value="Junio">Junio</option>
+                            <option value="Julio">Julio</option>
+                            <option value="Agosto">Agosto</option>
+                            <option value="Septiembre">Septiembre</option>
+                            <option value="Octubre">Octubre</option>
+                            <option value="Noviembre">Noviembre</option>
+                            <option value="Diciembre">Diciembre</option>
+                        </select>
+
+                        <button id="clearFilters" class="btn-clear-filters">
+                            Limpiar Filtros
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid de Cards -->
+                <div id="auditGrid" class="audit-grid">
+                    <div class="empty-state">
+                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <p class="empty-text">No hay auditorías registradas</p>
+                        <p class="empty-subtext">Comienza agregando tu primera auditoría</p>
+                    </div>
                 </div>
             </section>
         </main>
+    </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2025 Sistema de Gestión de Calidad. Todos los derechos reservados.</p>
-        </footer>
+    <!-- Modal de reprogramación -->
+    <div id="reprogramarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Reprogramar Auditoría</h3>
+                <button class="modal-close" id="closeModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-text">Seleccione el nuevo mes para reprogramar esta auditoría:</p>
+                <div class="form-group">
+                    <label for="nuevoMes" class="form-label">Nuevo Mes <span class="required">*</span></label>
+                    <select id="nuevoMes" class="form-input" required>
+                        <option value="">Seleccionar mes</option>
+                        <option value="Enero">Enero</option>
+                        <option value="Febrero">Febrero</option>
+                        <option value="Marzo">Marzo</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Mayo">Mayo</option>
+                        <option value="Junio">Junio</option>
+                        <option value="Julio">Julio</option>
+                        <option value="Agosto">Agosto</option>
+                        <option value="Septiembre">Septiembre</option>
+                        <option value="Octubre">Octubre</option>
+                        <option value="Noviembre">Noviembre</option>
+                        <option value="Diciembre">Diciembre</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelReprogramar">Cancelar</button>
+                <button class="btn btn-warning" id="confirmarReprogramar">Reprogramar</button>
+            </div>
+        </div>
     </div>
 
     <script src="/scripts/calidad/scriptsAgregarAuditoria.js"></script>
+    <script src="/clases/clase_fetch.js"></script>
+    <script>
+        let tok = <%-JSON.stringify(tok)%>
+    </script>
 </body>
 </html>

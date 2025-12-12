@@ -496,12 +496,9 @@ async function submitSupplyOrder() {
 }
 
 // Delete Order
-function deleteOrder(orderId) {
+async function deleteOrder(orderId) {
   if (confirm(`¿Estás seguro de que deseas eliminar el pedido #${orderId}?`)) {
-    orders = orders.filter((o) => o.id !== orderId)
-    renderOrders()
-    updateTotals()
-    showNotification(`Pedido #${orderId} eliminado correctamente`)
+    await alertaFetchCalidad("crudPedidosInsumos",{tipo: "delete", id: orderId, _csrf: tok},"gestionPedidosInsumos")
   }
 }
 

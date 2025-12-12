@@ -3,8 +3,8 @@ import dbCalidad from '../../config/dbCalidad.js';
 
 const auditoria  = dbCalidad.define('auditoria', {
     auditores: {
-        type: DataTypes.TEXT,
-        defaultValue: "sin definir",
+        type: DataTypes.JSON,
+        defaultValue: [],
         allowNull: false,
     },
     mesProgramado:{
@@ -12,12 +12,12 @@ const auditoria  = dbCalidad.define('auditoria', {
         defaultValue: "N/A",
         allowNull: false,
     },
-    ano:{
+    anio:{
         type: DataTypes.INTEGER,
         defaultValue: 0,
         allowNull: false,
     },
-    planta:{
+    lugar:{
         type: DataTypes.STRING(255),
         defaultValue: "sin definir",
         allowNull: false,
@@ -25,11 +25,6 @@ const auditoria  = dbCalidad.define('auditoria', {
     tipoAuditoria:{
         type: DataTypes.STRING(200),
         defaultValue: "N/A",
-        allowNull: false,
-    },
-    proceso:{
-        type: DataTypes.CHAR(255),
-        defaultValue: "no definido",
         allowNull: false,
     },
     auditado:{

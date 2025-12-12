@@ -130,6 +130,7 @@ infraestructuraController.crudPedidoInsumos = async(req, res) => {
         let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
         let datosUsuario =  await clase.obtener1Registro({criterio:{codigoempleado:usuario}})
         clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_pedido_insumos})
+        let id = campos.id
 
         switch(campos.tipo){
             case 'insert':
@@ -139,17 +140,19 @@ infraestructuraController.crudPedidoInsumos = async(req, res) => {
                 if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
                 return res.json({ok:  await clase.insertar({datosInsertar: campos}), msg: 'informacion enviada exitosamente'})
             case 'update':
-                console.log(campos)
-                let id = campos.id
                 delete campos.id
                 delete campos.tipo
+                if (campos.razon) {
+                    // implementacion del envio de correo con la razon
+                }
                 delete campos.razon
-                
                 let actualizado = await clase.actualizarDatos({id: id, datos: campos})
                 if (!actualizado) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
                 return res.json({ok:actualizado, msg: 'informacion actualizada exitosamente'})
             case 'delete':
-                break;
+                let eliminado = await clase.eliminar({id: id})
+                if (!eliminado) return res.json({ok: false, msg: 'no se pudo eliminar la informacion'})
+                return res.json({ok:eliminado, msg: 'informacion eliminada exitosamente'})
         }    
     } catch (error) {
         manejadorErrores(res,ex)
