@@ -29,7 +29,7 @@ class LabsMobileLib {
         }
     }
 
-    async envioGrupal(mensaje, numeros) {
+    async enviarSmsGrupal(mensaje, numeros) {
         return this.enviarSms({
             mensaje,
             destinatario: numeros.map(num => ({ msisdn: num }))
