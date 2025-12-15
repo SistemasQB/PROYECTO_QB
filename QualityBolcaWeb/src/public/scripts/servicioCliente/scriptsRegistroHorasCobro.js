@@ -176,18 +176,17 @@ async function handleSubmit(e) {
     formData.tipo = "insert"
     formData._csrf = tok
     console.log("Datos enviados:", formData)
-    await alertaFetchCalidad("", formData,"")
 
-    // Limpiar localStorage después de envío exitoso
-    localStorage.removeItem(STORAGE_KEY)
+     await envioJson("crudHorasCobro", formData,"formularioHorasCobro")
 
-    // Limpiar formulario
-    form.reset()
+    // // Limpiar localStorage después de envío exitoso
+    // localStorage.removeItem(STORAGE_KEY)
 
-    // Reestablecer estado después de 4 segundos
-    setTimeout(() => {
-      successAlert.style.display = "none"
-    }, 4000)
+    // // Limpiar formulario
+    // form.reset()
+
+    // // Reestablecer estado después de 4 segundos
+    
   } catch (error) {
     console.error("Error al enviar:", error)
     showErrorAlert("Error al enviar el formulario. Intente nuevamente.")

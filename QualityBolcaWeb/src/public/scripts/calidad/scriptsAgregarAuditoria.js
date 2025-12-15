@@ -2,6 +2,7 @@
 let auditorias = []
 let auditoresCount = 1
 let auditoriaReprogramarId = null
+let auditorciaCompletarId = null
 
 // Referencias del DOM
 const auditForm = document.getElementById("auditForm")
@@ -21,37 +22,54 @@ const clearFiltersBtn = document.getElementById("clearFilters")
 
 const reprogramarModal = document.getElementById("reprogramarModal")
 const closeModalBtn = document.getElementById("closeModal")
+const cerrarModalCompletarBtn = document.getElementById("cerrarDocumentosModalBtn")
 const cancelReprogramarBtn = document.getElementById("cancelReprogramar")
 const confirmarReprogramarBtn = document.getElementById("confirmarReprogramar")
 const nuevoMesSelect = document.getElementById("nuevoMes")
+const btnEnvio = document.getElementById("registerBtn")
+const filtroAnio = document.getElementById("filterAnio")
+
+const completarModal = document.getElementById("completarModal")
+const confirmarCompletarBtn = document.getElementById("confirmarCompletar")
+const cancelarCompletarBtn = document.getElementById("cancelCompletar")
+const btnCerrarModalCompletar = document.getElementById("cerrarDocumentosModal")
 
 // Inicialización
 document.addEventListener("DOMContentLoaded", () => {
+  deserializarAuditorias()
   inicializarAuditores()
-  cargarAuditorias()
+  // cargarAuditorias()
   configurarEventListeners()
   renderizarAuditorias()
 })
 
 // Configurar event listeners
 function configurarEventListeners() {
-  auditForm.addEventListener("submit", handleSubmit)
+  btnEnvio.addEventListener("click", handleSubmit)
   clearBtn.addEventListener("click", limpiarFormulario)
   addAuditorBtn.addEventListener("click", agregarAuditor)
   tipoAuditoriaSelect.addEventListener("change", handleTipoChange)
   searchInput.addEventListener("input", filtrarAuditorias)
   filterTipo.addEventListener("change", filtrarAuditorias)
   filterMes.addEventListener("change", filtrarAuditorias)
+  filtroAnio.addEventListener("change", filtrarAuditorias)
   clearFiltersBtn.addEventListener("click", limpiarFiltros)
-
   closeModalBtn.addEventListener("click", cerrarModal)
+  cerrarModalCompletarBtn.addEventListener("click", cerrarModalCompletado)
   cancelReprogramarBtn.addEventListener("click", cerrarModal)
+  cancelarCompletarBtn.addEventListener("click", cerrarModalCompletado)
   confirmarReprogramarBtn.addEventListener("click", confirmarReprogramacion)
 
   // Cerrar modal al hacer clic fuera de él
   reprogramarModal.addEventListener("click", (e) => {
     if (e.target === reprogramarModal) {
       cerrarModal()
+    }
+  })
+
+  completarModal.addEventListener("click", (e) => {
+    if (e.target === completarModal) {
+      cerrarModalCompletado()
     }
   })
 }
@@ -132,8 +150,8 @@ function actualizarBotonAgregarAuditor() {
 // Manejar cambio de tipo de auditoría
 function handleTipoChange(e) {
   const tipo = e.target.value
-
-  if (tipo === "Proceso") {
+  
+  if (tipo === "Proceso"){
     campoCondicionalGroup.style.display = "flex"
     campoCondicionalLabel.innerHTML = 'Planta <span class="required">*</span>'
     campoCondicional.placeholder = "Ingrese la planta"
@@ -259,7 +277,7 @@ function limpiarTodosLosErrores() {
 
 // Manejar envío del formulario
 async function handleSubmit(e) {
-  e.preventDefault()
+  // e.preventDefault()
 
   if (!validarFormulario()) {
     return
@@ -278,32 +296,29 @@ async function handleSubmit(e) {
   const campoCondicionalValor = campoCondicional.value.trim()
 
   const nuevaAuditoria = {
-    id: Date.now(),
     auditores: auditores,
     mesProgramado: mes,
     anio: parseInt(anio),
-    tipoAuditoria: tipoAuditoria,
     lugar: campoCondicionalValor,
+    tipoAuditoria: tipoAuditoria,
     auditado: auditado,
     estatus: "programada",
     mesOriginal: mes,
     mesReprogramado: mes,
-  }
-
-  // Aquí puedes enviar los datos al backend
-  // await enviarAlBackend(nuevaAuditoria);
+    _csrf: tok,
+    tipo: "insert"
     
+  }
   
-
-  // Por ahora, guardamos localmente
-  console.log(nuevaAuditoria)
-  auditorias.push(nuevaAuditoria)
-  guardarAuditorias()
-  renderizarAuditorias()
-  limpiarFormulario()
+  envioJson('crudAuditorias', nuevaAuditoria, 'agregarAuditoria')
+  
+  // auditorias.push(nuevaAuditoria)
+  // guardarAuditorias()
+  // renderizarAuditorias()
+  // limpiarFormulario()
 
   // Scroll hacia las auditorías
-  document.querySelector(".list-section").scrollIntoView({ behavior: "smooth" })
+  // document.querySelector(".list-section").scrollIntoView({ behavior: "smooth" })
 }
 
 // Función para enviar datos al backend (comentadas para futuro uso)
@@ -375,17 +390,20 @@ function filtrarAuditorias() {
   const busqueda = searchInput.value.toLowerCase()
   const tipoFiltro = filterTipo.value
   const mesFiltro = filterMes.value
+  const anioFiltro = filtroAnio.value
 
-  const auditoriasFiltradas = auditorias.filter((auditoria) => {
+  const auditoriasFiltradas = misAuditorias.filter((auditoria) => {
+    
     const coincideBusqueda =
       auditoria.auditores.some((auditor) => auditor.toLowerCase().includes(busqueda)) ||
       auditoria.auditado.toLowerCase().includes(busqueda) ||
-      auditoria.campoCondicional.toLowerCase().includes(busqueda)
+      auditoria.lugar.toLowerCase().includes(busqueda) ||
+      auditoria.anio.toString().includes(busqueda)
+    const coincideTipo = !tipoFiltro || auditoria.tipoAuditoria === tipoFiltro
+    const coincideMes = !mesFiltro || auditoria.mesReprogramado === mesFiltro
+    const coincideAnio = !anioFiltro || auditoria.anio === parseInt(anioFiltro)
 
-    const coincideTipo = !tipoFiltro || auditoria.tipo === tipoFiltro
-    const coincideMes = !mesFiltro || auditoria.mes === mesFiltro
-
-    return coincideBusqueda && coincideTipo && coincideMes
+    return coincideBusqueda && coincideTipo && coincideMes && coincideAnio
   })
 
   renderizarAuditorias(auditoriasFiltradas)
@@ -405,6 +423,12 @@ function abrirModalReprogramar(id) {
   reprogramarModal.classList.add("show")
   document.body.style.overflow = "hidden"
 }
+function abrirModalCompletar(id) {
+  auditorciaCompletarId = id
+  
+  completarModal.classList.add("show")
+  document.body.style.overflow = "hidden"
+}
 
 function cerrarModal() {
   reprogramarModal.classList.remove("show")
@@ -413,37 +437,36 @@ function cerrarModal() {
   document.body.style.overflow = "auto"
 }
 
-async function confirmarReprogramacion() {
-  const nuevoMes = nuevoMesSelect.value
+function cerrarModalCompletado(){
+  completarModal.classList.remove("show")
+  auditorciaCompletarId = null
+  document.body.style.overflow = "auto"
+}
 
+function confirmarReprogramacion() {
+  const nuevoMes = nuevoMesSelect.value
   if (!nuevoMes) {
     alert("Por favor seleccione un mes")
     return
   }
 
-  const auditoria = auditorias.find((a) => a.id === auditoriaReprogramarId)
+  const auditoria = misAuditorias.find((a) => a.id === auditoriaReprogramarId)
 
   if (!auditoria) {
     alert("Auditoría no encontrada")
     return
   }
-
-  // Guardar el mes original si es la primera reprogramación
-  if (!auditoria.mesOriginal) {
-    auditoria.mesOriginal = auditoria.mes
+  let datos = {
+    tipo: "update",
+    id: auditoriaReprogramarId,
+    mesReprogramado: nuevoMes,
+    estatus: "reprogramada",
+    _csrf: tok
   }
+  
+  envioJson('crudAuditorias', datos, 'agregarAuditoria')
 
-  // Actualizar datos
-  auditoria.mes = nuevoMes
-  auditoria.mesReprogramado = nuevoMes
-  auditoria.estatus = "reprogramada"
-
-  // Aquí puedes enviar los datos al backend
-  // await enviarReprogramacionAlBackend(auditoriaReprogramarId, nuevoMes);
-
-  guardarAuditorias()
-  renderizarAuditorias()
-  cerrarModal()
+  
 }
 
 async function marcarComoRealizada(id) {
@@ -511,7 +534,7 @@ async function actualizarEstatusEnBackend(auditoriaId, estatus) {
 }
 */
 
-function renderizarAuditorias(auditoriasAMostrar = auditorias) {
+function renderizarAuditorias(auditoriasAMostrar = misAuditorias) {
   // Actualizar contador
   auditCount.textContent = `${auditoriasAMostrar.length} auditoría${auditoriasAMostrar.length !== 1 ? "s" : ""}`
 
@@ -530,8 +553,8 @@ function renderizarAuditorias(auditoriasAMostrar = auditorias) {
 
   auditGrid.innerHTML = auditoriasAMostrar
     .map((auditoria) => {
-      const badgeClass = auditoria.tipo === "Proceso" ? "badge-proceso" : "badge-sistema"
-      const campoLabel = auditoria.tipo === "Proceso" ? "Planta" : "Procesos/Dpto"
+      const badgeClass = auditoria.tipoAuditoria === "Proceso" ? "badge-proceso" : "badge-sistema"
+      const campoLabel = auditoria.tipoAuditoria === "Proceso" ? "Planta" : "Procesos/Dpto"
       const estatus = auditoria.estatus || "programada"
 
       // Iconos según el estatus
@@ -599,7 +622,7 @@ function renderizarAuditorias(auditoriasAMostrar = auditorias) {
               </svg>
               Reprogramar
             </button>
-            <button class="btn-action btn-marcar-realizada" onclick="marcarComoRealizada(${auditoria.id})">
+            <button class="btn-action btn-marcar-realizada" onclick="abrirModalCompletar(${auditoria.id})">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
@@ -623,7 +646,7 @@ function renderizarAuditorias(auditoriasAMostrar = auditorias) {
                 <div class="card-header">
                     <h3 class="card-title">${auditoria.auditado}</h3>
                     <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end;">
-                        <span class="card-badge ${badgeClass}">${auditoria.tipo}</span>
+                        <span class="card-badge ${badgeClass}">${auditoria.tipoAuditoria}</span>
                         <span class="status-badge status-${estatus}">
                             ${statusIcon}
                             ${statusText}
@@ -643,17 +666,15 @@ function renderizarAuditorias(auditoriasAMostrar = auditorias) {
                     
                     <div class="card-field">
                         <span class="field-label">${campoLabel}</span>
-                        <span class="field-value">${auditoria.campoCondicional}</span>
+                        <span class="field-value">${auditoria.lugar}</span>
                     </div>
                     
                     <div class="card-field">
                         <span class="field-label">Fecha ${estatus === "reprogramada" ? "Reprogramada" : "Programada"}</span>
-                        <span class="field-value">${auditoria.mes} ${auditoria.anio}</span>
+                        <span class="field-value">${auditoria.mesProgramado} ${auditoria.anio}</span>
                     </div>
-                    
                     ${reprogramacionHTML}
                 </div>
-                
                 <div class="card-footer">
                     ${actionButtons}
                 </div>
@@ -661,4 +682,17 @@ function renderizarAuditorias(auditoriasAMostrar = auditorias) {
         `
     })
     .join("")
+}
+
+function deserializarAuditorias(){
+  let audits = misAuditorias.map((auditoria) => {
+    try {
+        auditoria.auditores = JSON.parse(auditoria.auditores)
+    } catch (error) {
+      
+    }
+    return auditoria
+  })
+  misAuditorias = audits
+  return 
 }

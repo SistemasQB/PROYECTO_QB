@@ -1,11 +1,7 @@
 
-class miFetch{
-    constructor( link, cuerpo, destino){
-        this.link = link;
-        this.cuerpo = cuerpo;
-        this.destino = destino
-    }    
-    envioJson(){
+
+    function envioJson(link, cuerpo, destino){
+        console.log(`el link es ${link},  el cuerpo es ${JSON.stringify(cuerpo)} y el destino es ${destino}`);
     Swal.fire({
         title: 'Procesando...',
         html: '<div class="spinner"></div>',
@@ -21,8 +17,7 @@ class miFetch{
             // 'X-CSRF-Token': cuerpo._csrf, 
         },
         body: JSON.stringify(cuerpo),
-        credentials: 'include'
-        
+        credentials: 'include'  
     })
         .then(response => response.json())
         .then(res => {
@@ -51,7 +46,7 @@ class miFetch{
             }
         })
     }
-    envioFormdata(){
+    function envioFormData(link, cuerpo, destino){
         Swal.fire({
         title: 'Procesando...',
         html: '<div class="spinner"></div>',
@@ -90,7 +85,3 @@ class miFetch{
         }
     });
     }
-
-}
-
-export default miFetch;

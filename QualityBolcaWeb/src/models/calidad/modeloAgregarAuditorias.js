@@ -36,6 +36,16 @@ const auditoria  = dbCalidad.define('auditoria', {
         type: DataTypes.STRING(20),
         defaultValue: "POR INICIAR",
         allowNull: false,
+    },
+    mesOriginal:{
+        type: DataTypes.STRING(30),
+        defaultValue: "SIN DEFINIR",
+        allowNull: false,
+    },
+    mesReprogramado:{
+        type: DataTypes.STRING(30),
+        defaultValue: "SIN DEFINIR",
+        allowNull: false,
     }
     
 },{

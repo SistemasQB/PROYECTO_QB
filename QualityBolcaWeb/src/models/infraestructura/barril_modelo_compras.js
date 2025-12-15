@@ -14,5 +14,4 @@ import modelo_pedido_insumos from "./modelo_pedido_insumos.js";
         modelo_plantas_gastos,
         modelo_pedido_insumos
     }
-
     export default modelosInfraestructura;

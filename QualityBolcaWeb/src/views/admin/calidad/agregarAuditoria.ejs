@@ -130,7 +130,7 @@
                         <button type="button" id="clearBtn" class="btn btn-secondary">
                             Limpiar Formulario
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="button" id="registerBtn" class="btn btn-primary">
                             Registrar Auditoría
                         </button>
                     </div>
@@ -141,7 +141,7 @@
             <section class="list-section">
                 <div class="list-header">
                     <h2 class="section-title">Auditorías Registradas</h2>
-                    <div class="audit-count" id="auditCount">0 auditorías</div>
+                    <div class="audit-count" id="auditCount">0 auditorías </div>
                 </div>
 
                 <!-- Filtros -->
@@ -176,6 +176,11 @@
                             <option value="Octubre">Octubre</option>
                             <option value="Noviembre">Noviembre</option>
                             <option value="Diciembre">Diciembre</option>
+                        </select>
+                        <select id="filterAnio" class="filter-select">
+                            <option value="">Todos los años</option>
+                            <option value=2025>2025</option>
+                            <option value=2026>2026</option>
                         </select>
 
                         <button id="clearFilters" class="btn-clear-filters">
@@ -238,10 +243,62 @@
         </div>
     </div>
 
+    <!-- Modal de documentos -->
+    <div id="completarModal" class="modal">
+        <form action="">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">documentacion de Auditoría</h3>
+                    <button class="modal-close" id="cerrarDocumentosModalBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-text">agregue la documentacion correspondiente para completar la auditoria auditoría:</p>
+                    <div class="form-group">
+                        <label for="correoNotificacion" class="form-label">correo de notificacion de auditoria<span class="required">*</span></label>
+                        <input type="file" name="correoNotificacion" id="correoNotificacion" accept=".msg, .eml" required>
+                        <!-- .msg,application/vnd.ms-outlook -->
+                    </div>
+                    <div class="form-group">
+                        <label for="correoResultados" class="form-label">correo con envio de resultados finales<span class="required">*</span></label>
+                        <input type="file" name="correoResultados" id="correoResultados" accept=".msg, .eml" required>
+                        <!-- .msg,application/vnd.ms-outlook -->
+                    </div>
+                    <div class="form-group">
+                        <label for="listaVerificacion" class="form-label">lista de verificacion de auditoria<span class="required">*</span></label>
+                        <input type="file" name="listaVerificacion" id="listaVerificacion" accept=".pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memorandun" class="form-label">memorandun de notificacion de auditoria<span class="required">*</span></label>
+                        <input type="file" name="memorandun" id="memorandun" accept=".pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reporteFinal" class="form-label">reporte final de auditoria<span class="required">*</span></label>
+                        <input type="file" name="reporteFinal" id="reporteFinal" accept=".pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="minuta" class="form-label">minuta de reunion de apertura y cierre de auditoria<span class="required">*</span></label>
+                        <input type="file" name="minuta" id="minuta" accept=".pdf" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelCompletar" type="button">Cancelar</button>
+                    <button class="btn btn-primary" id="confirmarCompletar" type="button">Completar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <script src="/scripts/calidad/scriptsAgregarAuditoria.js"></script>
     <script src="/clases/clase_fetch.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let tok = <%-JSON.stringify(tok)%>
+        let misAuditorias = <%-JSON.stringify(auditorias)%>
     </script>
 </body>
 </html>
