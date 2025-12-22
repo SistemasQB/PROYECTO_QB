@@ -14,7 +14,7 @@ import {
 } from "../models/index.js";
 
 import { Op, QueryTypes, where } from 'sequelize'
-
+import { cat } from "@xenova/transformers";
 
 const app = express();
 
@@ -272,6 +272,89 @@ controller.inicio = (req, res)=>{
     }
 }
 
+//Jalar los usuarios sin vale creado
+controller.obtenerColaboradoresSinVale = async (req, res) => {
+    try {
+        // Obtener todos los números de empleado que ya tienen vale
+        const vales = await Vales.findAll({
+            attributes: ['numeroEmpleado']
+        });
+
+        const empleadosConVale = vales.map(v => v.numeroEmpleado);
+
+        const colaboradores = await informaciongch.findAll({
+            where: {
+                codigoempleado: {
+                    [Op.notIn]: empleadosConVale.length > 0 ? empleadosConVale : ['']
+                }
+            },
+            attributes: [
+                'idempleado',
+                'codigoempleado',
+                'nombrelargo',
+                'iddepartamento',
+                'jefeDirecto',
+                'esBecario'
+            ]
+        });
+
+        return res.json(colaboradores);
+
+    } catch (error) {
+        console.error("Error obteniendo colaboradores sin vale:", error);
+        return res.status(500).json({ message: "Error al obtener colaboradores sin vale" });
+    }
+}
+
+//controlador de crear nuevo Vale
+controller.crearVale = async(req, res) => {
+    try{
+        const { numeroEmpleado, equipos } = req.body;
+
+        if (!numeroEmpleado || !equipos || equipos.length === 0) {
+            return res.status(400).json({ message: "numeroEmpleado es requerido" });
+        }
+
+        // 1. Obtener el siguiente idFolio
+        const ultimoVale = await Vales.findOne({
+            order: [['idFolio', 'DESC']]
+        });
+
+        const siguienteFolio = ultimoVale ? ultimoVale.idFolio + 1 : 1;
+
+        // 2. Fecha actual en formato YYYY-MM-DD
+        const hoy = new Date().toISOString().split("T")[0];
+
+        // 3. Crear el vale
+        const nuevoVale = await Vales.create({
+            idFolio: siguienteFolio,
+            numeroEmpleado: numeroEmpleado,
+            fechaFolio: hoy,
+            Firma: null,
+            comentarios: null
+        });
+
+        //Asignar el folio a los equipos
+        await Inventario.update(
+            {folio: siguienteFolio },
+            {
+                where: {
+                    idInventario: equipos
+                }
+            }
+        );
+
+        return res.json({
+            ok: true,
+            message: "Vale creado y equipos asignados correctamente",
+            vale: nuevoVale
+        });
+    } catch (error) {
+        console.error("❌ Error al crear vale:", error);
+        return res.status(500).json({ message: "Error al crear vale" });
+    }
+}
+
 //controladores de baja de vale
 controller.darBajaVale = async(req, res) => {
     const { folio } = req.params;
@@ -305,6 +388,114 @@ controller.darBajaVale = async(req, res) => {
         return res.status(500).json({ok: false, message: error.message})
     }
 }
+
+controller.inventarioDisponible = async(req, res) => {
+    try{
+        const equipos = await Inventario.findAll({
+            where: {
+                folio: 0
+            }
+        });
+        
+        return res.json(equipos);
+    } catch (error) {
+        console.error("Error al obtener inventario disponible:", error);
+        return res.status(500),json({
+            ok: false,
+            message: "Error al obtener inventario disponible"
+        })
+    }
+}
+
+controller.agregarEquipos = async(req, res) => {
+    const { folio } = req.params;
+    const { equipos } = req.body;
+
+    if(!equipos || equipos.length === 0){
+        return res.status(400).json({
+            ok: false,
+            message: "No se recibieron equipos para asignar."
+        });
+    }
+
+    try {
+        // 1. Validar que el vale existe
+        const vale = await Vales.findOne({ where: { idFolio: folio } });
+
+        if (!vale) {
+            return res.status(404).json({
+                ok: false,
+                message: "El folio del vale no existe."
+            });
+        }
+
+        // 2. Asignar los equipos al vale
+        await Inventario.update(
+            { folio: folio },               // se asigna el folio
+            { where: { idInventario: equipos } } // se asignan todos los seleccionados
+        );
+
+        return res.json({
+            ok: true,
+            message: "Equipos asignados correctamente."
+        });
+
+    } catch (error) {
+        console.error("Error al agregar equipos:", error);
+        return res.status(500).json({
+            ok: false,
+            message: "Error interno del servidor."
+        });
+    }
+}
+
+controller.equiposAsignados = async(req, res) => {   //obtener equipos asignados
+    const { folio } = req.params;
+
+    try {
+        const equipos = await Inventario.findAll({
+            where: {
+                folio: folio
+            }
+        });
+
+        return res.json(equipos);
+
+    } catch (error) {
+        console.error("ERROR obteniendo equipos asignados:", error);
+        return res.status(500).json({ message: "Error al obtener los equipos asignados." });
+    }
+};
+
+controller.removerEquipos = async(req, res) => {
+    const { folio } = req.params;
+    const { equipos } = req.body;
+
+    if (!equipos || equipos.length === 0) {
+        return res.status(400).json({ ok: false, message: "No se enviaron equipos a remover." });
+    }
+
+    try {
+        await Inventario.update(
+            { folio: 0 },
+            {
+                where: {
+                    idInventario: equipos,
+                    folio: folio
+                }
+            }
+        );
+
+        return res.json({ ok: true, message: "Equipos removidos correctamente."});
+
+    } catch (error) {
+        console.error("ERROR removiendo equipos:", error);
+        return res.status(500).json({
+            ok: false,
+            message: "Error inesperado al remover equipos."
+        });
+    }
+};
 
 //controladores de tickets
 controller.levantamientoTicket = async(req, res)=>{

@@ -22,11 +22,16 @@ router.get('/tablainventario',adminController.tablainventario);
 //rutas de vales
 router.get('/listadopersonal',adminController.listadopersonal); //visualizar los vales del personal
 router.put('/darBaja/:folio', adminController.darBajaVale); //dar de baja un vale
+router.get('/inventario-disponible', adminController.inventarioDisponible); //ver inventario disponible
+router.post('/agregar-equipos/:folio', adminController.agregarEquipos); //agregar equipos al vale
+router.get('/equipos-asignados/:folio', adminController.equiposAsignados); //obtener equipos asignados
+router.post('/remover-equipos/:folio', adminController.removerEquipos); //remover equipos del vale
+router.post('/crear-vale', adminController.crearVale); // crear vales
+router.get('/colaboradores-sin-vale', adminController.obtenerColaboradoresSinVale) //jalar los colaboradores sin vale
 
 //rutas de los vales
 router.get('/addvales',adminController.addvales);
 router.post('/addvales',adminController.addvales2);
-
 
 //rutas de mantenimiento
 router.get('/registroma',adminController.registroMA); //lista de mantenimientos autonomos (realizados)

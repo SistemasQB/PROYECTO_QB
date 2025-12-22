@@ -90,6 +90,9 @@ body {
 /* Search */
 .search-container {
     margin-bottom: 2rem;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
 }
 
 .search-box {
@@ -119,6 +122,54 @@ body {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.btn-crear-vale {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+/* Dropdown colaboradores  */
+.custom-select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    color: #111827;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+
+    /* Flecha personalizada */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='gray'%3E%3Cpath d='M5.25 7.5L10 12.25L14.75 7.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.custom-select:hover {
+    border-color: #9ca3af;
+}
+
+.custom-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.custom-select option {
+    padding: 8px;
+}
+
+.btn-crear-vale:hover {
+    background-color: #1558b0;
 }
 
 /* Grid */
@@ -509,6 +560,130 @@ body {
 
 #cancelarBaja {
     padding: 10px 25px;
+}
+
+/* lista de asignar equipos */
+.equipos-lista {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+    padding: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.equipo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.2s ease;
+}
+
+.equipo-item:hover {
+    background: #eef2ff; 
+    border-color: #c7d2fe;
+}
+
+.equipo-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+/* Título dentro del modal */
+.modal-body h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+    align-items: center;
+    
+}
+
+/* Párrafos */
+.modal-body p {
+    font-size: 0.875rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+/* Botones del modal */
+.modal-buttons-agregar {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+/* Botón cancelar */
+#cancelarAgregar {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#cancelarAgregar:hover {
+    background: #f3f4f6;
+}
+
+/* Botón aceptar */
+#aceptarAgregar {
+    padding: 0.5rem 1rem;
+    background: #2563eb;
+    border-radius: 0.375rem;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#aceptarAgregar:hover {
+    background: #1d4ed8;
+}
+
+.equipos-lista::-webkit-scrollbar {
+    width: 8px;
+}
+
+.equipos-lista::-webkit-scrollbar-thumb {
+    background: #cfcfcf;
+    border-radius: 4px;
+}
+
+.equipos-lista::-webkit-scrollbar-thumb:hover {
+    background: #b5b5b5;
+}
+
+#aceptarRemover {
+    padding: 0.5rem 1rem;
+    background: #2563eb;
+    border-radius: 0.375rem;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#aceptarCrear {
+    padding: 0.5rem 1rem;
+    background: #2563eb;
+    border-radius: 0.375rem;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#cancelarCrear {
+     background: white;
+     border-radius: 0.375rem;
 }
 
 .modal-buttons {
