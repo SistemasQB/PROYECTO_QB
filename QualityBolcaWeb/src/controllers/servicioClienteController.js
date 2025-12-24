@@ -2,6 +2,7 @@ import sequelizeClase from "../public/clases/sequelize_clase.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import barrilModelosServicioCliente from "../models/servicioCliente/barrilModelosServicioCliente.js";
 import modelosInfraestructura from "../models/infraestructura/barril_modelo_compras.js";
+import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import { Op } from "sequelize";
 
 const controllerServicioCliente = {}
@@ -25,9 +26,12 @@ controllerServicioCliente.crudHorasCobro = async(req, res) => {
     delete campos._csrf
     delete campos.tipo
     delete campos.id
-    let clase =new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro})
+    let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
+    let  datosUsuario = await clase.obtener1Registro({criterio: {codigoempleado: req.usuario.codigoempleado}})
+    clase =new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro})
     switch (tipo){
         case "insert":
+            campos.cotizadora = datosUsuario.nombrelargo
             let respuesta = await clase.insertar({datosInsertar: campos})
             if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
             return res.json({ok: respuesta, msg: 'informacion enviada exitosamente'})

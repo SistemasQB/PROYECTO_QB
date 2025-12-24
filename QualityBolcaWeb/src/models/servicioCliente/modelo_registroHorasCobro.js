@@ -26,9 +26,9 @@ const modelo_registroHorasCobro = db.define(
             defaultValue: "sin definir",
         },
         gasto: {
-            type: DataTypes.STRING(150),
+            type: DataTypes.JSON,
             allowNull: false,
-            defaultValue: "sin definir",
+            defaultValue: [],
         },
         horas:{
             type: DataTypes.DECIMAL(10,2),
@@ -45,10 +45,34 @@ const modelo_registroHorasCobro = db.define(
             allowNull: false,
             defaultValue: "sin definir",
         },
+        region: {
+            type: DataTypes.STRING(70),
+            allowNull: false,
+            defaultValue: "No especificado",
+        },
         estatus: {
             type: DataTypes.STRING(50),
             allowNull: false,
             defaultValue: "INGRESADO",
+        },
+        semana: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        cotizacion:{
+            type: DataTypes.STRING(20),
+            allowNull: false,
+            defaultValue: "sin definir",
+        },
+        cotizadora:{
+            type: DataTypes.STRING(200),
+            allowNull: false,
+            defaultValue: "sin definir",
+        },
+        gastoCotizado:{
+            type: DataTypes.DECIMAL,
+            allowNull: false,
+            defaultValue: 0.00,
         }
         
     },

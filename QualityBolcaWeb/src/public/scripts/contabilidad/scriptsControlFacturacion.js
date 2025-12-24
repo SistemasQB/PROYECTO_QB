@@ -121,7 +121,7 @@ function handleStatusFilter(e) {
 
 // Filtrar facturas
 function getFilteredInvoices() {
-  return invoices.filter((invoice) => {
+  return facturas.filter((invoice) => {
     const matchesSearch =
       invoice.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -181,9 +181,8 @@ function getPaymentStatusText(status) {
 }
 
 // Renderizar tabla
-function renderTable() {
+function renderTable(invoices = facturas) {
   const filteredInvoices = getFilteredInvoices()
-
   // Actualizar contador
   invoiceCount.textContent = `${filteredInvoices.length} facturas`
 

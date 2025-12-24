@@ -1,31 +1,31 @@
 class MaterialManager {
   constructor() {
-    this.materials = [
-      {
-        id: "1",
-        partNumber: "MT-001",
-        description: "Tornillo hexagonal M8x20",
-        finalProducts: ["PF-100", "PF-102"],
-        client: "Industrias ABC",
-      },
-      {
-        id: "2",
-        partNumber: "MT-002",
-        description: "Arandela plana 8mm",
-        finalProducts: ["PF-100"],
-        client: "Manufacturas XYZ",
-      },
-      {
-        id: "3",
-        partNumber: "MT-003",
-        description: "Tuerca hexagonal M8",
-        finalProducts: ["PF-101", "PF-102"],
-        client: "Industrias ABC",
-      },
-    ]
+    // this.materials = [
+    //   {
+    //     id: "1",
+    //     partNumber: "MT-001",
+    //     description: "Tornillo hexagonal M8x20",
+    //     finalProducts: ["PF-100", "PF-102"],
+    //     client: "Industrias ABC",
+    //   },
+    //   {
+    //     id: "2",
+    //     partNumber: "MT-002",
+    //     description: "Arandela plana 8mm",
+    //     finalProducts: ["PF-100"],
+    //     client: "Manufacturas XYZ",
+    //   },
+    //   {
+    //     id: "3",
+    //     partNumber: "MT-003",
+    //     description: "Tuerca hexagonal M8",
+    //     finalProducts: ["PF-101", "PF-102"],
+    //     client: "Industrias ABC",
+    //   },
+    // ]
 
-    this.finalProductOptions = ["PF-100", "PF-101", "PF-102", "PF-103", "PF-104", "PF-105"]
-    this.selectedProducts = []
+    // this.finalProductOptions = ["PF-100", "PF-101", "PF-102", "PF-103", "PF-104", "PF-105"]
+    // this.selectedProducts = []
 
     this.init()
   }

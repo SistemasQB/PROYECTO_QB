@@ -1,7 +1,6 @@
 
 
     function envioJson(link, cuerpo, destino){
-        console.log(`el link es ${link},  el cuerpo es ${JSON.stringify(cuerpo)} y el destino es ${destino}`);
     Swal.fire({
         title: 'Procesando...',
         html: '<div class="spinner"></div>',

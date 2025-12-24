@@ -1,6 +1,8 @@
+
 // Configuración
 const STORAGE_KEY = "quotation_form_draft"
 const SAVE_DELAY = 1000 // 1 segundo
+const listadoGastos =[]
 
 // Referencias del DOM
 const form = document.getElementById("quotationForm")
@@ -12,6 +14,9 @@ const fields = {
   responsable: document.getElementById("responsable"),
   gasto: document.getElementById("gasto"),
   horas: document.getElementById("horas"),
+  region: document.getElementById("region"),
+  cotizacion: document.getElementById("cotizacion"),
+  gastoCotizado: document.getElementById("gastoCotizado"),
 }
 
 const submitBtn = document.getElementById("submitBtn")
@@ -28,9 +33,24 @@ let errors = {}
 // Inicialización
 document.addEventListener("DOMContentLoaded", () => {
   loadSavedData()
+  renderPlantas()
   attachEventListeners()
+  fields.gasto.addEventListener("change", (e)=>cambio(e))
 })
+function cambio(e){
+  let valor = e.target.value
+  let et = document.getElementById('listadoGastos')
+  if(!valor) return
+  if(listadoGastos.includes(valor)){
+    listadoGastos.splice(listadoGastos.indexOf(valor), 1)
+    et.innerText = listadoGastos.map((gasto) => gasto).join(', ')
+    return
+  }
+  listadoGastos.push(valor)
+  et.innerText = listadoGastos.map((gasto) => gasto).join(', ')
+  
 
+}
 // Cargar datos guardados del localStorage
 function loadSavedData() {
   const savedData = localStorage.getItem(STORAGE_KEY)
@@ -64,13 +84,12 @@ function attachEventListeners() {
 // Manejar cambios en campos
 function handleFieldChange(e) {
   const fieldName = e.target.name
-
+  
   // Limpiar error del campo
   if (errors[fieldName]) {
     delete errors[fieldName]
     clearFieldError(fieldName)
   }
-
   // Guardar automáticamente con delay
   clearTimeout(saveTimeout)
   saveTimeout = setTimeout(() => {
@@ -94,6 +113,7 @@ function saveFormData() {
 
 // Validar formulario
 function validateForm() {
+  
   errors = {}
 
   if (!fields.fecha.value.trim()) {
@@ -111,14 +131,24 @@ function validateForm() {
   if (!fields.responsable.value.trim()) {
     errors.responsable = "El responsable es requerido"
   }
-  if (!fields.gasto.value) {
-    errors.gasto = "Debe seleccionar un tipo de gasto"
+  if (listadoGastos.length === 0) {
+    errors.gasto = "Debe seleccionar al menos un tipo de gasto"
   }
   if (!fields.horas.value || Number.parseFloat(fields.horas.value) <= 0) {
     errors.horas = "Las horas deben ser mayor a 0"
   }
+  if (!fields.region.value ) {
+    errors.region = "la region es requerida"
+  }
+  if(!fields.cotizacion.value){
+    errors.cotizacion = "la cotizacion es requerida"
+  }
+  if(!fields.gastoCotizado.value || Number.parseFloat(fields.gastoCotizado.value) <= 0){
+    errors.gastoCotizado = "el gasto cotizado es requerido"
+  }
 
   // Mostrar errores en el formulario
+  
   Object.entries(errors).forEach(([field, message]) => {
     showFieldError(field, message)
   })
@@ -168,15 +198,15 @@ async function handleSubmit(e) {
 
   try {
     // Obtener datos del formulario
+    
+    delete fields.gasto
     const formData = {}
     Object.entries(fields).forEach(([key, field]) => {
       formData[key] = field.value
     })
-
+    formData.gasto = listadoGastos
     formData.tipo = "insert"
     formData._csrf = tok
-    console.log("Datos enviados:", formData)
-
      await envioJson("crudHorasCobro", formData,"formularioHorasCobro")
 
     // // Limpiar localStorage después de envío exitoso
@@ -188,7 +218,7 @@ async function handleSubmit(e) {
     // // Reestablecer estado después de 4 segundos
     
   } catch (error) {
-    console.error("Error al enviar:", error)
+    
     showErrorAlert("Error al enviar el formulario. Intente nuevamente.")
   } finally {
     // Reestablecer botón
@@ -230,4 +260,12 @@ function showErrorAlert(message) {
 // Cerrar alerta
 function closeAlert(alertId) {
   document.getElementById(alertId).style.display = "none"
+}
+function renderPlantas(){
+    let inputPlantas = document.getElementById('planta')
+    let html = '<option value="">Seleccionar planta</option>'
+    plantas.forEach(planta => {
+        html += `<option value="${planta.planta}">${planta.planta}</option>`
+    });
+    inputPlantas.innerHTML = html
 }

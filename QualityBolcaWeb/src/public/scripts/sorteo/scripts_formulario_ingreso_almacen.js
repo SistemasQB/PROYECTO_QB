@@ -1,15 +1,13 @@
+let partidas = []
+let tabla = document.getElementById('partidasBody');
 
 document.addEventListener("DOMContentLoaded", () => {
   renderizarContenido()
 })
 
-function renderizarContenido(){
-    let tabla = document.getElementById('partidasBody');
-    
+function renderizarContenido(){    
     let partidasTotales = JSON.parse(embarque.partidas)
-    
     let partidas = partidasTotales.map((p) => {
-        
         return `
             <tr>
                 <td><input type="date" class="table-input" value="${p.fecha}"></td>
@@ -64,5 +62,25 @@ function renderizarContenido(){
     // firmaRecibe.style.backgroundSize = 'cover'
     // firmaRecibe.style.backgroundRepeat = 'no-repeat';
     // firmaRecibe.style.backgroundPosition = 'center';
+}
+
+function aceptar(){
+  let filas = document.getElementById('partidasBody')
+  let totales = []
+  for (row in filas.rows){
+     let inputs = filas.rows[row].querySelectorAll('input')
+     let partida = {
+       fecha: inputs[0].value,
+       numeroParte: inputs[1].value,
+       descripcion: inputs[2].value,
+       numeroCajas: inputs[3].value,
+       cantidadPiezas: inputs[4].value,
+       totalConcatenado: inputs[5].value,
+       totalMultiplicado: inputs[6].value
+     }
+     totales.push(partida)
+     
+  }
+
 }
 

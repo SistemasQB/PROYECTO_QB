@@ -389,6 +389,8 @@ controller.crudAuditorias = async(req, res) => {
             if (!actualizacion) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
             return res.json({ok: true, msg: 'la auditoria fue actualizada exitosamente'})
         case 'delete':
+            let eliminacion = await clase.eliminar({id: id})
+            if (!eliminacion) return res.json({ok: false, msg: 'no se pudo eliminar la informacion'})
             return res.json({ok: true, msg: 'la auditoria fue eliminada exitosamente'})
     }
 }

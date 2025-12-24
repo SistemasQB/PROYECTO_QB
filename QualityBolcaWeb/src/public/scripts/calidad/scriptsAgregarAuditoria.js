@@ -379,9 +379,7 @@ function guardarAuditorias() {
 // Eliminar auditoría
 function eliminarAuditoria(id) {
   if (confirm("¿Está seguro de que desea eliminar esta auditoría?")) {
-    auditorias = auditorias.filter((auditoria) => auditoria.id !== id)
-    guardarAuditorias()
-    renderizarAuditorias()
+    envioJson('crudAuditorias', {id: id, tipo: 'delete', _csrf: tok}, 'agregarAuditoria')
   }
 }
 

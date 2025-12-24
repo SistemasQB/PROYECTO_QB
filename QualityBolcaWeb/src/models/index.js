@@ -52,14 +52,18 @@ import modelosSistemas from './sistemas/barril_modelos_sistemas.js';
 
 
 // Configuración de Sequelize
-const sequelize = new Sequelize('informacionQB', 'admin', '8646559a', {
-  host: '86.38.218.253',
-  dialect: 'mariadb' // o el dialecto que estés utilizando
-});
-const qb = new Sequelize(process.env.BD_NOMBRE, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: 'mariadb'})
-const compras = new Sequelize(process.env.BD_COMPRAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: 'mariadb'})
-const calidad = new Sequelize(process.env.BD_CALIDAD, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: 'mariadb'})
-const sistemas = new Sequelize(process.env.BD_SISTEMAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: 'mariadb'})
+// const conexiones = {
+//   informacion: conexion('informacionQB'),
+//   qb: conexion(process.env.BD_NOMBRE),
+//   compras: conexion(process.env.BD_COMPRAS),
+//   calidad: conexion(process.env.BD_CALIDAD),
+//   sistemas: conexion(process.env.BD_SISTEMAS)
+// }
+const sequelize = new Sequelize('informacionQB', process.env.BD_USER, process.env.BD_PASS, {host: process.env.BD_HOST,dialect: process.env.BD_DIALECT});
+const qb = new Sequelize(process.env.BD_NOMBRE, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
+const compras = new Sequelize(process.env.BD_COMPRAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
+const calidad = new Sequelize(process.env.BD_CALIDAD, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
+const sistemas = new Sequelize(process.env.BD_SISTEMAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
 
 // Definir asociaciones
 // Comunicacion.belongsTo(Gch_Alta, { foreignKey: 'curp', targetKey: 'id' });
@@ -77,6 +81,7 @@ informacionpuesto.hasOne(informaciongch, { foreignKey: 'idpuesto', sourceKey: 'i
 // Vales.hasOne(Inventario, { foreignKey: 'folio', sourceKey: 'idFolio' });
 
 // Sincronizar la base de datos
+
 (async () => {
   try {
     await sequelize.sync({ force: true });
@@ -141,3 +146,7 @@ export {
   modelosInfraestructura,
   modelosSistemas
 };
+
+function conexion(db){
+  return new Sequelize(db, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
+}

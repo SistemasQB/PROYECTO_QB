@@ -224,8 +224,6 @@ controller.lote2 = async (req, res) => {
 }
 
 controller.controldepiezas = async (req, res) => {
-
-
     const rCotizacionesCC1 = await CotizacionesCC1.findAll({attributes: ['id','numeroCotizacion','numeroParte']});
     const rPersonalCC1 = await PersonalCC1.findAll({attributes: ['id','nombreInspector']});
 
@@ -255,7 +253,11 @@ controller.secciones2 = (req, res) => {
     res.render('admin/sorteo/cc1/secciones');
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+controller.inicio = (req, res)=>{
+    res.render('admin/sorteo/inicio.ejs')
+}
 //controlador de entrega de material (cliente) ----------------------------------------------------------
 controller.entregaMaterial = async (req, res)=>{
     let token = req.csrfToken()
@@ -347,7 +349,6 @@ controller.adminAlmacen = async (req, res)=>{
 controller.puntoEntrada = async (req, res)=>{
     let tok = req.csrfToken()
     let id = req.params.id;
-    console.log(`el id de consulta es ${id}`)
     let clase = new sequelizeClase({modelo: modelosSorteo.modeloEdgewell})
     let criterios = {id:id}
     let embarquito = await clase.obtener1Registro({criterio :criterios})

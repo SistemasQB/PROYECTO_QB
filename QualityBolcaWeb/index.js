@@ -7,20 +7,21 @@ import { dirname } from 'path';
 import { PORT, SECRET_JWT_KEY } from "./src/config.js";
 import dbs from "./src/config/barril_dbs.js";
 import cors from "cors";
+import routers from "./src/routes/barrilRouters.js";
 
 // import mariadb from "mariadb";
-import { default as customerRoutes } from "./src/routes/userRoutes.js";
-import { default as adminRoutes } from "./src/routes/adminRoutes.js";
-import { default as allRoutes } from "./src/routes/allRoutes.js";
-import { default as sistemasRoutes } from "./src/routes/sistemasRoutes.js";
-import { default as sorteoRoutes } from "./src/routes/sorteoRoutes.js";
-import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
-import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
-import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
-import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
-import {default as infraestructuraRouter} from "./src/routes/infraestructuraRouter.js";
-import routerContabilidad from "./src/routes/contabilidadRoutes.js";
-import routerServicioCliente from "./src/routes/servicioClienteRoutes.js";
+// import { default as customerRoutes } from "./src/routes/userRoutes.js";
+// import { default as adminRoutes } from "./src/routes/adminRoutes.js";
+// import { default as allRoutes } from "./src/routes/allRoutes.js";
+// import { default as sistemasRoutes } from "./src/routes/sistemasRoutes.js";
+// import { default as sorteoRoutes } from "./src/routes/sorteoRoutes.js";
+// import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
+// import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
+// import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
+// import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
+// import {default as infraestructuraRouter} from "./src/routes/infraestructuraRouter.js";
+// import routerContabilidad from "./src/routes/contabilidadRoutes.js";
+// import routerServicioCliente from "./src/routes/servicioClienteRoutes.js";
 
 import {
   Controlpiezas,
@@ -44,17 +45,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 //Habilitar cookie parser
 app.use( cookieParser() )
-
-//Habilitar CSRF
-
-// app.use( csurf({cookie: true}))
-
-// app.use(csrfProtection); // Aplicado a todo
-
-// Middleware CSRF usando cookies
-// export const csrfProtection = csrf({ cookie: true });
-
-
 
 //conexion a la base de datos
 try {
@@ -102,7 +92,6 @@ const {piezasOK, piezasNG, mesas} = req.body;
 let fecha = new Date();
 fecha.setHours(fecha.getHours() - 6);
 
-// console.log(piezas, mesas, fecha);
 try {
   await Controlpiezas.create({
     piezasOK,
@@ -141,19 +130,33 @@ app.post('/sorteo/cc1/controldepiezas2',async (req, res) =>{
   }
   })
 
+// app.use('/',csrfProtection, customerRoutes);
+// app.use('/admin',csrfProtection, adminRoutes);
+// app.use('/all',csrfProtection, allRoutes);
+// app.use('/sistemas',csrfProtection, sistemasRoutes);
+// app.use('/calidad',csrfProtection, calidadRoutes);
+// app.use('/atraccion',csrfProtection, atraccionRoutes);
+// app.use('/capitalhumano',csrfProtection, capitalhumanoRoutes);
+// app.use('/sorteo',csrfProtection, sorteoRoutes);
+// app.use('/nominas',csrfProtection, nominasRoutes);
+// app.use('/infraestructura', csrfProtection,infraestructuraRouter);
+// app.use('/contabilidad',  csrfProtection,routerContabilidad);
+// app.use('/servicioCliente',  csrfProtection,routerServicioCliente);
+// app.use('/rentabilidad',csrfProtection, rentabilidadRoutes);
 
-app.use('/',csrfProtection, customerRoutes);
-app.use('/admin',csrfProtection, adminRoutes);
-app.use('/all',csrfProtection, allRoutes);
-app.use('/sistemas',csrfProtection, sistemasRoutes);
-app.use('/calidad',csrfProtection, calidadRoutes);
-app.use('/atraccion',csrfProtection, atraccionRoutes);
-app.use('/capitalhumano',csrfProtection, capitalhumanoRoutes);
-app.use('/sorteo',csrfProtection, sorteoRoutes);
-app.use('/nominas',csrfProtection, nominasRoutes);
-app.use('/infraestructura', csrfProtection,infraestructuraRouter);
-app.use('/contabilidad',  csrfProtection,routerContabilidad);
-app.use('/servicioCliente',  csrfProtection,routerServicioCliente);
+app.use('/',csrfProtection, routers.userRouters);
+app.use('/admin',csrfProtection, routers.adminRouters);
+app.use('/all',csrfProtection, routers.routerAll);
+app.use('/sistemas',csrfProtection, routers.sistemasRouters);
+app.use('/calidad',csrfProtection, routers.calidadRouters);
+app.use('/atraccion',csrfProtection, routers.atraccionRouters);
+app.use('/capitalhumano',csrfProtection, routers.capitalHumanoRouters);
+app.use('/sorteo',csrfProtection, routers.sorteoRouters);
+app.use('/nominas',csrfProtection, routers.nominasRouters);
+app.use('/infraestructura', csrfProtection,routers.infraestructuraRouters);
+app.use('/contabilidad',  csrfProtection,routers.contabilidadRouters);
+app.use('/servicioCliente',  csrfProtection,routers.servicioClienteRouters);
+app.use('/rentabilidad',csrfProtection, routers.rentabilidadRouters);
 app.use(express.json());
 
 app.listen(PORT, () => {

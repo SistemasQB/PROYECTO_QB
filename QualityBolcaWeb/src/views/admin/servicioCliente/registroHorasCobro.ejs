@@ -102,11 +102,7 @@
                                     <span class="required">*</span>
                                 </label>
                                 <select id="planta" name="planta" class="select">
-                                    <option value="">Seleccionar planta</option>
-                                    <option value="Planta A">Planta A</option>
-                                    <option value="Planta B">Planta B</option>
-                                    <option value="Planta C">Planta C</option>
-                                    <option value="Planta D">Planta D</option>
+                                    
                                 </select>
                                 <span class="error-message" id="error-planta"></span>
                             </div>
@@ -118,15 +114,16 @@
                                 </label>
                                 <select id="gasto" name="gasto" class="select">
                                     <option value="">Seleccionar tipo de gasto</option>
-                                    <option value="Operativo">Operativo</option>
-                                    <option value="Mantenimiento">Mantenimiento</option>
-                                    <option value="Capacitación">Capacitación</option>
-                                    <option value="Otro">Otro</option>
+                                    <option value="Gasolina">Gasolina</option>
+                                    <option value="Hospedaje">Hospedaje</option>
+                                    <option value="Otros">Otros</option>
+                                    <option value="Transporte">Transporte</option>
+                                    <option value="Viaticos">Viaticos</option>
                                 </select>
                                 <span class="error-message" id="error-gasto"></span>
+                                <span class="card-description" id="listadoGastos"></span>
                             </div>
                         </div>
-
                         <!-- Fila 4: Horas -->
                         <div class="form-row">
                             <div class="form-group">
@@ -140,13 +137,58 @@
                                     name="horas"
                                     placeholder="0"
                                     min="0"
-                                    step="0.5"
+                                    step="0.01"
                                     class="input"
                                 >
                                 <span class="error-message" id="error-horas"></span>
                             </div>
-                        </div>
+                            <!-- input de region -->
+                            <div class="form-group">
+                                <label for="region" class="label">
+                                    Region
+                                    <span class="required">*</span>
+                                </label>
+                                <select id="region" name="region" class="select" >
+                                    <option value="">Seleccionar region</option>
+                                    <option value="Aguascalientes">Aguascalientes</option>
+                                    <option value="CD.Juares">Cd. Juares</option>
+                                    <option value="CD.Victoria">Cd. Victoria</option>
+                                    <option value="Celaya">Celaya</option>
+                                    <option value="Guadalajara">Guadalajara</option>
+                                    <option value="Honda">Honda</option>
+                                    <option value="León">León</option>
+                                    <option value="Linares">Linares</option>
+                                    <option value="Monterrey">Monterrey</option>
+                                    <option value="Queretaro">Queretaro</option>
+                                    <option value="Reynosa">Reynosa</option>
+                                    <option value="San Luis">San Luis</option>
+                                    <option value="Saltillo">Saltillo</option>
+                                    <option value="Silao">Silao</option>
+                                    <option value="Toluca">Toluca</option>
+                                    <option value="Zacatecas">Zacatecas</option>
+                                </select>
+                                <span class="error-message" id="error-region"></span>
+                            </div>
+                            <!-- input de cotizacion -->
+                            <div class="form-group">
+                                <label for="cotizacion" class="label">
+                                    Cotizacion
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="text" id="cotizacion" name="cotizacion" placeholder="ingrese cotizacion completa" class="input">
+                                <span class="error-message" id="error-cotizacion"></span>
+                            </div>
+                            <!-- input de total -->
+                            <div class="form-group">
+                                <label for="gastoCotizado" class="label">
+                                    Gasto Cotizado
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="number" id="gastoCotizado" name="gastoCotizado" placeholder="0" min="0" step="0.01" class="input">
+                                <span class="error-message" id="error-gastoCotizado"></span>
+                            </div>
 
+                        </div>
                         <!-- Botones -->
                         <div class="form-buttons">
                             <button type="submit" id="submitBtn" class="btn btn-primary">
