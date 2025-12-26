@@ -99,11 +99,7 @@ function createEquipmentItemHTML(item, index) {
                     <input type="number" class="input-field" min="1" value="${item.quantity}" onchange="updateEquipmentItem('${item.id}', 'quantity', this.value)">
                 </div>
 
-                <div class="form-group">
-                    <label>Fecha Esperada de Llegada *</label>
-                    <input type="date" class="input-field" value="${item.expectedDate}" onchange="updateEquipmentItem('${item.id}', 'expectedDate', this.value)">
-                    <span class="error-message" id="error-item-${item.id}-expectedDate"></span>
-                </div>
+                
             </div>
 
             <div class="form-group" style="margin-top: 1rem;">
@@ -118,6 +114,11 @@ function createEquipmentItemHTML(item, index) {
             </div>
         </div>
     `;
+    // <div class="form-group">
+    //                 <label>Fecha Esperada de Llegada *</label>
+    //                 <input type="date" class="input-field" value="${item.expectedDate}" onchange="updateEquipmentItem('${item.id}', 'expectedDate', this.value)">
+    //                 <span class="error-message" id="error-item-${item.id}-expectedDate"></span>
+    //             </div>
 }
 
 // Add Equipment Item
@@ -200,8 +201,9 @@ function updateSummary() {
 
 // Update Progress
 function updateProgress() {
+    console.log(formState)
     let completedFields = 0;
-    let totalFields = 4 + (formState.items.length * 3); // 4 requester fields + 3 required fields per item
+    let totalFields = 4 + (formState.items.length * 4); // 4 requester fields + 3 required fields per item
 
     if (formState.requesterName) completedFields++;
     if (formState.department) completedFields++;
@@ -210,8 +212,10 @@ function updateProgress() {
 
     formState.items.forEach(item => {
         if (item.equipment) completedFields++;
-        if (item.expectedDate) completedFields++;
+        // if (item.expectedDate) completedFields++;
+        if (item.description) completedFields++;
         if (item.justification) completedFields++;
+        if (item.quantity) completedFields++;
     });
 
     const progress = totalFields === 0 ? 0 : Math.round((completedFields / totalFields) * 100);
@@ -252,10 +256,10 @@ function validateForm() {
                 setError(`item-${item.id}-equipment`, 'Seleccione equipo');
                 isValid = false;
             }
-            if (!item.expectedDate) {
-                setError(`item-${item.id}-expectedDate`, 'Fecha requerida');
-                isValid = false;
-            }
+            // if (!item.expectedDate) {
+            //     setError(`item-${item.id}-expectedDate`, 'Fecha requerida');
+            //     isValid = false;
+            // }
             if (!item.justification.trim()) {
                 setError(`item-${item.id}-justification`, 'Justificación requerida');
                 isValid = false;
