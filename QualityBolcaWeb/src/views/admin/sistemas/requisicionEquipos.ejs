@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Requisición de Equipos</title>
     <link rel="stylesheet" href="/styles/sistemas/styles_requisicionEquipos.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <main class="main-container">
@@ -125,8 +126,10 @@
     </main>
 
     <script src="/scripts/sistemas/scriptsRequisicionEquipos.js"></script>
+    <script src="/clases/clase_fetch.js"></script>
     <script>
         let informacion = <%-JSON.stringify(info)%>
+        let tok = <%-JSON.stringify(tok)%>
     </script>
 </body>
 </html>

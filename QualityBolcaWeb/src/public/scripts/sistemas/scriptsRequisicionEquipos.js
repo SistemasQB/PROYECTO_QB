@@ -65,6 +65,7 @@ emailInput.addEventListener('input', (e) => {
 phoneInput.addEventListener('input', (e) => {
     formState.phone = e.target.value;
     clearError('phone');
+    updateSummary();
 });
 
 // Add Equipment Button
@@ -105,6 +106,7 @@ function createEquipmentItemHTML(item, index) {
             <div class="form-group" style="margin-top: 1rem;">
                 <label>Descripción Detallada</label>
                 <textarea class="textarea-field" placeholder="Especifique más detalles sobre lo solicitado (modelo, especificaciones, accesorios, etc.)" onchange="updateEquipmentItem('${item.id}', 'description', this.value)">${item.description}</textarea>
+                <span class="error-message" id="error-item-${item.id}-description"></span>
             </div>
 
             <div class="form-group" style="margin-top: 1rem;">
@@ -129,9 +131,9 @@ function addEquipmentItem() {
         quantity: 1,
         description: '',
         justification: '',
-        expectedDate: ''
+        surtido: false
     };
-
+    
     formState.items.push(newItem);
     renderEquipmentList();
     updateSummary();
@@ -201,7 +203,6 @@ function updateSummary() {
 
 // Update Progress
 function updateProgress() {
-    console.log(formState)
     let completedFields = 0;
     let totalFields = 4 + (formState.items.length * 4); // 4 requester fields + 3 required fields per item
 
@@ -264,6 +265,11 @@ function validateForm() {
                 setError(`item-${item.id}-justification`, 'Justificación requerida');
                 isValid = false;
             }
+            if (!item.description.trim()) {
+                alert('hola')   
+                setError(`item-${item.id}-description`, 'descripcion requerida');
+                isValid = false;
+            }
         });
     }
 
@@ -297,19 +303,17 @@ function clearAllErrors() {
 // Handle Submit
 function handleSubmit() {
     if (validateForm()) {
-        console.log('Formulario válido:', formState);
-        alert('¡Requisición enviada exitosamente!');
-        // Here you would typically send the data to a server
-        // resetForm();
+        formState.tipo = 'insert'
+        formState._csrf = tok
+        formState.status = 'En Proceso'
+        envioJson('crudRequisicionEquipos', formState, 'requisicionEquipos')
     } else {
         alert('Por favor, completa todos los campos requeridos.');
     }
 }
-
 // Initialize
 renderEquipmentList();
 updateSummary();
-
 
 document.addEventListener('DOMContentLoaded', (e) => {
     cargarInfo()

@@ -4,21 +4,17 @@ import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import Empleados from "../models/empleado.js";
+import manejadrorErrores from "../middleware/manejadorErrores.js";
 
 
 import {
     registroma,
-    informaciongch,
-    informacionpuesto,
     Inventario,
     Solicitudservicio,
-    Vales,
-    Departamentos
+    Vales
 } from "../models/index.js";
 
-import { Op, QueryTypes } from 'sequelize'
-import { applyOffset } from "@formkit/tempo";
-
+import {  QueryTypes } from 'sequelize'
 
 const app = express();
 
@@ -331,10 +327,48 @@ controller.requisicionEquipos =async (req, res)=>{
             departamento: empleado.descripcion,
             email: datosEmpleado.correoelectronico
         }
-        return res.render('admin/sistemas/requisicionEquipos.ejs', {info: datos})    
-    } catch (error) {
-        console.log(error)
+        return res.render('admin/sistemas/requisicionEquipos.ejs', {info: datos, tok: req.csrfToken()})    
+    } catch (error) {   
+        manejadrorErrores(res, error)
     }
     
+}
+
+controller.administracionRequisicionEquipos = async(req, res) => {
+    try {
+        const clase = new sequelizeClase({modelo: modelosSistemas.requisicionEquipos})
+        const resultados = await clase.obtenerDatosPorCriterio({criterio: {}, orden: [['status', 'DESC']]})
+        return res.render('admin/sistemas/administracionRequisicionesEquipos.ejs', {tok: req.csrfToken(), registros: resultados})
+    } catch (error) {
+        manejadrorErrores(res, error)
+        
+    }
+}
+
+controller.CrudRequisicionEquipos = (req, res) => {
+    try {
+        const {tipo } = req.body
+        let campos = req.body
+        delete campos.tipo
+        let clase = new sequelizeClase({modelo: modelosSistemas.requisicionEquipos})
+        switch (tipo) {
+            case 'insert':
+                let resultado = clase.insertar({datosInsertar: campos})
+                if (!resultado) return res.json({ok: false, msg: 'no se pudo realizar la requisicion'})
+                return res.json({ok: true, msg: 'requisicion realizada exitosamente'})
+            case 'delete':
+                let eliminacion = clase.eliminar({id: campos.id})
+                if (!eliminacion) return res.json({ok: false})
+                return res.json({ok: true})
+            case 'update':
+                let actualizacion = clase.actualizarDatos({id: campos.id, datos: campos})
+                if (!actualizacion) return res.json({ok: false})
+                return res.json({ok: true})
+        }
+        
+    } catch (error) {
+        manejadrorErrores(res, error)
+        
+    }
 }
 export default controller;

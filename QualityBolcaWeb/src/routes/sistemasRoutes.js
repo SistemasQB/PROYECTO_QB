@@ -38,7 +38,9 @@ router.get('/mantenimientoautonomo',protegetRuta,adminController.mantenimientoau
 router.get('/api/:query2',adminController.api);
 
 //rutas de requisicion de equipos
-router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos)  
+router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos)
+router.get('/adminRequisicionEquipos',protegetRuta,adminController.administracionRequisicionEquipos)
+router.post('/crudRequisicionEquipos',protegetRuta,adminController.CrudRequisicionEquipos)
 
 
 

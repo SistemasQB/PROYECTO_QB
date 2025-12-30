@@ -5,7 +5,10 @@ class sequelizeClase{
 
     constructor({modelo}){
         this.modelo = modelo
+        // this.sequelize = sequelize
+
         if (!modelo) throw new Error('se requiere el modelo')
+        // if (!sequelize) throw new Error('se requiere la instancia de sequelize')
         
     }
 
@@ -78,11 +81,18 @@ class sequelizeClase{
         if (!respuesta) return ''
         return respuesta
 }
-    async insertarquery({query}){
-        return await Sequelize.query(query,{
-            model: modelo,
-            mapToModel: true
-        })
+     async ejecutarQuery({ query, replacements = null, mapToModel = false }) {
+        try {
+            const [results] = await this.modelo.sequelize.query(query, {
+                model: mapToModel ? this.modelo : undefined,
+                mapToModel,
+                replacements,
+            });
+            return results;
+        } catch (ex) {
+            console.log(`Error en ejecutarQuery: ${ex}`);
+            return null;
+        }
     }
 }
 
