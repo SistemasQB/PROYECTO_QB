@@ -1,72 +1,16 @@
 // Datos de ejemplo
-const mockInvoices = [
-  {
-    id: "1",
-    number: "REY-1260",
-    client: "APTIV DELCO",
-    amount: 21000,
-    date: "2025-10-09",
-    dueDate: "2025-11-09",
-    status: "paid",
-    description: "DEL 1 AL 5 DE OCTUBRE",
-    payments: [
-      {
-        id: "p1",
-        amount: 21000,
-        date: "2025-10-20",
-        method: "Transferencia",
-        reference: "20251020-001",
-        status: "completed",
-      },
-      // {
-      //   id: "p2",
-      //   amount: 7500,
-      //   date: "2024-02-10",
-      //   method: "Cheque",
-      //   reference: "CHQ-002",
-      //   status: "completed",
-      // },
-    ],
-  },
-  {
-    id: "2",
-    number: "CEL-3946",
-    client: "DECOPLAS, S.A. DE C.V.",
-    amount: 25000,
-    date: "2025-05-13",
-    dueDate: "2025-05-13",
-    status: "pending",
-    description: "servicio de inspeccion",
-    payments: [
-      {
-        id: "p3",
-        amount: 12500,
-        date: "2024-01-25",
-        method: "Transferencia",
-        reference: "TRF-003",
-        status: "completed",
-      },
-    ],
-  },
-  {
-    id: "3",
-    number: "REY-1234",
-    client: "APTIV DELCO",
-    amount: 6900,
-    date: "2025-10-17",
-    dueDate: "2025-11-17",
-    status: "overdue",
-    description: "Traspaleo",
-    payments: [],
-  },
-]
 
 // Estado de la aplicación
-let invoices = [...mockInvoices]
+let invoices = []
+let filteredInvoices = []
 const expandedInvoices = new Set()
 let searchTerm = ""
 let statusFilter = "all"
 let currentContextInvoice = null
+
+let currentPage = 1
+let itemsPerPage = 50
+let currentEditInvoice = null
 
 // Elementos del DOM
 const searchInput = document.getElementById("search-input")
@@ -78,6 +22,23 @@ const deleteModal = document.getElementById("delete-modal")
 const invoiceToDelete = document.getElementById("invoice-to-delete")
 const cancelDeleteBtn = document.getElementById("cancel-delete")
 const confirmDeleteBtn = document.getElementById("confirm-delete")
+
+const itemsPerPageSelect = document.getElementById("items-per-page")
+const firstPageBtn = document.getElementById("first-page")
+const prevPageBtn = document.getElementById("prev-page")
+const nextPageBtn = document.getElementById("next-page")
+const lastPageBtn = document.getElementById("last-page")
+const currentPageSpan = document.getElementById("current-page")
+const totalPagesSpan = document.getElementById("total-pages")
+const showingFromSpan = document.getElementById("showing-from")
+const showingToSpan = document.getElementById("showing-to")
+const totalRecordsSpan = document.getElementById("total-records")
+
+const editModal = document.getElementById("edit-modal")
+const closeEditModalBtn = document.getElementById("close-edit-modal")
+const cancelEditBtn = document.getElementById("cancel-edit")
+const saveEditBtn = document.getElementById("save-edit")
+const editForm = document.getElementById("edit-invoice-form")
 
 // Importación de Lucide
 const lucide = window.lucide // Assuming Lucide is available globally
@@ -93,6 +54,19 @@ document.addEventListener("DOMContentLoaded", () => {
   cancelDeleteBtn.addEventListener("click", closeDeleteModal)
   confirmDeleteBtn.addEventListener("click", confirmDelete)
 
+  itemsPerPageSelect.addEventListener("change", handleItemsPerPageChange)
+  firstPageBtn.addEventListener("click", () => goToPage(1))
+  prevPageBtn.addEventListener("click", () => goToPage(currentPage - 1))
+  nextPageBtn.addEventListener("click", () => goToPage(currentPage + 1))
+  lastPageBtn.addEventListener("click", () => {
+    const totalPages = getTotalPages()
+    goToPage(totalPages)
+  })
+
+  closeEditModalBtn.addEventListener("click", closeEditModal)
+  cancelEditBtn.addEventListener("click", closeEditModal)
+  saveEditBtn.addEventListener("click", saveEditInvoice)
+
   // Cerrar menú contextual al hacer click fuera
   document.addEventListener("click", closeContextMenu)
 
@@ -100,6 +74,12 @@ document.addEventListener("DOMContentLoaded", () => {
   deleteModal.addEventListener("click", (e) => {
     if (e.target === deleteModal || e.target.classList.contains("modal-overlay")) {
       closeDeleteModal()
+    }
+  })
+
+  editModal.addEventListener("click", (e) => {
+    if (e.target === editModal || e.target.classList.contains("modal-overlay")) {
+      closeEditModal()
     }
   })
 
@@ -123,11 +103,11 @@ function handleStatusFilter(e) {
 function getFilteredInvoices() {
   return facturas.filter((invoice) => {
     const matchesSearch =
-      invoice.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.description.toLowerCase().includes(searchTerm.toLowerCase())
+      invoice.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.receptor.toLowerCase().includes(searchTerm.toLowerCase()) 
+      // || invoice.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesStatus = statusFilter === "all" || invoice.status === statusFilter
+    const matchesStatus = statusFilter === "all" || invoice.estatusPago === statusFilter
 
     return matchesSearch && matchesStatus
   })
@@ -135,7 +115,7 @@ function getFilteredInvoices() {
 
 // Obtener total pagado
 function getTotalPaid(payments) {
-  return payments.filter((p) => p.status === "completed").reduce((sum, p) => sum + p.amount, 0)
+  return payments.reduce((sum, p) => sum + p.conversion, 0)
 }
 
 // Formatear fecha
@@ -182,60 +162,67 @@ function getPaymentStatusText(status) {
 
 // Renderizar tabla
 function renderTable(invoices = facturas) {
-  const filteredInvoices = getFilteredInvoices()
-  // Actualizar contador
-  invoiceCount.textContent = `${filteredInvoices.length} facturas`
+  
+  const paginatedInvoices = getPaginatedInvoices()
+  const totalFiltered = getFilteredInvoices().length
+  // Actualizar contado
+   invoiceCount.textContent = `${totalFiltered} facturas`
 
   // Limpiar tabla
   invoiceTbody.innerHTML = ""
 
   // Renderizar cada factura
-  filteredInvoices.forEach((invoice) => {
+  paginatedInvoices.forEach((invoice) => {
     // Fila principal
     const row = document.createElement("tr")
     row.className = "invoice-row"
     row.dataset.invoiceId = invoice.id
-
     const isExpanded = expandedInvoices.has(invoice.id)
-    const totalPaid = getTotalPaid(invoice.payments)
-
+    
+    const pagos = JSON.parse(invoice.pago)
+    let totalPaid = 0
+    if (pagos.length > 0) {
+      invoice.pagos = pagos
+      totalPaid = getTotalPaid(pagos)
+    }
+      
     row.innerHTML = `
             <td>
                 <div class="invoice-info">
                     <i data-lucide="chevron-right" class="chevron ${isExpanded ? "expanded" : ""}"></i>
                     <div>
-                        <div class="invoice-number">${invoice.number}</div>
-                        <div class="invoice-description">${invoice.description}</div>
+                        <div class="invoice-number">${invoice.uuid}</div>
+                        <div class="invoice-description">${invoice.descripcion}</div>
                     </div>
                 </div>
             </td>
             <td>
-                <div class="font-weight-500">${invoice.client}</div>
+                <div class="font-weight-500">${invoice.receptor}</div>
             </td>
             <td>
-                <div class="font-weight-500">${formatCurrency(invoice.amount)}</div>
+                <div class="font-weight-500">${formatCurrency(invoice.total)}</div>
             </td>
             <td>
                 <div class="date-info">
                     <i data-lucide="calendar" style="width: 1rem; height: 1rem; color: var(--muted-foreground);"></i>
-                    ${formatDate(invoice.date)}
+                    ${formatDate(invoice.fechaFactura)}
                 </div>
             </td>
             <td>
                 <div class="date-info">
                     <i data-lucide="calendar" style="width: 1rem; height: 1rem; color: var(--muted-foreground);"></i>
-                    ${formatDate(invoice.dueDate)}
+                    ${formatDate(invoice.fechaFactura)}
                 </div>
             </td>
             <td>
                 <div class="status-info">
-                    <i data-lucide="${getStatusIcon(invoice.status)}" class="status-icon ${invoice.status}"></i>
-                    <span class="badge status-${invoice.status}">${getStatusText(invoice.status)}</span>
+                    <i data-lucide="${getStatusIcon(invoice.estatusPago)}" class="status-icon ${invoice.estatusPago}"></i>
+                    <span class="badge status-${invoice.estatusPago}">${getStatusText(invoice.estatusPago)}</span>
                 </div>
             </td>
             <td>
                 <div class="amount-info">${formatCurrency(totalPaid)}</div>
-                <div class="amount-secondary">de ${formatCurrency(invoice.amount)}</div>
+                <div class="amount-secondary">de ${formatCurrency(invoice.total)}</div>
             </td>
         `
 
@@ -251,15 +238,14 @@ function renderTable(invoices = facturas) {
       paymentsRow.className = "payments-row"
 
       let paymentsContent = ""
-      if (invoice.payments.length > 0) {
-        const paymentsHtml = invoice.payments
-          .map(
-            (payment) => `
+      if (typeof (invoice.pagos) === 'object'){
+        console.log('entro',invoice.pagos)
+        const paymentsHtml = invoice.pagos.map((payment) => `
                     <div class="payment-item">
                         <div class="payment-left">
                             <div class="payment-amount">
                                 <i data-lucide="dollar-sign" style="width: 1rem; height: 1rem; color: var(--primary);"></i>
-                                ${formatCurrency(payment.amount)}
+                                ${formatCurrency(payment.conversion)}
                             </div>
                             <div class="payment-details">
                                 ${payment.method} • ${payment.reference}
@@ -267,7 +253,7 @@ function renderTable(invoices = facturas) {
                         </div>
                         <div class="payment-right">
                             <div style="font-size: 0.75rem; color: var(--muted-foreground);">
-                                ${formatDate(payment.date)}
+                                ${formatDate(payment.fechaPago)}
                             </div>
                             <span class="badge status-${payment.status === "completed" ? "paid" : "pending"}">
                                 ${getPaymentStatusText(payment.status)}
@@ -282,7 +268,7 @@ function renderTable(invoices = facturas) {
                     <div class="payments-container">
                         <h4 class="payments-header">
                             <i data-lucide="credit-card" style="width: 1rem; height: 1rem;"></i>
-                            Pagos Registrados (${invoice.payments.length})
+                            Pagos Registrados (${invoice.pagos.length})
                         </h4>
                         <div>
                             ${paymentsHtml}
@@ -290,6 +276,7 @@ function renderTable(invoices = facturas) {
                     </div>
                 `
       } else {
+        console.log('no hay pagos')
         paymentsContent = `
                     <div class="payments-container">
                         <div class="no-payments">
@@ -304,16 +291,19 @@ function renderTable(invoices = facturas) {
       invoiceTbody.appendChild(paymentsRow)
     }
   })
-
+  updatePaginationInfo()
   // Reinicializar iconos de Lucide
   lucide.createIcons()
 }
 
 // Alternar expansión de factura
 function toggleExpanded(invoiceId) {
+  
   if (expandedInvoices.has(invoiceId)) {
+    console.log(`se va a ELIMINAR el id ${invoiceId}`)
     expandedInvoices.delete(invoiceId)
   } else {
+    console.log(`se va a agregar el id ${invoiceId}`)
     expandedInvoices.add(invoiceId)
   }
   renderTable()
@@ -350,7 +340,8 @@ function handleContextMenuAction(e) {
       console.log("Ver detalles de factura:", currentContextInvoice)
       break
     case "edit":
-      console.log("Editar factura:", currentContextInvoice)
+      // console.log("Editar factura:", currentContextInvoice)
+      showDeleteModal()
       break
     case "cancel":
       showDeleteModal()
@@ -389,4 +380,99 @@ function confirmDelete() {
     renderTable()
   }
   closeDeleteModal()
+}
+
+function getTotalPages() {
+  const filtered = getFilteredInvoices()
+  return Math.ceil(filtered.length / itemsPerPage)
+}
+
+function getPaginatedInvoices() {
+  const filtered = getFilteredInvoices()
+  const start = (currentPage - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filtered.slice(start, end)
+}
+
+function updatePaginationInfo() {
+  const filtered = getFilteredInvoices()
+  const totalPages = getTotalPages()
+  const start = (currentPage - 1) * itemsPerPage + 1
+  const end = Math.min(currentPage * itemsPerPage, filtered.length)
+
+  currentPageSpan.textContent = currentPage
+  totalPagesSpan.textContent = totalPages
+  showingFromSpan.textContent = filtered.length > 0 ? start : 0
+  showingToSpan.textContent = end
+  totalRecordsSpan.textContent = filtered.length
+
+  // Deshabilitar botones según la página actual
+  firstPageBtn.disabled = currentPage === 1
+  prevPageBtn.disabled = currentPage === 1
+  nextPageBtn.disabled = currentPage === totalPages || totalPages === 0
+  lastPageBtn.disabled = currentPage === totalPages || totalPages === 0
+}
+
+function goToPage(page) {
+  const totalPages = getTotalPages()
+  if (page >= 1 && page <= totalPages) {
+    currentPage = page
+    renderTable()
+  }
+}
+
+function handleItemsPerPageChange(e) {
+  itemsPerPage = Number.parseInt(e.target.value)
+  currentPage = 1
+  renderTable()
+}
+function showEditModal() {
+  const invoice = invoices.find((inv) => inv.id === currentContextInvoice)
+  if (!invoice) return
+
+  currentEditInvoice = invoice.id
+
+  // Llenar el formulario con los datos actuales
+  document.getElementById("edit-number").value = invoice.number
+  document.getElementById("edit-client").value = invoice.client
+  document.getElementById("edit-amount").value = invoice.amount
+  document.getElementById("edit-date").value = invoice.date
+  document.getElementById("edit-due-date").value = invoice.dueDate
+  document.getElementById("edit-status").value = invoice.status
+  document.getElementById("edit-description").value = invoice.description
+
+  editModal.classList.remove("hidden")
+  lucide.createIcons()
+}
+
+function closeEditModal() {
+  editModal.classList.add("hidden")
+  currentEditInvoice = null
+  editForm.reset()
+}
+
+function saveEditInvoice() {
+  if (!currentEditInvoice) return
+
+  // Obtener valores del formulario
+  const updatedInvoice = {
+    number: document.getElementById("edit-number").value,
+    client: document.getElementById("edit-client").value,
+    amount: Number.parseFloat(document.getElementById("edit-amount").value),
+    date: document.getElementById("edit-date").value,
+    dueDate: document.getElementById("edit-due-date").value,
+    status: document.getElementById("edit-status").value,
+    description: document.getElementById("edit-description").value,
+  }
+
+  // Actualizar la factura en el array
+  invoices = invoices.map((invoice) =>
+    invoice.id === currentEditInvoice ? { ...invoice, ...updatedInvoice } : invoice,
+  )
+
+  console.log("Factura actualizada:", updatedInvoice)
+
+  // Renderizar tabla y cerrar modal
+  renderTable()
+  closeEditModal()
 }

@@ -117,6 +117,11 @@ const xmls_facturacion = db.define('xmls_facturacion', {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: new Date('1980-01-01T00:00:00')
+    },
+    pago: {
+        type: DataTypes.JSON,
+        allowNull: false,
+        defaultValue: []
     }
 },
     {
