@@ -88,13 +88,13 @@ body {
   color: var(--foreground);
 }
 
-.badge.status-paid {
+.badge.status-PAGADA {
   background-color: var(--primary);
   color: var(--primary-foreground);
   border-color: var(--primary);
 }
 
-.badge.status-pending {
+.badge.status-PENDIENTE {
   background-color: #fbbf24;
   color: #ffffff;
   border-color: #fbbf24;
@@ -512,11 +512,11 @@ body {
   height: 1rem;
 }
 
-.status-icon.paid {
+.status-icon.PAGADA {
   color: var(--primary);
 }
 
-.status-icon.pending {
+.status-icon.PENDIENTE {
   color: #fbbf24;
 }
 

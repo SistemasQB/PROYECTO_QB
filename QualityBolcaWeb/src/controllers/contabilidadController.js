@@ -14,7 +14,7 @@ contabilidadController.controlFacturas = async(req, res) => {
                 {formaPago:'PPD'},
                 {formaPago:'PUE'}
             ]
-        },atributos: ['id', 'uuid','receptor','fechaFactura', 'total', 'estatusPago','receptor','pago', 'descripcion']});
+        },atributos: ['id', 'uuid','receptor','fechaFactura', 'total', 'estatusPago','receptor','pago', 'descripcion', 'datosEmision', 'fechaVencimiento']});
         return res.render('admin/contabilidad/controlFacturacion.ejs', {facturas: facturas, tok: req.csrfToken()});    
     } catch (error) {
         manejadorErrores(res, error)

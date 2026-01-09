@@ -102,11 +102,35 @@ function handleStatusFilter(e) {
 // Filtrar facturas
 function getFilteredInvoices() {
   return facturas.filter((invoice) => {
+    try {
+      invoice.pagos = JSON.parse(invoice.pago)
+      invoice.datosEmision = JSON.parse(invoice.datosEmision)  
+      invoice.folioCompuesto = invoice.datosEmision.serie + "-" + invoice.datosEmision.folio
+    } catch (error) {
+      
+    }
+
     const matchesSearch =
       invoice.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.receptor.toLowerCase().includes(searchTerm.toLowerCase()) 
+      invoice.receptor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.folioCompuesto.toLowerCase().includes(searchTerm.toLowerCase())
+      
       // || invoice.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
-
+      console.log(statusFilter)
+      switch (statusFilter){
+        case "paid":
+          statusFilter = 'PAGADA'
+          break;
+        case "pending":
+          statusFilter = 'PENDIENTE'
+          break;
+        case "overdue":
+          
+          break;
+        case "cancelled":
+          break;
+      }
+    
     const matchesStatus = statusFilter === "all" || invoice.estatusPago === statusFilter
 
     return matchesSearch && matchesStatus
@@ -131,8 +155,8 @@ function formatCurrency(amount) {
 // Obtener icono de estado
 function getStatusIcon(status) {
   const icons = {
-    paid: "check-circle",
-    pending: "clock",
+    PAGADA: "check-circle",
+    PENDIENTE: "clock",
     overdue: "alert-circle",
     cancelled: "alert-circle",
   }
@@ -142,8 +166,8 @@ function getStatusIcon(status) {
 // Obtener texto de estado
 function getStatusText(status) {
   const texts = {
-    paid: "Pagada",
-    pending: "Pendiente",
+    PAGADA: "Pagada",
+    PENDIENTE: "Pendiente",
     overdue: "Vencida",
     cancelled: "Cancelada",
   }
@@ -161,8 +185,7 @@ function getPaymentStatusText(status) {
 }
 
 // Renderizar tabla
-function renderTable(invoices = facturas) {
-  
+function renderTable() {
   const paginatedInvoices = getPaginatedInvoices()
   const totalFiltered = getFilteredInvoices().length
   // Actualizar contado
@@ -178,12 +201,17 @@ function renderTable(invoices = facturas) {
     row.className = "invoice-row"
     row.dataset.invoiceId = invoice.id
     const isExpanded = expandedInvoices.has(invoice.id)
+    try {
+      invoice.pagos = JSON.parse(invoice.pago)
+      invoice.datosEmision = JSON.parse(invoice.datosEmision)  
+      
+    } catch (error) {
+      
+    }
     
-    const pagos = JSON.parse(invoice.pago)
     let totalPaid = 0
-    if (pagos.length > 0) {
-      invoice.pagos = pagos
-      totalPaid = getTotalPaid(pagos)
+    if (invoice.pagos.length > 0) {
+      totalPaid = getTotalPaid(invoice.pagos)
     }
       
     row.innerHTML = `
@@ -191,8 +219,8 @@ function renderTable(invoices = facturas) {
                 <div class="invoice-info">
                     <i data-lucide="chevron-right" class="chevron ${isExpanded ? "expanded" : ""}"></i>
                     <div>
-                        <div class="invoice-number">${invoice.uuid}</div>
-                        <div class="invoice-description">${invoice.descripcion}</div>
+                        <div class="invoice-number">${invoice.datosEmision.serie}-${invoice.datosEmision.folio}</div>
+                        <div class="invoice-description">${invoice.uuid}</div>
                     </div>
                 </div>
             </td>
@@ -211,7 +239,7 @@ function renderTable(invoices = facturas) {
             <td>
                 <div class="date-info">
                     <i data-lucide="calendar" style="width: 1rem; height: 1rem; color: var(--muted-foreground);"></i>
-                    ${formatDate(invoice.fechaFactura)}
+                    ${formatDate(invoice.fechaVencimiento)}
                 </div>
             </td>
             <td>
@@ -238,9 +266,9 @@ function renderTable(invoices = facturas) {
       paymentsRow.className = "payments-row"
 
       let paymentsContent = ""
-      if (typeof (invoice.pagos) === 'object'){
-        console.log('entro',invoice.pagos)
-        const paymentsHtml = invoice.pagos.map((payment) => `
+      if (invoice.pagos.length > 0){
+        const paymentsHtml = invoice.pagos.map((payment) =>
+           `
                     <div class="payment-item">
                         <div class="payment-left">
                             <div class="payment-amount">
@@ -248,22 +276,25 @@ function renderTable(invoices = facturas) {
                                 ${formatCurrency(payment.conversion)}
                             </div>
                             <div class="payment-details">
-                                ${payment.method} • ${payment.reference}
+                                ${payment.idDocumento} • ${payment.monedaPago}
                             </div>
                         </div>
                         <div class="payment-right">
                             <div style="font-size: 0.75rem; color: var(--muted-foreground);">
                                 ${formatDate(payment.fechaPago)}
                             </div>
-                            <span class="badge status-${payment.status === "completed" ? "paid" : "pending"}">
-                                ${getPaymentStatusText(payment.status)}
+                            <span class="badge status-paid">
+                                PAGADO
                             </span>
                         </div>
                     </div>
                 `,
-          )
-          .join("")
+          
+        ).join("")
 
+         //<span class="badge status-${payment.status === "completed" ? "paid" : "pending"}">
+         //${getPaymentStatusText(payment.status)}
+            
         paymentsContent = `
                     <div class="payments-container">
                         <h4 class="payments-header">
@@ -300,10 +331,8 @@ function renderTable(invoices = facturas) {
 function toggleExpanded(invoiceId) {
   
   if (expandedInvoices.has(invoiceId)) {
-    console.log(`se va a ELIMINAR el id ${invoiceId}`)
     expandedInvoices.delete(invoiceId)
   } else {
-    console.log(`se va a agregar el id ${invoiceId}`)
     expandedInvoices.add(invoiceId)
   }
   renderTable()
@@ -334,9 +363,9 @@ function handleRightClick(e, invoiceId) {
 // Manejar acciones del menú contextual
 function handleContextMenuAction(e) {
   const action = e.currentTarget.dataset.action
-
   switch (action) {
     case "view":
+      window.open(`factura/${currentContextInvoice}`, "_blank")
       console.log("Ver detalles de factura:", currentContextInvoice)
       break
     case "edit":
