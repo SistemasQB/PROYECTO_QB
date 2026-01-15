@@ -55,6 +55,7 @@ infraestructuraController.historicoOrdenes = async(req, res)=>{
 }
 infraestructuraController.crudOrdenesCompra = async(req, res)=>{
     try {
+        console.log("entro al controlador")
         const {tipo} = req.body
         if(!tipo) return res.json({ok:false, msg:'no se especifico el tipo de accion'})
         const clase = new sequelizeClase({modelo: modelosInfraestructura.modeloOrdenCompra})
@@ -92,8 +93,11 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
                     let campos = req.body
                     delete campos._csrf
                     delete campos.tipo
+                    console.log('antes de la actualizacion')
                     let envio = await clase.actualizarDatos({id:id, datos:{status: 'ENVIADA'}})
+                    console.log('despues de la actualizacion')
                     if (!envio) return res.json({ok:envio, msg:'no se pudo actualizar la OC'})
+
                     delete campos.id
                     return res.json({ok: envioOC({datos: campos}), msg:'OC enviada exitosamente'})
             }    

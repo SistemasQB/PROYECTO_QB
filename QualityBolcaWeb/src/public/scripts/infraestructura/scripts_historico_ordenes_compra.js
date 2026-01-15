@@ -11,25 +11,24 @@ document.addEventListener('DOMContentLoaded', function() {
   btnAgregar.addEventListener('click', (e) => {
       let tabla = document.getElementById('productsTableBody')
       let total = tabla.rows.length
+      let btnSaveChanges = document.getElementById('btnSaveChanges')
       let fila = document.createElement('tr')
       fila.setAttribute('id', `row${total+1}`)
       fila.innerHTML = `
         <td>${total+1}</td>
-        <td><input type="text" name="producto[]" required></td>
-        <td><input type="number" name="cantidad[]" min="1" step="1" required></td>
-        <td><input type="number" name="precioUnitario[]" min="0" step="1" required></td>
-        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1"  required></td>
+        <td><input type="text" name="producto[]" data-producto="producto" required></td>
+        <td><input type="number" name="cantidad[]" min="1" step="1" data-cantidad="cantidad" required></td>
+        <td><input type="number" name="precioUnitario[]" min="0" step="1" data-preciounitario="unitario" required></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1"  data-preciototal="total" required disabled></td>
         <td><button type="button" class="btn-remove" >Eliminar</button></td>
         `
     tabla.appendChild(fila)
-    let btn = fila.querySelectorAll('button')
-    btn = btn[0]
-    btn.addEventListener(`click`, (e) => {
-        eliminarRow(fila)
-    })
+    agregarListenersEliminacion()
     
   })
-  
+  btnSaveChanges.addEventListener('click', (e) => {
+        confirmarEdicion()
+    })
   renderTable()
 })
 // Filter table function
@@ -63,33 +62,42 @@ function filterTable() {
 function openEditModal(orderId) {
   const order = ordenes.find((o) => o.id === orderId)
   if (!order) return
-  
   currentEditingOrder = orderId
-  let informacionPro = JSON.parse(order.informacionProveedor)
-  let servicios = JSON.parse(order.servicios)
+  let informacionPro = order.informacionProveedor
+  let servicios = order.servicios
   let filas = servicios.partidas.map((p) => {
-     return `<tr id='row${p.item}'>
+    return `<tr id='row${p.item}'>
         <td>${p.item}</td>
-        <td><input type="text" name="producto[]" value = '${p.producto}'required></td>
-        <td><input type="number" name="cantidad[]" min="1" step="1" value = '${p.cantidad}'required></td>
-        <td><input type="number" name="precioUnitario[]" min="0" step="1" value = '${p.precioUnitario}' required></td>
-        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1" value ='${p.precioUnitario}' required></td>
+        <td><input type="text" name="producto[]" value = '${p.producto}' data-producto="producto" required></td>
+        <td><input type="number" name="cantidad[]" min="1" step="1" value = '${p.cantidad}' data-cantidad="cantidad" required></td>
+        <td><input type="number" name="precioUnitario[]" min="0" step="1" value = '${parseFloat(p.precioUnitario).toFixed(2)}' data-preciounitario="unitario" required></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1" value ='${p.precioTotal}' data-preciototal="total" required disabled></td>
         <td><button type="button" class="btn-remove">Eliminar</button></td></tr>
     `
   }).join('')
   let tabla = document.getElementById('productsTableBody')
   tabla.innerHTML = filas
-  
-  document.getElementById("editFecha").value = order.fecha.split("T")[0]
-  document.getElementById("editLugar").value = order.lugar
-  document.getElementById("editProveedor").value = informacionPro.proveedor
-  // document.getElementById("editSolicitudes").value = order.solicitudes
-  document.getElementById("editObservaciones").value = order.observaciones
+  let campos = {
+    fecha : document.getElementById("editFecha"),
+    lugar: document.getElementById("editLugar"),
+    proveedor: document.getElementById("editProveedor"),
+    observaciones: document.getElementById("editObservaciones")
+  }
+
+  campos.fecha.value = order.fecha.split("T")[0]
+  campos.lugar.value = order.lugar
+  campos.proveedor.value = informacionPro.proveedor
+  campos.observaciones.value = order.observaciones
+  delete campos.observaciones
+  for (const [_, value] of Object.entries(campos)){
+    value.disabled = true
+  }
 
   const modal = document.getElementById("editModal")
   modal.classList.add("active")
   document.body.style.overflow = "hidden"
   agregarListenersEliminacion()
+  totalizando()
   
 }
 
@@ -151,23 +159,16 @@ function updateTableRow(orderId, orderData) {
 async function sendToProvider(orderId) {
   const order = ordenes.find((o) => o.id === orderId)
   if (!order) return
-  
-  let infPro = JSON.parse(order.informacionProveedor)
-  // infPro = JSON.parse(infPro)
-
-  let servicios = JSON.parse(order.servicios)
-  
-  // let partidas = JSON.parse(servicios)
-  
-  if (confirm(`¿Enviar orden de compra a ${infPro.proveedor}?`)) {
+  if (confirm(`¿Enviar orden de compra a ${order.informacionProveedor.proveedor}?`)) {
     let campos = {
-      basicas: JSON.stringify({fecha: order.fecha, lugar: order.lugar, observaciones: order.observaciones, id: orderId}),
-      informacionProveedor: infPro,
-      partidas: partidas,
-      totales: JSON.stringify({subtotal: partidas.subtotal, iva: partidas.iva, total: partidas.total}),
+      basicas: {fecha: order.fecha, lugar: order.lugar, observaciones: order.observaciones, id: orderId},
+      informacionProveedor: order.informacionProveedor,
+      partidas: order.servicios.partidas,
+      totales: order.servicios,
       tipo: 'send',
       _csrf: tok,
     }
+    //JSON.stringify({subtotal: partidas.subtotal, iva: partidas.iva, total: partidas.total})
     await alertaFetchCalidad('crudOrdenesCompra',campos,'historicoOrdenesCompra')
   }
 }
@@ -240,23 +241,17 @@ function renderTable(){
   let tabla = document.getElementById('tablaOrdenes')
   let MisOrdenes = ordenes
   let rows = MisOrdenes.map((orden) => {
-    
-      let datosP = JSON.parse(orden.informacionProveedor)
-      let partidas = JSON.parse(orden.servicios)
-      partidas = partidas.partidas
-      let articulos = partidas.map((orden) => {
-        return `${orden.producto}, `
-      }).join('')
-      
+      orden.informacionProveedor = JSON.parse(orden.informacionProveedor)
+      orden.servicios = JSON.parse(orden.servicios)
+      let articulos = orden.servicios.partidas.map((orden) => `${orden.producto}`).join(', ')
       let fecha = new Date(orden.fecha)
       let fc = fecha.toLocaleDateString('en-GB')
-      
       return `
         <tr>
               <td>OC-${fecha.getFullYear()}-${orden.id}</td>
               <td>${fc}</td>
               <td>${orden.lugar}</td>
-              <td>${datosP.proveedor}</td>
+              <td>${orden.informacionProveedor.proveedor}</td>
               <td>${articulos}</td>
               <td>${orden.observaciones}</td>
               <td class="actions-cell">
@@ -284,34 +279,110 @@ function calcularPrecio(precio){
 function eliminarRow(row){
   row.remove()
   foliando()
+  totalizando()
 }
 
 function agregarListenersEliminacion(){
-  alert('esta agregando eventos')
   let tabla = document.getElementById('productsTableBody')
   let filas = tabla.querySelectorAll('tr')
   
   filas.forEach((fila) => {
-      // let btn = fila.getElementById(fila.getAttribute('id'))
+      //evento de eliminacion (btn)
       let btn = fila.querySelectorAll('button')
       btn = btn[0]
-      
       btn.addEventListener('click', (e) => {
-        eliminarRow(fila)    
+        eliminarRow(fila)
       })
+
+      //evento de change( cantidad y/o precio unitario)
+      const inputCantidad = fila.querySelector('[data-cantidad]')
+      const inputPrecioUnitario = fila.querySelector('[data-preciounitario]')  
+      const inputTotal = fila.querySelector('[data-preciototal]')
+      inputCantidad.addEventListener('change', (e) => {
+        if(e.target.value > 0  && inputPrecioUnitario.value > 0){
+          inputTotal.value = parseFloat(parseFloat(e.target.value) * parseFloat(inputPrecioUnitario.value)).toFixed(2)
+          totalizando()
+        }else{
+          inputTotal.value = 0  
+        }
+
+      })
+      inputPrecioUnitario.addEventListener('change', (e) => {
+        if(e.target.value > 0  && inputCantidad.value > 0){
+          inputTotal.value = parseFloat(parseFloat(e.target.value) * parseFloat(inputCantidad.value)).toFixed(2)
+          totalizando()
+        }else{
+          inputTotal.value = 0  
+        }
+      })
+
+      // inputTotal.addEventListener('change', (e) => {
+      //   if(parseFloat(e.target.value) > 0 ){
+      //     alert("entro")
+      //     totalizando()
+      //   }
+      // })
   })
 }
 
 function foliando(){
   let tabla = document.getElementById('productsTableBody')
   let filas = tabla.querySelectorAll('tr')
+  let i  = 1
   filas.forEach((fila) => {
-      
+      fila.children.item(0).textContent = i;
+      i++;
   })
-  // totalizando()
+  totalizando()
 }
 function totalizando(){
-  let totales = filas.reduce((total, fila, ) => {
-      total[fila] = (total[fruta] || 0)+ fila
-  },{})
+  let tabla = document.getElementById('productsTableBody')
+  let filas = tabla.querySelectorAll('tr')
+  
+  let subtotal = 0
+  let iva =0
+  let total = 0
+  filas.forEach((fila) => {  
+    let miSubtotal = parseFloat(fila.querySelector('[data-preciototal]').value)
+    let miIva = miSubtotal *.16
+    let miTotal = miSubtotal + miIva
+    
+    subtotal += miSubtotal
+    iva += miIva
+    total += miTotal
+    
+  })
+    document.getElementById('total').innerText = `$${total.toFixed(2)}`
+    document.getElementById('subtotal').innerText = `$${subtotal.toFixed(2)}`
+    document.getElementById('iva').innerText = `$${iva.toFixed(2)}`
+  
+  
+}
+function confirmarEdicion(){
+  let tabla = document.getElementById('productsTableBody')
+  let nuevasPartidas = []
+  
+  for(fila of tabla.rows) {  
+    let partida = {
+      item: fila.children.item(0).textContent,
+      producto: fila.children.item(1).querySelector('[data-producto]').value,
+      cantidad: fila.children.item(2).querySelector('[data-cantidad]').value,
+      precioUnitario: fila.children.item(3).querySelector('[data-preciounitario]').value,
+      precioTotal: fila.children.item(4).querySelector('[data-preciototal]').value
+    }
+    nuevasPartidas.push(partida)
+  }
+  const order = ordenes.find((o) => o.id === currentEditingOrder)
+  console.log( order.servicios)
+  let nuevosServicios = {
+    subtotal : document.getElementById('subtotal').innerText,
+    iva : document.getElementById('iva').innerText,
+    total : document.getElementById('total').innerText,
+    partidas: nuevasPartidas
+  }
+    order.servicios = nuevosServicios
+  const inputObservaciones = document.getElementById('editObservaciones')
+  order.observaciones = inputObservaciones.value
+  alert("orden actualizada")
+  closeEditModal()
 }

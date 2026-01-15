@@ -319,6 +319,7 @@ controller.requisicionEquipos =async (req, res)=>{
     try {
         let {codigoempleado} = req.usuario
         let empleado = await Empleados.findOne({where: {codigoempleado:codigoempleado}})
+        console.log(empleado)
         let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
         let criterios = {codigoempleado:codigoempleado}
         let datosEmpleado = await clase.obtener1Registro({criterio: criterios})
@@ -327,7 +328,7 @@ controller.requisicionEquipos =async (req, res)=>{
             departamento: empleado.descripcion,
             email: datosEmpleado.correoelectronico
         }
-        return res.render('admin/sistemas/requisicionEquipos.ejs', {info: datos, tok: req.csrfToken()})    
+        return res.render('admin/sistemas/requisicionEquipos.ejs', {info: datos, tok: req.csrfToken()})
     } catch (error) {   
         manejadrorErrores(res, error)
     }
