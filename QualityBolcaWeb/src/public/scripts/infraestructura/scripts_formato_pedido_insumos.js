@@ -157,10 +157,9 @@ btnEnvio.addEventListener("click", async (e) => {
       _csrf: tok,
       planta: planta,
       solicitado: pedidos,
-
       tipo: 'insert'
     }
-    console.log(datosPedido)
+    
     await alertaFetchCalidad('/infraestructura/crudPedidosInsumos',datosPedido,'/infraestructura/pedidoInsumos')
     // Opcional: Limpiar formulario después del envío
     // this.reset();

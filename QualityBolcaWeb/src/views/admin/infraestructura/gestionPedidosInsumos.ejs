@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-outline" onclick="closeModal('editOrderModal')">Cancelar</button>
+                    <button class="btn btn-outline" onclick="closeModal('editOrderModal')" type="button">Cancelar</button>
                     <button class="btn btn-primary" type="button" onclick="actualizarPedido()">Confirmar Cambios</button>
                 </div>
             </div>
@@ -126,7 +126,7 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeModal('rejectOrderModal')">Cancelar</button>
+                <button class="btn btn-outline" onclick="closeModal('rejectOrderModal')" type="button">Cancelar</button>
                 <button class="btn btn-destructive" onclick="submitRejectOrder()" type="button">Enviar Rechazo</button>
             </div>
         </div>
@@ -164,10 +164,17 @@
                         <p class="total-amount-small" id="supplyTotalSupplied">$0.00</p>
                     </div>
                 </div>
+                    <div class="items-container">
+                        <label for="observaciones">Observaciones</label>
+                        <textarea name="observaciones" id="observaciones" placeholder="coloca observaciones acerca de este pedido" class="mi-textarea"></textarea>
+                    </div>
+                <div>
+
+                </div>
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeModal('supplyOrderModal')">Cancelar</button>
+                <button class="btn btn-outline" onclick="closeModal('supplyOrderModal')" type="button">Cancelar</button>
                 <button class="btn btn-accent" onclick="submitSupplyOrder()" type="button">Confirmar Surtimiento</button>
             </div>
         </div>

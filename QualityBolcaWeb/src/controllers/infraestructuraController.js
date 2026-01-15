@@ -2,7 +2,7 @@ import sequelizeClase from "../public/clases/sequelize_clase.js";
 import modelosInfraestructura from "../models/infraestructura/barril_modelo_compras.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import envioOC from "../public/scripts/infraestructura/funciones/envioOrdenCompra.js";
-import { Op} from "sequelize";
+import { Op, or} from "sequelize";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 
 
@@ -55,7 +55,6 @@ infraestructuraController.historicoOrdenes = async(req, res)=>{
 }
 infraestructuraController.crudOrdenesCompra = async(req, res)=>{
     try {
-        console.log("entro al controlador")
         const {tipo} = req.body
         if(!tipo) return res.json({ok:false, msg:'no se especifico el tipo de accion'})
         const clase = new sequelizeClase({modelo: modelosInfraestructura.modeloOrdenCompra})
@@ -93,13 +92,17 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
                     let campos = req.body
                     delete campos._csrf
                     delete campos.tipo
-                    console.log('antes de la actualizacion')
-                    let envio = await clase.actualizarDatos({id:id, datos:{status: 'ENVIADA'}})
-                    console.log('despues de la actualizacion')
-                    if (!envio) return res.json({ok:envio, msg:'no se pudo actualizar la OC'})
-
+                    let orden = await clase.obtener1Registro({criterio:{id:id}})
+                    if (orden.estatus == 'ENVIADA' ) return res.json({ok:true, msg:'la OC ya habia sido enviada'})
                     delete campos.id
-                    return res.json({ok: envioOC({datos: campos}), msg:'OC enviada exitosamente'})
+                    let envio = await clase.actualizarDatos({id: id, datos: campos})
+                    if (!envio) return res.json({ok:envio, msg:'no se pudo actualizar la OC'})
+                        orden.servicios = campos.servicios
+                        orden.observaciones = campos.observaciones
+                        orden.informacionProveedor = JSON.parse(orden.informacionProveedor)
+                        let envioO = envioOC({datos: orden})
+                        if (!envioO) return res.json({ok:envioO, msg:'no se pudo enviar la OC'})
+                    return res.json({ok: envioO, msg:'OC enviada exitosamente'})
             }    
     } catch (ex) {
         manejadorErrores(res,ex)
@@ -128,13 +131,15 @@ infraestructuraController.pedidoInsumos = async(req, res) => {
 }
 infraestructuraController.crudPedidoInsumos = async(req, res) => {
     try {
+        
         let campos = req.body
         delete campos._csrf
         let usuario = req.usuario.codigoempleado
         let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
         let datosUsuario =  await clase.obtener1Registro({criterio:{codigoempleado:usuario}})
         clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_pedido_insumos})
-        let id = campos.id
+        console.log('va a obtener el id')
+        const id = campos.id
 
         switch(campos.tipo){
             case 'insert':
@@ -142,14 +147,11 @@ infraestructuraController.crudPedidoInsumos = async(req, res) => {
                 campos.solicitante = datosUsuario.nombrelargo
                 let respuesta = await clase.insertar({datosInsertar: campos})
                 if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
-                return res.json({ok:  await clase.insertar({datosInsertar: campos}), msg: 'informacion enviada exitosamente'})
+                return res.json({ok:  respuesta, msg: 'informacion enviada exitosamente'})
             case 'update':
                 delete campos.id
                 delete campos.tipo
-                if (campos.razon) {
-                    // implementacion del envio de correo con la razon
-                }
-                delete campos.razon
+                console.log("llego antes de actualizar");
                 let actualizado = await clase.actualizarDatos({id: id, datos: campos})
                 if (!actualizado) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
                 return res.json({ok:actualizado, msg: 'informacion actualizada exitosamente'})
@@ -157,9 +159,16 @@ infraestructuraController.crudPedidoInsumos = async(req, res) => {
                 let eliminado = await clase.eliminar({id: id})
                 if (!eliminado) return res.json({ok: false, msg: 'no se pudo eliminar la informacion'})
                 return res.json({ok:eliminado, msg: 'informacion eliminada exitosamente'})
+            case 'rechazo':
+                delete campos.tipo
+                delete campos.id
+                console.log(campos);
+                let rechazado = await clase.actualizarDatos({id: id, datos: campos})
+                if (!rechazado) return res.json({ok: false, msg: 'no se pudo rechazar la informacion'})
+                return res.json({ok:rechazado, msg: 'informacion actualizada exitosamente'})
         }    
     } catch (error) {
-        manejadorErrores(res,ex)
+        manejadorErrores(res,error)
     }
     
 }
@@ -256,7 +265,6 @@ infraestructuraController.crudCheckListVehicular = async(req, res)=>{
 infraestructuraController.vistaCheckListVehicular = async(req, res)=>{
  try {
     let {id} = req.params
-    console.log('el id es',id);
     let clase = new sequelizeClase({modelo: modelosInfraestructura.modeloCheckListVehicular})
     let criterios = {id:parseInt(id)}
     let resultado = await clase.obtener1Registro({criterio:criterios})

@@ -1,11 +1,11 @@
 import nodemailer from "../../../clases/nodemailer.js";
 
 function envioOC({datos}){    
-    let basicas = deserializar(datos.basicas)
-    let partidas = datos.partidas
-    let f = new Date(basicas.fecha)
+    try{
+    console.log(datos)
+    let partidas = datos.servicios.partidas
+    let f = new Date(datos.fecha)
     const ano = f.getFullYear()
-    let to = deserializar(datos.totales)
     let html = `
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
     <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 40px 20px;">
@@ -17,8 +17,7 @@ function envioOC({datos}){
                      <!-- Encabezado  -->
                     <tr>
                         <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 40px 40px 30px 40px; text-align: center;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 600; letter-spacing: -0.5px;">ORDEN DE COMPRA</h1>
-                            <p style="margin: 10px 0 0 0; color: #a8b2d1; font-size: 14px; letter-spacing: 0.5px;">ORDEN DE COMPRA</p>
+                            <h1 style="margin: 0; color: #000000; font-size: 32px; font-weight: 600;">ORDEN DE COMPRA</h1>
                         </td>
                     </tr>
 
@@ -29,11 +28,11 @@ function envioOC({datos}){
                                 <tr>
                                     <td style="width: 33%; padding-right: 20px;">
                                         <p style="margin: 0 0 5px 0; font-size: 12px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">No. de Orden</p>
-                                        <p style="margin: 0; font-size: 18px; color: #1a1a2e; font-weight: 600;">OC-${ano}-${basicas.id}</p>
+                                        <p style="margin: 0; font-size: 18px; color: #1a1a2e; font-weight: 600;">OC-${ano}-${datos.id}</p>
                                     </td>
                                     <td style="width: 33%; text-align: right;">
                                         <p style="margin: 0 0 5px 0; font-size: 12px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">lugar</p>
-                                        <p style="margin: 0; font-size: 18px; color: #1a1a2e; font-weight: 600;">${basicas.lugar}</p>
+                                        <p style="margin: 0; font-size: 18px; color: #1a1a2e; font-weight: 600;">${datos.lugar}</p>
                                     </td>
                                     <td style="width: 33%; text-align: right;">
                                         <p style="margin: 0 0 5px 0; font-size: 12px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Fecha</p>
@@ -58,17 +57,30 @@ function envioOC({datos}){
                     <tr>
                         <td style="padding: 0 40px 30px 40px;">
                             <table role="presentation" style="width: 100%; border-collapse: collapse; border: 1px solid #e1e8ed; border-radius: 6px; overflow: hidden;">
-                                <tbody>
-                                    <tr style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);"></tr>
+
+                                    
                                     <tr>
-                                        <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600;   width: 8%;">No.</td>
-                                        <td style="padding: 15px 12px; text-align: left; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%;">Servicio/Producto</td>
-                                        <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 13%;">Cantidad</td>
-                                        <td style="padding: 15px 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 19%;">Precio Unit.</td>
-                                        <td style="padding: 15px 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 20%;">Precio Total</td>
-                                    </tr>
+                                        <td style="border: 1px solid #cccccc; padding: 12px; font-size: 12px; color: #333333;">No.</td>
+                                        <td style="border: 1px solid #cccccc; padding: 12px; font-size: 12px; color: #333333;">Servicio/Producto</td>
+                                        <td style="border: 1px solid #cccccc; padding: 12px; font-size: 12px; color: #333333;">Cantidad</td>
+                                        <td style="border: 1px solid #cccccc; padding: 12px; font-size: 12px; color: #333333;">Precio Unit.</td>
+                                        <td style="border: 1px solid #cccccc; padding: 12px; font-size: 12px; color: #333333;">Precio Total</td>
+                                // </tr>
                                 `
-                                    for (let i = 0; i < partidas.length; i++) {
+
+                                // <tr>
+                                //         <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600;   width: 8%;">No.</td>
+                                //         <td style="padding: 15px 12px; text-align: left; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%;">Servicio/Producto</td>
+                                //         <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 13%;">Cantidad</td>
+                                //         <td style="padding: 15px 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 19%;">Precio Unit.</td>
+                                //         <td style="padding: 15px 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 20%;">Precio Total</td>
+                                //     </tr>
+                                // <tr>
+                                //     <td style="border: 1px solid #cccccc; padding: 12px; font-size: 12px; color: #333333;">
+                                //         [DESCRIPCIÓN DETALLADA DE LA ORDEN]
+                                //     </td>
+                                // </tr>
+                                    for (let i = 0; i < datos.servicios.partidas.length; i++) {
                                         let parti = partidas[i]
                                         html +=`<tr style="border-bottom: 1px solid #e1e8ed; background-color: #ffffff;">
                                         <td style="padding: 15px 12px; text-align: center; color: #2c3e50; font-size: 14px;">${parti.item}</td>
@@ -80,7 +92,7 @@ function envioOC({datos}){
                                      }
 
             html+=`
-                                </tbody>
+                                
                             </table>
                         </td>
                     </tr>
@@ -94,7 +106,7 @@ function envioOC({datos}){
                                         <span style="font-size: 15px; color: #6c757d; font-weight: 500;">Subtotal:</span>
                                     </td>
                                     <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e1e8ed;">
-                                        <span style="font-size: 15px; color: #2c3e50; font-weight: 600;">${to.subtotal}</span>
+                                        <span style="font-size: 15px; color: #2c3e50; font-weight: 600;">${datos.servicios.subtotal}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -102,7 +114,7 @@ function envioOC({datos}){
                                         <span style="font-size: 15px; color: #6c757d; font-weight: 500;">IVA (16%):</span>
                                     </td>
                                     <td style="padding: 10px 0; text-align: right; border-bottom: 1px solid #e1e8ed;">
-                                        <span style="font-size: 15px; color: #2c3e50; font-weight: 600;">${to.iva}</span>
+                                        <span style="font-size: 15px; color: #2c3e50; font-weight: 600;">${datos.servicios.iva}</span>
                                     </td>
                                 </tr>
                                 
@@ -111,7 +123,7 @@ function envioOC({datos}){
                                         <span style="font-size: 17px; color: #1a1a2e; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total:</span>
                                     </td>
                                     <td style="padding: 15px 0 10px 0; text-align: right; background-color: #f8f9fa; padding-right: 15px; border-radius: 0 6px 6px 0;">
-                                        <span style="font-size: 22px; color: #1a1a2e; font-weight: 700;">${to.total}</span>
+                                        <span style="font-size: 22px; color: #1a1a2e; font-weight: 700;">${datos.servicios.total}</span>
                                     </td>
                                 </tr>
                             </table>
@@ -123,7 +135,7 @@ function envioOC({datos}){
                         <td style="padding: 0 40px 35px 40px;">
                             <div style="background-color: #f8f9fa; border-left: 4px solid #2c3e50; padding: 20px 25px; border-radius: 4px;">
                                 <p style="margin: 0 0 10px 0; font-size: 13px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Observaciones</p>
-                                <p style="margin: 0; font-size: 15px; color: #2c3e50; line-height: 1.6;">${basicas.observaciones}</p>
+                                <p style="margin: 0; font-size: 15px; color: #2c3e50; line-height: 1.6;">${datos.observaciones}</p>
                             </div>
                         </td>
                     </tr>
@@ -191,7 +203,7 @@ function envioOC({datos}){
         html:html
     }
     
-    try{
+    
     const cor = new nodemailer()
     cor.enviarCorreo({Correo: dato});
     return true

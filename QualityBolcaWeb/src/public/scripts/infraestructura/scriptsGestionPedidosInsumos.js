@@ -64,22 +64,17 @@ function renderOrders() {
 // Update Totals
 function updateTotals() {
   let total = 0
-  resultados.forEach((order) => {
-    let partidas = JSON.parse(order.solicitado)
-    total += parseFloat(partidas[partidas.length-1].total)
-  })
-  
-  // const totalSupplied = orders.reduce((sum, order) => sum + calculateOrderSuppliedTotal(order), 0)
 
+  resultados.forEach((order) => {
+    try {order.solicitado = JSON.parse(order.solicitado)} catch (error) {}
+    total += parseFloat( order.solicitado[order.solicitado.length - 1].total)
+  })
   document.getElementById("totalRequested").textContent = formatCurrency(total)
-  // document.getElementById("totalSupplied").textContent = formatCurrency(totalSupplied)
 }
 
 // Calculate Order Total
 //posible eliminacion
-function calculateOrderTotal(orden) {
-
-  console.log(partidas);
+function calculateOrderTotal(orden){
   return partidas.reduce((sum, item) => sum + item.cantidad * item.precioUnitario, 0)
 }
 
@@ -157,7 +152,6 @@ function openEditModal(orderId) {
 
   renderEditItems()
   updateEditOrderTotal()
-
   openModal("editOrderModal")
 }
 
@@ -300,6 +294,8 @@ function actualizarPedido() {
       resultados[orderIndex].solicitado = partidas
     }
     closeModal("editOrderModal")
+    renderOrders()
+    updateTotals()
 }
 
 
@@ -337,8 +333,8 @@ async function submitRejectOrder() {
     let actualizado = {
       id : currentRejectingOrderId,
       estatus : "RECHAZADA",
-      razon : reason,
-      tipo: 'update',
+      observaciones : reason,
+      tipo: 'rechazo',
       _csrf: tok
     }
     alertaFetchCalidad('crudPedidosInsumos',actualizado,'gestionPedidosInsumos')
@@ -472,11 +468,12 @@ function validateSupplyForm() {
 async function submitSupplyOrder() {
   if (validateSupplyForm()) {
     const orderIndex = resultados.findIndex((o) => o.id === currentSupplyingOrder.id)
+    let orden = resultados.find((r) => r.id === currentSupplyingOrder.id)
     let actualizacion = {solicitado: {}, estatus: ""};
     if (orderIndex !== -1) {
       actualizacion.solicitado = partidas
       // Update status
-      let ap = partidas.slice(0,-1)
+      let ap = orden.solicitado.slice(0,-1)
       const totalRequested =  ap.reduce((sum, item) => sum + item.cantidad, 0) 
       const totalSupplied = ap.reduce((sum, item) => sum + item.surtido, 0) 
 
@@ -488,10 +485,9 @@ async function submitSupplyOrder() {
     }
     actualizacion.tipo = "update"
     actualizacion._csrf = tok
-    actualizacion.id = orderIndex.id
-
+    actualizacion.id = orden.id
+    actualizacion.observaciones = !document.getElementById("observaciones").value ? "No especificadas cuando se surtio" : document.getElementById("observaciones").value
     await alertaFetchCalidad('crudPedidosInsumos',actualizacion,'gestionPedidosInsumos')
-    closeModal("supplyOrderModal")
   }
 }
 

@@ -95,6 +95,13 @@ body {
   font-size: 1rem;
   opacity: 0.95;
 }
+.mi-textarea{
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 8px;
+  outline: 1px solid  var(--muted-foreground);
+}
 
 @media (max-width: 768px) {
   .header-title {

@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
       fila.setAttribute('id', `row${total+1}`)
       fila.innerHTML = `
         <td>${total+1}</td>
-        <td><input type="text" name="producto[]" data-producto="producto" required></td>
-        <td><input type="number" name="cantidad[]" min="1" step="1" data-cantidad="cantidad" required></td>
-        <td><input type="number" name="precioUnitario[]" min="0" step="1" data-preciounitario="unitario" required></td>
-        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1"  data-preciototal="total" required disabled></td>
+        <td><input type="text" name="producto[]" data-producto="producto" class='mi-input' required></td>
+        <td><input type="number" name="cantidad[]" min="1" step="1" data-cantidad="cantidad" class='mi-input' required></td>
+        <td><input type="number" name="precioUnitario[]" min="0" step="1" data-preciounitario="unitario" required class='mi-input'></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1"  data-preciototal="total" class='mi-input' required disabled></td>
         <td><button type="button" class="btn-remove" >Eliminar</button></td>
         `
     tabla.appendChild(fila)
@@ -68,11 +68,11 @@ function openEditModal(orderId) {
   let filas = servicios.partidas.map((p) => {
     return `<tr id='row${p.item}'>
         <td>${p.item}</td>
-        <td><input type="text" name="producto[]" value = '${p.producto}' data-producto="producto" required></td>
-        <td><input type="number" name="cantidad[]" min="1" step="1" value = '${p.cantidad}' data-cantidad="cantidad" required></td>
-        <td><input type="number" name="precioUnitario[]" min="0" step="1" value = '${parseFloat(p.precioUnitario).toFixed(2)}' data-preciounitario="unitario" required></td>
-        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1" value ='${p.precioTotal}' data-preciototal="total" required disabled></td>
-        <td><button type="button" class="btn-remove">Eliminar</button></td></tr>
+        <td><input type="text" name="producto[]" value = '${p.producto}' data-producto="producto" class='mi-input' required></td>
+        <td><input type="number" name="cantidad[]" min="1" step="1" value = '${p.cantidad}' data-cantidad="cantidad" class='mi-input' required></td>
+        <td><input type="number" name="precioUnitario[]" min="0" step="1" value = '${parseFloat(p.precioUnitario).toFixed(2)}' data-preciounitario="unitario" class='mi-input' required></td>
+        <td class="precio-total"><input type="number" name="cantidad[]" min="1" step="1" value ='${p.precioTotal}' data-preciototal="total" class='mi-input' required disabled></td>
+        <td><button type="button" class="btn-remove mi-btn" >Eliminar</button></td></tr>
     `
   }).join('')
   let tabla = document.getElementById('productsTableBody')
@@ -98,7 +98,7 @@ function openEditModal(orderId) {
   document.body.style.overflow = "hidden"
   agregarListenersEliminacion()
   totalizando()
-  
+  renderTable()
 }
 
 function closeEditModal() {
@@ -161,14 +161,13 @@ async function sendToProvider(orderId) {
   if (!order) return
   if (confirm(`¿Enviar orden de compra a ${order.informacionProveedor.proveedor}?`)) {
     let campos = {
-      basicas: {fecha: order.fecha, lugar: order.lugar, observaciones: order.observaciones, id: orderId},
-      informacionProveedor: order.informacionProveedor,
-      partidas: order.servicios.partidas,
-      totales: order.servicios,
+      servicios : order.servicios,
+      status: 'ENVIADA',
+      observaciones: order.observaciones,
+      id: orderId,
       tipo: 'send',
       _csrf: tok,
     }
-    //JSON.stringify({subtotal: partidas.subtotal, iva: partidas.iva, total: partidas.total})
     await alertaFetchCalidad('crudOrdenesCompra',campos,'historicoOrdenesCompra')
   }
 }
@@ -241,8 +240,13 @@ function renderTable(){
   let tabla = document.getElementById('tablaOrdenes')
   let MisOrdenes = ordenes
   let rows = MisOrdenes.map((orden) => {
-      orden.informacionProveedor = JSON.parse(orden.informacionProveedor)
-      orden.servicios = JSON.parse(orden.servicios)
+      try {
+          orden.informacionProveedor = JSON.parse(orden.informacionProveedor)
+        orden.servicios = JSON.parse(orden.servicios)  
+      } catch (error) {
+        
+      }
+      
       let articulos = orden.servicios.partidas.map((orden) => `${orden.producto}`).join(', ')
       let fecha = new Date(orden.fecha)
       let fc = fecha.toLocaleDateString('en-GB')
@@ -373,7 +377,6 @@ function confirmarEdicion(){
     nuevasPartidas.push(partida)
   }
   const order = ordenes.find((o) => o.id === currentEditingOrder)
-  console.log( order.servicios)
   let nuevosServicios = {
     subtotal : document.getElementById('subtotal').innerText,
     iva : document.getElementById('iva').innerText,
@@ -385,4 +388,5 @@ function confirmarEdicion(){
   order.observaciones = inputObservaciones.value
   alert("orden actualizada")
   closeEditModal()
+  renderTable()
 }
