@@ -10,7 +10,7 @@ contabilidadController.controlFacturas = async(req, res) => {
     try {
         let clase = new claseSequelize({modelo: modelosFacturacion.xmls_facturacion});
         let facturas = await  clase.obtenerDatosPorCriterio({criterio: {
-            estatusPago: 'PENDIENTE',
+            estatusPago: {[Op.in]:['PENDIENTE', 'VENCIDA']},
             formaPago:{[Op.in]: ['PUE', 'PPD']}
     },atributos: ['id', 'uuid','receptor','fechaFactura', 'total', 'estatusPago','receptor','pago', 'descripcion', 'datosEmision', 'fechaVencimiento']});
         return res.render('admin/contabilidad/controlFacturacion.ejs', {facturas: facturas, tok: req.csrfToken()});    

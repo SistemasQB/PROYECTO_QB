@@ -100,7 +100,7 @@ body {
   border-color: #fbbf24;
 }
 
-.badge.status-overdue {
+.badge.status-VENCIDA {
   background-color: var(--destructive);
   color: var(--destructive-foreground);
   border-color: var(--destructive);
@@ -520,7 +520,7 @@ body {
   color: #fbbf24;
 }
 
-.status-icon.overdue {
+.status-icon.VENCIDA {
   color: var(--destructive);
 }
 

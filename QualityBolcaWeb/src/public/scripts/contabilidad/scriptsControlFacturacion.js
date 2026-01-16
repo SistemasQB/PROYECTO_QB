@@ -125,7 +125,7 @@ function getFilteredInvoices() {
           statusFilter = 'PENDIENTE'
           break;
         case "overdue":
-          
+          statusFilter = 'VENCIDA'
           break;
         case "cancelled":
           break;
@@ -168,7 +168,7 @@ function getStatusText(status) {
   const texts = {
     PAGADA: "Pagada",
     PENDIENTE: "Pendiente",
-    overdue: "Vencida",
+    VENCIDA: "Vencida",
     cancelled: "Cancelada",
   }
   return texts[status] || status
@@ -179,6 +179,7 @@ function getPaymentStatusText(status) {
   const texts = {
     completed: "Completado",
     pending: "Pendiente",
+    overdue: "Vencida",
     failed: "Fallido",
   }
   return texts[status] || status

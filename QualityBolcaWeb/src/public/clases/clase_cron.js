@@ -66,6 +66,6 @@ class miCron{
 }
 
 
-module.exports = miCron;
+export default miCron;
 
 

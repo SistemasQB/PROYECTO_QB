@@ -8,33 +8,15 @@ import { PORT, SECRET_JWT_KEY } from "./src/config.js";
 import dbs from "./src/config/barril_dbs.js";
 import cors from "cors";
 import routers from "./src/routes/barrilRouters.js";
-
-// import mariadb from "mariadb";
-// import { default as customerRoutes } from "./src/routes/userRoutes.js";
-// import { default as adminRoutes } from "./src/routes/adminRoutes.js";
-// import { default as allRoutes } from "./src/routes/allRoutes.js";
-// import { default as sistemasRoutes } from "./src/routes/sistemasRoutes.js";
-// import { default as sorteoRoutes } from "./src/routes/sorteoRoutes.js";
-// import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
-// import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
-// import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
-// import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
-// import {default as infraestructuraRouter} from "./src/routes/infraestructuraRouter.js";
-// import routerContabilidad from "./src/routes/contabilidadRoutes.js";
-// import routerServicioCliente from "./src/routes/servicioClienteRoutes.js";
+import miCron from "./src/public/clases/clase_cron.js";
 
 import {
   Controlpiezas,
   Controlpiezas2
 } from "./src/models/index.js";
 
-// import mimeTypes from "mime-types";
-// import fetch from 'node-fetch'
-// import urlencoded from "body-parser";
-// import nodeMailer from 'nodemailer';
 import path from "path";
-// import { pipeline } from '@xenova/transformers';
-// import wavefile from 'wavefile';
+
 
 const app = express();
 app.use(cors());
@@ -81,10 +63,7 @@ app.use(express.static('./src/public'));
 //Habilirar  EJS
 app.set('views', path.join('\src', 'views'));
 app.set('view engine', 'ejs');
-
 const csrfProtection = csurf({ cookie: true });
-
-
 app.post('/sorteo/cc1/controldepiezas',async (req, res) =>{
 
 const {piezasOK, piezasNG, mesas} = req.body;
@@ -130,20 +109,7 @@ app.post('/sorteo/cc1/controldepiezas2',async (req, res) =>{
   }
   })
 
-// app.use('/',csrfProtection, customerRoutes);
-// app.use('/admin',csrfProtection, adminRoutes);
-// app.use('/all',csrfProtection, allRoutes);
-// app.use('/sistemas',csrfProtection, sistemasRoutes);
-// app.use('/calidad',csrfProtection, calidadRoutes);
-// app.use('/atraccion',csrfProtection, atraccionRoutes);
-// app.use('/capitalhumano',csrfProtection, capitalhumanoRoutes);
-// app.use('/sorteo',csrfProtection, sorteoRoutes);
-// app.use('/nominas',csrfProtection, nominasRoutes);
-// app.use('/infraestructura', csrfProtection,infraestructuraRouter);
-// app.use('/contabilidad',  csrfProtection,routerContabilidad);
-// app.use('/servicioCliente',  csrfProtection,routerServicioCliente);
-// app.use('/rentabilidad',csrfProtection, rentabilidadRoutes);
-
+  //declaracion de rutas
 app.use('/',csrfProtection, routers.userRouters);
 app.use('/admin',csrfProtection, routers.adminRouters);
 app.use('/all',csrfProtection, routers.routerAll);
@@ -162,4 +128,10 @@ app.use(express.json());
 app.listen(PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 })
+
+
+//cronos de ejecucion en tareas periodicas
+// const cronos = new miCron();
+// cronos.iniciarCron('prueba1', '* * * * * *', () => {console.log(`trabajo ejectuado 0 veces`)});
+
 
