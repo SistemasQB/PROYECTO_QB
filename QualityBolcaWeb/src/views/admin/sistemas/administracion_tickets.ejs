@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Tickets</title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <link rel="stylesheet" href="/styles/sistemas/estilos_administracion_tickets.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -45,6 +46,7 @@
                 <thead>
                     <tr>
                         <th><i class="fas fa-hashtag"></i> Folio</th>
+                        <th><i class="fas fa-heading"></i> Título</th>
                         <th><i class="fas fa-folder"></i> Categoría</th>
                         <th><i class="fas fa-exclamation-circle"></i> Prioridad</th>
                         <th><i class="fas fa-file-alt"></i> Descripción del Problema</th>

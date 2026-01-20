@@ -10,7 +10,13 @@ router.get('/inicio', adminController.inicio);
 //rutas de tickets
 router.get('/tickets', protegetRuta,adminController.levantamientoTicket)
 router.get('/admin-tickets', protegetRuta,adminController.administracionTickets)
+router.get('/crudTickets', adminController.crudTickets)
 router.post('/crudTickets', protegetRuta,adminController.crudTickets)
+router.post('/tickets/:id/asignar', protegetRuta,adminController.asignarTicket);
+router.post('/tickets/:id/pausar', adminController.pausarTicket);
+router.post('/tickets/:id/reanudar', adminController.reanudarTicket);
+router.put('/tickets/:id/terminar', adminController.terminarTicket);
+router.post('/tickets/:id/cerrar', adminController.cerrarTicket);
 
 //rutas de inventario
 router.get('/inventario', adminController.inventario)

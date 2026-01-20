@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="/styles/sistemas/estilos_levantamiento_tickets.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
     <div class="container">
         <header class="header">
@@ -26,17 +28,25 @@
                     <h2>Crear Nuevo Ticket</h2>
                     <p>Complete el formulario para reportar un problema técnico</p>
                 </div>
-
+                <input type="hidden" id="csrfToken" value="<%= csrfToken %>">
                 <form id="ticketForm" class="ticket-form">
                     <div class="form-group">
+                        <label>Nombre del Usuario *</label>
+                        <input type="text" id="nombreUsuario" name="nombreUsuario" value="<%= info.nombreCompleto %>"
+                            disabled>
+                        <span class="error-message" id="nombreUsuarioError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Departamento *</label>
+                        <input type="text" id="departamento" name="departamento" value="<%= info.departamento %>"
+                            disabled>
+                        <span class="error-message" id="departamentoError"></span>
+                    </div>
+
+                    <div class="form-group">
                         <label for="title">Título del Problema *</label>
-                        <input 
-                            type="text" 
-                            id="titulo" 
-                            name="titulo" 
-                            required
-                            placeholder="Ej: Computadora no enciende"
-                        >
+                        <input type="text" id="titulo" name="titulo" required placeholder="Ej: Computadora no enciende">
                         <span class="error-message" id="tituloError"></span>
                     </div>
 
@@ -106,13 +116,8 @@
 
                     <div class="form-group">
                         <label for="description">Descripción del Problema *</label>
-                        <textarea 
-                            id="descripcion" 
-                            name="descripcion" 
-                            rows="5" 
-                            required
-                            placeholder="Describa detalladamente el problema que está experimentando..."
-                        ></textarea>
+                        <textarea id="descripcion" name="descripcion" rows="5" required
+                            placeholder="Describa detalladamente el problema que está experimentando..."></textarea>
                         <span class="error-message" id="descripcionError"></span>
                     </div>
 
@@ -141,10 +146,11 @@
     </div>
 
     <!-- Changed to use index.js instead of app.js -->
+    <script>
+        const tok = "<%= csrfToken %>";
+    </script>
     <script src="/scripts/sistemas/scripts_levantamiento_tickets.js"></script>
     <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
-    <script>
-        let tok = <%-JSON.stringify(tok)%>
-    </script>
 </body>
+
 </html>
