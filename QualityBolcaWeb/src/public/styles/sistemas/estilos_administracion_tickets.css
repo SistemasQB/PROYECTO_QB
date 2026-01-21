@@ -22,6 +22,7 @@
     --status-pending: #eab308;
     --status-resolved: #22c55e;
     --status-closed: #6b7280;
+    --end-ticket: #128e43;
 }
 
 body {
@@ -320,6 +321,13 @@ body {
     white-space: nowrap;
 }
 
+.title-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .actions-cell {
     display: flex;
     gap: 0.5rem;
@@ -440,6 +448,280 @@ body {
     background: var(--accent-blue);
     border-color: var(--accent-blue);
     color: white;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    animation: fadeIn 0.2s ease;
+}
+
+.ticket-modal {
+    max-width: 800px;
+    width: 100%;
+}
+
+.ticket-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.ticket-col p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.ticket-section {
+    margin-top: 16px;
+}
+
+.ticket-section h4 {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #f4f8ff;
+}
+
+.ticket-description {
+    background: #0e1012;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.sla-time {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.sla-bar {
+    width: 100%;
+    height: 10px;
+    background: #000000;
+    border-radius: 999px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.sla-progress {
+    height: 100%;
+    width: 0%;
+    background: #16a34a;
+    transition: width 0.5s linear;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: #15151b;
+    width: 100%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, .5);
+    position: relative;
+    animation: slideUp 0.25s ease;
+    color: #e5e5e5;
+    scrollbar-width: thin;
+    scrollbar-color: #232323 transparent;
+    backdrop-filter: blur(8px);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1
+    }
+}
+
+@keyframes modalFade {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content .close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #f2ebeb;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-content .close:hover {
+    color: #ffffff;
+}
+
+/* ================= TÍTULO ================= */
+.modal-content h2 {
+    margin-bottom: 15px;
+    font-size: 22px;
+    color: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 10px;
+}
+
+.modal-content p {
+    margin: 6px 0;
+    font-size: 14px;
+    color: #d9d9d9;
+}
+
+.modal-content p strong {
+    color: #ffffff;
+}
+
+.modal-content p.descripcion,
+.modal-content p:nth-of-type(6) {
+    background: #131415;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 5px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.modal-content hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+
+.modal-content label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.modal-content select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #0a0707;
+    font-size: 14px;
+    background: #1a1a1a;
+    color: #000000;
+    margin-top: 6px;
+}
+
+#asignarUsuario {
+    background: #fdf9f9;
+}
+
+.modal-content select:focus {
+    border-color: #007bff;
+}
+
+#btnAsignar {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+#btnAsignar:hover {
+    background: #2563eb;
+}
+
+#btnPausar {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: var(--priority-medium);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+#btnReanudar {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: var(--status-open);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .2s ease;
+}
+
+#btnReanudar:hover {
+    background: var(#1750ab);
+}
+
+#cerrarTicket {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--end-ticket);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#btnTerminar {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: var(--end-ticket);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.flex-gap-2 {
+    display: flex;
+    gap: 0.5rem;
 }
 
 /* Responsive Design */

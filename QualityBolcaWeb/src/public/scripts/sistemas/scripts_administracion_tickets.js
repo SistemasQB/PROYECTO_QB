@@ -1,51 +1,10 @@
-// Datos de ejemplo
-const ticketsData = [
-    { folio: 'TKT-2024-001', categoria: 'Hardware', prioridad: 'critical', descripcion: 'Servidor principal no responde, sistema caído completamente', usuario: 'María González', departamento: 'IT', estatus: 'open' },
-    { folio: 'TKT-2024-002', categoria: 'Software', prioridad: 'high', descripcion: 'Error en sistema de facturación, no genera reportes', usuario: 'Juan Pérez', departamento: 'Contabilidad', estatus: 'progress' },
-    { folio: 'TKT-2024-003', categoria: 'Red', prioridad: 'medium', descripcion: 'Conexión intermitente en área de ventas', usuario: 'Ana Martínez', departamento: 'Ventas', estatus: 'pending' },
-    { folio: 'TKT-2024-004', categoria: 'Software', prioridad: 'low', descripcion: 'Actualización de antivirus pendiente', usuario: 'Carlos López', departamento: 'IT', estatus: 'resolved' },
-    { folio: 'TKT-2024-005', categoria: 'Hardware', prioridad: 'high', descripcion: 'Impresora principal atascada, no imprime', usuario: 'Laura Sánchez', departamento: 'Administración', estatus: 'open' },
-    { folio: 'TKT-2024-006', categoria: 'Acceso', prioridad: 'critical', descripcion: 'Usuario bloqueado, no puede acceder al sistema', usuario: 'Roberto Díaz', departamento: 'Recursos Humanos', estatus: 'progress' },
-    { folio: 'TKT-2024-007', categoria: 'Software', prioridad: 'medium', descripcion: 'Lentitud en aplicación de inventarios', usuario: 'Patricia Ruiz', departamento: 'Almacén', estatus: 'open' },
-    { folio: 'TKT-2024-008', categoria: 'Hardware', prioridad: 'low', descripcion: 'Teclado con teclas pegajosas', usuario: 'Miguel Torres', departamento: 'Marketing', estatus: 'closed' },
-    { folio: 'TKT-2024-009', categoria: 'Red', prioridad: 'high', descripcion: 'VPN no conecta desde ubicaciones remotas', usuario: 'Carmen Flores', departamento: 'IT', estatus: 'progress' },
-    { folio: 'TKT-2024-010', categoria: 'Software', prioridad: 'medium', descripcion: 'Error al exportar datos a Excel', usuario: 'Fernando Vargas', departamento: 'Finanzas', estatus: 'pending' },
-    { folio: 'TKT-2024-011', categoria: 'Hardware', prioridad: 'critical', descripcion: 'Disco duro con sectores dañados, riesgo de pérdida de datos', usuario: 'Isabel Morales', departamento: 'IT', estatus: 'open' },
-    { folio: 'TKT-2024-012', categoria: 'Acceso', prioridad: 'high', descripcion: 'Permisos incorrectos en carpeta compartida', usuario: 'Diego Ramírez', departamento: 'Proyectos', estatus: 'resolved' },
-    { folio: 'TKT-2024-013', categoria: 'Software', prioridad: 'low', descripcion: 'Solicitud de instalación de software adicional', usuario: 'Sofía Castro', departamento: 'Diseño', estatus: 'pending' },
-    { folio: 'TKT-2024-014', categoria: 'Red', prioridad: 'medium', descripcion: 'Velocidad de internet reducida en piso 3', usuario: 'Andrés Jiménez', departamento: 'Operaciones', estatus: 'progress' },
-    { folio: 'TKT-2024-015', categoria: 'Hardware', prioridad: 'high', descripcion: 'Monitor parpadeando constantemente', usuario: 'Valentina Herrera', departamento: 'Atención al Cliente', estatus: 'open' },
-    { folio: 'TKT-2024-016', categoria: 'Software', prioridad: 'critical', descripcion: 'Base de datos corrupta, no se puede acceder', usuario: 'Javier Mendoza', departamento: 'IT', estatus: 'open' },
-    { folio: 'TKT-2024-017', categoria: 'Acceso', prioridad: 'medium', descripcion: 'Cambio de contraseña solicitado', usuario: 'Gabriela Ortiz', departamento: 'Legal', estatus: 'resolved' },
-    { folio: 'TKT-2024-018', categoria: 'Hardware', prioridad: 'low', descripcion: 'Mouse inalámbrico sin batería', usuario: 'Ricardo Silva', departamento: 'Compras', estatus: 'closed' },
-    { folio: 'TKT-2024-019', categoria: 'Red', prioridad: 'high', descripcion: 'Firewall bloqueando aplicación crítica', usuario: 'Daniela Reyes', departamento: 'IT', estatus: 'progress' },
-    { folio: 'TKT-2024-020', categoria: 'Software', prioridad: 'medium', descripcion: 'Actualización de sistema operativo pendiente', usuario: 'Alejandro Cruz', departamento: 'IT', estatus: 'pending' },
-    { folio: 'TKT-2024-021', categoria: 'Hardware', prioridad: 'critical', descripcion: 'Equipo no enciende, posible falla de fuente', usuario: 'Natalia Vega', departamento: 'Producción', estatus: 'open' },
-    { folio: 'TKT-2024-022', categoria: 'Software', prioridad: 'high', descripcion: 'Aplicación se cierra inesperadamente', usuario: 'Sebastián Rojas', departamento: 'Ventas', estatus: 'progress' },
-    { folio: 'TKT-2024-023', categoria: 'Red', prioridad: 'low', descripcion: 'Solicitud de acceso a red WiFi invitados', usuario: 'Camila Guzmán', departamento: 'Recepción', estatus: 'resolved' },
-    { folio: 'TKT-2024-024', categoria: 'Acceso', prioridad: 'medium', descripcion: 'Usuario nuevo requiere credenciales', usuario: 'Martín Navarro', departamento: 'Recursos Humanos', estatus: 'pending' },
-    { folio: 'TKT-2024-025', categoria: 'Hardware', prioridad: 'high', descripcion: 'Laptop sobrecalentándose constantemente', usuario: 'Victoria Medina', departamento: 'Marketing', estatus: 'open' },
-    { folio: 'TKT-2024-026', categoria: 'Software', prioridad: 'critical', descripcion: 'Sistema de nómina no calcula correctamente', usuario: 'Emilio Paredes', departamento: 'Recursos Humanos', estatus: 'open' },
-    { folio: 'TKT-2024-027', categoria: 'Red', prioridad: 'medium', descripcion: 'Configuración de correo en dispositivo móvil', usuario: 'Lucía Campos', departamento: 'Ventas', estatus: 'progress' },
-    { folio: 'TKT-2024-028', categoria: 'Hardware', prioridad: 'low', descripcion: 'Solicitud de auriculares con micrófono', usuario: 'Tomás Aguilar', departamento: 'Soporte', estatus: 'pending' },
-    { folio: 'TKT-2024-029', categoria: 'Software', prioridad: 'high', descripcion: 'Error de sincronización con la nube', usuario: 'Mariana Delgado', departamento: 'IT', estatus: 'progress' },
-    { folio: 'TKT-2024-030', categoria: 'Acceso', prioridad: 'medium', descripcion: 'Renovación de certificado digital', usuario: 'Pablo Fuentes', departamento: 'Legal', estatus: 'resolved' },
-    { folio: 'TKT-2024-031', categoria: 'Hardware', prioridad: 'critical', descripcion: 'Servidor de respaldos no funciona', usuario: 'Elena Ríos', departamento: 'IT', estatus: 'open' },
-    { folio: 'TKT-2024-032', categoria: 'Software', prioridad: 'low', descripcion: 'Solicitud de licencia adicional', usuario: 'Rodrigo Peña', departamento: 'Diseño', estatus: 'pending' },
-    { folio: 'TKT-2024-033', categoria: 'Red', prioridad: 'high', descripcion: 'Puerto de red no funciona en sala de juntas', usuario: 'Adriana Molina', departamento: 'Administración', estatus: 'open' },
-    { folio: 'TKT-2024-034', categoria: 'Hardware', prioridad: 'medium', descripcion: 'Webcam con imagen borrosa', usuario: 'Gustavo Salazar', departamento: 'Recursos Humanos', estatus: 'progress' },
-    { folio: 'TKT-2024-035', categoria: 'Software', prioridad: 'high', descripcion: 'No se pueden enviar correos con archivos adjuntos', usuario: 'Paola Cortés', departamento: 'Ventas', estatus: 'open' },
-    { folio: 'TKT-2024-036', categoria: 'Acceso', prioridad: 'critical', descripcion: 'Cuenta de administrador comprometida', usuario: 'Héctor Ibarra', departamento: 'IT', estatus: 'progress' },
-    { folio: 'TKT-2024-037', categoria: 'Hardware', prioridad: 'low', descripcion: 'Cable de red dañado', usuario: 'Beatriz Luna', departamento: 'Contabilidad', estatus: 'resolved' },
-    { folio: 'TKT-2024-038', categoria: 'Software', prioridad: 'medium', descripcion: 'Aplicación móvil no sincroniza datos', usuario: 'Óscar Domínguez', departamento: 'Ventas', estatus: 'pending' },
-    { folio: 'TKT-2024-039', categoria: 'Red', prioridad: 'high', descripcion: 'Ataque de phishing detectado', usuario: 'Claudia Pacheco', departamento: 'IT', estatus: 'progress' },
-    { folio: 'TKT-2024-040', categoria: 'Hardware', prioridad: 'medium', descripcion: 'Batería de laptop no carga', usuario: 'Raúl Estrada', departamento: 'Proyectos', estatus: 'open' }
-];
+
+let ticketsData = []
 
 // Variables globales
 let currentPage = 1;
 let itemsPerPage = 20;
-let filteredData = [...ticketsData];
+let filteredData = [];
 
 // Mapeo de textos para prioridades y estatus
 const priorityLabels = {
@@ -78,6 +37,56 @@ const statusIcons = {
     closed: 'fa-circle'
 };
 
+async function renderizarUsuario() {
+    try {
+        const res = await fetch('/sistemas/tickets');
+        const data = await res.json();
+
+    } catch (error) {
+        console.error('Error al cargar usuario:', error);
+    }
+
+}
+
+async function cargarTicketsDesdeBackend() {
+    try {
+        const res = await fetch('/sistemas/crudTickets');
+
+        const data = await res.json();
+
+        if (!data.ok) {
+            console.error('Error al cargar tickets');
+            return;
+        }
+
+        ticketsData = data.tickets.map(t => ({
+            id: t.folio,
+            folio: t.folio,
+            titulo: t.datosTicket?.titulo ?? 'Sin título',
+            categoria: t.datosTicket?.categoria ?? 'N/D',
+            prioridad: (t.datosTicket?.prioridad ?? 'medium').toLowerCase(),
+            descripcion: t.datosTicket?.descripcion ?? '',
+            nombreUsuario: t.datosTicket?.nombreUsuario ?? 'N/D',
+            departamento: t.datosTicket?.departamento ?? 'N/D',
+            estatus: t.datosTicket?.estatus ?? 'open',
+            slaInicio: t.datosTicket?.slaInicio
+                ? Number(t.datosTicket.slaInicio)
+                : null,
+            slaHoras: t.datosTicket?.slaHoras ?? 72,
+            slaConsumido: t.datosTicket?.slaConsumido ?? 0,
+            slaActivo: t.datosTicket?.slaActivo ?? false,
+            slaFin: t.datosTicket?.slaFin ?? null,
+            asignadoA: t.datosTicket?.asignadoA ?? null
+        }));
+
+        filteredData = [...ticketsData];
+        renderTable();
+
+    } catch (error) {
+        console.error('Error cargando tickets:', error);
+    }
+}
+
 // Función para renderizar la tabla
 function renderTable() {
     const tableBody = document.getElementById('tableBody');
@@ -93,6 +102,7 @@ function renderTable() {
 
         row.innerHTML = `
             <td class="folio-cell">${ticket.folio}</td>
+            <td class="title-cell">${ticket.titulo}</td>
             <td>${ticket.categoria}</td>
             <td>
                 <span class="priority-badge">
@@ -101,7 +111,7 @@ function renderTable() {
                 </span>
             </td>
             <td class="description-cell" title="${ticket.descripcion}">${ticket.descripcion}</td>
-            <td>${ticket.usuario}</td>
+            <td>${ticket.nombreUsuario}</td>
             <td>${ticket.departamento}</td>
             <td>
                 <span class="status-badge status-${ticket.estatus}">
@@ -111,14 +121,14 @@ function renderTable() {
             </td>
             <td>
                 <div class="actions-cell">
-                    <button class="action-btn view" title="Ver detalles">
+                    <button class="action-btn view" title="Ver detalles" onclick="verDetallesTicket('${ticket.id}')">
                         <i class="fas fa-eye"></i>
                     </button>
                     <button class="action-btn edit" title="Editar">
-                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-check"></i>
                     </button>
                     <button class="action-btn delete" title="Eliminar">
-                        <i class="fas fa-trash"></i>
+                        <i class="fas fa-pause"></i>
                     </button>
                 </div>
             </td>
@@ -135,7 +145,7 @@ function renderTable() {
 function updatePaginationInfo() {
     const start = (currentPage - 1) * itemsPerPage + 1;
     const end = Math.min(currentPage * itemsPerPage, filteredData.length);
-    
+
     document.getElementById('showingStart').textContent = filteredData.length > 0 ? start : 0;
     document.getElementById('showingEnd').textContent = end;
     document.getElementById('totalItems').textContent = filteredData.length;
@@ -229,5 +239,368 @@ document.getElementById('lastPage').addEventListener('click', () => {
     renderTable();
 });
 
+function getCSRFToken() {
+    return document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content');
+}
+
+
+function cerrarModal() {
+    clearInterval(slaInterval);
+    slaInterval = null;
+    const modal = document.getElementById("modalTicket");
+    if (modal) modal.remove();
+    ticketActual = null;
+}
+
+function obtenerBotonesPorEstatus(ticket) {
+    if (ticket.estatus === 'open') {
+        return `<button id="btnAsignar">Asignar Ticket</button>`;
+    }
+
+    if (ticket.estatus === 'progress') {
+        return `
+            <div class="flex-gap-2">
+                <button id="btnPausar">Pausar</button>
+                <button id="btnTerminar" class="danger">Terminar</button>
+            </div>
+        `;
+    }
+
+    if (ticket.estatus === 'pending') {
+        return `<button id="btnReanudar">Reanudar</button>`;
+    }
+
+    if(ticket.estatus === 'resolved') {
+        return `<button id="cerrarTicket">Cerrar Ticket</button>`
+    }
+
+    return '';
+}
+
+function renderAsignacion(ticket) {
+    if (ticket.estatus !== 'open') return '';
+
+    return `
+        <label>Asignar a:</label>
+        <select id="asignarUsuario">
+            <option value="">-- Selecciona --</option>
+            <option value="Omar Vazquez">Omar Vazquez</option>
+            <option value="Alejandro Robledo">Alejandro Robledo</option>
+            <option value="Guillermo Reyes">Guillermo Reyes</option>
+            <option value="Luis Oliva">Luis Oliva</option>
+        </select>
+    `;
+}
+
+function obtenerSlaActual(ticket) {
+    let total = ticket.slaConsumido || 0;
+
+    if (ticket.slaActivo && ticket.slaInicio) {
+        const ahora = Date.now();
+        total += Math.floor((ahora - ticket.slaInicio) / 1000);
+    }
+
+    return total;
+}
+
+
+function actualizarSLATexto(ticket) {
+    const slaEl = document.getElementById('slaTimer');
+    if (!slaEl) return;
+
+    const total = ticket.slaHoras * 3600;
+    const restante = total - ticket.slaConsumido;
+
+    if (restante <= 0) {
+        slaEl.textContent = 'SLA vencido';
+        slaEl.style.color = '#dc2626';
+        return;
+    }
+
+    if (restante <= 3600) {
+        slaEl.style.color = '#dc2626';
+    } else if (restante <= 14400) {
+        slaEl.style.color = '#f59e0b';
+    } else {
+        slaEl.style.color = '#16a34a';
+    }
+
+    const h = Math.floor(restante / 3600);
+    const m = Math.floor((restante % 3600) / 60);
+    const s = restante % 60;
+
+    slaEl.textContent = `${h}h ${m}m ${s}s`;
+}
+
+//caclcular el tiempo restante
+function calcularTiempoRestante(ticket) {
+    const totalSegundos = ticket.slaHoras * 3600;
+    const usados = ticket.slaConsumido;
+    const restante = totalSegundos - usados;
+
+    if (restante <= 0) return 'SLA vencido';
+
+    const h = Math.floor(restante / 3600);
+    const m = Math.floor((restante % 3600) / 60);
+    const s = restante % 60;
+
+    return `${h}h ${m}m ${s}s`;
+}
+
+let slaInterval = null;
+
+//intervalo en tiempo real
+function iniciarContadorSLA() {
+    clearInterval(slaInterval);
+
+    slaInterval = setInterval(() => {
+        if (!ticketActual || !ticketActual.slaActivo) return;
+        if (!ticketActual.slaInicio) return;
+
+        const ahora = Date.now();
+
+        //  ACTUALIZA EN MEMORIA
+        ticketActual.slaConsumidoActual =
+            ticketActual.slaConsumido +
+            Math.floor((ahora - ticketActual.slaInicio) / 1000);
+
+        const total = ticketActual.slaHoras * 3600;
+        const restante = total - ticketActual.slaConsumidoActual;
+
+        const porcentaje =
+            Math.max(0, (restante / (ticketActual.slaHoras * 3600)) * 100);
+
+        const progressEl = document.getElementById('slaProgress');
+        if (progressEl) {
+            progressEl.style.width = `${porcentaje}%`;
+
+            if (porcentaje <= 10) {
+                progressEl.style.background = '#dc2626';
+            } else if (porcentaje <= 30) {
+                progressEl.style.background = '#f59e0b';
+            } else {
+                progressEl.style.background = '#16a34a';
+            }
+        }
+
+        const slaEl = document.getElementById('slaTimer');
+        if (!slaEl) return;
+
+        if (restante <= 0) {
+            slaEl.textContent = 'SLA vencido';
+            slaEl.style.color = '#dc2626';
+            return;
+        }
+
+        if (restante <= 3600) {
+            slaEl.style.color = '#dc2626';
+        } else if (restante <= 14400) {
+            slaEl.style.color = '#f59e0b';
+        } else {
+            slaEl.style.color = '#16a34a';
+        }
+
+        const h = Math.floor(restante / 3600);
+        const m = Math.floor((restante % 3600) / 60);
+        const s = restante % 60;
+
+        slaEl.textContent = `${h}h ${m}m ${s}s`;
+    }, 1000);
+}
+
+async function pausarTicket() {
+    clearInterval(slaInterval);
+    slaInterval = null;
+    await fetch(`/sistemas/tickets/${ticketActual.id}/pausar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': getCSRFToken()
+        },
+        credentials: 'include'
+    });
+
+    cerrarModal();
+    cargarTicketsDesdeBackend();
+}
+
+async function reanudarTicket() {
+    await fetch(`/sistemas/tickets/${ticketActual.id}/reanudar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': getCSRFToken()
+        },
+        credentials: 'include'
+    });
+
+    cerrarModal();
+    cargarTicketsDesdeBackend();
+}
+
+
+async function terminarTicket() {
+    clearInterval(slaInterval);
+    slaInterval = null;
+    await fetch(`/sistemas/tickets/${ticketActual.id}/terminar`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': getCSRFToken()
+        },
+        credentials: 'include'
+    });
+
+    cerrarModal();
+    cargarTicketsDesdeBackend();
+}
+
+async function cerrarTicket() {
+
+    if(!confirm('¿Estás seguro de cerrar este ticket? Esta acción es definitiva.')) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`/sistemas/tickets/${ticketActual.id}/cerrar`, {
+            method: 'POST',
+            headers: {
+                'content-Type': 'application/json',
+                'CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
+
+        if(!res.ok) throw new Error('Error al cerrar ticket');
+
+        alert('ticket cerrado correctamente');
+        cerrarModal();
+        cargarTicketsDesdeBackend();
+    } catch (error) {
+        console.error(error);
+        alert('No se pudo cerrar el ticket');
+    }
+
+}
+
+//funcion asignar ticket
+async function asignarTicket() {
+    const usuario = document.getElementById('asignarUsuario').value;
+    if (!usuario) return alert('Selecciona un usuario');
+
+    await fetch(`/sistemas/tickets/${ticketActual.id}/asignar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': getCSRFToken()
+        },
+        credentials: 'include',
+        body: JSON.stringify({ asignadoA: usuario })
+    });
+
+    cerrarModal();
+    cargarTicketsDesdeBackend();
+}
+
+let ticketActual = null;
+function verDetallesTicket(id) {
+    // Lógica para ver detalles del ticket
+    ticketActual = ticketsData.find(t => t.id === id);
+    if (!ticketActual) return;
+
+    const existente = document.getElementById("modalTicket");
+    if (existente) existente.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'modalTicket';
+    modal.className = 'modal';
+
+    modal.innerHTML = `
+        <div class="modal-content ticket-modal">
+            <span class="close">&times;</span>
+            <h2> Detalle del Ticket </h2>
+            <div class="ticket-grid">
+                <div class="ticket-col">
+                    <p><strong>Folio:</strong> ${ticketActual.folio}</p>
+                    <p><strong>Título:</strong> ${ticketActual.titulo}</p>
+                    <p><strong>Categoría:</strong> ${ticketActual.categoria}</p>
+                    <p><strong>Prioridad:</strong> ${priorityLabels[ticketActual.prioridad]}</p>
+                </div>
+
+                <div class="ticket-col">
+                    <p><strong>Usuario:</strong> ${ticketActual.nombreUsuario}</p>
+                    <p><strong>Departamento:</strong> ${ticketActual.departamento}</p>
+                    <p><strong>Asignado a:</strong> ${ticketActual.asignadoA ?? 'No asignado'}</p>
+                    <p><strong>Estatus:</strong> ${statusLabels[ticketActual.estatus]}</p>
+                </div>
+            </div>
+
+            <div class="ticket-section">
+                <h4>Descripción</h4>
+                <p class="ticket-description">${ticketActual.descripcion}</p>
+            </div>
+            
+            <div class="sla-section">
+                <h4>SLA restante</h4>
+                <span id="slaTimer" class="sla-time">--</span>
+
+                <div class="sla-bar">
+                    <div id="slaProgress" class="sla-progress"></div>
+                </div>
+            </div>
+
+            <hr>
+
+            ${renderAsignacion(ticketActual)}
+
+            <div class="modal-actions">
+                ${obtenerBotonesPorEstatus(ticketActual)}
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+
+    modal.querySelector('.close').onclick = cerrarModal;
+
+    if (document.getElementById('btnAsignar'))
+        document.getElementById('btnAsignar').onclick = asignarTicket;
+
+    if (document.getElementById('btnPausar'))
+        document.getElementById('btnPausar').onclick = pausarTicket;
+
+    if (document.getElementById('btnReanudar'))
+        document.getElementById('btnReanudar').onclick = reanudarTicket;
+
+    if (document.getElementById('btnTerminar'))
+        document.getElementById('btnTerminar').onclick = terminarTicket;
+
+    if(document.getElementById('cerrarTicket'))
+        document.getElementById('cerrarTicket').onclick = cerrarTicket;
+
+    // Pintar SLA inmediatamente
+    actualizarSLATexto(ticketActual);
+
+    const total = ticketActual.slaHoras * 3600;
+    const restante = total - ticketActual.slaConsumido;
+    const porcentaje = Math.max(0, (restante / total) * 100);
+
+    const progressEl = document.getElementById('slaProgress');
+    if (progressEl) {
+        progressEl.style.width = `${porcentaje}%`;
+    }
+
+    // Iniciar reloj si está activo
+    if (ticketActual.slaActivo) {
+        iniciarContadorSLA();
+    }
+}
+
 // Inicializar la tabla
-renderTable();
+//renderTable();
+
+document.addEventListener('DOMContentLoaded', () => {
+    cargarTicketsDesdeBackend();
+});

@@ -172,7 +172,7 @@ function showModal(colaborador) {
                 <div class="signature-line">
                     <p>Firma del Colaborador</p>
                     <p>Nombre: ${vLista.nombrelargo}</p>
-                    <p>Fecha: 2025-07-01</p>
+                    <p>Fecha: ${vLista.fechaFolio}</p>
                 </div>
             </div>
         </div>

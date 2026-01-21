@@ -15,7 +15,7 @@ fields.forEach((fieldName) => {
   const errorElement = document.getElementById(`${fieldName}Error`)
 
   field.addEventListener("blur", () => {
-    
+
     validateField(field, errorElement)
   })
 
@@ -52,7 +52,7 @@ function validateField(field, errorElement) {
   if (!isValid) {
     field.classList.add("error")
     errorElement.textContent = errorMessage
-    
+
     errorElement.classList.add("show")
   } else {
     field.classList.remove("error")
@@ -75,7 +75,7 @@ function calcularPrioridad() {
   const pr = parseInt(procesos.value);
 
   //si faltan valores, no calcular aún
-  if(!n || !p || !pr) {
+  if (!n || !p || !pr) {
     prioridad.value = "";
     return;
   }
@@ -83,9 +83,9 @@ function calcularPrioridad() {
   const promedio = (n + p + pr) / 3;
 
   let nivel = "";
-  if(promedio <= 1.7) nivel = "low"; //baja
-  else if(promedio <= 2.5) nivel = "medium"; //media
-  else if(promedio <= 3.3) nivel = "high"; //alta
+  if (promedio <= 1.7) nivel = "low"; //baja
+  else if (promedio <= 2.5) nivel = "medium"; //media
+  else if (promedio <= 3.3) nivel = "high"; //alta
   else nivel = "critical";  //critica
 
   prioridad.value = nivel;
@@ -100,7 +100,7 @@ procesos.addEventListener("change", calcularPrioridad);
 // Manejo del envío del formulario
 let btnEnvio = document.getElementById('btnEnvio');
 btnEnvio.addEventListener("click", async (e) => {
-  
+
   // Validar todos los campos
   let isFormValid = true
   let campos = {}
@@ -112,9 +112,9 @@ btnEnvio.addEventListener("click", async (e) => {
     }
     campos[fieldName] = field.value
   })
-  
+
   if (!isFormValid) {
-    return ;
+    return;
   }
 
   let criterios = {
@@ -123,22 +123,39 @@ btnEnvio.addEventListener("click", async (e) => {
     procesosAfectados: procesos.value,
   }
 
+  const nombreUsuario = document.getElementById("nombreUsuario").value;
+  const departamento = document.getElementById("departamento").value;
+
+
   estadoFormulario.datosTicket = JSON.stringify({
     ...campos,
-    criterios: criterios
-  })
+
+    nombreUsuario,
+    departamento,
+
+    criterios,
+    estatus: "open",
+    asignadoA: null,
+    slaInicio: null,
+    slaConsumido: 0,     // segundos acumulados
+    slaActivo: false,
+    slaFin: null,
+
+    fechaCreacion: new Date().toISOString()
+  });
 
   let fecha = new Date(Date.now())
   let dia = fecha.getDay();
   let mes = fecha.getMonth() + 1;
 
-  if(dia < 10) dia = `0`+ dia
-  if(mes < 10) mes = `0`+ mes
+  if (dia < 10) dia = `0` + dia
+  if (mes < 10) mes = `0` + mes
   estadoFormulario.folio = `INC-${fecha.getFullYear()}${mes}${dia}-${Math.floor(Math.random() * 1000000) + 1}`;
-  estadoFormulario._csrf = tok
+  const csrfToken = document.getElementById('csrfToken').value;
+  estadoFormulario._csrf = csrfToken;
   estadoFormulario.tipo = 'insert'
-  
-  await alertaFetchCalidad('crudTickets',estadoFormulario,'admin-tickets')
+
+  await alertaFetchCalidad('crudTickets', estadoFormulario, 'tickets')
   // Crear objeto de ticket
   // const ticket = {
   //   id: "TKT-" + Date.now(),

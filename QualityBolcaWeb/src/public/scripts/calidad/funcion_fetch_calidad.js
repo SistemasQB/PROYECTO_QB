@@ -12,7 +12,7 @@ async function alertaFetchCalidad( link, cuerpo, destino) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            // 'X-CSRF-Token': cuerpo._csrf, 
+            'X-CSRF-Token': cuerpo._csrf, 
         },
         body: JSON.stringify(cuerpo),
         credentials: 'include'
