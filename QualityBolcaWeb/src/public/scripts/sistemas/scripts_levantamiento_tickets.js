@@ -7,7 +7,7 @@ let estadoFormulario = {
 
 // Validación en tiempo real
 const form = document.getElementById("ticketForm")
-const fields = ["titulo", "categoria", "prioridad", "descripcion"]
+const fields = ["titulo", "categoria", "descripcion", "prioridad"]
 
 // Agregar listeners para validación en tiempo real
 fields.forEach((fieldName) => {
@@ -63,6 +63,40 @@ function validateField(field, errorElement) {
   return isValid
 }
 
+//calculo de prioridad
+const numAfectacion = document.getElementById("numAfectacion");
+const porcentaje = document.getElementById("porcentaje");
+const procesos = document.getElementById("procesos");
+const prioridad = document.getElementById("prioridad");
+
+function calcularPrioridad() {
+  const n = parseInt(numAfectacion.value);
+  const p = parseInt(porcentaje.value);
+  const pr = parseInt(procesos.value);
+
+  //si faltan valores, no calcular aún
+  if(!n || !p || !pr) {
+    prioridad.value = "";
+    return;
+  }
+
+  const promedio = (n + p + pr) / 3;
+
+  let nivel = "";
+  if(promedio <= 1.7) nivel = "low"; //baja
+  else if(promedio <= 2.5) nivel = "medium"; //media
+  else if(promedio <= 3.3) nivel = "high"; //alta
+  else nivel = "critical";  //critica
+
+  prioridad.value = nivel;
+}
+prioridad.addEventListener("mousedown", (e) => e.preventDefault());
+prioridad.addEventListener("keydown", (e) => e.preventDefault());
+
+numAfectacion.addEventListener("change", calcularPrioridad);
+porcentaje.addEventListener("change", calcularPrioridad);
+procesos.addEventListener("change", calcularPrioridad);
+
 // Manejo del envío del formulario
 let btnEnvio = document.getElementById('btnEnvio');
 btnEnvio.addEventListener("click", async (e) => {
@@ -82,7 +116,18 @@ btnEnvio.addEventListener("click", async (e) => {
   if (!isFormValid) {
     return ;
   }
-  estadoFormulario.datosTicket = JSON.stringify(campos)
+
+  let criterios = {
+    numeroAfectados: numAfectacion.value,
+    porcentajeAfectacion: porcentaje.value,
+    procesosAfectados: procesos.value,
+  }
+
+  estadoFormulario.datosTicket = JSON.stringify({
+    ...campos,
+    criterios: criterios
+  })
+
   let fecha = new Date(Date.now())
   let dia = fecha.getDay();
   let mes = fecha.getMonth() + 1;
