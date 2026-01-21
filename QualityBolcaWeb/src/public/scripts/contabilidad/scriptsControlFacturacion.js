@@ -1,8 +1,6 @@
-// Datos de ejemplo
-
 // Estado de la aplicación
 let invoices = []
-let filteredInvoices = []
+let facturasFiltradas = []
 const expandedInvoices = new Set()
 let searchTerm = ""
 let statusFilter = "all"
@@ -16,12 +14,14 @@ let currentEditInvoice = null
 const searchInput = document.getElementById("search-input")
 const statusSelect = document.getElementById("status-filter")
 const invoiceCount = document.getElementById("invoice-count")
+const subtotalInvoice = document.getElementById("subtotal-invoice")
 const invoiceTbody = document.getElementById("invoice-tbody")
 const contextMenu = document.getElementById("context-menu")
 const deleteModal = document.getElementById("delete-modal")
 const invoiceToDelete = document.getElementById("invoice-to-delete")
 const cancelDeleteBtn = document.getElementById("cancel-delete")
 const confirmDeleteBtn = document.getElementById("confirm-delete")
+const panelFiltroFecha = document.getElementById("filtroFecha")
 
 const itemsPerPageSelect = document.getElementById("items-per-page")
 const firstPageBtn = document.getElementById("first-page")
@@ -39,6 +39,7 @@ const closeEditModalBtn = document.getElementById("close-edit-modal")
 const cancelEditBtn = document.getElementById("cancel-edit")
 const saveEditBtn = document.getElementById("save-edit")
 const editForm = document.getElementById("edit-invoice-form")
+const btnBuscar = document.getElementById("buscarFecha")
 
 // Importación de Lucide
 const lucide = window.lucide // Assuming Lucide is available globally
@@ -62,6 +63,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalPages = getTotalPages()
     goToPage(totalPages)
   })
+  btnBuscar.addEventListener("click", ()=>{ 
+    facturasFiltradas = []
+    renderTable()
+  } )
 
   closeEditModalBtn.addEventListener("click", closeEditModal)
   cancelEditBtn.addEventListener("click", closeEditModal)
@@ -85,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Renderizar tabla inicial
   renderTable()
+  // iniciarTabla()
 })
 
 // Manejar búsqueda
@@ -96,12 +102,21 @@ function handleSearch(e) {
 // Manejar filtro de estado
 function handleStatusFilter(e) {
   statusFilter = e.target.value
+  if (statusFilter === "fechas") {
+    panelFiltroFecha.classList.remove("ninguno")
+    panelFiltroFecha.classList.add("card-content")
+    return
+  } else {
+    panelFiltroFecha.classList.remove("card-content")
+    panelFiltroFecha.classList.add("ninguno")
+  }
   renderTable()
 }
 
 // Filtrar facturas
 function getFilteredInvoices() {
   return facturas.filter((invoice) => {
+    
     try {
       invoice.pagos = JSON.parse(invoice.pago)
       invoice.datosEmision = JSON.parse(invoice.datosEmision)  
@@ -109,18 +124,7 @@ function getFilteredInvoices() {
     } catch (error) {
       
     }
-
-    const matchesSearch =
-      invoice.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.receptor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.folioCompuesto.toLowerCase().includes(searchTerm.toLowerCase())
-      
-      // || invoice.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
-      console.log(statusFilter)
       switch (statusFilter){
-        case "paid":
-          statusFilter = 'PAGADA'
-          break;
         case "pending":
           statusFilter = 'PENDIENTE'
           break;
@@ -130,9 +134,13 @@ function getFilteredInvoices() {
         case "cancelled":
           break;
       }
-    
-    const matchesStatus = statusFilter === "all" || invoice.estatusPago === statusFilter
-
+      
+      const matchesSearch = 
+      invoice.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.receptor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.folioCompuesto.toLowerCase().includes(searchTerm.toLowerCase())
+      matchesStatus = statusFilter === "all" || invoice.estatusPago === statusFilter
+      
     return matchesSearch && matchesStatus
   })
 }
@@ -149,6 +157,11 @@ function formatDate(dateString) {
 
 // Formatear moneda
 function formatCurrency(amount) {
+  const formateador = new Intl.NumberFormat("es-MX",{
+    style: "currency",
+    currency: "MXN",
+  })
+  return formateador.format(amount)
   return `$${amount.toLocaleString()}`
 }
 
@@ -187,15 +200,37 @@ function getPaymentStatusText(status) {
 
 // Renderizar tabla
 function renderTable() {
-  const paginatedInvoices = getPaginatedInvoices()
-  const totalFiltered = getFilteredInvoices().length
+  let paginatedInvoices 
+  let filtro = []
+  
+  switch(statusFilter){
+    case "fechas":
+      if(facturasFiltradas.length === 0){
+        facturasFiltradas = filtrarPorFechas()
+        if (facturasFiltradas.length == 0) return;
+        filtro = facturasFiltradas
+        paginatedInvoices = getPaginatedInvoices(facturasFiltradas)
+        break;
+      }
+        filtro = facturasFiltradas
+        paginatedInvoices = getPaginatedInvoices(facturasFiltradas)
+    break;
+    default:
+      filtro = getFilteredInvoices()
+      paginatedInvoices= getPaginatedInvoices()
+    break;
+  }
+
+  const totalFiltered = filtro.length
   // Actualizar contado
    invoiceCount.textContent = `${totalFiltered} facturas`
+   subtotalInvoice.textContent = formatCurrency(filtro.reduce((sum, inv) => sum + parseFloat(inv.total),0))
 
   // Limpiar tabla
   invoiceTbody.innerHTML = ""
 
   // Renderizar cada factura
+
   paginatedInvoices.forEach((invoice) => {
     // Fila principal
     const row = document.createElement("tr")
@@ -204,8 +239,7 @@ function renderTable() {
     const isExpanded = expandedInvoices.has(invoice.id)
     try {
       invoice.pagos = JSON.parse(invoice.pago)
-      invoice.datosEmision = JSON.parse(invoice.datosEmision)  
-      
+      invoice.datosEmision = JSON.parse(invoice.datosEmision)    
     } catch (error) {
       
     }
@@ -308,7 +342,6 @@ function renderTable() {
                     </div>
                 `
       } else {
-        console.log('no hay pagos')
         paymentsContent = `
                     <div class="payments-container">
                         <div class="no-payments">
@@ -323,7 +356,9 @@ function renderTable() {
       invoiceTbody.appendChild(paymentsRow)
     }
   })
-  updatePaginationInfo()
+
+  facturasFiltradas.length > 0 && statusFilter === "fechas"? updatePaginationInfo(facturasFiltradas): updatePaginationInfo()
+  
   // Reinicializar iconos de Lucide
   lucide.createIcons()
 }
@@ -413,20 +448,31 @@ function confirmDelete() {
 }
 
 function getTotalPages() {
-  const filtered = getFilteredInvoices()
+  const filtered =  statusFilter === "fechas" && facturasFiltradas.length > 0 ? facturasFiltradas :  getFilteredInvoices()
   return Math.ceil(filtered.length / itemsPerPage)
 }
 
-function getPaginatedInvoices() {
-  const filtered = getFilteredInvoices()
+function getPaginatedInvoices(datos = null) {
+  let filtered = datos
+  if (!datos){
+    filtered = getFilteredInvoices()
+  }
   const start = (currentPage - 1) * itemsPerPage
   const end = start + itemsPerPage
   return filtered.slice(start, end)
 }
 
-function updatePaginationInfo() {
-  const filtered = getFilteredInvoices()
-  const totalPages = getTotalPages()
+function updatePaginationInfo(filtradas = null) {
+  let filtered
+  let totalPages
+  if (filtradas === null){
+    filtered = getFilteredInvoices()  
+    totalPages = getTotalPages()
+  }else{
+    filtered = filtradas
+    totalPages = Math.ceil(filtered.length / itemsPerPage)
+  }
+  
   const start = (currentPage - 1) * itemsPerPage + 1
   const end = Math.min(currentPage * itemsPerPage, filtered.length)
 
@@ -499,10 +545,51 @@ function saveEditInvoice() {
   invoices = invoices.map((invoice) =>
     invoice.id === currentEditInvoice ? { ...invoice, ...updatedInvoice } : invoice,
   )
-
   console.log("Factura actualizada:", updatedInvoice)
-
   // Renderizar tabla y cerrar modal
   renderTable()
   closeEditModal()
+}
+
+// function iniciarTabla(){
+//   $('#miTabla').DataTable({
+//         paging: true,
+//         searching: true,
+//         ordering: true,
+//         info: true
+//       });
+// }
+
+function filtrarPorFechas(){
+  const texto = document.getElementById("msg-error")
+  statusFilter = "fechas"
+  let startDate = new Date(document.getElementById("start-date").value + "T00:00:00");
+  let endDate =new Date(document.getElementById("end-date").value + "T23:59:59")
+  
+  if(startDate > endDate){
+    texto.innerText  = "La fecha de inicio debe ser menor a la fecha de fin"
+    texto.classList.remove("ninguno")
+    texto.classList.add("error")
+    setTimeout(() => {
+      texto.classList.remove("error")
+      texto.classList.add("ninguno")  
+    },4000)
+    return
+  }else if (!startDate || !endDate) {
+    texto.innerText  = "debes colocar ambas fechas para poder filtrar"
+    texto.classList.remove("ninguno")
+    texto.classList.add("error")
+    setTimeout(() => {
+      texto.classList.remove("error")
+      texto.classList.add("ninguno")  
+    },4000)
+  }
+  
+  let filteredInvoices = facturas.filter(invoice => {
+    const fechaFactura = new Date(invoice.fechaFactura);  
+    return fechaFactura >= startDate && fechaFactura <=endDate && (invoice.uuid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.receptor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.folioCompuesto.toLowerCase().includes(searchTerm.toLowerCase()));
+  });
+  return filteredInvoices
 }

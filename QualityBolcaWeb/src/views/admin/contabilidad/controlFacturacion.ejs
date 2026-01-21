@@ -17,7 +17,10 @@
                     <p class="subtitle">Administra facturas y sus pagos correspondientes</p>
                 </div>
                 <div class="header-actions">
+                    <p>facturas</p>
                     <span class="badge" id="invoice-count">0 facturas</span>
+                    <p>Subtotal</p>
+                    <span class="badge" id="subtotal-invoice">$0</span>
                 </div>
             </div>
         </div>
@@ -38,7 +41,7 @@
                     <div class="filter-actions">
                         <select id="status-filter" class="status-select">
                             <option value="all">Todos los estados</option>
-                            <option value="paid">Pagadas</option>
+                            <option value="fechas">fecha</option>
                             <option value="pending">Pendientes</option>
                             <option value="overdue">Vencidas</option>
                             <option value="cancelled">Canceladas</option>
@@ -48,6 +51,24 @@
                             Filtros
                         </button>
                     </div>
+                    
+                </div>
+                <div  id="filtroFecha" class="ninguno">
+                    <div class="filters">
+                            <div class="filter-actions">
+                                <p>fecha Inicio</p>
+                                <input type="date" class="status-select" id="start-date">
+                            </div>
+                            <div class="filter-actions">
+                                <p>fecha final</p>
+                                <input type="date" class="status-select" id="end-date">
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-outline" id="buscarFecha">buscar</button>
+                            </div>
+                        
+                    </div>
+                    <p id="msg-error" class="ninguno">texto de error</p>
                 </div>
             </div>
         </div>
@@ -62,7 +83,7 @@
             </div>
             <div class="card-content table-container">
                 <div class="table-wrapper">
-                    <table class="invoice-table">
+                    <table class="invoice-table" id="miTabla">
                         <thead>
                             <tr>
                                 <th>Factura</th>

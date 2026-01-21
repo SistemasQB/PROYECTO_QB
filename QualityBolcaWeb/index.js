@@ -131,7 +131,7 @@ app.listen(PORT, () => {
 
 
 //cronos de ejecucion en tareas periodicas
-// const cronos = new miCron();
+// const cronos = new miCron(); 
 // cronos.iniciarCron('prueba1', '* * * * * *', () => {console.log(`trabajo ejectuado 0 veces`)});
 
 

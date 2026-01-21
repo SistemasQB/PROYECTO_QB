@@ -137,6 +137,9 @@ body {
 .card-content {
   padding: 1.5rem;
 }
+.ninguno{
+  display: none;
+}
 
 .card-content.table-container {
   padding: 0;
@@ -147,6 +150,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+.error{
+  color: red;
+  font-size: 0.875rem;
+  
 }
 
 @media (min-width: 640px) {

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle de Factura - Sistema de Gestión</title>
+  <link rel="stylesheet" href="/styles/contabilidad/estilos_consultarFactura.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div class="header-title">
+          <h1>Factura <span id="headerInvoiceNumber">FAC-2024-0001</span></h1>
+          <p>Sistema de Gestión de Facturas</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-outline" onclick="window.print()">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+          </svg>
+          Imprimir
+        </button>
+        <button type="button" class="btn btn-primary" id="btnSave" onclick="saveInvoice()">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+          </svg>
+          <span>Guardar</span>
+        </button>
+        <button type="button" class="btn btn-success" id="btnUpdate" onclick="updateInvoice()">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span>Actualizar</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <form id="invoiceForm">
+      <!-- General Information -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h2 class="card-title">Información General</h2>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-4">
+            <div class="form-group">
+              <label class="form-label" for="invoiceNumber">Número de Factura</label>
+              <input type="text" id="folioCompuesto" class="form-input" value="FAC-2024-0001" oninput="updateHeaderInvoiceNumber()">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="issueDate">Fecha de Emisión</label>
+              <input type="date" id="fechaEmision" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dueDate">Fecha de Vencimiento</label>
+              <input type="date" id="fechaVencimiento" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="estatusPago">Estado</label>
+              <select id="estatusPago" class="form-select">
+                <option value="draft">Borrador</option>
+                <option value="pending">Pendiente</option>
+                <option value="paid">Pagada</option>
+                <option value="overdue">Vencida</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issuer and Client Information -->
+      <div class="two-column">
+        <!-- Issuer Information -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Datos del Emisor</h2>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-2">
+              <div class="form-group">
+                <label class="form-label" for="issuerName">Razón Social</label>
+                <input type="text" id="issuerName" class="form-input" placeholder="Nombre de la empresa" value="QUALITY BOLCA">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="issuerTaxId">RFC / NIT</label>
+                <input type="text" id="issuerTaxId" class="form-input" placeholder="Identificación fiscal" value="QBO0902209C9">
+              </div>
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label" for="issuerAddress">Dirección</label>
+                <input type="text" id="issuerAddress" class="form-input" placeholder="Dirección completa" value="C.P. 20908, CARRETERA A PASO BLANCO No. 300 TEPETATES, JESUS MARIA, AGUASCALIENTES">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="issuerPhone">Teléfono</label>
+                <input type="tel" id="issuerPhone" class="form-input" placeholder="449-404-21-53">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="issuerEmail">Correo Electrónico</label>
+                <input type="email" id="issuerEmail" class="form-input" placeholder="facturacion@qualitybolca.com">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client Information -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Datos del Cliente</h2>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-2">
+              <div class="form-group">
+                <label class="form-label" for="clientName">Razón Social</label>
+                <input type="text" id="clientName" class="form-input" placeholder="Nombre del cliente">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="clientTaxId">RFC / NIT</label>
+                <input type="text" id="clientTaxId" class="form-input" placeholder="Identificación fiscal">
+              </div>
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label" for="clientAddress">Dirección</label>
+                <input type="text" id="clientAddress" class="form-input" placeholder="Dirección completa">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="clientPhone">Teléfono</label>
+                <input type="tel" id="clientPhone" class="form-input" placeholder="+00 000 000 0000">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="clientEmail">Correo Electrónico</label>
+                <input type="email" id="clientEmail" class="form-input" placeholder="correo@cliente.com">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line Items -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+            </svg>
+          </div>
+          <h2 class="card-title">Conceptos / Líneas de Detalle</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width: 40%;">Descripción</th>
+                  <th style="width: 12%;">Cantidad</th>
+                  <th style="width: 15%;">Precio Unitario</th>
+                  <th style="width: 10%;">IVA %</th>
+                  <th style="width: 15%;">Total</th>
+                  <th style="width: 8%;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="itemsTableBody">
+                <!-- Items will be added here dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <button type="button" class="btn btn-outline add-item-btn" onclick="addItem()">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Agregar Concepto
+          </button>
+
+          <!-- Totals -->
+          <div class="totals-section">
+            <div class="totals-card">
+              <div class="totals-row">
+                <span class="totals-label">Subtotal</span>
+                <span class="totals-value" id="subtotal">$0.00</span>
+              </div>
+              <div class="totals-row">
+                <span class="totals-label">IVA</span>
+                <span class="totals-value" id="totalTax">$0.00</span>
+              </div>
+              <div class="totals-row">
+                <span class="totals-label">Descuento</span>
+                <input type="number" id="discount" class="form-input totals-input" value="0" min="0" step="0.01" onchange="calculateTotals()">
+              </div>
+              <div class="totals-row total">
+                <span class="totals-label">Total</span>
+                <span class="totals-value" id="grandTotal">$0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Information -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
+          <h2 class="card-title">Información de Pago</h2>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-3">
+            <div class="form-group">
+              <label class="form-label" for="paymentMethod">Método de Pago</label>
+              <select id="paymentMethod" class="form-select">
+                <option value="transfer">Transferencia Bancaria</option>
+                <option value="cash">Efectivo</option>
+                <option value="card">Tarjeta de Crédito/Débito</option>
+                <option value="check">Cheque</option>
+                <option value="other">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="bankName">Banco</label>
+              <input type="text" id="bankName" class="form-input" placeholder="Nombre del banco">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="accountNumber">Número de Cuenta</label>
+              <input type="text" id="accountNumber" class="form-input" placeholder="XXXX-XXXX-XXXX-XXXX">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes and Terms -->
+      <div class="two-column">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Notas Adicionales</h2>
+          </div>
+          <div class="card-body">
+            <textarea id="notes" class="form-textarea" placeholder="Agregue cualquier nota o comentario adicional para el cliente..."></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Términos y Condiciones</h2>
+          </div>
+          <div class="card-body">
+            <textarea id="terms" class="form-textarea" placeholder="Especifique los términos y condiciones aplicables a esta factura..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Actions (Mobile) -->
+      <div class="footer-actions">
+        <button type="button" class="btn btn-outline" onclick="resetForm()">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" onclick="saveInvoice()">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+          </svg>
+          Guardar Factura
+        </button>
+        <button type="button" class="btn btn-success" onclick="updateInvoice()">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Actualizar
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Notification -->
+  <div id="notification" class="notification">
+    <span id="notificationText"></span>
+  </div>
+  <script src="/scripts/contabilidad/scriptsConsultarFactura.js"></script>
+  <script>
+    let miFactura = <%-JSON.stringify(factura)%>
+  </script>
+  </body>
+</html>

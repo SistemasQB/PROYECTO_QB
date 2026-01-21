@@ -288,7 +288,6 @@ controller.crudTickets = async (req, res) => {
         folio: folio,
         datosTicket: JSON.parse(datosTicket)
     }
-    console.log(usuario)
     switch(tipo){
         case 'insert':
             return res.json({ok: await clase.insertar({datosInsertar: campos, msg: `ticket levantado con exito, el folio de tu ticket es: ` })})
@@ -319,7 +318,6 @@ controller.requisicionEquipos =async (req, res)=>{
     try {
         let {codigoempleado} = req.usuario
         let empleado = await Empleados.findOne({where: {codigoempleado:codigoempleado}})
-        console.log(empleado)
         let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
         let criterios = {codigoempleado:codigoempleado}
         let datosEmpleado = await clase.obtener1Registro({criterio: criterios})
