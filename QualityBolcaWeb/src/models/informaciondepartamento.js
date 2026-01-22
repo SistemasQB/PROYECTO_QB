@@ -1,5 +1,4 @@
-import { DataTypes, Sequelize } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+import {DataTypes} from "sequelize";
 import db from "../config/db.js";
 
 const Informaciondepartamento = db.define('nom10003', {
@@ -33,7 +32,6 @@ const Informaciondepartamento = db.define('nom10003', {
     }
 },{
     tableName: 'nom10003',
-    sequelize,
     freezeTableName: true,
     timestamps: false
 }

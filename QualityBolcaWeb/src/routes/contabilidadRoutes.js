@@ -1,5 +1,6 @@
 import express from 'express'
 import contabilidadController from '../controllers/contabilidadController.js';
+import validarAcceso from '../middleware/validacion-permisos/calidad/permisos.js';
 
 
 const routerContabilidad = express.Router()

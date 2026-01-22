@@ -1,6 +1,7 @@
 import express from "express";
 import {default as adminController} from './../controllers/sistemasController.js';
 import protegetRuta from "../middleware/protegetRuta.js";
+import validarAcceso from "../middleware/validacion-permisos/calidad/permisos.js";
 
 
 const router = express.Router();
@@ -9,7 +10,9 @@ router.get('/inicio', adminController.inicio);
 
 //rutas de tickets
 router.get('/tickets', protegetRuta,adminController.levantamientoTicket)
-router.get('/admin-tickets', protegetRuta,adminController.administracionTickets)
+router.get('/admin-tickets', protegetRuta,validarAcceso({
+    roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),
+    adminController.administracionTickets)
 router.get('/crudTickets', adminController.crudTickets)
 router.post('/crudTickets', protegetRuta,adminController.crudTickets)
 router.post('/tickets/:id/asignar', protegetRuta,adminController.asignarTicket);
