@@ -1,34 +1,29 @@
 import jwt from "jsonwebtoken";
 import { Usuario } from '../models/index.js';
-const protegerRuta = async(req, res, next) =>{
-    //Verificar si hay un tok<en
+
+const rutasPublicas = async(req, res, next) =>{
+    //Verificar si hay un token
     const { _token } = req.cookies
     
     if(!_token){
-        req.session.redirectTo = req.originalUrl;
-        return res.redirect('/')
+        return next();
     }
     //Comprobar el token
     try {
+        
         const decoded = jwt.verify(_token, process.env.JWT_SECRET)
         const usuario = await Usuario.scope('eliminarPassword').findByPk(decoded.codigoempleado)
         //Almacenar el usuario al Req
         if (usuario) {
-            req.usuario = usuario
-            console.log(req.path)
-             if (req.path === '/')  {
-                // Si ya está logueado y pide login, lo mandas a inicio
+            if (req.path === '/'){
                 return res.redirect('/inicio');
             }
-        } else {    
-            return res.redirect('/')
         }
         return next();
-
     } catch (error) {
-        return res.clearCookie('_token').redirect('/')
+        return next();
     }
     next();
 }
 
-export default protegerRuta
+export default rutasPublicas;

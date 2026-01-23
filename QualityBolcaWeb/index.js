@@ -123,6 +123,10 @@ app.use('/infraestructura', csrfProtection,routers.infraestructuraRouters);
 app.use('/contabilidad',  csrfProtection,routers.contabilidadRouters);
 app.use('/servicioCliente',  csrfProtection,routers.servicioClienteRouters);
 app.use('/rentabilidad',csrfProtection, routers.rentabilidadRouters);
+app.use((_, res) => {
+  return res.render('admin/default/paginaNoEncontrada.ejs');
+});
+
 app.use(express.json());
 
 app.listen(PORT, () => {

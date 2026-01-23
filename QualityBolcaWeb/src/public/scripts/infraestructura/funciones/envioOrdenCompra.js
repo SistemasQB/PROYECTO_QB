@@ -1,12 +1,19 @@
 import nodemailer from "../../../clases/nodemailer.js";
+import azureClase from "../../../clases/azureClass.js"; 
 
-function envioOC({datos}){    
+async function envioOC({datos}){    
     try{
-    console.log(datos)
     let partidas = datos.servicios.partidas
     let f = new Date(datos.fecha)
     const ano = f.getFullYear()
     let html = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden de Compra</title>
+    </head>
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
     <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f4f4f4; padding: 40px 20px;">
         <tr>
@@ -68,18 +75,6 @@ function envioOC({datos}){
                                 // </tr>
                                 `
 
-                                // <tr>
-                                //         <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600;   width: 8%;">No.</td>
-                                //         <td style="padding: 15px 12px; text-align: left; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 40%;">Servicio/Producto</td>
-                                //         <td style="padding: 15px 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 13%;">Cantidad</td>
-                                //         <td style="padding: 15px 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 19%;">Precio Unit.</td>
-                                //         <td style="padding: 15px 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 20%;">Precio Total</td>
-                                //     </tr>
-                                // <tr>
-                                //     <td style="border: 1px solid #cccccc; padding: 12px; font-size: 12px; color: #333333;">
-                                //         [DESCRIPCIÓN DETALLADA DE LA ORDEN]
-                                //     </td>
-                                // </tr>
                                     for (let i = 0; i < datos.servicios.partidas.length; i++) {
                                         let parti = partidas[i]
                                         html +=`<tr style="border-bottom: 1px solid #e1e8ed; background-color: #ffffff;">
@@ -148,9 +143,9 @@ function envioOC({datos}){
                                 <tr>
                                      
                                     <td style="width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
-                                        <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px; transition: all 0.3s ease;">
+                                        <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px; ">
                                             <div style="width: 100px; height: 100px; margin: 0 auto 15px auto; border-radius: 5%; overflow: hidden; border: 3px solid #2c3e50; background-color: #ffffff;">
-                                                <img src="https://www.qualitybolca.net/img/JOSA.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                                <img src="https://www.qualitybolca.net/img/JOSA.jpg" alt="" style="width: 100%; height: 100%;  display: block;">
                                             </div>
                                             <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">SANCHEZ LOPEZ JOSAAT EDUARDO</p>
                                             <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">ANALISTA DE GESTION DE GASTOS</p>
@@ -158,9 +153,9 @@ function envioOC({datos}){
                                     </td>
                                      <!-- Firma 2  -->
                                     <td style="width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
-                                        <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px; transition: all 0.3s ease;">
+                                        <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px; ">
                                             <div style="width: 100px; height: 100px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 3px solid #2c3e50; background-color: #ffffff;">
-                                                <img src="https://www.qualitybolca.net/img/LESS.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                                <img src="https://www.qualitybolca.net/img/LESS.jpg" alt="" style="width: 100%; height: 100%;  display: block;">
                                             </div>
                                             <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">REYES NICASIO LESLIE CECILIA</p>
                                             <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">AUXILIAR DE COMPRAS Y SUMINISTROS</p>
@@ -168,9 +163,9 @@ function envioOC({datos}){
                                     </td>
                                      <!-- Firma 3  -->
                                     <td style="width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
-                                        <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px; transition: all 0.3s ease;">
+                                        <div style="background-color: #f8f9fa; border: 2px solid #e1e8ed; border-radius: 8px; padding: 20px 15px;">
                                             <div style="width: 100px; height: 100px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; border: 3px solid #2c3e50; background-color: #ffffff;">
-                                                <img src="https://www.qualitybolca.net/img/GABI.jpg" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                                <img src="https://www.qualitybolca.net/img/GABI.jpg" alt="" style="width: 100%; height: 100%;  display: block;">
                                             </div>
                                             <p style="margin: 0; font-size: 15px; color: #1a1a2e; font-weight: 600; line-height: 1.4;">CADENA MENDOZA EVA GABRIELA</p>
                                             <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d; font-weight: 500;">JEFE DE COMPRAS Y SUMINISTROS</p>
@@ -194,28 +189,24 @@ function envioOC({datos}){
         </tr>
     </table>
 </body>
-    `
+</html>
+    `                                    
+    const miAzureClase = new azureClase({ 
+        idAplicacion: 'id_AplicacionCompras',
+        idDirectorio: 'id_DirectorioCompras', 
+        secreto: 'secreto_compras', 
+        correo: 'correoCompras'
+     })
+    return await miAzureClase.enviarCorreo({destinatario:datos.informacionProveedor.correo,asunto:'ORDEN DE COMPRA DE QUALITY BOLCA',html:html,texto:'texto'})
+    // const cor = new nodemailer()
+    // cor.enviarCorreo({Correo: dato});
     
-    let dato = {
-        destinatario: datos.informacionProveedor.correo,
-        asunto:'ORDEN DE COMPRA DE QUALITY BOLCA',
-        texto:'TEXTO',
-        html:html
-    }
-    
-    
-    const cor = new nodemailer()
-    cor.enviarCorreo({Correo: dato});
-    return true
 }catch(ex){
         console.log(`surgio un error: ${ex}`)
         return false
     }
 }
 
-function deserializar(dato){
-    return   JSON.parse(dato)
-}
 function formatearPesos(monto){
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',

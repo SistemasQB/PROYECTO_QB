@@ -3,12 +3,14 @@ import express from "express";
 import {default as customerController} from './../controllers/customerController.js';
 import upload3 from "../middleware/cargararchivo.js";
 import csurf from "csurf";
+import protegerRuta from '../middleware/protegetRuta.js';
+import rutasPublicas from "../middleware/rutasPublicas.js";
 // import { csrfProtection } from '../../index.js';
 
 
 const router = express.Router();
 //rutas de login
-router.get('/', customerController.formularioLogin);
+router.get('/',rutasPublicas,customerController.formularioLogin);
 router.get('/login', customerController.formularioLogin);
 router.post('/login', customerController.autenticar);
 //rutas de registro
@@ -21,8 +23,6 @@ router.get('/olvide-password', customerController.formularioOlvidePassword);
 router.post('/olvide-password', customerController.resetPassword)
 router.get('/olvide-password/:token', customerController.comprobarToken)
 router.post('/olvide-password/:token', customerController.nuevoPassword)
-
-
 
 router.get('/requisicion', customerController.requisicion);
 router.post('/requisicion', customerController.requisicion2);

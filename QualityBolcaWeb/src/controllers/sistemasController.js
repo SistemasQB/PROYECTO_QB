@@ -18,6 +18,7 @@ import {
 import { Op, QueryTypes, where } from 'sequelize'
 import Informaciongch from "../models/informaciongch.js";
 import Informaciondepartamento from "../models/informaciondepartamento.js";
+import e from "express";
 const app = express();
 
 const controller = {};
@@ -597,26 +598,18 @@ function obtenerHorasPorPrioridad(prioridad) {
 }
 
 controller.crudTickets = async (req, res) => {
-    //console.log('ENTRÓ A crudTickets');
-    //console.log(req.body);
-    console.log('REQ.USUARIO:', req.usuario);
-    //console.log('SESSION:', req.session);
-    //console.log('SESSION USUARIO:', req.session.usuario);
     try {
         //  LISTAR TICKETS (GET)
         if (req.method === 'GET') {
             const tickets = await modelosSistemas.modeloTickets.findAll({
                 order: [['id', 'DESC']]
             });
-
-
             const ticketsParseados = tickets.map(t => ({
                 ...t.toJSON(),
                 datosTicket: typeof t.datosTicket === 'string'
                     ? JSON.parse(t.datosTicket)
                     : t.datosTicket
             }));
-
             return res.json({
                 ok: true,
                 tickets: ticketsParseados
@@ -834,8 +827,7 @@ controller.reanudarTicket = async (req, res) => {
         res.json({ ok: true });
 
     } catch (error) {
-        console.error('❌ Error reanudar ticket:', error);
-        res.status(500).json({ ok: false });
+        res.status(500).json({ ok: false});
     }
 };
 

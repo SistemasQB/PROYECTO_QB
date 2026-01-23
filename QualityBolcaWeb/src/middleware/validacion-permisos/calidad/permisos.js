@@ -4,8 +4,7 @@ return  (req, res, next) => {
     const {roles, permisos, jerarquia} = campos
   
     if (!permisosUsuario || (!roles || !permisos || !jerarquia)) {
-      return res.status(401).render('admin/default/permisos_insuficientes.ejs',{ error: 'Acceso denegado: usuario no autenticado o sin datos de acceso' ,csrfToken: req.csrfToken() });
-      return res.status(401).json({ error: 'Usuario no autenticado o sin datos de acceso' });
+      return res.status(401).render('admin/default/permisos_insuficientes.ejs',{ error: 'Acceso denegado: usuario no autenticado o sin datos de acceso'});
     }
     if (permisosUsuario.roles.includes('administrador')) {
       return next();
