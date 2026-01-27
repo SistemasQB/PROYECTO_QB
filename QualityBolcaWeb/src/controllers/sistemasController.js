@@ -585,7 +585,7 @@ controller.formularioTicket = async (req, res) => {
 }
 
 function obtenerHorasPorPrioridad(prioridad) {
-    switch(prioridad) {
+    switch (prioridad) {
         case 'low':
             return 72;
         case 'medium':
@@ -672,6 +672,7 @@ controller.crudTickets = async (req, res) => {
                 ticketParseado.slaInicio = null;
                 ticketParseado.slaFin = null;
                 ticketParseado.slaActivo = false;
+                ticketParseado.fechaCreacion = new Date().toISOString();
 
 
                 const nuevoTicket = await modelosSistemas.modeloTickets.create({
@@ -700,6 +701,47 @@ controller.crudTickets = async (req, res) => {
         return res.status(500).json({ ok: false });
     }
 }
+controller.misTickets = (req, res) => {
+    try {
+        const codigoEmpleado = req.session.usuario.codigoempleado;
+
+        // Obtener TODOS los tickets
+        const ticketsDB = await crudTickets('select');
+        // Filtrar solo los del usuario
+        const misTickets = ticketsDB
+            .map(t => JSON.parse(t.datosTicket))
+            .filter(t => t.codigoEmpleado === codigoEmpleado)
+            .map(t => ({
+                id: t.folio,
+                asunto: t.titulo,
+                fecha: t.fechaCreacion,
+                estatus: normalizarEstatus(t.estatus),
+                tecnico: t.asignadoa ? `Ing. ${t.asignadoa}` : 'Pendiente de asignar'
+            }));
+
+        return res.render('admin/sistemas/misTickets.ejs', {
+            csrfToken: req.csrfToken(),
+            tickets: misTickets
+        });
+    } catch (error) {
+        console.error('Error en misTickets:', error);
+        res.render('admin/sistemas/misTickets', {
+            tickets: []
+        });
+    }
+}
+
+function normalizarEstatus(estatus) {
+    switch (estatus) {
+        case 'open': return 'abierto';
+        case 'progress': return 'proceso';
+        case 'pending': return 'pendiente';
+        case 'resolved': return 'resuelto';
+        case 'closed': return 'cerrado';
+        default: return estatus;
+    }
+}
+
 controller.administracionTickets = (req, res) => {
     try {
         return res.render('admin/sistemas/administracion_tickets.ejs', {

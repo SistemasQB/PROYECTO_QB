@@ -76,7 +76,8 @@ async function cargarTicketsDesdeBackend() {
             slaConsumido: t.datosTicket?.slaConsumido ?? 0,
             slaActivo: t.datosTicket?.slaActivo ?? false,
             slaFin: t.datosTicket?.slaFin ?? null,
-            asignadoA: t.datosTicket?.asignadoA ?? null
+            asignadoA: t.datosTicket?.asignadoA ?? null,
+            fecha: t.datosTicket?.fechaCreacion ?? null
         }));
 
         filteredData = [...ticketsData];
@@ -85,6 +86,20 @@ async function cargarTicketsDesdeBackend() {
     } catch (error) {
         console.error('Error cargando tickets:', error);
     }
+}
+
+function formatearFecha(fechaISO) {
+    if (!fechaISO) return 'N/D';
+
+    const fecha = new Date(fechaISO);
+
+    return fecha.toLocaleString('es-MX', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 // Función para renderizar la tabla
@@ -123,12 +138,6 @@ function renderTable() {
                 <div class="actions-cell">
                     <button class="action-btn view" title="Ver detalles" onclick="verDetallesTicket('${ticket.id}')">
                         <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="action-btn edit" title="Editar">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button class="action-btn delete" title="Eliminar">
-                        <i class="fas fa-pause"></i>
                     </button>
                 </div>
             </td>
@@ -272,7 +281,7 @@ function obtenerBotonesPorEstatus(ticket) {
         return `<button id="btnReanudar">Reanudar</button>`;
     }
 
-    if(ticket.estatus === 'resolved') {
+    if (ticket.estatus === 'resolved') {
         return `<button id="cerrarTicket">Cerrar Ticket</button>`
     }
 
@@ -459,7 +468,7 @@ async function terminarTicket() {
 
 async function cerrarTicket() {
 
-    if(!confirm('¿Estás seguro de cerrar este ticket? Esta acción es definitiva.')) {
+    if (!confirm('¿Estás seguro de cerrar este ticket? Esta acción es definitiva.')) {
         return;
     }
 
@@ -472,7 +481,7 @@ async function cerrarTicket() {
             }
         });
 
-        if(!res.ok) throw new Error('Error al cerrar ticket');
+        if (!res.ok) throw new Error('Error al cerrar ticket');
 
         alert('ticket cerrado correctamente');
         cerrarModal();
@@ -526,13 +535,14 @@ function verDetallesTicket(id) {
                     <p><strong>Título:</strong> ${ticketActual.titulo}</p>
                     <p><strong>Categoría:</strong> ${ticketActual.categoria}</p>
                     <p><strong>Prioridad:</strong> ${priorityLabels[ticketActual.prioridad]}</p>
+                    <p><strong>Estatus:</strong> ${statusLabels[ticketActual.estatus]}</p>
                 </div>
 
                 <div class="ticket-col">
                     <p><strong>Usuario:</strong> ${ticketActual.nombreUsuario}</p>
                     <p><strong>Departamento:</strong> ${ticketActual.departamento}</p>
+                    <p><strong>Fecha:</strong> ${formatearFecha(ticketActual.fecha)} </p>
                     <p><strong>Asignado a:</strong> ${ticketActual.asignadoA ?? 'No asignado'}</p>
-                    <p><strong>Estatus:</strong> ${statusLabels[ticketActual.estatus]}</p>
                 </div>
             </div>
 
@@ -577,7 +587,7 @@ function verDetallesTicket(id) {
     if (document.getElementById('btnTerminar'))
         document.getElementById('btnTerminar').onclick = terminarTicket;
 
-    if(document.getElementById('cerrarTicket'))
+    if (document.getElementById('cerrarTicket'))
         document.getElementById('cerrarTicket').onclick = cerrarTicket;
 
     // Pintar SLA inmediatamente

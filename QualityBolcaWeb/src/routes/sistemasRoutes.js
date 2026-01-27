@@ -9,6 +9,7 @@ router.get('/inicio', adminController.inicio);
 
 //rutas de tickets
 router.get('/tickets', protegetRuta,adminController.levantamientoTicket)
+router.get('/misTickets', protegetRuta, adminController.misTickets)
 router.get('/admin-tickets', protegetRuta,adminController.administracionTickets)
 router.get('/crudTickets', adminController.crudTickets)
 router.post('/crudTickets', protegetRuta,adminController.crudTickets)

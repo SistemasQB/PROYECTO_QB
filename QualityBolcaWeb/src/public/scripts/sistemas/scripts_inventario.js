@@ -2,7 +2,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   let currentStatus = 'assigned';
-  let tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+
+  seedInventory();
+  let tickets = JSON.parse(localStorage.getItem('inventory') || '[]');
 
   // Traducciones de estados
   const statusLabels = {
@@ -30,62 +32,91 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Actualizar estadísticas
   function updateStats() {
-    const stats = {
-      assigned: tickets.filter(t => t.status === 'assigned').length,
-      custody: tickets.filter(t => t.status === 'custody').length,
-      repair: tickets.filter(t => t.status === 'repair').length,
-      decommissioned: tickets.filter(t => t.status === 'decommissioned').length
-    };
+    document.getElementById('statAssigned').textContent =
+      inventory.filter(i => i.status === 'assigned').length;
 
-    document.getElementById('statAssigned').textContent = stats.assigned;
-    document.getElementById('statCustody').textContent = stats.custody;
-    document.getElementById('statRepair').textContent = stats.repair;
-    document.getElementById('statDecommissioned').textContent = stats.decommissioned;
+    document.getElementById('statCustody').textContent =
+      inventory.filter(i => i.status === 'custody').length;
+
+    document.getElementById('statRepair').textContent =
+      inventory.filter(i => i.status === 'repair').length;
+
+    document.getElementById('statDecommissioned').textContent =
+      inventory.filter(i => i.status === 'decommissioned').length;
   }
 
   // Renderizar tabla de tickets
-  function renderTickets() {
-    const tbody = document.getElementById('ticketsTableBody');
-    const filteredTickets = tickets.filter(t => t.status === currentStatus);
+  function renderInventory() {
+    const list = document.getElementById('inventoryList');
+    list.innerHTML = '';
 
-    if (filteredTickets.length === 0) {
-      tbody.innerHTML = `
-        <tr class="empty-state">
-          <td colspan="8">
-            <div class="empty-content">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="12" y1="18" x2="12" y2="12"></line>
-                <line x1="9" y1="15" x2="15" y2="15"></line>
-              </svg>
-              <p>No hay tickets en este estado</p>
-            </div>
-          </td>
-        </tr>
-      `;
+    const filtered = inventory.filter(item => item.status === currentStatus);
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<p class="empty">No hay activos en este estado</p>`;
       return;
     }
 
-    tbody.innerHTML = filteredTickets.map(ticket => `
-      <tr>
-        <td><strong>${ticket.id}</strong></td>
-        <td>${ticket.title}</td>
-        <td><span class="category-badge">${categoryLabels[ticket.category]}</span></td>
-        <td><span class="priority-badge priority-${ticket.priority}">${priorityLabels[ticket.priority]}</span></td>
-        <td>${ticket.name}</td>
-        <td>${ticket.department}</td>
-        <td>${new Date(ticket.createdAt).toLocaleDateString('es-ES')}</td>
-        <td>
-          <div class="action-buttons">
-            ${getActionButtons(ticket)}
-          </div>
-        </td>
-      </tr>
-    `).join('');
+    filtered.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'inventory-card';
 
-    attachActionListeners();
+      card.innerHTML = `
+      <h3>${item.name}</h3>
+      <p><strong>Tipo:</strong> ${item.type}</p>
+      <p><strong>Serie:</strong> ${item.serial}</p>
+      <p><strong>Ubicación:</strong> ${item.location}</p>
+      <p><strong>Responsable:</strong> ${item.responsible}</p>
+      <span class="badge ${item.status}">${item.status}</span>
+    `;
+
+      list.appendChild(card);
+    });
   }
+
+
+  function seedInventory() {
+    if (localStorage.getItem('inventory')) return;
+
+    const inventory = [
+      {
+        id: 'INV-001',
+        title: 'Laptop Dell Latitude 5420',
+        category: 'hardware',
+        serial: 'DL-5420-AX92',
+        assignedTo: 'Juan Pérez',
+        area: 'Sistemas',
+        status: 'assigned',
+        lastMaintenance: '2025-01-10'
+      },
+      {
+        id: 'INV-003',
+        title: 'Laptop Dell Latitude 6420',
+        category: 'hardware',
+        serial: 'DL-5420-6384',
+        assignedTo: 'Alex Robledo',
+        area: 'Sistemas',
+        status: 'assigned',
+        lastMaintenance: '2025-03-10'
+      },
+      {
+        id: 'INV-005',
+        title: 'Celular samsung',
+        category: 'hardware',
+        serial: 'DL-5420-6384',
+        assignedTo: 'Alex Robledo',
+        area: 'Sistemas',
+        status: 'assigned',
+        lastMaintenance: '2025-03-10'
+      }
+    ];
+
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+  }
+
+
+  seedInventory();
+  let inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
 
   // Obtener botones de acción según el estado
   function getActionButtons(ticket) {
@@ -234,16 +265,17 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Cambiar estado del ticket
-  window.changeStatus = (ticketId, newStatus) => {
-    const ticketIndex = tickets.findIndex(t => t.id === ticketId);
-    if (ticketIndex === -1) return;
+  function changeStatus(id, newStatus) {
+    const item = inventory.find(i => i.id === id);
+    if (!item) return;
 
-    tickets[ticketIndex].status = newStatus;
-    localStorage.setItem('tickets', JSON.stringify(tickets));
+    item.status = newStatus;
+    localStorage.setItem('inventory', JSON.stringify(inventory));
 
     updateStats();
-    renderTickets();
-  };
+    renderInventory();
+    seedInventory();
+  }
 
   // Eliminar ticket
   window.deleteTicket = (ticketId) => {
@@ -257,39 +289,16 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Cambio de pestañas
-  const tabs = document.querySelectorAll('.tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function() {
-      tabs.forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      currentStatus = this.dataset.status;
-      renderTickets();
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      currentStatus = tab.dataset.status;
+      renderInventory();
     });
   });
 
-  // Limpiar todos los tickets
-  document.getElementById('clearAllBtn').addEventListener('click', () => {
-    if (!confirm('¿Está seguro de que desea eliminar TODOS los tickets?')) return;
-
-    localStorage.removeItem('tickets');
-    tickets = [];
-    updateStats();
-    renderTickets();
-  });
-
-  // Cerrar modal
-  document.getElementById('closeModal').addEventListener('click', () => {
-    document.getElementById('ticketModal').classList.remove('show');
-  });
-
-  // Cerrar modal al hacer clic fuera
-  document.getElementById('ticketModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-      this.classList.remove('show');
-    }
-  });
-
-  // Renderizado inicial
   updateStats();
-  renderTickets();
-});
+  renderInventory();
+})

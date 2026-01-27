@@ -1,0 +1,144 @@
+<% 
+    const tickets = [
+        { 
+            id: 'DEMO-01', 
+            asunto: 'Prueba de diseño Abierto', 
+            fecha: 'Hoy', 
+            estatus: 'abierto',
+            tecnico: 'Pendiente de asignar' // Sin técnico aún
+        },
+        { 
+            id: 'DEMO-02', 
+            asunto: 'Prueba de diseño Proceso', 
+            fecha: 'Ayer', 
+            estatus: 'proceso',
+            tecnico: 'Ing. Carlos Pérez'
+        },
+        { 
+            id: 'DEMO-03', 
+            asunto: 'Prueba de diseño Resuelto', 
+            fecha: 'Antier', 
+            estatus: 'resuelto',
+            tecnico: 'Lic. Ana Martínez'
+        },
+        { 
+            id: 'DEMO-04', 
+            asunto: 'Prueba de diseño Resuelto', 
+            fecha: 'Antier', 
+            estatus: 'cerrado',
+            tecnico: 'Ing. Omar Vazquez'
+        },
+        { 
+            id: 'DEMO-05', 
+            asunto: 'Prueba de lol', 
+            fecha: 'Antier', 
+            estatus: 'pendiente',
+            tecnico: 'Ing. Alex Robledo'
+        },
+        { 
+            id: 'DEMO-05', 
+            asunto: 'Prueba de lol', 
+            fecha: 'Antier', 
+            estatus: 'Abierto',
+            tecnico: 'Ing. Guillermo Reyes'
+        },
+        { 
+            id: 'DEMO-05', 
+            asunto: 'Prueba de lol', 
+            fecha: 'Antier', 
+            estatus: 'Abierto',
+            tecnico: 'Ing. Guillermo Reyes'
+        },
+        { 
+            id: 'DEMO-05', 
+            asunto: 'Prueba de lol', 
+            fecha: 'Antier', 
+            estatus: 'Abierto',
+            tecnico: 'Ing. Guillermo Reyes'
+        },
+    ]; 
+%>
+
+    <!DOCTYPE html>
+    <html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mis Tickets</title>
+        <link rel="stylesheet" href="/styles/sistemas/misTickets.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="main-container">
+            <header class="module-header">
+                <div>
+                    <h1>Mis Tickets</h1>
+                    <p class="subtitle">Gestiona y da seguimiento a tus solicitudes.</p>
+                </div>
+                <button class="btn-new-ticket" onclick="location.href='tickets'">
+                    <span class="material-icons-round">add</span> Nuevo Ticket
+                </button>
+            </header>
+
+            <section class="controls-bar">
+                <div class="search-box">
+                    <span class="material-icons-round">search</span>
+                    <input type="text" id="searchInput" placeholder="Buscar por asunto o ID...">
+                </div>
+
+                <div class="filter-box">
+                    <select id="statusFilter">
+                        <option value="todos">Todos los estatus</option>
+                        <option value="abierto">Abiertos</option>
+                        <option value="proceso">En Proceso</option>
+                        <option value="pendiente">Pendientes</option>
+                        <option value="resuelto">Resueltos</option>
+                        <option value="cerrado">Cerrados</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="tickets-grid" id="ticketsContainer">
+                <% if (tickets && tickets.length> 0) { %>
+                    <% tickets.forEach(function(ticket) { %>
+                        <article class="ticket-card" data-status="<%= ticket.estatus.toLowerCase() %>">
+                            <div class="ticket-header">
+                                <span class="ticket-id">#<%= ticket.id %></span>
+                                <span class="status-badge status-<%= ticket.estatus.toLowerCase() %>">
+                                    <%= ticket.estatus %>
+                                </span>
+                            </div>
+                            <div class="ticket-body"> 
+                                <h3 class="ticket-subject">
+                                    <%= ticket.asunto %>
+                                </h3>
+                                <p class="ticket-date">
+                                    <span class="material-icons-round icon-sm">calendar_today</span>
+                                    <%= ticket.fecha %>
+                                </p>
+                                <p class="ticket-tech">
+                                    <span class="material-icons-round icon-sm">engineering</span>
+                                    <%= ticket.tecnico %>
+                                </p>
+                            </div>
+                            <div class="ticket-footer">
+                                
+                            </div>
+                        </article>
+                        <% }); %>
+                            <% } else { %>
+                                <div class="empty-state">
+                                    <p>No tienes tickets registrados aún.</p>
+                                </div>
+                                <% } %>
+            </section>
+
+        </div>
+
+        <script src="/scripts/sistemas/misTickets.js"></script>
+
+    </body>
+
+    </html>
