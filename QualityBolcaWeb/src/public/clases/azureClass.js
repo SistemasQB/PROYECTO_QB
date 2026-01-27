@@ -4,7 +4,6 @@ import axios from "axios";
 
 class azureClass {
     constructor({idAplicacion,idDirectorio,secreto,correo}){ 
-        console.log(idAplicacion,idDirectorio,secreto,correo)
         if(!idAplicacion || !idDirectorio || !secreto || !correo) throw new Error( 'se necesitan los datos de azure')
 
         this.id_Aplicacion = process.env[idAplicacion]

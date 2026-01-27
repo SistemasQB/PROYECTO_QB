@@ -2,8 +2,9 @@ import sequelizeClase from "../public/clases/sequelize_clase.js";
 import modelosInfraestructura from "../models/infraestructura/barril_modelo_compras.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import envioOC from "../public/scripts/infraestructura/funciones/envioOrdenCompra.js";
-import { Op, or} from "sequelize";
+import { Op} from "sequelize";
 import manejadorErrores from "../middleware/manejadorErrores.js";
+import nodemailerClase from "../public/clases/nodemailer.js";
 
 
 
@@ -95,17 +96,27 @@ infraestructuraController.crudOrdenesCompra = async(req, res)=>{
                     let orden = await clase.obtener1Registro({criterio:{id:id}})
                     if (orden.estatus == 'ENVIADA' ) return res.json({ok:true, msg:'la OC ya habia sido enviada'})
                     delete campos.id
+                    ///parseo de la informacion
+                    orden.informacionProveedor = JSON.parse(orden.informacionProveedor)
+                    orden.servicios = campos.servicios
+                    orden.observaciones = campos.observaciones    
+
+                    //configuracion que se debe de eliminar
+                    const configuracion = new nodemailerClase({datosSmtp:{host: process.env.EMAIL_HOST, port: process.env.EMAIL_PORT, auth: {user: process.env.EMAILR_USER, pass: process.env.EMAILR_PASS,}}})
+                    let confirmacion = await configuracion.enviarCorreo({Datoscorreo: {destinatario: orden.informacionProveedor.correo, asunto: `ORDEN DE COMPRA DE QUALITY BOLCA`,
+                    texto: 'orden compra', html: configuracion.htmlOrdenesCompra({datos:orden}),cc:"grupo.compras@qualitybolca.com"}})
+                    
+                    if(!confirmacion) return res.json({ok:confirmacion, msg:'no se pudo notificar al proveedor'})
                     let envio = await clase.actualizarDatos({id: id, datos: campos})
                     if (!envio) return res.json({ok:envio, msg:'no se pudo actualizar la OC'})
-                        orden.servicios = campos.servicios
-                        orden.observaciones = campos.observaciones
-                        orden.informacionProveedor = JSON.parse(orden.informacionProveedor)
-                        let envioO = envioOC({datos: orden})
-                        if (!envioO) return res.json({ok:envioO, msg:'no se pudo enviar la OC'})
-                    return res.json({ok: envioO, msg:'OC enviada exitosamente'})
+                        //let envioO = envioOC({datos: orden})
+                        // if (!envioO) return res.json({ok:envioO, msg:'no se pudo enviar la OC'})
+                    return res.json({ok: true, msg:'OC enviada exitosamente'})
             }    
     } catch (ex) {
-        manejadorErrores(res,ex)
+        console.log(ex)
+        return res.json({ok: false, msg: ex, error: ex.message})
+        
     }
     
 }
@@ -131,29 +142,37 @@ infraestructuraController.pedidoInsumos = async(req, res) => {
 }
 infraestructuraController.crudPedidoInsumos = async(req, res) => {
     try {
-        
         let campos = req.body
         delete campos._csrf
         let usuario = req.usuario.codigoempleado
         let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
         let datosUsuario =  await clase.obtener1Registro({criterio:{codigoempleado:usuario}})
         clase = new sequelizeClase({modelo: modelosInfraestructura.modelo_pedido_insumos})
-        console.log('va a obtener el id')
+        const envio = new nodemailerClase({datosSmtp:{host: process.env.EMAIL_HOST, port: process.env.EMAIL_PORT, auth: {user: process.env.EMAILR_USER, pass: process.env.EMAILR_PASS,}}})
+        let confirmacion = false
         const id = campos.id
-
         switch(campos.tipo){
             case 'insert':
                 delete campos.tipo
                 campos.solicitante = datosUsuario.nombrelargo
                 let respuesta = await clase.insertar({datosInsertar: campos})
                 if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
-                return res.json({ok:  respuesta, msg: 'informacion enviada exitosamente'})
+                confirmacion = await envio.enviarCorreo({Datoscorreo: {destinatario: 'grupo.compras@qualitybolca.com', asunto: `nuevo pedido de insumos de (${campos.solicitante})`, texto: 'pedido de insumos', html: envio.htmlPedidoInsumos()}})
+                if (!confirmacion) return res.json({ok: true, msg: 'la requisicion se hizo, pero no se pudo notificar al area de compras'})
+                    return res.json({ok:  respuesta, msg: 'informacion enviada exitosamente'})
             case 'update':
                 delete campos.id
                 delete campos.tipo
-                console.log("llego antes de actualizar");
+                const solicitante = campos.solicitante
+                delete campos.solicitante
                 let actualizado = await clase.actualizarDatos({id: id, datos: campos})
                 if (!actualizado) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
+                clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
+                let datosSolicitante =  await clase.obtener1Registro({criterio:{nombrelargo:solicitante}})
+                if (!datosSolicitante) return res.json({ok: true, msg: 'informacion actualizada exitosamente'})
+                    datosSolicitante.id = id
+                console.log(datosSolicitante)
+                actualizado = envio.enviarCorreo({Datoscorreo: {destinatario: datosSolicitante.correoelectronico, asunto: `pedido de insumos Surtido`, texto: 'pedido surtido', html: envio.htmlConfirmacionSurtimiento(datosSolicitante)}})
                 return res.json({ok:actualizado, msg: 'informacion actualizada exitosamente'})
             case 'delete':
                 let eliminado = await clase.eliminar({id: id})
@@ -162,12 +181,12 @@ infraestructuraController.crudPedidoInsumos = async(req, res) => {
             case 'rechazo':
                 delete campos.tipo
                 delete campos.id
-                console.log(campos);
                 let rechazado = await clase.actualizarDatos({id: id, datos: campos})
                 if (!rechazado) return res.json({ok: false, msg: 'no se pudo rechazar la informacion'})
                 return res.json({ok:rechazado, msg: 'informacion actualizada exitosamente'})
         }    
     } catch (error) {
+        console.log(error)
         manejadorErrores(res,error)
     }
     

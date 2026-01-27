@@ -23,7 +23,7 @@ async function envioOC({datos}){
                     
                      <!-- Encabezado  -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 40px 40px 30px 40px; text-align: center;">
+                        <td style="background: background-color:#1a1a2e; padding: 40px 40px 30px 40px; text-align: center;">
                             <h1 style="margin: 0; color: #000000; font-size: 32px; font-weight: 600;">ORDEN DE COMPRA</h1>
                         </td>
                     </tr>
@@ -178,7 +178,7 @@ async function envioOC({datos}){
 
                      <!-- Pie de página  -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 25px 40px; text-align: center;">
+                        <td style="background-color: #16213e ; padding: 25px 40px; text-align: center;">
                             <p style="margin: 0 0 5px 0; font-size: 14px; color: #a8b2d1; line-height: 1.6;">Saludos cordiales</p>
                             <p style="margin: 0; font-size: 12px; color: #6c7a9d; line-height: 1.6;">QUALITY BOLCA | +52 449 243 5163 | leslie.reyes@qualitybolca.net</p>
                         </td>
@@ -191,15 +191,15 @@ async function envioOC({datos}){
 </body>
 </html>
     `                                    
-    const miAzureClase = new azureClase({ 
-        idAplicacion: 'id_AplicacionCompras',
-        idDirectorio: 'id_DirectorioCompras', 
-        secreto: 'secreto_compras', 
-        correo: 'correoCompras'
-     })
-    return await miAzureClase.enviarCorreo({destinatario:datos.informacionProveedor.correo,asunto:'ORDEN DE COMPRA DE QUALITY BOLCA',html:html,texto:'texto'})
-    // const cor = new nodemailer()
-    // cor.enviarCorreo({Correo: dato});
+    // const miAzureClase = new azureClase({ 
+    //     idAplicacion: 'id_AplicacionCompras',
+    //     idDirectorio: 'id_DirectorioCompras', 
+    //     secreto: 'secreto_compras', 
+    //     correo: 'correoCompras'
+    //  })
+    // return await miAzureClase.enviarCorreo({destinatario:datos.informacionProveedor.correo,asunto:'ORDEN DE COMPRA DE QUALITY BOLCA',html:html,texto:'texto'})
+    const cor = new nodemailer()
+    cor.enviarCorreo({});
     
 }catch(ex){
         console.log(`surgio un error: ${ex}`)

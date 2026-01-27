@@ -50,10 +50,10 @@ document.getElementById("agregarItem").addEventListener("click", () => {
             </select>
         </td>
         <td>
-            <input type="number" data-precioUnitario="unitario" class="input-precio" disabled>
+            <input type="number" data-precioUnitario="unitario" class="input-precio" disabled required>
         </td>
         <td>
-            <input type="number" data-preciototal="total" class="input-precio" disabled>
+            <input type="number" data-preciototal="total" class="input-precio" disabled required>
         </td>
         <td>
             <button type="button" class="btn-remove">Eliminar</button>
@@ -99,7 +99,17 @@ function actualizarBotonesEliminar() {
 // Validación y envío del formulario
 btnEnvio.addEventListener("click", async (e) => {
   let formu = document.getElementById('pedidoForm')
-  if (formu.checkVisibility()){
+  if (formu.reportValidity()){
+    let tabla = document.getElementById('pedidosBody')
+    let inputs = tabla.querySelectorAll('input')
+    for (input of inputs){
+      if (input.value === '' || input.value.trim() === ''){ 
+        const errorcillo = document.getElementById("errorMessage")
+        errorcillo.classList.add("show")
+        errorcillo.textContent = "Por favor, complete todos los campos obligatorios del formulario."
+        return;
+      }
+    }
     const errorMessage = document.getElementById("errorMessage")
     errorMessage.classList.remove("show")
     errorMessage.textContent = ""

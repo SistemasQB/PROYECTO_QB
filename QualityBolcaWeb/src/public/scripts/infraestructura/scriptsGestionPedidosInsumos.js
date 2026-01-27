@@ -403,7 +403,6 @@ function renderSupplyItems() {
 function updateSupplyItem(index, value) {
   const cantidad = Number.parseInt(value) || 0
   const item = partidas[index] //se define item actual
-
   const suppliedIndex = partidas.findIndex((s) => s.descripcion === item.descripcion)
   
   if (cantidad > 0) {
@@ -426,7 +425,6 @@ function updateSupplyItem(index, value) {
       // partidas.splice(suppliedIndex, 1)
     }
   }
-  
   renderSupplyItems()
   updateSupplyTotals()
 }
@@ -436,10 +434,13 @@ function updateSupplyTotals() {
   let partidasF = partidas.slice(0,-1)
   const requestedTotal = partidasF.reduce((sum, item) => sum + item.cantidad * item.precioUnitario, 0)
   const suppliedTotal = partidasF.reduce((sum, item) => sum + (item.surtido * item.precioUnitario), 0)
-  
+  const totalSolicitadoItems = partidasF.reduce((sum, item) => sum + item.cantidad, 0)  
+  const totalSurtidoItems = partidasF.reduce((sum, item) => sum + item.surtido, 0)
   
   document.getElementById("supplyTotalRequested").textContent = formatCurrency(requestedTotal)
   document.getElementById("supplyTotalSupplied").textContent = formatCurrency(suppliedTotal)
+  document.getElementById("totalArticulosSurtidos").textContent = totalSurtidoItems
+  document.getElementById("totalArticulosSolicitados").textContent = totalSolicitadoItems
 }
 
 function validateSupplyForm() {
@@ -486,7 +487,8 @@ async function submitSupplyOrder() {
     actualizacion.tipo = "update"
     actualizacion._csrf = tok
     actualizacion.id = orden.id
-    actualizacion.observaciones = !document.getElementById("observaciones").value ? "No especificadas cuando se surtio" : document.getElementById("observaciones").value
+    actualizacion.observaciones = !document.getElementById("observaciones").value ? "No especificas cuando se surtio" : document.getElementById("observaciones").value
+    actualizacion.solicitante = orden.solicitante
     await alertaFetchCalidad('crudPedidosInsumos',actualizacion,'gestionPedidosInsumos')
   }
 }
