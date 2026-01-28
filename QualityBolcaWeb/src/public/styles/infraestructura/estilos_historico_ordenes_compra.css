@@ -54,7 +54,21 @@
   color: #f5f5f5;
   font-size: 1rem;
 }
-
+.mi-input{
+  height: 100%;
+  width: 100%;
+  padding: 3px;
+  border-radius: 8px;
+  outline: solid 1px #444;
+  background-color: #7f8b97;
+  font-weight: 400;
+}
+.mi-btn{
+  height: 100%;
+  width: 100%;
+  padding: 3px;
+  border-radius: 8px;
+}
 .search-container input:focus {
   outline: none;
   border-color: #4a90e2;

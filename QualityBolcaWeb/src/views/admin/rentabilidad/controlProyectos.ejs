@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Rentabilidad de Proyectos</title>
+    <link rel="stylesheet" href="/styles/rentabilidad/estilos_controlProyectos.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <line x1="10" y1="9" x2="8" y2="9"></line>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="header-title">Control de Rentabilidad de Proyectos</h1>
+                    <p class="header-subtitle">Gestión y seguimiento de cotizaciones y facturación</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Card -->
+        <div class="card filters-card">
+            <div class="card-content">
+                <div class="filters-header">
+                    <div class="filters-title-section">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="filter-icon">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <h3 class="filters-title">Filtros de Búsqueda</h3>
+                        <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
+                    </div>
+                    <div class="filters-actions">
+                        <button class="btn btn-outline btn-sm" id="toggleFiltersBtn">
+                            <span id="toggleFiltersText">Mostrar</span> Filtros
+                        </button>
+                        <button class="btn btn-ghost btn-sm" id="clearFiltersBtn" style="display: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters-content" id="filtersContent" style="display: none;">
+                    <!-- Search Bar -->
+                    <div class="form-group">
+                        <label for="searchInput" class="form-label">Búsqueda General</label>
+                        <div class="input-with-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="input-icon">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input type="text" id="searchInput" class="form-input" placeholder="Buscar por cotización, cliente, concepto...">
+                        </div>
+                    </div>
+
+                    <!-- Filter Grid -->
+                    <div class="filters-grid">
+                        <div class="form-group">
+                            <label for="regionFilter" class="form-label">Región</label>
+                            <select id="regionFilter" class="form-select">
+                                <option value="">Todas las regiones</option>
+                                <option value="norte">Norte</option>
+                                <option value="centro">Centro</option>
+                                <option value="sur">Sur</option>
+                                <option value="occidente">Occidente</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="clienteFilter" class="form-label">Cliente</label>
+                            <input type="text" id="clienteFilter" class="form-input" placeholder="Filtrar por cliente">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="analistaFilter" class="form-label">Analista</label>
+                            <input type="text" id="analistaFilter" class="form-input" placeholder="Filtrar por analista">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="semanaFilter" class="form-label">Número de Semana</label>
+                            <input type="number" id="semanaFilter" class="form-input" placeholder="Ej: 47">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-section">
+                    <p class="pagination-text">Página <span class="pagination-current" id="currentPage">1</span></p>
+                    <div class="pagination-buttons">
+                        <button class="btn btn-outline btn-sm" id="prevPageBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                            Anterior
+                        </button>
+                        <button class="btn btn-outline btn-sm" id="nextPageBtn">
+                            Siguiente
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Proyectos Registrados</h3>
+                <p class="card-description">Gestiona y da seguimiento a todos tus proyectos y cotizaciones</p>
+            </div>
+            <div class="card-content-table">
+                <div class="table-loading" id="tableLoading">
+                    <div class="spinner"></div>
+                </div>
+                <div class="table-wrapper" id="tableWrapper" style="display: none;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Semana</th>
+                                <th>Fecha Cotización</th>
+                                <th>Cotización</th>
+                                <th>Analista</th>
+                                <th>Concepto</th>
+                                <th>Responsable</th>
+                                <th>Región</th>
+                                <th>Cliente</th>
+                                <th>Planta</th>
+                                <th class="text-right">Horas Cotiz.</th>
+                                <th class="text-right">Gasto Cotiz.</th>
+                                <th class="text-right">Dif. Cot-Fac</th>
+                                <th class="text-right">Cot-Dep</th>
+                                <th class="text-center">% ≥20%</th>
+                                <th class="text-center sticky-col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody">
+                            <!-- Rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModalOverlay" style="display: none;">
+        <div class="modal large-modal">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title">Editar Proyecto</h2>
+                    <p class="modal-description">Actualiza la información del proyecto <span id="editModalCotizacion"></span></p>
+                </div>
+                <button class="modal-close" id="closeEditModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="editForm">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="editNumeroSemana" class="form-label">Número de Semana</label>
+                            <input type="number" id="editNumeroSemana" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editFechaCotizacion" class="form-label">Fecha Cotización</label>
+                            <input type="date" id="editFechaCotizacion" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCotizacion" class="form-label">Cotización</label>
+                            <input type="text" id="editCotizacion" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAnalistaEncargada" class="form-label">Analista Encargada</label>
+                            <input type="text" id="editAnalistaEncargada" class="form-input" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="editConceptoCobrar" class="form-label">Concepto a Cobrar</label>
+                            <input type="text" id="editConceptoCobrar" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPersonaResponsable" class="form-label">Persona Responsable</label>
+                            <input type="text" id="editPersonaResponsable" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editRegion" class="form-label">Región</label>
+                            <input type="text" id="editRegion" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCliente" class="form-label">Cliente</label>
+                            <input type="text" id="editCliente" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPlanta" class="form-label">Planta</label>
+                            <input type="text" id="editPlanta" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editHorasCotizacion" class="form-label">Horas de la Cotización</label>
+                            <input type="number" step="0.01" id="editHorasCotizacion" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editGastoCotizado" class="form-label">Gasto Cotizado</label>
+                            <input type="number" step="0.01" id="editGastoCotizado" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDiferenciaCotizadoFacturado" class="form-label">Diferencia Cotizado-Facturado</label>
+                            <input type="number" step="0.01" id="editDiferenciaCotizadoFacturado" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCotizadoMenosDepositado" class="form-label">Cotizado Menos Depositado</label>
+                            <input type="number" step="0.01" id="editCotizadoMenosDepositado" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPorcentaje20" class="form-label">Porcentaje (≥20%)</label>
+                            <input type="number" step="0.1" id="editPorcentaje20" class="form-input" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="cancelEditBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="saveEditBtn">
+                        <span class="btn-spinner" style="display: none;"></span>
+                        <span class="btn-text">Guardar Cambios</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Complete Modal -->
+    <div class="modal-overlay" id="completeModalOverlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title">Completar Información del Proyecto</h2>
+                    <p class="modal-description">Agrega información adicional de facturación y depósito para <span id="completeModalCotizacion"></span></p>
+                </div>
+                <button class="modal-close" id="closeCompleteModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="completeForm">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="completeMontoCotizado" class="form-label">Monto Cotizado</label>
+                            <input type="number" step="0.01" id="completeMontoCotizado" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="completeTotalCotizadoPesos" class="form-label">Total Cotizado en Pesos</label>
+                            <input type="number" step="0.01" id="completeTotalCotizadoPesos" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="completeHorasFacturadas" class="form-label">Horas Facturadas</label>
+                            <input type="number" step="0.01" id="completeHorasFacturadas" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="completeMontoFacturado" class="form-label">Monto Facturado</label>
+                            <input type="number" step="0.01" id="completeMontoFacturado" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="completeTotalFacturadoPesos" class="form-label">Total Facturado en Pesos</label>
+                            <input type="number" step="0.01" id="completeTotalFacturadoPesos" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="completePresupuestoRequisicion" class="form-label">Presupuesto en la Requisición</label>
+                            <input type="number" step="0.01" id="completePresupuestoRequisicion" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="completeFechaDeposito" class="form-label">Fecha de Depósito</label>
+                            <input type="date" id="completeFechaDeposito" class="form-input" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="completeComentarios" class="form-label">Comentarios</label>
+                            <textarea id="completeComentarios" class="form-textarea" placeholder="Agrega comentarios adicionales sobre el proyecto..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="cancelCompleteBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-accent" id="saveCompleteBtn">
+                        <span class="btn-spinner" style="display: none;"></span>
+                        <span class="btn-text">Guardar Información</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModalOverlay" style="display: none;">
+        <div class="modal small-modal">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title">¿Estás seguro?</h2>
+                    <p class="modal-description">Esta acción no se puede deshacer. El proyecto será eliminado permanentemente de la base de datos.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancelDeleteBtn">Cancelar</button>
+                <button type="button" class="btn btn-destructive" id="confirmDeleteBtn">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <div class="toast-icon" id="toastIcon"></div>
+            <div class="toast-text">
+                <div class="toast-title" id="toastTitle"></div>
+                <div class="toast-description" id="toastDescription"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/rentabilidad/scriptsControlProyectos.js"></script>
+    <script>
+        let proyectos = <%- JSON.stringify(proyectos)%>
+    </script>
+</body>
+</html>

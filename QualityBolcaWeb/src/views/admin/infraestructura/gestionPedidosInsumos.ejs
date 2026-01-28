@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pedidos - Sistema de Administración</title>
+    <link rel="stylesheet" href="/styles/infraestructura/estilos_gestionPedidosInsumos.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div>
+                    <h1 class="header-title">Gestión de Pedidos de Insumos </h1>
+                    <p class="header-subtitle">Bienvenid@ (<%= usuario%>)</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Totals Summary -->
+            <div class="totals-grid">
+                <div class="total-card">
+                    <p class="total-label">Total Solicitado</p>
+                    <p class="total-amount" id="totalRequested">$0.00</p>
+                </div>
+                <!-- <div class="total-card accent">
+                    <p class="total-label">Total Surtido</p>
+                    <p class="total-amount" id="totalSupplied">$0.00</p>
+                </div> -->
+            </div>
+
+            <!-- Orders Table -->
+            <div class="table-wrapper">
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr class="table-header">
+                            <th>Pedido</th>
+                            <th>Fecha</th>
+                            <th>Planta</th>
+                            <th>Artículos</th>
+                            <th class="text-right">Total Solicitado</th>
+                            <th class="text-right">Solicitante</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <p>No hay pedidos para mostrar</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Order Modal -->
+    <!-- <div class="modal" id="editOrderModal"> -->
+        <form class="miform modal" id="editOrderModal">
+            <div class="modal-overlay" onclick="closeModal('editOrderModal')"></div>
+            <div class="modal-content edit-modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="editModalTitle">Editar Pedido</h2>
+                    <button class="modal-close" onclick="closeModal('editOrderModal')">×</button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Plant Field -->
+                    <div class="form-group">
+                        <label class="form-label">Planta</label>
+                        <input type="text" id="editPlant" class="form-input" placeholder="Nombre de la planta" disabled>
+                        <p class="error-message" id="editPlantError"></p>
+                    </div>
+
+                    <!-- Items Section -->
+                    <div class="items-section">
+                        <div class="items-header">
+                            <h3 class="form-label">Registros / Partidas</h3>
+                            <button class="btn btn-outline btn-small" id="btnAgregarInsumo">+ Agregar Partida</button>
+                        </div>
+
+                        <div id="editItemsContainer" class="items-container">
+                            <!-- Items populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="total-box">
+                        <p class="total-label-small">Total Solicitado</p>
+                        <p class="total-amount-small" id="editOrderTotal">$0.00</p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-outline" onclick="closeModal('editOrderModal')" type="button">Cancelar</button>
+                    <button class="btn btn-primary" type="button" onclick="actualizarPedido()">Confirmar Cambios</button>
+                </div>
+            </div>
+        </form>
+    <!-- </div> -->
+
+    <!-- Reject Order Modal -->
+    <div class="modal" id="rejectOrderModal">
+        <div class="modal-overlay" onclick="closeModal('rejectOrderModal')"></div>
+        <div class="modal-content reject-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Rechazar Pedido</h2>
+                <button class="modal-close" onclick="closeModal('rejectOrderModal')" type="button">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="warning-box">
+                    <p>Está a punto de rechazar el pedido <strong id="rejectPedidoId">#1001</strong></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Motivo del Rechazo</label>
+                    <textarea id="rejectReason" class="form-textarea" placeholder="Especifique el motivo por el cual se rechaza este pedido..." rows="6"></textarea>
+                    <p class="error-message" id="rejectReasonError"></p>
+                    <p class="form-hint">Mínimo 10 caracteres requeridos</p>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('rejectOrderModal')" type="button">Cancelar</button>
+                <button class="btn btn-destructive" onclick="submitRejectOrder()" type="button">Enviar Rechazo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supply Order Modal -->
+    <!-- <div class="modal" id="supplyOrderModal"> -->
+        <form class="modal" id="supplyOrderModal">
+        <div class="modal-overlay" onclick="closeModal('supplyOrderModal')"></div>
+        <div class="modal-content supply-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="supplyModalTitle">Surtir Pedido</h2>
+                <button class="modal-close" onclick="closeModal('supplyOrderModal')" type="button">×</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Items Section -->
+                <div class="items-section">
+                    <h3 class="form-label" >Partidas Solicitadas</h3>
+                    <!-- <button type="button" class="btn" id="btnAgregarInsumo">agregar insumo</button> -->
+                    <div id="supplyItemsContainer" class="items-container">
+                        <!-- Items populated by JavaScript -->
+                    </div>
+                    
+                </div>
+
+                <!-- Totals -->
+                <div class="totals-grid-modal">
+                    <div class="total-card">
+                        <p class="total-label-small">Total Solicitado</p>
+                        <p class="total-amount-small" id="supplyTotalRequested">$0.00</p>
+                        <p class="total-label-small">Articulos Solicitados</p>
+                        <p class="total-amount-small" id="totalArticulosSolicitados">0.0</p>
+                    </div>
+                    <div class="total-card accent">
+                        <p class="total-label-small">Total Surtido</p>
+                        <p class="total-amount-small" id="supplyTotalSupplied">$0.00</p>
+                        <p class="total-label-small">Articulos surtidos</p>
+                        <p class="total-amount-small" id="totalArticulosSurtidos">0.0</p>
+                    </div>
+                </div>
+                    <div class="items-container">
+                        <label for="observaciones">Observaciones</label>
+                        <textarea name="observaciones" id="observaciones" placeholder="coloca observaciones acerca de este pedido" class="mi-textarea"></textarea>
+                    </div>
+                <div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('supplyOrderModal')" type="button">Cancelar</button>
+                <button class="btn btn-accent" onclick="submitSupplyOrder()" type="button">Confirmar Surtimiento</button>
+            </div>
+        </div>
+        </form>
+    <!-- </div> -->
+
+    <script src="/scripts/infraestructura/scriptsGestionPedidosInsumos.js"></script>
+    <script>
+        let resultados = <%- JSON.stringify(pendientes)%>
+        let productos = <%- JSON.stringify(productos)%>
+        let usuario = <%- JSON.stringify(usuario)%>
+        let tok = <%- JSON.stringify(tok)%>
+        
+    </script>
+    <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

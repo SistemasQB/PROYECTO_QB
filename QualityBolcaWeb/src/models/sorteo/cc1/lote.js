@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+// const sequelize = new Sequelize('sqlite::memory:');
 import db from "../../../config/db.js";
 
 const LoteCC1 = db.define('loteCC1', {
@@ -26,7 +26,7 @@ const LoteCC1 = db.define('loteCC1', {
     }
 }, {
     tableName: 'loteCC1',
-    sequelize,
+    // sequelize,
     freezeTableName: true,
     timestamps: false
 });

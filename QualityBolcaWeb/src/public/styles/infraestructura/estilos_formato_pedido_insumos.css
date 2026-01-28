@@ -51,6 +51,7 @@ form {
 .form-group {
   display: flex;
   flex-direction: column;
+  padding: 1%;
 }
 
 .form-group label {
@@ -111,6 +112,7 @@ form {
   overflow-x: auto;
   border: 2px solid #d1c4b0;
   border-radius: 4px;
+  overflow: hidden;
 }
 
 table {
@@ -206,7 +208,13 @@ td {
 .btn-submit:hover {
   background: #c96644;
 }
+.input-precio{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease-in-out;
 
+}
 /* Responsive */
 @media (max-width: 768px) {
   body {
@@ -306,6 +314,12 @@ td {
     content: "Articulo:";
   }
   td:nth-of-type(4):before {
+    content: "precio Unitario:";
+  }
+  td:nth-of-type(5):before {
+    content: "precio Total:";
+  }
+  td:nth-of-type(6):before {
     content: "Acciones:";
   }
 }

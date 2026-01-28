@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Facturas</title>
+    <link rel="stylesheet" href="/styles/contabilidad/estilos_controlFacturacion.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1 class="title">Gestión de Facturas</h1>
+                    <p class="subtitle">Administra facturas y sus pagos correspondientes</p>
+                </div>
+                <div class="header-actions">
+                    <p>facturas</p>
+                    <span class="badge" id="invoice-count">0 facturas</span>
+                    <p>Subtotal</p>
+                    <span class="badge" id="subtotal-invoice">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros y búsqueda -->
+        <div class="card">
+            <div class="card-content">
+                <div class="filters">
+                    <div class="search-container">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            class="search-input" 
+                            placeholder="Buscar por uuid o cliente"
+                        >
+                    </div>
+                    <div class="filter-actions">
+                        <select id="status-filter" class="status-select">
+                            <option value="all">Todos los estados</option>
+                            <option value="fechas">fecha</option>
+                            <option value="pending">Pendientes</option>
+                            <option value="overdue">Vencidas</option>
+                            <option value="cancelled">Canceladas</option>
+                        </select>
+                        <button class="btn btn-outline">
+                            <i data-lucide="filter"></i>
+                            Filtros
+                        </button>
+                    </div>
+                    
+                </div>
+                <div  id="filtroFecha" class="ninguno">
+                    <div class="filters">
+                            <div class="filter-actions">
+                                <p>fecha Inicio</p>
+                                <input type="date" class="status-select" id="start-date">
+                            </div>
+                            <div class="filter-actions">
+                                <p>fecha final</p>
+                                <input type="date" class="status-select" id="end-date">
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-outline" id="buscarFecha">buscar</button>
+                            </div>
+                        
+                    </div>
+                    <p id="msg-error" class="ninguno">texto de error</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de facturas -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i data-lucide="file-text"></i>
+                    Facturas y Pagos
+                </h2>
+            </div>
+            <div class="card-content table-container">
+                <div class="table-wrapper">
+                    <table class="invoice-table" id="miTabla">
+                        <thead>
+                            <tr>
+                                <th>Factura</th>
+                                <th>Cliente</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                                <th>Vencimiento</th>
+                                <th>Estado</th>
+                                <th>Pagado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-tbody">
+                            <!-- Las filas se generarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Mostrando <strong id="showing-from">0</strong> a <strong id="showing-to">0</strong> de <strong id="total-records">0</strong> registros
+                    </div>
+                    <div class="pagination-controls">
+                        <select id="items-per-page" class="status-select">
+                            <option value="10">10 por página</option>
+                            <option value="25">25 por página</option>
+                            <option value="50" selected>50 por página</option>
+                            <option value="100">100 por página</option>
+                        </select>
+                        <div class="pagination-buttons">
+                            <button class="btn btn-outline pagination-btn" id="first-page" title="Primera página">
+                                <i data-lucide="chevrons-left"></i>
+                            </button>
+                            <button class="btn btn-outline pagination-btn" id="prev-page" title="Página anterior">
+                                <i data-lucide="chevron-left"></i>
+                            </button>
+                            <span class="pagination-current">
+                                Página <strong id="current-page">1</strong> de <strong id="total-pages">1</strong>
+                            </span>
+                            <button class="btn btn-outline pagination-btn" id="next-page" title="Página siguiente">
+                                <i data-lucide="chevron-right"></i>
+                            </button>
+                            <button class="btn btn-outline pagination-btn" id="last-page" title="Última página">
+                                <i data-lucide="chevrons-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menú contextual -->
+    <div id="context-menu" class="context-menu hidden">
+        <div class="context-menu-content">
+            <button class="context-menu-item" data-action="view">
+                <i data-lucide="eye"></i>
+                Ver detalles
+            </button>
+            <button class="context-menu-item" data-action="edit">
+                <i data-lucide="edit"></i>
+                Editar factura
+            </button>
+            <button class="context-menu-item context-menu-danger" data-action="cancel">
+                <i data-lucide="trash-2"></i>
+                Cancelar factura
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="delete-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i data-lucide="alert-triangle" class="text-destructive"></i>
+                    Confirmar Cancelación
+                </h3>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas cancelar la factura <strong id="invoice-to-delete"></strong>?</p>
+                <br>
+                <p>Esta acción marcará la factura como cancelada y no se podrá deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-delete">Cancelar</button>
+                <button class="btn btn-destructive" id="confirm-delete">Sí, cancelar factura</button>
+            </div>
+        </div>
+    </div>
+     <!-- Agregando modal de edición de factura -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i data-lucide="edit"></i>
+                    Editar Factura
+                </h3>
+                <button class="btn-close" id="close-edit-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-invoice-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="edit-number">Número de Factura</label>
+                            <input type="text" id="edit-number" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-client">Cliente</label>
+                            <input type="text" id="edit-client" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-amount">Monto Total</label>
+                            <input type="number" id="edit-amount" class="form-input" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-date">Fecha de Emisión</label>
+                            <input type="date" id="edit-date" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-due-date">Fecha de Vencimiento</label>
+                            <input type="date" id="edit-due-date" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-status">Estado</label>
+                            <select id="edit-status" class="form-input">
+                                <option value="pending">Pendiente</option>
+                                <option value="paid">Pagada</option>
+                                <option value="overdue">Vencida</option>
+                                <option value="cancelled">Cancelada</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="edit-description">Descripción</label>
+                            <textarea id="edit-description" class="form-input" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-edit">Cancelar</button>
+                <button class="btn btn-primary" id="save-edit">
+                    <i data-lucide="save"></i>
+                    Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="/scripts/contabilidad/scriptsControlFacturacion.js"></script>
+    <script>
+        let facturas = <%-JSON.stringify(facturas)-%>
+    </script>
+</body>
+</html>

@@ -1,7 +1,10 @@
+
 // Inicializar fecha actual
 let grupos = [];
 let articulos = []
 let estadoFormulario = {}
+let btnEnvio = document.getElementById('btnEnvio')
+
 
 document.addEventListener("DOMContentLoaded", () => {
   // const fechaInput = document.getElementById("fecha")
@@ -47,6 +50,12 @@ document.getElementById("agregarItem").addEventListener("click", () => {
             </select>
         </td>
         <td>
+            <input type="number" data-precioUnitario="unitario" class="input-precio" disabled required>
+        </td>
+        <td>
+            <input type="number" data-preciototal="total" class="input-precio" disabled required>
+        </td>
+        <td>
             <button type="button" class="btn-remove">Eliminar</button>
         </td>`
   newRow.innerHTML = cont
@@ -54,7 +63,14 @@ document.getElementById("agregarItem").addEventListener("click", () => {
     input.addEventListener('change',(e) => {
         eventoChange(e.target.value,newRow)
     })
-  // logica de evento chage aqui abajito ⬇️
+    let inpPro =  newRow.querySelector('[data-insumo]')
+    inpPro.addEventListener('change', (e) => {
+        cambioArticulo(e.target.value, newRow)
+    })
+    let inpcan =  newRow.querySelector('.cantidad-input')
+    inpcan.addEventListener('input', (e) => {
+        cambioCantidad(e.target.value, newRow)
+    })
 
 
   tbody.appendChild(newRow)
@@ -66,6 +82,7 @@ document.getElementById("pedidosBody").addEventListener("click", (e) => {
   if (e.target.classList.contains("btn-remove")) {
     e.target.closest("tr").remove()
     actualizarBotonesEliminar()
+    totalizar();
   }
 })
 
@@ -80,75 +97,84 @@ function actualizarBotonesEliminar() {
 }
 
 // Validación y envío del formulario
-document.getElementById("pedidoForm").addEventListener("submit", (e) => {
-  e.preventDefault()
+btnEnvio.addEventListener("click", async (e) => {
+  let formu = document.getElementById('pedidoForm')
+  if (formu.reportValidity()){
+    let tabla = document.getElementById('pedidosBody')
+    let inputs = tabla.querySelectorAll('input')
+    for (input of inputs){
+      if (input.value === '' || input.value.trim() === ''){ 
+        const errorcillo = document.getElementById("errorMessage")
+        errorcillo.classList.add("show")
+        errorcillo.textContent = "Por favor, complete todos los campos obligatorios del formulario."
+        return;
+      }
+    }
+    const errorMessage = document.getElementById("errorMessage")
+    errorMessage.classList.remove("show")
+    errorMessage.textContent = ""
 
-  const errorMessage = document.getElementById("errorMessage")
-  errorMessage.classList.remove("show")
-  errorMessage.textContent = ""
-
-  // Validar campos principales
-  // const folio = document.getElementById("folio").value.trim()
-  // const fecha = document.getElementById("fecha").value
-  const planta = document.getElementById("planta").value.trim()
-  // const solicitante = document.getElementById("solicitante").value.trim()
-
-  if (!planta ) {
-    mostrarError("Por favor, complete todos los campos obligatorios del formulario.")
-    return
-  }
-
-  // Validar pedidos
-  const rows = document.querySelectorAll(".pedido-row")
-  let pedidosValidos = true
-  const pedidos = []
-
-  rows.forEach((row, index) => {
-    const cantidad = row.querySelector(".cantidad-input").value
-    const descripcion = row.querySelector(".descripcion-select").value
-
-    if (!cantidad || cantidad <= 0) {
-      mostrarError(`Por favor, ingrese una cantidad válida en el pedido ${index + 1}.`)
-      pedidosValidos = false
+    // Validar campos principales
+    const planta = document.getElementById("planta").value.trim()
+    
+    if (!planta ) {
+      mostrarError("Por favor, complete todos los campos obligatorios del formulario.")
       return
     }
 
-    if (!descripcion) {
-      mostrarError(`Por favor, seleccione una descripción en el pedido ${index + 1}.`)
-      pedidosValidos = false
-      return
-    }
+    // Validar pedidos
+    const rows = document.querySelectorAll(".pedido-row")
+    let pedidosValidos = true
+    const pedidos = []
 
-    pedidos.push({
-      cantidad: Number.parseInt(cantidad),
-      descripcion: descripcion,
+    rows.forEach((row, index) => {
+      const cantidad = row.querySelector(".cantidad-input").value
+      const grupo = row.querySelector(".descripcion-select").value
+      const descripcion = row.querySelector("[data-insumo]").value
+      const pUnitario = row.querySelector("[data-precioUnitario]").value
+      const pTotal = row.querySelector("[data-preciototal]").value
+
+      if (!cantidad || cantidad <= 0) {
+        mostrarError(`Por favor, ingrese una cantidad válida en el pedido ${index + 1}.`)
+        pedidosValidos = false
+        return
+      }
+
+      if (!descripcion) {
+        mostrarError(`Por favor, seleccione una descripción en el pedido ${index + 1}.`)
+        pedidosValidos = false
+        return
+      }
+
+      pedidos.push({
+        cantidad: Number.parseInt(cantidad),
+        grupo: grupo,
+        descripcion: descripcion,
+        precioUnitario: Number.parseFloat(pUnitario),
+        precioTotal: Number.parseFloat(pTotal),
+        surtio: "",
+        surtido: 0
+      })
     })
-  })
 
-  if (!pedidosValidos) {
-    return
+    if (!pedidosValidos) {
+      return
+    }
+
+    // Si todo es válido, preparar datos
+    pedidos.push({total: document.getElementById('totalL').textContent})
+    const datosPedido = {
+      _csrf: tok,
+      planta: planta,
+      solicitado: pedidos,
+      tipo: 'insert'
+    }
+    
+    await alertaFetchCalidad('/infraestructura/crudPedidosInsumos',datosPedido,'/infraestructura/pedidoInsumos')
+    // Opcional: Limpiar formulario después del envío
+    // this.reset();
+    // location.reload();
   }
-
-  // Si todo es válido, preparar datos
-  const datosPedido = {
-    planta: planta,
-    pedidos: pedidos,
-  }
-
-  // Aquí puedes enviar los datos a un servidor
-  console.log("Pedido válido:", datosPedido)
-
-  // Mostrar confirmación
-  alert(
-    "Pedido enviado correctamente!\n\nFolio: " +
-      planta +
-      "\nTotal de items: " +
-      pedidos.length,
-  )
-
-  // Opcional: Limpiar formulario después del envío
-  // this.reset();
-  // location.reload();
 })
 
 function mostrarError( mensaje) {
@@ -171,7 +197,14 @@ function cargarInformacion(fila){
   input.addEventListener('change', (e) => {
     eventoChange(e.target.value, fila)
   })
-  
+  let inputCant = fila.querySelector('.cantidad-input')
+  inputCant.addEventListener('input', (e) => {
+    cambioCantidad(e.target.value, fila)
+  })
+  let inpArt = fila.querySelector('[data-insumo]')
+  inpArt.addEventListener('change', (e) => {
+    cambioArticulo(e.target.value, fila)
+  })
 }
 
 function eventoChange(texto, fila){
@@ -184,8 +217,34 @@ function eventoChange(texto, fila){
   }).join('')
   
   inpIns.innerHTML = cont
-    
-    
+}
 
+function cambioArticulo(nombreArticulo, row){
+  let art = productos.find((articulo) => articulo.articulo == nombreArticulo)
+  let inpUni = row.querySelectorAll('[data-precioUnitario]')
+  let inpTot = row.querySelectorAll('[data-preciototal]')
+  let inpCan = row.querySelectorAll('.cantidad-input')
+  
+  inpUni[0].value = art.costoUnitario
+  inpTot[0].value = parseFloat(inpCan[0].value) * parseFloat(inpUni[0].value) || 0
+  totalizar()
+}
+function totalizar(){
+  let inputs = document.querySelectorAll('[data-preciototal]')
+  let labelT = document.getElementById('totalL')
+  let total = 0
+  
+  for (const input of inputs){
+   total +=  parseFloat(input.value)
+  }
+  labelT.textContent = total.toFixed(2) || 0
+}
+
+
+function cambioCantidad(cantidad, row){
+  let inputs = row.querySelector('[data-preciototal]')
+  let inpUni = row.querySelector('[data-preciounitario]')
+  inputs.value = cantidad * parseFloat(inpUni.value) || 0;
+  totalizar()
 }
 

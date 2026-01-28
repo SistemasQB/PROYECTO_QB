@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+// const sequelize = new Sequelize('sqlite::memory:');
 import db from "../../../config/db.js";
 
 const Checklistcc1 = db.define('checklistcc1', {
@@ -45,7 +45,7 @@ const Checklistcc1 = db.define('checklistcc1', {
     }
 },{
     tableName: 'checklistcc1',
-    sequelize,
+    // sequelize,
     freezeTableName: true, // Desactiva la pluralización automática
     timestamps: false
 })

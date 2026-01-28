@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
+import barrilmodelosgenerales from '../models/generales/barrilModelosGenerales.js'
 
 import {
     Cps,
@@ -31,9 +32,7 @@ import {
     Glosario
 } from "../models/index.js";
 
-import Swal from 'sweetalert2'
 import multer from "multer";
-import mimeTypes from "mime-types";
 import { check, validationResult } from "express-validator";
 import { generarJWT, generarId } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword, emailContacto } from "../helpers/emails.js";
@@ -54,17 +53,13 @@ controller.formularioLogin = (req, res) => {
 }
 
 controller.autenticar = async (req, res) => {
-    // await check('email').isEmail().withMessage('El correo es obligatorio').run(req);
-    // await check('password').notEmpty().withMessage('La contrseña es obligatoria').run(req);
         const { codigoempleado, password } = req.body
-        
     if (codigoempleado == '' || password == '') {
         res.status(400).send({ msg: 'Completa los campos', ok: false });
         return
     }
-
+    
    //comporbar si el usuario existe
-
     const usuario = await Usuario.findOne({ where: { codigoempleado } })
     if (!usuario) {
         res.status(400).send({ msg: 'El usuario no existe', ok: false });
@@ -93,13 +88,7 @@ controller.autenticar = async (req, res) => {
         httpOnly: true,
         secure: false,
     })
-
-    console.log(req.session.redirectTo);
-    
-
     let redireccionar = ''
-
-    
         redireccionar =  req.session.redirectTo || '/inicio';
         delete req.session.redirectTo;
 
@@ -220,7 +209,6 @@ controller.registrar = async (req, res) => {
     }).withMessage('Las contraseñas no son iguales').run(req);
 
     let resultado = validationResult(req);
-    console.log('entrando al controller de registro', resultado);
     //Verificar que el resultado este vacio
     if (!resultado.isEmpty()) {
         return res.render('auth/registro', {
@@ -233,7 +221,9 @@ controller.registrar = async (req, res) => {
     const { codigoempleado, password } = req.body
     
     //Verificar si el usuario ya esta registrado
-    const gchUsuario = await informaciongch.findOne({ where: { codigoempleado }, attributes: { exclude: ['idtipoperiodo'] } })
+
+    const gchUsuario = await barrilmodelosgenerales.modelonom10001.findOne({ where: { codigoempleado } })
+    // const gchUsuario = await informaciongch.findOne({ where: { codigoempleado } })
 
     if (!gchUsuario) {
         res.status(400).send({ ok: false, msg: 'El usuario no Existe' });
@@ -246,8 +236,8 @@ controller.registrar = async (req, res) => {
     if (existeUsuario) {
         return res.status(400).send({ ok: false, msg: 'El usuario ya esta registrado' });
     }
-
-
+    //validar el gchusuario para saber porque no esta dando el correo y porque esta fallando el envio de correo
+    console.log(gchUsuario)
     //Almacenar usuario
     const usuario = await Usuario.create({
         codigoempleado: codigoempleado,
@@ -255,17 +245,17 @@ controller.registrar = async (req, res) => {
         token: generarId()
     });
 
-
+    //validar aqui
     // Enviar email de confirmacion
     emailRegistro({
         nombre: gchUsuario.nombrelargo,
-        email: gchUsuario.CorreoElectronico,
+        email: gchUsuario.correoelectronico,
         token: usuario.token
     })
 
     //Mostrando al usuario que confirme correo
 
-    res.status(200).send({ ok: true, correo:gchUsuario.CorreoElectronico });
+    res.status(200).send({ ok: true, correo:gchUsuario.correoelectronico });
     return
 
 }

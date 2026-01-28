@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Solicitudes IT</title>
+    <link rel="stylesheet" href="/styles/sistemas/estilos_administracionRequisicionEquipos.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1 class="header-title">Solicitudes de Equipos IT</h1>
+                    <p class="header-subtitle">Administracion y gestion de las solicitudes de equipos del departamento</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Cargando solicitudes...</p>
+        </div>
+
+        <!-- Filters and Search -->
+        <div id="filters-section" class="filters-section" style="display: none;">
+            <div class="filters-row">
+                <div class="search-wrapper">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-input" 
+                        placeholder="Buscar por solicitante, departamento, email o equipo..."
+                    />
+                </div>
+                <div class="filters-actions">
+                    <div class="select-wrapper">
+                        <svg class="select-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        <select id="status-filter" class="status-select">
+                            <option value="all">Todos los estatus</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En Proceso">En Proceso</option>
+                            <option value="Completada">Completada</option>
+                            <option value="Parcialmente Surtida">Parcialmente Surtida</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                    </div>
+                    <button id="new-request-btn" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Nueva Solicitud
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div id="table-container" class="table-container" style="display: none;">
+            <table class="requests-table">
+                <thead>
+                    <tr>
+                        <th class="th-id">ID</th>
+                        <th>Solicitante</th>
+                        <th>Departamento</th>
+                        <th>Equipos</th>
+                        <th>Estatus</th>
+                        <th>Teléfono</th>
+                        <th class="th-actions">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="pagination" style="display: none;">
+            <p id="pagination-info" class="pagination-info"></p>
+            <div class="pagination-controls">
+                <button id="prev-page" class="btn btn-outline btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <span id="page-info" class="page-info"></span>
+                <button id="next-page" class="btn btn-outline btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Dialog Modal -->
+    <div id="request-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modal-title" class="modal-title">Nueva Solicitud</h2>
+                    <p id="modal-description" class="modal-description">Completa los datos para crear una nueva solicitud de equipos.</p>
+                </div>
+                <button class="modal-close" onclick="closeRequestModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="request-form" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="requesterName">Nombre del Solicitante <span class="required">*</span></label>
+                        <input type="text" id="requesterName" class="form-input" placeholder="Ej: Juan Pérez" required>
+                        <span class="error-message" id="error-requesterName"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input type="email" id="email" class="form-input" placeholder="juan.perez@empresa.com" required>
+                        <span class="error-message" id="error-email"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Teléfono <span class="required">*</span></label>
+                        <input type="tel" id="phone" class="form-input" placeholder="555-1234" required>
+                        <span class="error-message" id="error-phone"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Departamento <span class="required">*</span></label>
+                        <input type="text" id="department" class="form-input" placeholder="Ej: Ventas" required>
+                        <span class="error-message" id="error-department"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Estatus</label>
+                    <select id="status" class="form-input">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Parcialmente Surtida">Parcialmente Surtida</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="items-header">
+                        <label>Equipos Solicitados <span class="required">*</span></label>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="addItemToForm()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Agregar Equipo
+                        </button>
+                    </div>
+                    <span class="error-message" id="error-items"></span>
+                    <div id="items-container" class="items-container">
+                        <p class="empty-items">No hay equipos agregados. Haz clic en "Agregar Equipo" para comenzar.</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea id="observaciones" class="form-textarea" placeholder="Notas adicionales sobre la solicitud..." rows="3"></textarea>
+                </div>
+            </form>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeRequestModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="save-request-btn" onclick="saveRequest()">Crear Solicitud</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 class="modal-title">Confirmar Eliminación</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="delete-message">¿Estás seguro de que deseas eliminar esta solicitud? Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="button" class="btn btn-destructive" onclick="confirmDelete()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/scripts/sistemas/scriptsAdministracionRequisicionEquipos.js"></script>
+    <script>
+        const tok = <%-JSON.stringify(tok)%>;
+        let solicitudes = <%-JSON.stringify(registros)%>;
+    </script>
+</body>
+</html>

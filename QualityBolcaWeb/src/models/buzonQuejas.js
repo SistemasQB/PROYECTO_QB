@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize } from "sequelize";
-const sequelize = new Sequelize('sqlite::memory:');
+// const sequelize = new Sequelize('sqlite::memory:');
 import db from "../config/db.js";
 
 const BuzonQuejas = db.define('buzonQuejas', {
@@ -29,7 +29,7 @@ const BuzonQuejas = db.define('buzonQuejas', {
     },
 },{
     tableName: 'buzonQuejas',
-    sequelize,
+    // sequelize,
     freezeTableName: true, // Desactiva la pluralización automática
 })
 

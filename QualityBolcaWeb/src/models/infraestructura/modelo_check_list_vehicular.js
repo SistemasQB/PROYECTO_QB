@@ -2,12 +2,11 @@ import dbCompras from "../../config/dbCompras.js";
 import { DataTypes } from "sequelize";
 
 const modeloCheckListVehicular = dbCompras.define('registrosCheckListVehicular',{
-    id:{
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                primaryKey: true,
-                autoIncrement: true,
-                
+        id:{
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            primaryKey: true,
+            autoIncrement: true,
         },
         datosUnidad:{
             type: DataTypes.JSON,

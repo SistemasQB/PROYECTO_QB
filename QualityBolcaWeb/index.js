@@ -2,76 +2,31 @@ import express from "express";
 import csurf from "csurf";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-// import uuidv4 from "uuid/v4";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { PORT, SECRET_JWT_KEY } from "./src/config.js";
-// import dbSQLS from "./src/config/dbSQLS.js";
 import dbs from "./src/config/barril_dbs.js";
-// import myConnection from "express-myconnection";
-// import mysql from "mysql2";
 import cors from "cors";
-
-
-// import mariadb from "mariadb";
-import { default as customerRoutes } from "./src/routes/userRoutes.js";
-import { default as adminRoutes } from "./src/routes/adminRoutes.js";
-import { default as allRoutes } from "./src/routes/allRoutes.js";
-import { default as sistemasRoutes } from "./src/routes/sistemasRoutes.js";
-import { default as sorteoRoutes } from "./src/routes/sorteoRoutes.js";
-import { default as calidadRoutes } from "./src/routes/calidadRoutes.js";
-import { default as atraccionRoutes } from "./src/routes/atraccionRoutes.js";
-import { default as capitalhumanoRoutes } from "./src/routes/capitalHumanoRoutes.js";
-import { default as nominasRoutes } from "./src/routes/nominasRoutes.js";
-import {default as infraestructuraRouter} from "./src/routes/infraestructuraRouter.js";
+import routers from "./src/routes/barrilRouters.js";
+import miCron from "./src/public/clases/clase_cron.js";
 
 import {
   Controlpiezas,
   Controlpiezas2
 } from "./src/models/index.js";
 
-import mimeTypes from "mime-types";
-import fetch from 'node-fetch'
-
-import urlencoded from "body-parser";
-import nodeMailer from 'nodemailer';
 import path from "path";
-
-import { pipeline } from '@xenova/transformers';
-import wavefile from 'wavefile';
-import fs from 'fs';
 
 
 const app = express();
-
 app.use(cors());
-
-// Configurar almacenamiento de archivos con Multer
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-
 //Habilitar cookie parser
-
 app.use( cookieParser() )
-
-//Habilitar CSRF
-
-// app.use( csurf({cookie: true}))
-
-// app.use(csrfProtection); // Aplicado a todo
-
-// Middleware CSRF usando cookies
-// export const csrfProtection = csrf({ cookie: true });
-
-
 
 //conexion a la base de datos
 try {
@@ -108,10 +63,7 @@ app.use(express.static('./src/public'));
 //Habilirar  EJS
 app.set('views', path.join('\src', 'views'));
 app.set('view engine', 'ejs');
-
 const csrfProtection = csurf({ cookie: true });
-
-
 app.post('/sorteo/cc1/controldepiezas',async (req, res) =>{
 
 const {piezasOK, piezasNG, mesas} = req.body;
@@ -119,7 +71,6 @@ const {piezasOK, piezasNG, mesas} = req.body;
 let fecha = new Date();
 fecha.setHours(fecha.getHours() - 6);
 
-// console.log(piezas, mesas, fecha);
 try {
   await Controlpiezas.create({
     piezasOK,
@@ -158,24 +109,33 @@ app.post('/sorteo/cc1/controldepiezas2',async (req, res) =>{
   }
   })
 
-
-app.use('/',csrfProtection, customerRoutes);
-app.use('/admin',csrfProtection, adminRoutes);
-app.use('/all',csrfProtection, allRoutes);
-app.use('/sistemas',csrfProtection, sistemasRoutes);
-app.use('/calidad',csrfProtection, calidadRoutes);
-app.use('/atraccion',csrfProtection, atraccionRoutes);
-app.use('/capitalhumano',csrfProtection, capitalhumanoRoutes);
-app.use('/sorteo',csrfProtection, sorteoRoutes);
-app.use('/nominas',csrfProtection, nominasRoutes);
-app.use('/infraestructura', infraestructuraRouter)
-
-
-
+  //declaracion de rutas
+app.use('/',csrfProtection, routers.userRouters);
+app.use('/admin',csrfProtection, routers.adminRouters);
+app.use('/all',csrfProtection, routers.routerAll);
+app.use('/sistemas',csrfProtection, routers.sistemasRouters);
+app.use('/calidad',csrfProtection, routers.calidadRouters);
+app.use('/atraccion',csrfProtection, routers.atraccionRouters);
+app.use('/capitalhumano',csrfProtection, routers.capitalHumanoRouters);
+app.use('/sorteo',csrfProtection, routers.sorteoRouters);
+app.use('/nominas',csrfProtection, routers.nominasRouters);
+app.use('/infraestructura', csrfProtection,routers.infraestructuraRouters);
+app.use('/contabilidad',  csrfProtection,routers.contabilidadRouters);
+app.use('/servicioCliente',  csrfProtection,routers.servicioClienteRouters);
+app.use('/rentabilidad',csrfProtection, routers.rentabilidadRouters);
+app.use((_, res) => {
+  return res.render('admin/default/paginaNoEncontrada.ejs');
+});
 
 app.use(express.json());
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 })
+
+
+//cronos de ejecucion en tareas periodicas
+// const cronos = new miCron(); 
+// cronos.iniciarCron('prueba1', '* * * * * *', () => {console.log(`trabajo ejectuado 0 veces`)});
+
 

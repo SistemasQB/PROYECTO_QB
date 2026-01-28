@@ -2,12 +2,13 @@ import express from "express";
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
-
+import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
+import Empleados from "../models/empleado.js";
+import manejadrorErrores from "../middleware/manejadorErrores.js";
+import validarAcceso from '../middleware/validacion-permisos/calidad/permisos.js';
 
 import {
     registroma,
-    informaciongch,
-    informacionpuesto,
     Inventario,
     Solicitudservicio,
     Vales,
@@ -15,10 +16,9 @@ import {
 } from "../models/index.js";
 
 import { Op, QueryTypes, where } from 'sequelize'
-import { cat } from "@xenova/transformers";
 import Informaciongch from "../models/informaciongch.js";
 import Informaciondepartamento from "../models/informaciondepartamento.js";
-
+import e from "express";
 const app = express();
 
 const controller = {};
@@ -119,7 +119,6 @@ controller.api = async (req, res) => {
 }
 
 controller.addvales = async (req, res) => {
-
     res.render('admin/sistemas/addvales', {
         csrfToken: req.csrfToken()
     });
@@ -127,7 +126,6 @@ controller.addvales = async (req, res) => {
 
 
 controller.addvales2 = async (req, res) => {
-
     const {
         idFolio,
         numeroEmpleado,
@@ -600,25 +598,18 @@ function obtenerHorasPorPrioridad(prioridad) {
 }
 
 controller.crudTickets = async (req, res) => {
-    //console.log('ENTRÓ A crudTickets');
-    //console.log(req.body);
-    console.log('REQ.USUARIO:', req.usuario);
-    //console.log('SESSION:', req.session);
-    //console.log('SESSION USUARIO:', req.session.usuario);
     try {
         //  LISTAR TICKETS (GET)
         if (req.method === 'GET') {
             const tickets = await modelosSistemas.modeloTickets.findAll({
                 order: [['id', 'DESC']]
             });
-
             const ticketsParseados = tickets.map(t => ({
                 ...t.toJSON(),
                 datosTicket: typeof t.datosTicket === 'string'
                     ? JSON.parse(t.datosTicket)
                     : t.datosTicket
             }));
-
             return res.json({
                 ok: true,
                 tickets: ticketsParseados
@@ -878,8 +869,7 @@ controller.reanudarTicket = async (req, res) => {
         res.json({ ok: true });
 
     } catch (error) {
-        console.error('❌ Error reanudar ticket:', error);
-        res.status(500).json({ ok: false });
+        res.status(500).json({ ok: false});
     }
 };
 
@@ -973,11 +963,69 @@ controller.inventario = async (req, res) => {
     res.render('admin/sistemas/inventario.ejs')
 }
 
+
+
+//controladores de equisicion de equipos
+controller.requisicionEquipos =async (req, res)=>{
+    try {
+        let {codigoempleado} = req.usuario
+        let empleado = await Empleados.findOne({where: {codigoempleado:codigoempleado}})
+        let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
+        let criterios = {codigoempleado:codigoempleado}
+        let datosEmpleado = await clase.obtener1Registro({criterio: criterios})
+        let datos = {
+            nombreCompleto: datosEmpleado.nombrelargo,
+            departamento: empleado.descripcion,
+            email: datosEmpleado.correoelectronico
+        }
+        return res.render('admin/sistemas/requisicionEquipos.ejs', {info: datos, tok: req.csrfToken()})
+    } catch (error) {   
+        manejadrorErrores(res, error)
+    }
+    
+}
+
+controller.administracionRequisicionEquipos = async(req, res) => {
+    try {
+        const clase = new sequelizeClase({modelo: modelosSistemas.requisicionEquipos})
+        const resultados = await clase.obtenerDatosPorCriterio({criterio: {}, orden: [['status', 'DESC']]})
+        return res.render('admin/sistemas/administracionRequisicionesEquipos.ejs', {tok: req.csrfToken(), registros: resultados})
+    } catch (error) {
+        manejadrorErrores(res, error)
+        
+    }
+}
+
+controller.CrudRequisicionEquipos = (req, res) => {
+    try {
+        const {tipo } = req.body
+        let campos = req.body
+        delete campos.tipo
+        let clase = new sequelizeClase({modelo: modelosSistemas.requisicionEquipos})
+        switch (tipo) {
+            case 'insert':
+                let resultado = clase.insertar({datosInsertar: campos})
+                if (!resultado) return res.json({ok: false, msg: 'no se pudo realizar la requisicion'})
+                return res.json({ok: true, msg: 'requisicion realizada exitosamente'})
+            case 'delete':
+                let eliminacion = clase.eliminar({id: campos.id})
+                if (!eliminacion) return res.json({ok: false})
+                return res.json({ok: true})
+            case 'update':
+                let actualizacion = clase.actualizarDatos({id: campos.id, datos: campos})
+                if (!actualizacion) return res.json({ok: false})
+                return res.json({ok: true})
+        }
+        
+    } catch (error) {
+        manejadrorErrores(res, error)
+        
+    }
+}
+
 function parseDatosTicket(ticket) {
     return typeof ticket.datosTicket === 'string'
         ? JSON.parse(ticket.datosTicket)
         : ticket.datosTicket;
 }
-
-
 export default controller;

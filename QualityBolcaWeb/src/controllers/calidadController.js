@@ -3,10 +3,11 @@ import Sequelize, { where } from 'sequelize'
 import claseSeq from "../public/clases/sequelize_clase.js";
 import { emailMejoraRespuesta } from "../helpers/emails.js";
 import { Op } from 'sequelize'
-import { format } from "@formkit/tempo"
+import { date, format } from "@formkit/tempo"
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import barrilcalidad from '../models/calidad/barrilCalidad.js'
-
+import barrilmodelosgenerales from '../models/generales/barrilModelosGenerales.js'
+import manejadorErrores from "../middleware/manejadorErrores.js";
 import {
     Mejora,
     bitacoraActividades,
@@ -327,10 +328,9 @@ controller.verificacion5s = async(req, res)=>{
     try{
         const tok = req.csrfToken()
         const nomina = req.usuario.codigoempleado
-        console.log(nomina)
-        let clase = new sequelizeClase({modelo: barrilcalidad.modeloDirectorioCalidad})
-        let usuario = await clase.obtener1Registro({criterio:{numeroEmpleado: nomina}})
-        res.render('admin/calidad/formato_verificacion_5s.ejs',{nombre: usuario.nombreCompleto, tok: tok})
+        let clase = new sequelizeClase({modelo: barrilmodelosgenerales.modelonom10001})
+        let usuario = await clase.obtener1Registro({criterio:{codigoempleado: nomina}})
+        res.render('admin/calidad/formato_verificacion_5s.ejs',{nombre: usuario.nombrelargo, tok: tok})
     }catch(ex){
         res.send(`algo salio muy mal y no se pudo cargar la informacion el error fue: ${ex}`)
     }
@@ -359,11 +359,41 @@ controller.inicio= (req, res)=>{
 }
 
 //controladores de auditorias
-controller.agregarAuditoria = (req, res) => {
- return res.render('admin/calidad/agregarAuditoria.ejs')   
+controller.agregarAuditoria = async (req, res) => {
+try {
+    // ejecutar logica de auditorias ya realizadas
+    let clase = new sequelizeClase({modelo: barrilcalidad.auditoria})
+    let auditorias = await clase.obtenerDatosPorCriterio({criterio: {[Op.or]: [{anio: new Date().getFullYear()}, { anio: new Date().getFullYear() + 1 }]}})
+    return res.render('admin/calidad/agregarAuditoria.ejs', {tok: req.csrfToken(), auditorias: auditorias})   
+} catch (error) {
+    return manejadorErrores(res,error)
 }
-controller
 
+ 
+}
+
+controller.crudAuditorias = async(req, res) => {
+    let{tipo, id} = req.body;
+    let campos = req.body
+    delete campos._csrf
+    delete campos.tipo  
+    delete campos.id
+    let clase = new sequelizeClase({modelo: barrilcalidad.auditoria})
+    switch(tipo){
+        case 'insert':
+            let auditoria = await clase.insertar({datosInsertar: campos})
+            if (!auditoria) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
+            return res.json({ok: auditoria, msg: 'la auditoria fue registrada exitosamente'})
+        case 'update':
+            let actualizacion = await clase.actualizarDatos({id: id, datos:campos})
+            if (!actualizacion) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
+            return res.json({ok: true, msg: 'la auditoria fue actualizada exitosamente'})
+        case 'delete':
+            let eliminacion = await clase.eliminar({id: id})
+            if (!eliminacion) return res.json({ok: false, msg: 'no se pudo eliminar la informacion'})
+            return res.json({ok: true, msg: 'la auditoria fue eliminada exitosamente'})
+    }
+}
 
 export default controller;
 
