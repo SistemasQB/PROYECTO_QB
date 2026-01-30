@@ -22,7 +22,7 @@ const modeloTickets = dbSistemas.define('tickets',{
 
 },{
     tablename: 'tickets',
-    timestamps:false,
+    timestamps:true,
 }) 
 
 export default modeloTickets;
