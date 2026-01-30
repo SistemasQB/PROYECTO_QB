@@ -1,7 +1,6 @@
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import modelosInfraestructura from "../models/infraestructura/barril_modelo_compras.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
-import envioOC from "../public/scripts/infraestructura/funciones/envioOrdenCompra.js";
 import { Op} from "sequelize";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import nodemailerClase from "../public/clases/nodemailer.js";
@@ -12,12 +11,11 @@ const infraestructuraController = {}
 //controlador de inicio
 infraestructuraController.inicio = (req, res)=>{
     try{
-        return res.render('admin/infraestructura/inicio_infraestructura.ejs')
+        return res.render('admin/infraestructura/inicio_Infraestructura.ejs')
     }
     catch(ex){
         manejadorErrores(res,ex)
-    }
-    
+    }   
 }
 
 //controlador de control de inventario

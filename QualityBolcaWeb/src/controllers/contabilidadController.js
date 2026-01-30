@@ -14,7 +14,7 @@ contabilidadController.controlFacturas = async(req, res) => {
         let facturas = await  clase.obtenerDatosPorCriterio({criterio: {
             estatusPago: {[Op.in]:['PENDIENTE', 'VENCIDA']},
             formaPago:{[Op.in]: ['PUE', 'PPD']}
-    },atributos: ['id', 'uuid','receptor','fechaFactura', 'total', 'estatusPago','receptor','pago', 'descripcion', 'datosEmision', 'fechaVencimiento']});
+    },atributos: ['id', 'uuid','receptor','fechaFactura', 'total', 'estatusPago','receptor','pago', 'descripcion', 'datosEmision', 'fechaVencimiento', 'moneda', 'conversion']});
         return res.render('admin/contabilidad/controlFacturacion.ejs', {facturas: facturas, tok: req.csrfToken()});    
     } catch (error) {
         manejadorErrores(res, error)
@@ -30,6 +30,14 @@ contabilidadController.consultarFactura = async(req, res) => {
         return res.render('admin/contabilidad/consultarFactura.ejs', {factura: factura, tok: req.csrfToken()});    
     } catch (error) {
         manejadorErrores(res, error)
+    }
+}
+
+contabilidadController.reportesFacturacion = async(req, res) => {
+    try {
+        return res.render('admin/contabilidad/reportesFacturacion.ejs', {tok: req.csrfToken()});
+    } catch (error) {
+        
     }
 }
 export default contabilidadController;

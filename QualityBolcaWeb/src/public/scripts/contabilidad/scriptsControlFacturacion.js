@@ -248,8 +248,8 @@ function renderTable() {
     if (invoice.pagos.length > 0) {
       totalPaid = getTotalPaid(invoice.pagos)
     }
-      
-    row.innerHTML = `
+    
+    let texto=`
             <td>
                 <div class="invoice-info">
                     <i data-lucide="chevron-right" class="chevron ${isExpanded ? "expanded" : ""}"></i>
@@ -263,8 +263,14 @@ function renderTable() {
                 <div class="font-weight-500">${invoice.receptor}</div>
             </td>
             <td>
-                <div class="font-weight-500">${formatCurrency(invoice.total)}</div>
-            </td>
+                <div class="font-weight-500">${formatCurrency(invoice.total)}</div>`
+                
+                if(invoice.moneda == "USD"){
+                  texto += `<div class="amount-secondary">${formatCurrency(invoice.conversion)}</div>`
+                }
+
+                
+            texto+=`</td>
             <td>
                 <div class="date-info">
                     <i data-lucide="calendar" style="width: 1rem; height: 1rem; color: var(--muted-foreground);"></i>
@@ -289,6 +295,8 @@ function renderTable() {
             </td>
         `
 
+    row.innerHTML = texto
+    texto = ""
     // Event listeners para la fila
     row.addEventListener("click", () => toggleExpanded(invoice.id))
     row.addEventListener("contextmenu", (e) => handleRightClick(e, invoice.id))

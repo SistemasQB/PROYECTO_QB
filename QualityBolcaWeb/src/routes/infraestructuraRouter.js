@@ -7,7 +7,8 @@ import validarAcceso from '../middleware/validacion-permisos/calidad/permisos.js
 const multer = new miMulter('src/public/evidencias/check_List_Vehicular')
 const infraestructuraRouter = express.Router();
 //ruta de inicio
-infraestructuraRouter.get('/inicio', protegerRuta,validarAcceso({roles:['compras'], permisos: ['auxiliar de compras y suministros'], jerarquia: 5}),infraestructuraController.inicio);
+infraestructuraRouter.get('/inicio', protegerRuta, validarAcceso({
+    roles:['compras', 'logistica vehicular'], permisos: ['auxiliar de compras y suministros', 'jefe de logistica vehicular', 'jefe de compras y suministros'], jerarquia: 5}),infraestructuraController.inicio);
 
 //rutas de orden de compra
 infraestructuraRouter.get('/ordenCompra', protegerRuta,infraestructuraController.ordenCompra);
@@ -18,7 +19,8 @@ infraestructuraRouter.post('/crudOrdenesCompra', protegerRuta, infraestructuraCo
 //rutas pedido insumos
 infraestructuraRouter.get('/pedidoInsumos', protegerRuta,infraestructuraController.pedidoInsumos);
 infraestructuraRouter.post('/crudPedidosInsumos', protegerRuta,infraestructuraController.crudPedidoInsumos);
-infraestructuraRouter.get('/gestionPedidosInsumos', protegerRuta,infraestructuraController.gestionPedidosInsumos);
+infraestructuraRouter.get('/gestionPedidosInsumos', protegerRuta,validarAcceso({roles:['compras'], permisos: ['auxiliar de compras y suministros'], jerarquia: 5}),
+infraestructuraController.gestionPedidosInsumos);
 
 
 //rutas de logistica vehicular
