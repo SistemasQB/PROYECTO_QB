@@ -535,8 +535,6 @@ controller.levantamientoTicket = async (req, res) => {
             puesto: empleado.idpuesto
         };
 
-        console.log('Datos Usuario:', datosUsuario);
-
         res.render('admin/sistemas/levantamiento_ticket.ejs', {
             info: datosUsuario,
             csrfToken: req.csrfToken()
@@ -568,8 +566,6 @@ controller.formularioTicket = async (req, res) => {
             departamento: empleado.iddepartamento,
             puesto: empleado.puesto
         };
-
-        console.log('Datos Usuario:', datosUsuario);
 
         res.render('admin/sistemas/levantamiento_ticket.ejs', {
             info: datosUsuario,
@@ -795,47 +791,6 @@ controller.asignarTicket = async (req, res) => {
     }
 };
 
-controller.pausarTicket = async (req, res) => {   //pausar ticket
-    try {
-        const { id } = req.params;
-
-        const ticket = await modelosSistemas.modeloTickets.findOne({
-            where: { folio: id }
-        });
-
-        if (!ticket) {
-            return res.status(404).json({ ok: false });
-        }
-
-        const datos = parseDatosTicket(ticket);
-
-        if (datos.estatus !== 'progress') {
-            return res.status(400).json({
-                ok: false,
-                msg: 'El ticket no está en progreso'
-            });
-        }
-
-        // sumar tiempo consumido
-        const ahora = new Date();
-        const inicio = new Date(datos.slaInicio);
-        datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
-
-        datos.estatus = 'pending';
-        datos.slaActivo = false;
-        datos.slaInicio = null;
-
-        ticket.datosTicket = datos;
-        await ticket.save();
-
-        res.json({ ok: true });
-
-    } catch (error) {
-        console.error('Error pausar ticket:', error);
-        res.status(500).json({ ok: false });
-    }
-};
-
 controller.reanudarTicket = async (req, res) => {
     try {
         const { id } = req.params;
@@ -867,48 +822,6 @@ controller.reanudarTicket = async (req, res) => {
         res.json({ ok: true });
 
     } catch (error) {
-        res.status(500).json({ ok: false });
-    }
-};
-
-controller.terminarTicket = async (req, res) => {  //terminar ticket
-    try {
-        const { id } = req.params;
-
-        const ticket = await modelosSistemas.modeloTickets.findOne({
-            where: { folio: id }
-        });
-
-        if (!ticket) {
-            return res.status(404).json({ ok: false });
-        }
-
-        const datos = parseDatosTicket(ticket);
-
-        if (datos.estatus !== 'progress') {
-            return res.status(400).json({
-                ok: false,
-                msg: 'Solo se pueden terminar tickets en progreso'
-            });
-        }
-
-        // cerrar SLA
-        const ahora = Date.now();
-        const inicio = new Date(datos.slaInicio).getTime();
-        datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
-
-        datos.estatus = 'resolved';
-        datos.slaActivo = false;
-        datos.slaFin = new Date();
-        datos.slaInicio = null;
-
-        ticket.datosTicket = datos;
-        await ticket.save();
-
-        res.json({ ok: true });
-
-    } catch (error) {
-        console.error('Error terminar ticket:', error);
         res.status(500).json({ ok: false });
     }
 };
@@ -997,7 +910,7 @@ controller.agregarObservacionTicket = async (req, res) => {
             const inicio = new Date(datos.slaInicio);
             datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
 
-            datos.estatus = 'pending';
+            datos.estatus = 'pending';  //Aqui se pausa el ticket
             datos.slaActivo = false;
             datos.slaInicio = null;
         }
@@ -1007,7 +920,7 @@ controller.agregarObservacionTicket = async (req, res) => {
             const inicio = new Date(datos.slaInicio).getTime();
             datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
 
-            datos.estatus = 'resolved';
+            datos.estatus = 'resolved'; //Aqui se resuelve el ticket
             datos.slaActivo = false;
             datos.slaFin = new Date();
             datos.slaInicio = null;

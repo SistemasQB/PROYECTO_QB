@@ -37,17 +37,6 @@ const statusIcons = {
     closed: 'fa-circle'
 };
 
-async function renderizarUsuario() {
-    try {
-        const res = await fetch('/sistemas/tickets');
-        const data = await res.json();
-
-    } catch (error) {
-        console.error('Error al cargar usuario:', error);
-    }
-
-}
-
 async function cargarTicketsDesdeBackend() {
     try {
         const res = await fetch('/sistemas/crudTickets');
@@ -319,18 +308,6 @@ function renderAsignacion(ticket) {
     `;
 }
 
-function obtenerSlaActual(ticket) {
-    let total = ticket.slaConsumido || 0;
-
-    if (ticket.slaActivo && ticket.slaInicio) {
-        const ahora = Date.now();
-        total += Math.floor((ahora - ticket.slaInicio) / 1000);
-    }
-
-    return total;
-}
-
-
 function actualizarSLATexto(ticket) {
     const slaEl = document.getElementById('slaTimer');
     if (!slaEl) return;
@@ -358,21 +335,6 @@ function actualizarSLATexto(ticket) {
     const s = restante % 60;
 
     slaEl.textContent = `${h}h ${m}m ${s}s`;
-}
-
-//caclcular el tiempo restante
-function calcularTiempoRestante(ticket) {
-    const totalSegundos = ticket.slaHoras * 3600;
-    const usados = ticket.slaConsumido;
-    const restante = totalSegundos - usados;
-
-    if (restante <= 0) return 'SLA vencido';
-
-    const h = Math.floor(restante / 3600);
-    const m = Math.floor((restante % 3600) / 60);
-    const s = restante % 60;
-
-    return `${h}h ${m}m ${s}s`;
 }
 
 let slaInterval = null;
@@ -438,22 +400,6 @@ function iniciarContadorSLA() {
     }, 1000);
 }
 
-async function pausarTicket() {
-    clearInterval(slaInterval);
-    slaInterval = null;
-    await fetch(`/sistemas/tickets/${ticketActual.id}/pausar`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'CSRF-Token': getCSRFToken()
-        },
-        credentials: 'include'
-    });
-
-    cerrarModal();
-    cargarTicketsDesdeBackend();
-}
-
 async function reanudarTicket() {
     await fetch(`/sistemas/tickets/${ticketActual.id}/reanudar`, {
         method: 'POST',
@@ -461,23 +407,7 @@ async function reanudarTicket() {
             'Content-Type': 'application/json',
             'CSRF-Token': getCSRFToken()
         },
-        credentials: 'include'
-    });
-
-    cerrarModal();
-    cargarTicketsDesdeBackend();
-}
-
-
-async function terminarTicket() {
-    clearInterval(slaInterval);
-    slaInterval = null;
-    await fetch(`/sistemas/tickets/${ticketActual.id}/terminar`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'CSRF-Token': getCSRFToken()
-        },
+        body: JSON.stringify({ _csrf: tok }),
         credentials: 'include'
     });
 
@@ -496,8 +426,11 @@ async function cerrarTicket() {
             method: 'POST',
             headers: {
                 'content-Type': 'application/json',
-                'CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-            }
+                'CSRF-Token': getCSRFToken()
+            },
+            body: JSON.stringify({ _csrf: tok }),
+            credentials: 'include'
+
         });
 
         if (!res.ok) throw new Error('Error al cerrar ticket');
@@ -524,7 +457,7 @@ async function asignarTicket() {
             'CSRF-Token': getCSRFToken()
         },
         credentials: 'include',
-        body: JSON.stringify({ asignadoA: usuario })
+        body: JSON.stringify({ asignadoA: usuario, _csrf: tok })
     });
 
     cerrarModal();
@@ -604,7 +537,6 @@ function verDetallesTicket(id) {
                 placeholder: '¿Por qué se está pausando el ticket?',
                 onEnviar: async (mensaje) => {
 
-                    // 1️⃣ Guardar observación
                     await fetch(`/sistemas/tickets/${ticketActual.id}/observacion`, {
                         method: 'POST',
                         headers: {
@@ -614,7 +546,8 @@ function verDetallesTicket(id) {
                         credentials: 'include',
                         body: JSON.stringify({
                             tipo: 'pause',
-                            mensaje
+                            mensaje,
+                            _csrf: tok,
                         })
                     });
 
@@ -635,7 +568,7 @@ function verDetallesTicket(id) {
                 placeholder: 'Describe cómo se resolvió el problema',
                 onEnviar: async (mensaje) => {
 
-                    // 1️⃣ Guardar observación
+                    // Guardar observación
                     await fetch(`/sistemas/tickets/${ticketActual.id}/observacion`, {
                         method: 'POST',
                         headers: {
@@ -645,7 +578,8 @@ function verDetallesTicket(id) {
                         credentials: 'include',
                         body: JSON.stringify({
                             tipo: 'resolve',
-                            mensaje
+                            mensaje,
+                            _csrf: tok
                         })
                     });
 
