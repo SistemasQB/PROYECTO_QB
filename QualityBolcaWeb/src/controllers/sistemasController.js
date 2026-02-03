@@ -583,7 +583,7 @@ controller.formularioTicket = async (req, res) => {
 }
 
 function obtenerHorasPorPrioridad(prioridad) {
-    switch(prioridad) {
+    switch (prioridad) {
         case 'low':
             return 72;
         case 'medium':
@@ -664,7 +664,6 @@ controller.crudTickets = async (req, res) => {
                 ticketParseado.slaFin = null;
                 ticketParseado.slaActivo = false;
 
-
                 const nuevoTicket = await modelosSistemas.modeloTickets.create({
                     folio,
                     datosTicket: ticketParseado
@@ -691,6 +690,47 @@ controller.crudTickets = async (req, res) => {
         return res.status(500).json({ ok: false });
     }
 }
+controller.misTickets = async (req, res) => {
+    try {
+        const codigoEmpleado = req.session.usuario.codigoempleado;
+
+        // Obtener TODOS los tickets
+        const ticketsDB = await crudTickets('select');
+        // Filtrar solo los del usuario
+        const misTickets = ticketsDB
+            .map(t => JSON.parse(t.datosTicket))
+            .filter(t => t.codigoEmpleado === codigoEmpleado)
+            .map(t => ({
+                id: t.folio,
+                asunto: t.titulo,
+                fecha: t.fechaCreacion,
+                estatus: normalizarEstatus(t.estatus),
+                tecnico: t.asignadoa ? `Ing. ${t.asignadoa}` : 'Pendiente de asignar'
+            }));
+
+        return res.render('admin/sistemas/misTickets.ejs', {
+            csrfToken: req.csrfToken(),
+            tickets: misTickets
+        });
+    } catch (error) {
+        console.error('Error en misTickets:', error);
+        res.render('admin/sistemas/misTickets', {
+            tickets: []
+        });
+    }
+}
+
+function normalizarEstatus(estatus) {
+    switch (estatus) {
+        case 'open': return 'abierto';
+        case 'progress': return 'proceso';
+        case 'pending': return 'pendiente';
+        case 'resolved': return 'resuelto';
+        case 'closed': return 'cerrado';
+        default: return estatus;
+    }
+}
+
 controller.administracionTickets = (req, res) => {
     try {
         return res.render('admin/sistemas/administracion_tickets.ejs', {
@@ -777,8 +817,8 @@ controller.pausarTicket = async (req, res) => {   //pausar ticket
         }
 
         // sumar tiempo consumido
-        const ahora = Date.now();
-        const inicio = new Date(datos.slaInicio).getTime();
+        const ahora = new Date();
+        const inicio = new Date(datos.slaInicio);
         datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
 
         datos.estatus = 'pending';
@@ -827,7 +867,7 @@ controller.reanudarTicket = async (req, res) => {
         res.json({ ok: true });
 
     } catch (error) {
-        res.status(500).json({ ok: false});
+        res.status(500).json({ ok: false });
     }
 };
 
@@ -859,7 +899,7 @@ controller.terminarTicket = async (req, res) => {  //terminar ticket
 
         datos.estatus = 'resolved';
         datos.slaActivo = false;
-        datos.slaFin = Date.now();
+        datos.slaFin = new Date();
         datos.slaInicio = null;
 
         ticket.datosTicket = datos;
@@ -915,69 +955,242 @@ controller.cerrarTicket = async (req, res) => {
     }
 };
 
+controller.agregarObservacionTicket = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tipo, mensaje } = req.body;
+
+        if (!tipo || !mensaje) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Tipo y mensaje son obligatorios'
+            });
+        }
+
+        const ticket = await modelosSistemas.modeloTickets.findOne({
+            where: { folio: id }
+        });
+
+        if (!ticket) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Ticket no encontrado'
+            });
+        }
+
+        const datos = parseDatosTicket(ticket);
+
+        if (!Array.isArray(datos.observaciones)) {
+            datos.observaciones = [];
+        }
+
+        datos.observaciones.push({
+            tipo,
+            mensaje,
+            usuario: req.usuario?.nombre || req.usuario?.codigoempleado || 'Sistema',
+            fecha: new Date()
+        });
+
+        // Ajustes según tipo
+        if (tipo === 'pause' && datos.estatus === 'progress') {
+            const ahora = new Date();
+            const inicio = new Date(datos.slaInicio);
+            datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
+
+            datos.estatus = 'pending';
+            datos.slaActivo = false;
+            datos.slaInicio = null;
+        }
+
+        if (tipo === 'resolve' && datos.estatus === 'progress') {
+            const ahora = Date.now();
+            const inicio = new Date(datos.slaInicio).getTime();
+            datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
+
+            datos.estatus = 'resolved';
+            datos.slaActivo = false;
+            datos.slaFin = new Date();
+            datos.slaInicio = null;
+        }
+
+        ticket.datosTicket = datos;
+        await ticket.save();
+
+        return res.json({ ok: true });
+
+    } catch (error) {
+        console.error('Error agregando observación:', error);
+        return res.status(500).json({ ok: false });
+    }
+}
+
+controller.obtenerObservacionesTicket = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tipo } = req.query;
+
+        const ticket = await modelosSistemas.modeloTickets.findOne({
+            where: { folio: id }
+        });
+
+        if (!ticket) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Ticket no encontrado'
+            });
+        }
+
+        const datos = parseDatosTicket(ticket);
+
+        if (!Array.isArray(datos.observaciones)) {
+            return res.json({
+                ok: true,
+                observaciones: []
+            });
+        }
+
+        let observaciones = datos.observaciones;
+
+        if (tipo) {
+            observaciones = observaciones.filter(o => o.tipo === tipo);
+        }
+
+        return res.json({
+            ok: true,
+            total: observaciones.length,
+            observaciones
+        });
+
+    } catch (error) {
+        console.error('Error obteniendo observaciones del ticket:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+};
+
 
 //controladores de inventario
 controller.inventario = async (req, res) => {
     res.render('admin/sistemas/inventario.ejs')
 }
 
+//controladores gestion de usuarios
+controller.adminUsuarios = async (req, res) => {
+    try {
 
+        const usuariosDB = await db.query(
+            `
+                SELECT 
+                    u.codigoempleado,
+                    ig.nombrelargo,
+                    ig.correoelectronico AS email,
+                    n6.descripcion AS puesto,
+                    n3.descripcion AS departamento,
+                    u.permisos
+                FROM usuarios u
+                LEFT JOIN nom10001 ig 
+                    ON u.codigoempleado = ig.codigoempleado
+                LEFT JOIN nom10006 n6 
+                    ON ig.idpuesto = n6.idpuesto
+                LEFT JOIN nom10003 n3
+                    ON ig.iddepartamento = n3.iddepartamento
+                ORDER BY ig.nombrelargo;
+            `,
+            {
+                type: QueryTypes.SELECT
+            }
+        );
+
+        const usuarios = usuariosDB.map(u => {
+            let rol = 'Sin permisos';
+
+            if (u.permisos) {
+                try {
+                    const permisos = JSON.parse(u.permisos);
+                    rol = permisos.roles?.join(', ') || 'Sin permisos';
+                } catch (e) {
+                    rol = 'Sin permisos';
+                }
+            }
+
+            return {
+                codigoempleado: u.codigoempleado,
+                nombre: u.nombrelargo || 'Sin información',
+                puesto: u.puesto || 'Sin puesto',
+                departamento: u.departamento || 'No asignado',
+                email: u.email || 'No disponible',
+                permisos: u.permisos, //
+                rol
+            };
+        });
+
+        return res.render('admin/sistemas/adminUsuarios.ejs', {
+            csrfToken: req.csrfToken(),
+            usuarios
+        });
+    } catch (error) {
+        console.error("Error cargando usuarios:", error);
+        res.status(500).send("Error al cargar los usuarios");
+    }
+}
 
 //controladores de equisicion de equipos
-controller.requisicionEquipos =async (req, res)=>{
+controller.requisicionEquipos = async (req, res) => {
     try {
-        let {codigoempleado} = req.usuario
-        let empleado = await Empleados.findOne({where: {codigoempleado:codigoempleado}})
-        let clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
-        let criterios = {codigoempleado:codigoempleado}
-        let datosEmpleado = await clase.obtener1Registro({criterio: criterios})
+        let { codigoempleado } = req.usuario
+        let empleado = await Empleados.findOne({ where: { codigoempleado: codigoempleado } })
+        let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
+        let criterios = { codigoempleado: codigoempleado }
+        let datosEmpleado = await clase.obtener1Registro({ criterio: criterios })
         let datos = {
             nombreCompleto: datosEmpleado.nombrelargo,
             departamento: empleado.descripcion,
             email: datosEmpleado.correoelectronico
         }
-        return res.render('admin/sistemas/requisicionEquipos.ejs', {info: datos, tok: req.csrfToken()})
-    } catch (error) {   
-        manejadrorErrores(res, error)
-    }
-    
-}
-
-controller.administracionRequisicionEquipos = async(req, res) => {
-    try {
-        const clase = new sequelizeClase({modelo: modelosSistemas.requisicionEquipos})
-        const resultados = await clase.obtenerDatosPorCriterio({criterio: {}, orden: [['status', 'DESC']]})
-        return res.render('admin/sistemas/administracionRequisicionesEquipos.ejs', {tok: req.csrfToken(), registros: resultados})
+        return res.render('admin/sistemas/requisicionEquipos.ejs', { info: datos, tok: req.csrfToken() })
     } catch (error) {
         manejadrorErrores(res, error)
-        
+    }
+
+}
+
+controller.administracionRequisicionEquipos = async (req, res) => {
+    try {
+        const clase = new sequelizeClase({ modelo: modelosSistemas.requisicionEquipos })
+        const resultados = await clase.obtenerDatosPorCriterio({ criterio: {}, orden: [['status', 'DESC']] })
+        return res.render('admin/sistemas/administracionRequisicionesEquipos.ejs', { tok: req.csrfToken(), registros: resultados })
+    } catch (error) {
+        manejadrorErrores(res, error)
+
     }
 }
 
 controller.CrudRequisicionEquipos = (req, res) => {
     try {
-        const {tipo } = req.body
+        const { tipo } = req.body
         let campos = req.body
         delete campos.tipo
-        let clase = new sequelizeClase({modelo: modelosSistemas.requisicionEquipos})
+        let clase = new sequelizeClase({ modelo: modelosSistemas.requisicionEquipos })
         switch (tipo) {
             case 'insert':
-                let resultado = clase.insertar({datosInsertar: campos})
-                if (!resultado) return res.json({ok: false, msg: 'no se pudo realizar la requisicion'})
-                return res.json({ok: true, msg: 'requisicion realizada exitosamente'})
+                let resultado = clase.insertar({ datosInsertar: campos })
+                if (!resultado) return res.json({ ok: false, msg: 'no se pudo realizar la requisicion' })
+                return res.json({ ok: true, msg: 'requisicion realizada exitosamente' })
             case 'delete':
-                let eliminacion = clase.eliminar({id: campos.id})
-                if (!eliminacion) return res.json({ok: false})
-                return res.json({ok: true})
+                let eliminacion = clase.eliminar({ id: campos.id })
+                if (!eliminacion) return res.json({ ok: false })
+                return res.json({ ok: true })
             case 'update':
-                let actualizacion = clase.actualizarDatos({id: campos.id, datos: campos})
-                if (!actualizacion) return res.json({ok: false})
-                return res.json({ok: true})
+                let actualizacion = clase.actualizarDatos({ id: campos.id, datos: campos })
+                if (!actualizacion) return res.json({ ok: false })
+                return res.json({ ok: true })
         }
-        
+
     } catch (error) {
         manejadrorErrores(res, error)
-        
+
     }
 }
 

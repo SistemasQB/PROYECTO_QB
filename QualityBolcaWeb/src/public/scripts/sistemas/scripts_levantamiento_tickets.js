@@ -137,11 +137,9 @@ btnEnvio.addEventListener("click", async (e) => {
     estatus: "open",
     asignadoA: null,
     slaInicio: null,
-    slaConsumido: 0,     // segundos acumulados
+    slaConsumido: 0,   
     slaActivo: false,
     slaFin: null,
-
-    fechaCreacion: new Date().toISOString()
   });
 
   let fecha = new Date(Date.now())

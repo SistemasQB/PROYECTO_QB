@@ -76,7 +76,9 @@ async function cargarTicketsDesdeBackend() {
             slaConsumido: t.datosTicket?.slaConsumido ?? 0,
             slaActivo: t.datosTicket?.slaActivo ?? false,
             slaFin: t.datosTicket?.slaFin ?? null,
-            asignadoA: t.datosTicket?.asignadoA ?? null
+            asignadoA: t.datosTicket?.asignadoA ?? null,
+            fecha: t.createdAt,
+            ultimaActualizacion: t.updatedAt
         }));
 
         filteredData = [...ticketsData];
@@ -85,6 +87,20 @@ async function cargarTicketsDesdeBackend() {
     } catch (error) {
         console.error('Error cargando tickets:', error);
     }
+}
+
+function formatearFecha(fechaISO) {
+    if (!fechaISO) return 'N/D';
+
+    const fecha = new Date(fechaISO);
+
+    return fecha.toLocaleString('es-MX', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 // Función para renderizar la tabla
@@ -123,12 +139,6 @@ function renderTable() {
                 <div class="actions-cell">
                     <button class="action-btn view" title="Ver detalles" onclick="verDetallesTicket('${ticket.id}')">
                         <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="action-btn edit" title="Editar">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button class="action-btn delete" title="Eliminar">
-                        <i class="fas fa-pause"></i>
                     </button>
                 </div>
             </td>
@@ -272,8 +282,23 @@ function obtenerBotonesPorEstatus(ticket) {
         return `<button id="btnReanudar">Reanudar</button>`;
     }
 
-    if(ticket.estatus === 'resolved') {
-        return `<button id="cerrarTicket">Cerrar Ticket</button>`
+    if (ticket.estatus === 'resolved') {
+        return `
+        <div class="flex-gap-2">
+            <button id="btnVerSolucion" class="btn-secondary">Ver solución</button>
+            <button id="btnVerPausas" class="btn-secondary">Ver pausas</button>
+            <button id="cerrarTicket">Cerrar Ticket</button>
+        </div>
+    `;
+    }
+
+    if (ticket.estatus === 'closed') {
+        return `
+        <div class="flex-gap-2">
+            <button id="btnVerSolucion" class="btn-secondary">Ver solución</button>
+            <button id="btnVerPausas" class="btn-secondary">Ver pausas</button>
+        </div>
+    `;
     }
 
     return '';
@@ -311,7 +336,8 @@ function actualizarSLATexto(ticket) {
     if (!slaEl) return;
 
     const total = ticket.slaHoras * 3600;
-    const restante = total - ticket.slaConsumido;
+    const consumido = ticket.slaConsumidoActual ?? ticket.slaConsumido;
+    const restante = total - consumido;
 
     if (restante <= 0) {
         slaEl.textContent = 'SLA vencido';
@@ -354,6 +380,8 @@ let slaInterval = null;
 //intervalo en tiempo real
 function iniciarContadorSLA() {
     clearInterval(slaInterval);
+    const inicio = Number(ticketActual.slaInicio);
+    if (!inicio) return;
 
     slaInterval = setInterval(() => {
         if (!ticketActual || !ticketActual.slaActivo) return;
@@ -459,7 +487,7 @@ async function terminarTicket() {
 
 async function cerrarTicket() {
 
-    if(!confirm('¿Estás seguro de cerrar este ticket? Esta acción es definitiva.')) {
+    if (!confirm('¿Estás seguro de cerrar este ticket? Esta acción es definitiva.')) {
         return;
     }
 
@@ -472,7 +500,7 @@ async function cerrarTicket() {
             }
         });
 
-        if(!res.ok) throw new Error('Error al cerrar ticket');
+        if (!res.ok) throw new Error('Error al cerrar ticket');
 
         alert('ticket cerrado correctamente');
         cerrarModal();
@@ -526,13 +554,14 @@ function verDetallesTicket(id) {
                     <p><strong>Título:</strong> ${ticketActual.titulo}</p>
                     <p><strong>Categoría:</strong> ${ticketActual.categoria}</p>
                     <p><strong>Prioridad:</strong> ${priorityLabels[ticketActual.prioridad]}</p>
+                    <p><strong>Estatus:</strong> ${statusLabels[ticketActual.estatus]}</p>
                 </div>
 
                 <div class="ticket-col">
                     <p><strong>Usuario:</strong> ${ticketActual.nombreUsuario}</p>
                     <p><strong>Departamento:</strong> ${ticketActual.departamento}</p>
+                    <p><strong>Fecha:</strong> ${formatearFecha(ticketActual.fecha)} </p>
                     <p><strong>Asignado a:</strong> ${ticketActual.asignadoA ?? 'No asignado'}</p>
-                    <p><strong>Estatus:</strong> ${statusLabels[ticketActual.estatus]}</p>
                 </div>
             </div>
 
@@ -568,16 +597,100 @@ function verDetallesTicket(id) {
     if (document.getElementById('btnAsignar'))
         document.getElementById('btnAsignar').onclick = asignarTicket;
 
-    if (document.getElementById('btnPausar'))
-        document.getElementById('btnPausar').onclick = pausarTicket;
+    if (document.getElementById('btnPausar')) {
+        document.getElementById('btnPausar').onclick = () => {
+            crearModalObservacion({
+                titulo: 'Justificación de pausa',
+                placeholder: '¿Por qué se está pausando el ticket?',
+                onEnviar: async (mensaje) => {
+
+                    // 1️⃣ Guardar observación
+                    await fetch(`/sistemas/tickets/${ticketActual.id}/observacion`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'CSRF-Token': getCSRFToken()
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            tipo: 'pause',
+                            mensaje
+                        })
+                    });
+
+                    cerrarModal();
+                    cargarTicketsDesdeBackend();
+                }
+            });
+        };
+    }
 
     if (document.getElementById('btnReanudar'))
         document.getElementById('btnReanudar').onclick = reanudarTicket;
 
-    if (document.getElementById('btnTerminar'))
-        document.getElementById('btnTerminar').onclick = terminarTicket;
+    if (document.getElementById('btnTerminar')) {
+        document.getElementById('btnTerminar').onclick = () => {
+            crearModalObservacion({
+                titulo: 'Solución del ticket',
+                placeholder: 'Describe cómo se resolvió el problema',
+                onEnviar: async (mensaje) => {
 
-    if(document.getElementById('cerrarTicket'))
+                    // 1️⃣ Guardar observación
+                    await fetch(`/sistemas/tickets/${ticketActual.id}/observacion`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'CSRF-Token': getCSRFToken()
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            tipo: 'resolve',
+                            mensaje
+                        })
+                    });
+
+                    cerrarModal();
+                    cargarTicketsDesdeBackend();
+                }
+            });
+        };
+    }
+
+    if (document.getElementById('btnVerSolucion')) {
+        document.getElementById('btnVerSolucion').onclick = async () => {
+            const res = await fetch(`/sistemas/tickets/${ticketActual.id}/observaciones?tipo=resolve`, {
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            const data = await res.json();
+
+            crearModalLectura({
+                titulo: 'Solución del ticket',
+                items: data.observaciones || []
+            });
+        };
+    }
+
+    if (document.getElementById('btnVerPausas')) {
+        document.getElementById('btnVerPausas').onclick = async () => {
+            const res = await fetch(`/sistemas/tickets/${ticketActual.id}/observaciones?tipo=pause`, {
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            const data = await res.json();
+
+            crearModalLectura({
+                titulo: 'Historial de pausas',
+                items: data.observaciones || []
+            });
+        };
+    }
+
+    if (document.getElementById('cerrarTicket'))
         document.getElementById('cerrarTicket').onclick = cerrarTicket;
 
     // Pintar SLA inmediatamente
@@ -596,6 +709,86 @@ function verDetallesTicket(id) {
     if (ticketActual.slaActivo) {
         iniciarContadorSLA();
     }
+}
+
+function crearModalObservacion({ titulo, placeholder, onEnviar }) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('observacion-overlay');
+
+    const modal = document.createElement('div');
+    modal.classList.add('observacion-modal');
+
+    modal.innerHTML = `
+        <h3 class="observacion-title">${titulo}</h3>
+
+        <textarea
+            id="observacionInput"
+            class="observacion-textarea"
+            placeholder="${placeholder}"
+            rows="4"
+        ></textarea>
+
+        <div class="observacion-actions">
+            <button id="btnCancelarObs" class="btn-cancelar">Cancelar</button>
+            <button id="btnEnviarObs" class="btn-enviar">Enviar</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#btnCancelarObs').onclick = () => {
+        document.body.removeChild(overlay);
+    };
+
+    overlay.querySelector('#btnEnviarObs').onclick = async () => {
+        const texto = overlay.querySelector('#observacionInput').value.trim();
+
+        if (!texto) {
+            alert('La observación es obligatoria');
+            return;
+        }
+
+        await onEnviar(texto);
+        document.body.removeChild(overlay);
+    };
+}
+
+function crearModalLectura({ titulo, items }) {
+    const overlay = document.createElement('div');
+    overlay.className = 'observacion-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'observacion-modal';
+
+    modal.innerHTML = `
+        <h3 class="observacion-title">${titulo}</h3>
+
+        <div class="observacion-lista">
+            ${items.length === 0
+            ? `<p class="observacion-empty">No hay información registrada.</p>`
+            : items.map(obs => `
+                        <div class="observacion-item">
+                            <small class="observacion-fecha">
+                                ${formatearFecha(obs.fecha)}
+                            </small>
+                            <p class="observacion-texto">${obs.mensaje}</p>
+                        </div>
+                    `).join('')
+        }
+        </div>
+
+        <div class="observacion-actions">
+            <button class="btn-enviar" id="btnCerrarLectura">Cerrar</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    document.getElementById('btnCerrarLectura').onclick = () => {
+        document.body.removeChild(overlay);
+    };
 }
 
 // Inicializar la tabla

@@ -8,6 +8,9 @@ const router = express.Router();
 //ruta de inicio
 router.get('/inicio', adminController.inicio);
 
+//rutas gestion de usuarios
+router.get('/admin-usuarios', adminController.adminUsuarios);
+
 //rutas de tickets
 router.get('/tickets', protegetRuta,adminController.levantamientoTicket)
 router.get('/admin-tickets', protegetRuta,validarAcceso({
@@ -20,6 +23,8 @@ router.post('/tickets/:id/pausar', protegetRuta,adminController.pausarTicket);
 router.post('/tickets/:id/reanudar', protegetRuta,adminController.reanudarTicket);
 router.put('/tickets/:id/terminar', protegetRuta,adminController.terminarTicket);
 router.post('/tickets/:id/cerrar', protegetRuta,adminController.cerrarTicket);
+router.post('/tickets/:id/observacion', protegetRuta,adminController.agregarObservacionTicket);
+router.get('/tickets/:id/observaciones', protegetRuta, adminController.obtenerObservacionesTicket);
 
 //rutas de inventario
 router.get('/inventario', protegetRuta,validarAcceso({

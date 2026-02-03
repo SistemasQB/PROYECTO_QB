@@ -1,0 +1,237 @@
+:root {
+    --bg-color: #f3f4f6;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --white: #ffffff;
+    --primary-blue: #3b82f6;
+    --border-color: #e5e7eb;
+
+    /* Colores de Estatus */
+    --status-open-bg: #dbeafe;
+    --status-open-text: #1e40af;
+    --status-process-bg: #fef3c7;
+    --status-process-text: #92400e;
+    --status-resolved-bg: #d1fae5;
+    --status-resolved-text: #065f46;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 20px;
+}
+
+.main-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.subtitle {
+    margin: 5px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.btn-new-ticket {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-new-ticket:hover {
+    background-color: #2563eb;
+}
+
+/* Controles */
+.controls-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: var(--white);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: var(--bg-color);
+    border-radius: 8px;
+    padding: 0 10px;
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    padding: 10px;
+    width: 100%;
+    outline: none;
+    color: var(--text-primary);
+}
+
+.filter-box select {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    outline: none;
+    background: white;
+    cursor: pointer;
+}
+
+/* Grid de Tickets */
+.tickets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.ticket-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ticket-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.ticket-id {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+}
+
+/* Badges de Estatus */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-abierto {
+    background-color: var(--status-open-bg);
+    color: var(--status-open-text);
+}
+
+.status-proceso {
+    background-color: var(--status-process-bg);
+    color: var(--status-process-text);
+}
+
+.status-resuelto,
+.status-cerrado {
+    background-color: var(--status-resolved-bg);
+    color: var(--status-resolved-text);
+}
+
+.ticket-subject {
+    font-size: 1.1rem;
+    margin: 0 0 10px 0;
+}
+
+.ticket-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.icon-sm {
+    font-size: 16px;
+}
+
+.ticket-footer {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    text-align: right;
+}
+
+.btn-details {
+    text-decoration: none;
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn-details:hover {
+    text-decoration: underline;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    width: 100%;
+    grid-column: 1 / -1;
+    color: var(--text-secondary);
+    padding: 40px;
+}
+
+/* Agrupa fecha y técnico */
+.ticket-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Separación entre fecha y técnico */
+    margin-top: 10px;
+}
+
+.ticket-date, .ticket-tech {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.ticket-date {
+    color: var(--text-secondary);
+}
+
+.ticket-tech {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Estilo especial si el técnico no ha sido asignado */
+.ticket-tech:contains("Pendiente") {
+    color: #9ca3af;
+    font-style: italic;
+}

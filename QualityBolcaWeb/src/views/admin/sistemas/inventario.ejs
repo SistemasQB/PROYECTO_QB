@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Tickets IT - Administración</title>
+    <title>Sistema de Inventario - Administración</title>
     <!-- Changed to use admin.css instead of styles.css -->
     <link rel="stylesheet" href="/styles/sistemas/estilos_inventario.css">
 </head>
@@ -11,11 +11,7 @@
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <h1>Sistema de Tickets IT</h1>
-                <nav>
-                    <a href="index.html" class="nav-link">Crear Ticket</a>
-                    <a href="admin.html" class="nav-link active">Administración</a>
-                </nav>
+                <h1>Sistema de Inventario IT</h1>
             </div>
         </header>
 
@@ -23,13 +19,6 @@
             <div class="admin-container">
                 <div class="admin-header">
                     <h2>Panel de Administración</h2>
-                    <button id="clearAllBtn" class="btn btn-danger-outline">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                        Limpiar Todos
-                    </button>
                 </div>
 
                 <!-- Stats Cards -->
@@ -131,11 +120,11 @@
                                 <th>ID</th>
                                 <th>Título</th>
                                 <th>Categoría</th>
-                                <th>Prioridad</th>
-                                <th>Solicitante</th>
-                                <th>Departamento</th>
-                                <th>Fecha</th>
-                                <th>Acciones</th>
+                                <th>Num. de serie</th>
+                                <th>Asignado a</th>
+                                <th>Estado</th>
+                                <th>Area perteneciente</th>
+                                <th>Ultimo mantenimiento</th>
                             </tr>
                         </thead>
                         <tbody id="ticketsTableBody">
@@ -148,7 +137,7 @@
                                             <line x1="12" y1="18" x2="12" y2="12"></line>
                                             <line x1="9" y1="15" x2="15" y2="15"></line>
                                         </svg>
-                                        <p>No hay tickets en este estado</p>
+                                        <p>No hay artículos en este estado</p>
                                     </div>
                                 </td>
                             </tr>
@@ -159,24 +148,6 @@
         </main>
     </div>
 
-    <!-- Modal for Ticket Details -->
-    <div id="ticketModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Detalles del Ticket</h3>
-                <button class="modal-close" id="closeModal">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Content will be injected here -->
-            </div>
-        </div>
-    </div>
-
-    <script src="/scripts/sistemas/scripts_inventario"></script>
+    <script src="/scripts/sistemas/scripts_inventario.js"></script>
 </body>
 </html>
