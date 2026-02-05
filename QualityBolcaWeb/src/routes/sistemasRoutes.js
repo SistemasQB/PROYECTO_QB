@@ -9,7 +9,9 @@ const router = express.Router();
 router.get('/inicio', adminController.inicio);
 
 //rutas gestion de usuarios
-router.get('/admin-usuarios', adminController.adminUsuarios);
+router.get('/admin-usuarios', adminController.adminUsuarios); 
+router.put('/admin-usuarios/:codigoempleado/permisos', protegetRuta,adminController.actualizarPermisosUsuario);
+router.put('/admin-usuarios/:codigoempleado/estado', protegetRuta, adminController.actualizarEstadoUsuario);
 
 //rutas de tickets
 router.get('/tickets', protegetRuta,adminController.levantamientoTicket)

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Usuarios</title>
+    <link rel="stylesheet" href="/styles/sistemas/adminUsuarios.css">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <span class="nav-title">Gestión de usuarios</span>
+        </div>
+    </nav>
+    <div class="container">
+        <header class="table-header">
+            <h2>Lista de usuarios</h2>
+            <button class="btn-primary" onclick="location.href='/registro'">
+                <span class="material-icons">add</span> Nuevo Usuario
+            </button>
+        </header>
+
+        <div class="search-container">
+            <span class="material-icons">search</span>
+            <input type="text" id="searchInput" placeholder="Buscar por nombre, correo o rol...">
+        </div>
+
+        <section class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <div class="th-content">Nombre <span class="material-icons">person</span></div>
+                        </th>
+                        <th>
+                            <div class="th-content">Puesto <span class="material-icons">work</span></div>
+                        </th>
+                        <th style="width: 40%;">
+                            <div class="th-content">Rol / Permisos <span class="material-icons">assignment</span></div>
+                        </th>
+                        <th>
+                            <div class="th-content">Acciones<span class="material-icons">settings</span></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% usuarios.forEach(user=> { %>
+                        <tr>
+                            <td>
+                                <div style="color: #1e293b;">
+                                    <%= user.nombre %>
+                                </div>
+                            </td>
+                            <td>
+                                <%= user.puesto %>
+                            </td>
+                            <td>
+                                <div class="chips-wrapper">
+                        <% 
+                           // Lógica para extraer roles y permisos
+                           let roles = [];
+                           let permisos = [];
+                           try {
+                               // Intentamos leer el JSON si viene como string
+                               const data = (typeof user.permisos === 'string') 
+                                            ? JSON.parse(user.permisos) 
+                                            : user.permisos;
+                               
+                               roles = data.roles || [];
+                               permisos = data.permisos || [];
+                           } catch(e) {
+                               // Si falla o es nulo, dejamos arrays vacíos
+                           }
+                        %>
+
+                        <% roles.forEach(rol => { %>
+                            <span class="table-chip"><%= rol %></span>
+                        <% }) %>
+
+                        <% permisos.forEach(permiso => { %>
+                            <span class="table-chip permiso"><%= permiso %></span>
+                        <% }) %>
+
+                        <% if (roles.length === 0 && permisos.length === 0) { %>
+                            <span style="color: #94a3b8; font-size: 0.8rem; font-style: italic;">Sin asignación</span>
+                        <% } %>
+                    </div>
+                            </td>
+                            <td>
+                                <button class="btn-icon edit" onclick='openEditUser(<%- JSON.stringify(user) %>)'>
+                                    <span class="material-icons">edit</span>
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </section>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script>
+        const tok = <%- JSON.stringify(csrfToken) %>
+    </script>
+
+    <script src="/scripts/sistemas/adminUsuarios.js"></script>
+</body>
+
+</html>

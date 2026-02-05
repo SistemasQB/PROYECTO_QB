@@ -283,7 +283,7 @@ controller.obtenerColaboradoresSinVale = async (req, res) => {
 
         const empleadosConVale = vales.map(v => v.numeroEmpleado);
 
-        const colaboradores = await informaciongch.findAll({
+        const colaboradores = await Informaciongch.findAll({
             where: {
                 codigoempleado: {
                     [Op.notIn]: empleadosConVale.length > 0 ? empleadosConVale : ['']
@@ -999,6 +999,7 @@ controller.adminUsuarios = async (req, res) => {
                     u.codigoempleado,
                     ig.nombrelargo,
                     ig.correoelectronico AS email,
+                    ig.estadoempleado,
                     n6.descripcion AS puesto,
                     n3.descripcion AS departamento,
                     u.permisos
@@ -1034,8 +1035,9 @@ controller.adminUsuarios = async (req, res) => {
                 puesto: u.puesto || 'Sin puesto',
                 departamento: u.departamento || 'No asignado',
                 email: u.email || 'No disponible',
-                permisos: u.permisos, //
-                rol
+                permisos: u.permisos,
+                rol,
+                estadoempleado: u.estadoempleado || 'R' 
             };
         });
 
@@ -1046,6 +1048,109 @@ controller.adminUsuarios = async (req, res) => {
     } catch (error) {
         console.error("Error cargando usuarios:", error);
         res.status(500).send("Error al cargar los usuarios");
+    }
+}
+
+controller.actualizarPermisosUsuario = async (req, res) => {
+    try {
+        const { codigoempleado } = req.params;
+        const { permisos } = req.body;
+
+        console.log('PARAMS:', req.params);
+        console.log('BODY:', req.body);
+
+        if (!codigoempleado || !permisos) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Datos incompletos'
+            });
+        }
+
+        const { jerarquia, roles, permisos: permisosLista } = permisos;
+
+        if (
+            typeof jerarquia !== 'number' ||
+            !Array.isArray(roles) ||
+            !Array.isArray(permisosLista)
+        ) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Estructura de permisos inválida'
+            });
+        }
+
+        // Buscar usuario
+        const usuario = await Usuario.findOne({
+            where: { codigoempleado }
+        });
+
+        if (!usuario) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Usuario no encontrado'
+            });
+        }
+
+        // Guardar como JSON string
+        usuario.permisos = JSON.stringify({
+            jerarquia,
+            roles,
+            permisos: permisosLista
+        });
+
+        await usuario.save();
+
+        return res.json({
+            ok: true,
+            msg: 'Permisos actualizados correctamente'
+        });
+
+    } catch (error) {
+        console.error('Error actualizando permisos:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+}
+
+controller.actualizarEstadoUsuario = async (req, res) => {
+    try {
+        const { codigoempleado } = req.params;
+        const { estado } = req.body;
+
+        if (!codigoempleado || !['A', 'R'].includes(estado)) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Estado inválido'
+            });
+        }
+
+        const empleado = await Informaciongch.findOne({
+            where: { codigoempleado }
+        });
+
+        if (!empleado) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Empleado no encontrado'
+            });
+        }
+
+        empleado.estadoempleado = estado;
+        await empleado.save();
+
+        return res.json({
+            ok: true,
+            msg: `Usuario ${estado === 'A' ? 'activado' : 'desactivado'} correctamente`
+        });
+
+    } catch (error) {
+        console.error('Error actualizando estado del usuario:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
     }
 }
 
