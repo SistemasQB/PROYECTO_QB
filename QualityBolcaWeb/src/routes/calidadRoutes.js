@@ -11,15 +11,15 @@ const router = express.Router();
 router.get('/inicio', calidadController.inicio);
 
 // rutas de 5s
-// router.get('/verificacion5s' ,calidadController.verificacion5s);
-// router.post('/verificacion5s' ,calidadController.verificacion5s2);
 router.get('/evidencias' ,protegerRuta ,calidadController.evidencias);
 router.post('/evidencias',calidadController.evidencias2);
 
 // rutas de mejora continua
-router.get('/administracionmejoras', protegerRuta,calidadController.mejoracontinua);
-router.post('/rechazarMejora', calidadController.rechazarMejora);
-router.post("/actualizarMejoras", calidadController.ActualizarMejoras)
+router.get('/administracionmejoras', protegerRuta,calidadController.administracionmejoras);
+router.post('/rechazarMejora', protegerRuta,calidadController.rechazarMejora);
+router.post("/actualizarMejoras", protegerRuta,calidadController.ActualizarMejoras)
+router.get('/mejoracontinua',protegerRuta, calidadController.mejoracontinua);
+router.post('/crudMejoras', protegerRuta,calidadController.crudMejoras);
 
 // rutas de bitacora
 router.get('/bitacoraActividades', protegerRuta,permisos.permisosCalidad(

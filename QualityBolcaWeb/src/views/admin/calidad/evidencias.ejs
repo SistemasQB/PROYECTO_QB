@@ -4,11 +4,44 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Mejoras</title>
-    <link href="../styles/calidad/evidencias.css" rel="stylesheet" type="text/css" />
+    <link href="/styles/calidad/evidencias.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <div class="container">
         <h1>Sistema de Gestión de Mejoras</h1>
+
+        <!-- Sección de Filtros -->
+        <div class="filters-container">
+            <div class="filters-header">
+                <h2>🔍 Filtros de Búsqueda</h2>
+                <button class="clear-filters-btn" onclick="clearFilters()">Limpiar Filtros</button>
+            </div>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="filterNombre">Nombre de Mejora</label>
+                    <input type="text" id="filterNombre" placeholder="Buscar por nombre..." oninput="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label for="filterIntegrante">Integrante</label>
+                    <input type="text" id="filterIntegrante" placeholder="Buscar por integrante..." oninput="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label for="filterRubro">Tipo de Mejora</label>
+                    <select id="filterRubro" onchange="applyFilters()">
+                        <option value="">Todos los tipos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterEstatus">Estatus</label>
+                    <select id="filterEstatus" onchange="applyFilters()">
+                        <option value="">Todos los estatus</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filters-results">
+                <span id="resultsCount">Mostrando todas las mejoras</span>
+            </div>
+        </div>
 
         <div id="cardsContainer" class="list-container">
             <!-- Las filas de la lista se generarán dinámicamente aquí -->
@@ -21,11 +54,8 @@
             <span class="close" onclick="closeModal()">&times;</span>
             <h3 id="modalTitle">Evidencia</h3>
             <div class="pdf-container">
-                <!-- <p id="pdfPlaceholder">Aquí se mostraría el PDF: <span id="pdfName"></span></p> -->
                 <div class="pdf-viewer">
-                    <!-- <div class="pdf-placeholder"> -->
-                        <embed src="" type="" id="embedPdf" width="100%" height="100%">
-                    <!-- </div> -->
+                    <embed src="" type="" id="embedPdf" width="100%" height="100%">
                 </div>
             </div>
             <div class="modal-actions">
@@ -41,19 +71,11 @@
         </div>
     </div>
 
-    <script src="../scripts/calidad/evidencias.js"></script>
+    <script src="/scripts/calidad/evidencias.js"></script>
+
+    <script>
+        let currentData = null;
+        const sampleData = <%-JSON.stringify(obtenerValores)%>
+    </script>
 </body>
-
-<script>
-
-    const sampleData = <%- JSON.stringify(obtenerValores) %>;
-
-let currentData = null;
-
-    // Cargar datos automáticamente al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    displayCards(sampleData);
-});
-</script>
-
 </html>

@@ -638,7 +638,6 @@ controller.crudTickets = async (req, res) => {
                 if (!empleado) {
                     return res.status(404).json({ ok: false, message: 'Empleado no encontrado' });
                 }
-
                 //nombre del departamento
                 const departamentoDB = await db.query(
                     `
@@ -797,6 +796,7 @@ controller.asignarTicket = async (req, res) => {
 
 controller.pausarTicket = async (req, res) => {   //pausar ticket
     try {
+        console.log('pausar ticket');
         const { id } = req.params;
 
         const ticket = await modelosSistemas.modeloTickets.findOne({
@@ -1146,7 +1146,7 @@ controller.requisicionEquipos = async (req, res) => {
         let datosEmpleado = await clase.obtener1Registro({ criterio: criterios })
         let datos = {
             nombreCompleto: datosEmpleado.nombrelargo,
-            departamento: empleado.descripcion,
+            departamento: empleado.departamento,
             email: datosEmpleado.correoelectronico
         }
         return res.render('admin/sistemas/requisicionEquipos.ejs', { info: datos, tok: req.csrfToken() })
@@ -1183,7 +1183,8 @@ controller.CrudRequisicionEquipos = (req, res) => {
                 if (!eliminacion) return res.json({ ok: false })
                 return res.json({ ok: true })
             case 'update':
-                let actualizacion = clase.actualizarDatos({ id: campos.id, datos: campos })
+                delete campos._csrf
+                let actualizacion = clase.actualizarDatos({ id: campos.id, datos:campos})
                 if (!actualizacion) return res.json({ ok: false })
                 return res.json({ ok: true })
         }

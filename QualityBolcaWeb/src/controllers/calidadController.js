@@ -19,7 +19,7 @@ import {
 const app = express();
 
 const controller = {};
-
+//controlador de 5´sd
 controller.verificacion5s = (req, res) => {
     res.render('admin/calidad/verificacion5s');
 }
@@ -28,9 +28,7 @@ controller.verificacion5s2 = (req, res) => {
 }
 
 controller.evidencias = async (req, res) => {
-
     const obtenerValores = await Mejora.findAll({ where: { estatus:{ [Op.gt]: 0} }, order: [[Sequelize.literal('fecha'), 'DESC']], });
-
     res.render('admin/calidad/evidencias', {
         csrfToken: req.csrfToken(),
         obtenerValores
@@ -51,7 +49,7 @@ controller.evidencias2 = async (req, res) => {
     });
 }
 
-controller.mejoracontinua = async (req, res) => {
+controller.administracionmejoras = async (req, res) => {
     try {
         let resultados = await Mejora.findAll({
             where: { estatus: 1 }
@@ -135,11 +133,46 @@ controller.ActualizarMejoras = async (req, res) => {
         return res.json({ ok: false, msg: "no se pudo realizar la solicitud" })
     }
 }
+controller.mejoracontinua = async (req, res) => {
+    const { codigoempleado } = req.usuario
+    let clase = new sequelizeClase({modelo: barrilmodelosgenerales.vistaempleados})
+    const datosEmpleado = await clase.obtener1Registro({criterio: {codigoempleado: codigoempleado}})
+    const nombreLargo = `${datosEmpleado.nombre} ${datosEmpleado.apellidopaterno} ${datosEmpleado.apellidomaterno}`
+    clase = new sequelizeClase({modelo: barrilcalidad.modeloFormularioMejora})
+    const listadoMejoras = await clase.obtenerDatosPorCriterio({criterio: {nombreRegistra: nombreLargo}})
+    res.render('admin/calidad/registroMejoraContinua', { 
+        csrfToken: req.csrfToken(),
+        obtenerDatos: datosEmpleado,
+        obtenerValores: listadoMejoras
+    })
+}
+controller.crudMejoras = async(req, res) => {
+    try {        
+        const {tipo} = req.body
+        console.log('entro al controlador')
+        let campos = req.body
+        const clase = new sequelizeClase({modelo: barrilcalidad.modeloFormularioMejora})
+        switch(tipo){
+            case 'insert':
+                delete campos.tipo
+                const inserccion = await clase.insertar({datosInsertar: campos})
+                if (!inserccion) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
+                    return res.json({ok: inserccion, msg: 'la mejora fue registrada exitosamente'})
+            case 'delete':
+                break
+            case 'update':
+                let actualizacion = await clase.actualizarDatos({id: id, datos:campos})
+                if (!actualizacion) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
+                    return res.json({ok: true, msg: 'la mejora fue actualizada exitosamente'})}
+    }
+    catch (error) {
+        console.log(error.message);
+        manejadorErrores(res, error)
+    }
+}
+
 //controlador de actividades
 controller.bitacoraActividades = async (req, res)=>{
-
-
-
     let token = req.csrfToken()
     let clase = new sequelizeClase({modelo: modeloDirectorioCalidad});
 

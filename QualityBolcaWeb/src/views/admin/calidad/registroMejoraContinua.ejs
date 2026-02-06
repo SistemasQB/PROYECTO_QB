@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Mejora Continua</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/styles/calidad/estilos_registroMejoraContinua.css">
+</head>
+
+
+
+<body>
+    <div>
+        <!-- HTML: Navbar básico -->
+        <nav class="navbar">
+            <div class="navbar-logo">
+                <img src="../img/Quality-BOLCA.png" alt="Logo Empresa">
+            </div>
+            <ul class="navbar-links">
+                <li><a href="#" style="background-color: rgb(29, 211, 211);">Mis mejoras</a></li>
+                <li><a href="mejoracontinuaall">Todas Las mejoras</a></li>
+                <li><a href="blogayuda">Foro de ayuda</a></li>
+            </ul>
+        </nav>
+
+    </div>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <img src="../img/Quality-BOLCA.png" width="100%" alt="" srcset="">
+                    </div>
+                    <div class="header-text">
+                        <h1>Registro de Mejora Continua</h1>
+                        <p>Sistema de gestión de mejoras Quality BOLCA</p>
+                    </div>
+                </div>
+                <button id="openModalBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Registrar Nueva Mejora
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="main-header">
+
+                <h2>Mejoras Registradas</h2>
+                <p id="totalMejoras">Total de mejoras: <span id="totalMejorasCount"></span></p>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div class="coloresExpllicacion"
+                        style='background-color: #e8f9ff; border: 2px solid rgb(173, 216, 230);'>
+                    </div>
+                    <div>Sin analisis</div>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'>
+                    </div>
+                    <div>En espera</div>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #ffead3; border: 2px solid rgb(255, 135, 0);'>
+                    </div>
+                    <div>Espera de modificación</div>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #dfffe1; border: 2px solid rgb(76, 175, 80);'>
+                    </div>
+                    <div>Aprobada</div>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #d9f8f5; border: 4px solid rgb(64, 224, 208);'>
+                    </div>
+                    <div>Implementada</div>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #ffe6e4; border: 2px solid rgb(244, 67, 54);'>
+                    </div>
+                    <div>Rechazada</div>
+                    <div class="coloresExpllicacion"
+                        style='background-color: #ececec; border: 2px solid rgb(105, 105, 105);'>
+                    </div>
+                    <div>Declinada por falta de seguimiento</div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-content">
+                    <i class="fas fa-lightbulb empty-icon"></i>
+                    <h3>No hay mejoras registradas</h3>
+                    <p>Comienza registrando tu primera mejora continua</p>
+                    <button class="btn btn-primary open-modal-btn">
+                        <i class="fas fa-plus"></i>
+                        Registrar Primera Mejora
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mejoras Grid -->
+            <div id="mejorasGrid" class="mejoras-grid">
+                <!-- Las mejoras se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="../img/Quality-BOLCA.png" alt="" width="10%">
+                <h2>Registro de Mejora Continua</h2>
+                <div class="codificacion">
+                    <p>Código: QB-FR-A-06-01</p>
+                    <p>Rev: 06</p>
+                    <p>Fecha de emisión: 30-11-2017</p>
+                    <p>Fecha de revisión: 31-10-2024</p>
+                </div>
+                <button id="closeModalBtn" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="mejoraForm" class="modal-form">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                
+                <!-- Información Personal -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre_mejora">Nombre de la Mejora *</label>
+                        <input type="text" id="nombre_mejora" name="nombre_mejora" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Generador de la idea o Líder del equipo de mejora *</label>
+                        <input type="text" id="nombre" name="generador_idea" disabled>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="email">E-mail *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div> -->
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="puesto">Puesto *</label>
+                        <input type="text" id="puesto" name="puesto" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="proceso">Proceso al que Perteneces *</label>
+                        <select id="proceso" name="proceso_pertenece" required>
+                            <option value="Comercialización y ventas">1. Comercialización y ventas</option>
+                            <option value="Planeación del servicio">2. Planeación del servicio.</option>
+                            <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
+                            <option value="Control y mejora del servicio">4. Control y mejora del servicio.</option>
+                            <option value="Gestión de infraestructura">5. Gestión de infraestructura.</option>
+                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.
+                            </option>
+                            <option value="Gestión de capital humano">7. Gestión de capital humano.</option>
+                            <option value="Sistema de gestión de calidad">8. Sistema de gestión de calidad.</option>
+                            <option value="Administración y finanzas">9. Administración y finanzas.</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreEquipo">Nombre del equipo (Si aplica)</label>
+                        <input type="text" id="nombreEquipo" name="nombre_equipo">
+                    </div>
+                </div>
+
+
+                <!-- seccion para añadir a los participantes -->
+                <div class="form-row" id="containerParticipantes" style="display: none;">
+                    <div class="form-group">
+                        <label for="nombre_participantes">Nombre de los participantes</label>
+                        <textarea id="nombre_participantes" rows="4" name="nombre_participantes"
+                            placeholder="Ingresa los nombres de los participantes separados por comas"></textarea>
+                    </div>
+                </div>
+
+
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="proceso_aplica_mejora">Proceso (s) donde se aplica la mejora *</label>
+                        <select id="proceso_aplica_mejora" name="proceso_aplica_mejora" required>
+                            <option value="Comercialización y ventas">1. Comercialización y ventas</option>
+                            <option value="Planeación del servicio">2. Planeación del servicio.</option>
+                            <option value="Ejecución del servicio">3. Ejecución del servicio.</option>
+                            <option value="Control y mejora del servicio">4. Control y mejora del servicio.</option>
+                            <option value="Gestión de infraestructura">5. Gestión de infraestructura.</option>
+                            <option value="Planeación y dirección estratégica">6. Planeación y dirección estratégica.
+                            </option>
+                            <option value="Gestión de capital humano">7. Gestión de capital humano.</option>
+                            <option value="Sistema de gestión de calidad">8. Sistema de gestión de calidad.</option>
+                            <option value="Administración y finanzas">9. Administración y finanzas.</option>
+                            <option value="Todos">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="region_aplica_mejora">Región (s) donde se propone la mejora *</label>
+                        <input type="text" id="region_aplica_mejora" name="region_aplica_mejora">
+                    </div>
+                </div>
+
+                <div style="background-color: #eee6e691;">
+
+
+                    <input type="hidden" value="" id="indexmejora">
+
+                    <div style="display: flex; justify-content: center">
+                        <h2>Rubro</h2>
+                    </div>
+                    <br>
+                    <div style="display: flex; justify-content: space-around;">
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(0)" type="button" style="
+                            background-color: #fed7aa;
+                            color: #ea580c;
+                            border-color: #fdba74;">
+                            Ahorro
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(1)" type="button" style="
+                    background-color: #e9d5ff;
+        color: #7c3aed;
+        border-color: #c4b5fd;">
+                            Sistema
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(2)" type="button" style="
+                    background-color: #dbeafe;
+        color: #1e40af;
+        border-color: #93c5fd;
+                    " ;>
+                            Indirecta
+                        </button>
+                        <button class="btn btnRubro" onclick="rubroSeleccionado(3)" type="button" style="
+                    background-color: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
+                    ">
+                            Ambiental
+                        </button>
+                    </div>
+                    <br>
+                </div>
+
+                <!-- Tipo de Mejora -->
+                <div class="form-group" style="margin-top: 5%;">
+                    <label class="form-label">Tipo de Mejora y Beneficios *</label>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ahorro-material" class="checkboxbeneficios"
+                                value="Genera un Ahorro Material">
+                            <label for="ahorro-material">Genera un Ahorro Material</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="facilita-trabajo" class="checkboxbeneficios"
+                                value="Facilita el Trabajo Diario">
+                            <label for="facilita-trabajo">Facilita el Trabajo Diario</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mejora-ambiente" class="checkboxbeneficios"
+                                value="Mejora el Ambiente Laboral">
+                            <label for="mejora-ambiente">Mejora el Ambiente Laboral</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="entorno-saludable" class="checkboxbeneficios"
+                                value="Crear un entorno más saludable y sostenible">
+                            <label for="entorno-saludable">Crear un entorno más saludable y sostenible</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ahorro-economico" class="checkboxbeneficios"
+                                value="Genera un Ahorro Económico">
+                            <label for="ahorro-economico">Genera un Ahorro Económico</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ahorra-tiempo" value="Ahorra Tiempo" class="checkboxbeneficios">
+                            <label for="ahorra-tiempo">Ahorra Tiempo</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efectividad" value="Efectividad en tu Proceso"
+                                class="checkboxbeneficios">
+                            <label for="efectividad">Efectividad en tu Proceso</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="entorno-saludable" class="checkboxbeneficios"
+                                value="Entorno Más Saludable y Sostenible">
+                            <label for="entorno-saludable">Entorno Más Saludable y Sostenible</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mitiga-impacto" class="checkboxbeneficios"
+                                value="Mitiga el Impacto Negativo">
+                            <label for="mitiga-impacto">Mitiga el Impacto Negativo de Cualquier Actividad en el Medio
+                                Ambiente</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="beneficio-organizacion" class="checkboxbeneficios"
+                                value="Cambio en Beneficio de la Organización">
+                            <label for="beneficio-organizacion">Cambio en Beneficio de la Organización</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-group" style="background-color: #eee6e691;">
+                        <label for="beneficiosadd"> Beneficios Adicionales</label>
+                        <input type="text" id="beneficiosadd">
+                    </div>
+                </div>
+
+                <!-- Requiere Inversión -->
+                <div class="form-group">
+                    <label class="form-label">¿Requiere Inversión? *</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" class="inversionSN" id="inversion-si" name="inversion" value="1"
+                                required>
+                            <label for="inversion-si">Sí</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" class="inversionSN" id="inversion-no" name="inversion" value="0"
+                                required>
+                            <label for="inversion-no">No</label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="background-color: #eee6e691;">
+                            <label for="monto"> Monto $ (Mxm)</label>
+                            <input type="text" id="monto" name="monto"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" value=0
+                                placeholder="Introduce el monto sin decimales" autocomplete="off">
+                        </div>
+                        <div class="form-group" style="background-color: #eee6e691;">
+                            <label for="recuperacion"> Tiempo de recuperación (Meses)</label>
+                            <input type="text" id="recuperacion" name="recuperacion"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                placeholder="Introduce el numero de meses" autocomplete="off" value=0>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Situación Actual -->
+                <div class="form-group">
+                    <label for="situacion_actual">Situación Actual *</label>
+                    <textarea id="situacion_actual" name="situacion_actual" rows="4" required
+                        placeholder="Describe la situación actual que requiere mejora..."></textarea>
+                </div>
+
+                <!-- Mejora Propuesta -->
+                <div class="form-group">
+                    <label for="situacion_mejora">Mejora Propuesta *</label>
+                    <textarea id="situacion_mejora" name="situacion_mejora" rows="4" required
+                        placeholder="Describe la mejora propuesta..."></textarea>
+                </div>
+                <!-- Botones -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnEnvioMejora">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- modal analisis -->
+     <div id="modalAnalisis" class="modal" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="form-group">
+                    <img src="../img/Quality-BOLCA.png" alt="" width="10%">
+                    <h2>Subir Analisis de mejora</h2>
+                </div>
+                <button id="iconCloseModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="analisis"></p>
+                <input type="file" id="fileInput" accept="application/pdf" class="" >
+            </div>
+            <div class="modal-footer">
+                <button id="btnCloseModalAnalisis" class="btn btn-secondary">Cerrar</button>
+                <button id="btnEnvioAnalisis" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>  
+
+    <script src="/clases/clase_fetch.js"></script>
+    <script src="/scripts/calidad/scriptsRegistroMejoraContinua.js"></script>
+</body>
+
+<script>
+    const mejoras = <%-JSON.stringify(obtenerValores) %>;
+    const usuario = <%-JSON.stringify(obtenerDatos) %>;
+    const tok = <%-JSON.stringify(csrfToken) %>;
+</script>
+
+</html>

@@ -441,17 +441,19 @@ function iniciarContadorSLA() {
 async function pausarTicket() {
     clearInterval(slaInterval);
     slaInterval = null;
+    console.log(tok)
     await fetch(`/sistemas/tickets/${ticketActual.id}/pausar`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'CSRF-Token': getCSRFToken()
+            'X-CSRF-Token': tok,
         },
+        body: JSON.stringify({_csrf:tok}),
         credentials: 'include'
     });
 
     cerrarModal();
-    cargarTicketsDesdeBackend();
+    // cargarTicketsDesdeBackend();
 }
 
 async function reanudarTicket() {
@@ -459,7 +461,7 @@ async function reanudarTicket() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'CSRF-Token': getCSRFToken()
+            'CSRF-Token': tok
         },
         credentials: 'include'
     });
@@ -476,7 +478,7 @@ async function terminarTicket() {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'CSRF-Token': getCSRFToken()
+            'CSRF-Token': tok
         },
         credentials: 'include'
     });
@@ -521,10 +523,10 @@ async function asignarTicket() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'CSRF-Token': getCSRFToken()
+            'CSRF-Token': tok
         },
         credentials: 'include',
-        body: JSON.stringify({ asignadoA: usuario })
+        body: JSON.stringify({ asignadoA: usuario, _csrf: tok })
     });
 
     cerrarModal();
@@ -598,21 +600,21 @@ function verDetallesTicket(id) {
         document.getElementById('btnAsignar').onclick = asignarTicket;
 
     if (document.getElementById('btnPausar')) {
-        document.getElementById('btnPausar').onclick = () => {
+        document.getElementById('btnPausar').onclick = () =>{
             crearModalObservacion({
                 titulo: 'Justificación de pausa',
                 placeholder: '¿Por qué se está pausando el ticket?',
                 onEnviar: async (mensaje) => {
-
                     // 1️⃣ Guardar observación
                     await fetch(`/sistemas/tickets/${ticketActual.id}/observacion`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'CSRF-Token': getCSRFToken()
+                            'CSRF-Token': tok
                         },
                         credentials: 'include',
                         body: JSON.stringify({
+                            _csrf: tok,
                             tipo: 'pause',
                             mensaje
                         })
@@ -640,7 +642,7 @@ function verDetallesTicket(id) {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'CSRF-Token': getCSRFToken()
+                            'CSRF-Token': tok
                         },
                         credentials: 'include',
                         body: JSON.stringify({

@@ -459,9 +459,7 @@ controller.valeSalida = (req, res) => {
     */
 
 controller.mejoracontinua = async (req, res) => {
-
     const { codigoempleado } = req.usuario
-
     const obtenerDatos = await Empleados.findOne({ where: { codigoempleado: codigoempleado } });
     const obtenerValores = await Mejora.findAll({ where: { numero_empleado_registra: codigoempleado }, order: [[Sequelize.literal('fecha'), 'DESC']], });
 
