@@ -11,7 +11,7 @@
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <h1>Sistema de Inventario IT</h1>
+                <h1>Sistema de Inventario TI</h1>
             </div>
         </header>
 
@@ -112,9 +112,13 @@
                     </div>
                 </div>
 
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Buscar por título, categoría o número de serie...">
+                </div>
+
                 <!-- Table -->
                 <div class="table-container">
-                    <table class="tickets-table">
+                    <table class="inventory-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -127,7 +131,7 @@
                                 <th>Ultimo mantenimiento</th>
                             </tr>
                         </thead>
-                        <tbody id="ticketsTableBody">
+                        <tbody id="inventoryTableBody">
                             <tr class="empty-state">
                                 <td colspan="8">
                                     <div class="empty-content">

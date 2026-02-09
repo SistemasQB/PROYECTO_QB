@@ -29,7 +29,7 @@ router.get('/tickets/:id/observaciones', protegetRuta, adminController.obtenerOb
 //rutas de inventario
 router.get('/inventario', protegetRuta,protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.inventario)
-
+router.get('/inventario-data', protegetRuta,adminController.obtenerInventario); 
 router.get('/addinventario', protegetRuta, protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.addinventario); //para abrir la pagina de asignacion o de generar vale
 router.post('/addinventario',protegetRuta,adminController.addinventario2);

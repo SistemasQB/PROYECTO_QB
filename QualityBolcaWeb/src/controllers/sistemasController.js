@@ -989,6 +989,45 @@ controller.inventario = async (req, res) => {
     res.render('admin/sistemas/inventario.ejs')
 }
 
+controller.obtenerInventario = async (req, res) => {
+    try {
+        const inventario = await db.query(`
+            SELECT 
+                i.idInventario,
+                i.tipo,
+                i.marca,
+                i.serie,
+                i.folio,
+                i.estado,
+                i.usoExclusivo,
+                i.ultimoMantenimiento,
+
+                v.numeroEmpleado,
+
+                CONCAT(n.nombre, ' ', n.apellidopaterno) AS asignadoA
+            FROM inventario i
+            LEFT JOIN vales v 
+                ON i.folio = v.idFolio
+            LEFT JOIN nom10001 n 
+                ON v.numeroEmpleado = n.codigoempleado
+            ORDER BY i.idInventario ASC;
+        `, {
+            type: QueryTypes.SELECT
+        });
+
+        return res.json({
+            ok: true,
+            inventario
+        });
+    } catch (error) {
+        console.error('Error obteniendo inventario:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error al obtener inventario'
+        });
+    }
+}
+
 //controladores gestion de usuarios
 controller.adminUsuarios = async (req, res) => {
     try {
@@ -1037,7 +1076,7 @@ controller.adminUsuarios = async (req, res) => {
                 email: u.email || 'No disponible',
                 permisos: u.permisos,
                 rol,
-                estadoempleado: u.estadoempleado || 'R' 
+                estadoempleado: u.estadoempleado || 'R'
             };
         });
 
