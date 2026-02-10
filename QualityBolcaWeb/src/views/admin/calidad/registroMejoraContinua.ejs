@@ -365,17 +365,21 @@
      <div id="modalAnalisis" class="modal" >
         <div class="modal-content">
             <div class="modal-header">
-                <div class="form-group">
+                <div >
                     <img src="../img/Quality-BOLCA.png" alt="" width="10%">
                     <h2>Subir Analisis de mejora</h2>
                 </div>
-                <button id="iconCloseModal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
+                <div >
+                    <button  class="close-btn">
+                        <i class="fas fa-times" id="iconCloseModal"></i>
+                    </button>
+                </div>
             </div>
-            <div class="modal-body">
-                <p id="analisis"></p>
-                <input type="file" id="fileInput" accept="application/pdf" class="" >
+            <div class="modal-body input-per">
+                <label for="archivoAnalisis" class="file-label" id="labelAnalisis">
+                    📂 Selecciona un archivo
+                </label>
+                <input type="file" id="archivoAnalisis" class="file-input" name="file-input"  accept="application/pdf">
             </div>
             <div class="modal-footer">
                 <button id="btnCloseModalAnalisis" class="btn btn-secondary">Cerrar</button>

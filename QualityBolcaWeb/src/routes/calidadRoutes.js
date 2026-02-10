@@ -6,6 +6,7 @@ import protegerRuta from "../middleware/protegetRuta.js";
 
 const mimulter = new miMulter('src/public/evidencias')
 const multer5S = new miMulter("src/public/evidencias/5s")
+const multerAnalisis = new miMulter(`src/public/evidencias/${new Date().getFullYear()}/mejoras`)
 const router = express.Router();
 
 router.get('/inicio', calidadController.inicio);
@@ -19,7 +20,7 @@ router.get('/administracionmejoras', protegerRuta,calidadController.administraci
 router.post('/rechazarMejora', protegerRuta,calidadController.rechazarMejora);
 router.post("/actualizarMejoras", protegerRuta,calidadController.ActualizarMejoras)
 router.get('/mejoracontinua',protegerRuta, calidadController.mejoracontinua);
-router.post('/crudMejoras', protegerRuta,calidadController.crudMejoras);
+router.post('/crudMejoras', protegerRuta, multerAnalisis.archivoUnico('tituloAnalisis', 1),calidadController.crudMejoras);
 
 // rutas de bitacora
 router.get('/bitacoraActividades', protegerRuta,permisos.permisosCalidad(

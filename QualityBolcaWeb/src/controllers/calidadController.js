@@ -149,7 +149,7 @@ controller.mejoracontinua = async (req, res) => {
 controller.crudMejoras = async(req, res) => {
     try {        
         const {tipo} = req.body
-        console.log('entro al controlador')
+        const analisis = req.file;
         let campos = req.body
         const clase = new sequelizeClase({modelo: barrilcalidad.modeloFormularioMejora})
         switch(tipo){
@@ -161,9 +161,16 @@ controller.crudMejoras = async(req, res) => {
             case 'delete':
                 break
             case 'update':
+                const id = req.body.id
+                delete campos._csrf
+                delete campos.id
+                delete campos.tipo
+                if (analisis) {
+                    campos.tituloAnalisis = analisis.filename
+                }
                 let actualizacion = await clase.actualizarDatos({id: id, datos:campos})
                 if (!actualizacion) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
-                    return res.json({ok: true, msg: 'la mejora fue actualizada exitosamente'})}
+                    return res.json({ok: true, msg: analisis.length > 0 ? 'la mejora fue actualizada exitosamente con analisis' : 'la mejora fue actualizada exitosamente pero no se pudo subir el analisis'})}
     }
     catch (error) {
         console.log(error.message);
@@ -280,7 +287,7 @@ controller.misActividades = async (req, res)=>{
     res.render("admin/calidad/mis_actividades", { actividades: actividades, token: token })
 }
 controller.asignarAvance = async (req, res)=>{
-    const archivos = req.files;
+    
     if (!archivos) return res.json({ok: false, msg:'no se recibieron los archivos multimedia'})
     const nombresArchivos = archivos.map(file => file.filename);
     let {id, avance, comentarios, estatus} = req.body

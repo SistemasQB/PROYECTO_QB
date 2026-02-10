@@ -43,6 +43,47 @@
         /* margin: 1vh; */
     }
 
+    .file-upload {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+}
+
+.file-input {
+  display: none; /* Ocultamos el input original */
+}
+
+.file-label {
+  background: linear-gradient(135deg, #4a90e2, #007aff);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+}
+
+.file-label:hover {
+  background: linear-gradient(135deg, #007aff, #4a90e2);
+  transform: scale(1.05);
+}
+
+.file-label:active {
+  transform: scale(0.98);
+}
+.input-per{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+
     /* Header */
     .header {
         background-color: var(--color-white);

@@ -677,11 +677,8 @@ controller.subiranalisis2 = async (req, res) => {
 }
 
 controller.subirevidencia = async (req, res) => {
-
     const { mejoraid } = req.params
     const obtenerAnalisis = await Mejora.findByPk(mejoraid);
-
-
     if (obtenerAnalisis.evidencia1 === '' && obtenerAnalisis.evidencia2 === '' && obtenerAnalisis.evidencia3 === '' || obtenerAnalisis || obtenerAnalisis.estatus !== 5) {
         res.render('admin/subirevidencia', {
             csrfToken: req.csrfToken(),

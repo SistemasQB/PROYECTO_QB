@@ -3,6 +3,7 @@
     const btnRubro = document.querySelectorAll('.btnRubro');
     const nombreEquipo = document.getElementById('nombreEquipo');
     const mejoraForm = document.getElementById('mejoraForm');
+    let idAnalisis = null
     
     let rubro = ''
     var mejoragrupal = 0
@@ -165,12 +166,19 @@
     }
 // Elementos del DOM
     const modal = document.getElementById('modal');
-    const modalAnalisis = document.getElementById('modalAnalisis');
     const openModalBtn = document.getElementById('openModalBtn');
-    const openModalBtn2 = document.getElementById('openModalBtn2');
     const closeModalBtn = document.getElementById('closeModalBtn');
-    const closeModalAnalisisBtn = document.getElementById('modalAnalisis');
     const cancelBtn = document.getElementById('cancelBtn');
+    
+    const modalAnalisis = document.getElementById('modalAnalisis');
+    const openModalBtn2 = document.getElementById('openModalBtn2');
+    const closeModalAnalisisBtn = document.getElementById('btnCloseModalAnalisis');
+    const iconCloseModal = document.getElementById('iconCloseModal');
+    const analisis = document.getElementById('archivoAnalisis');
+    const etiquetaAnalisis = document.getElementById('labelAnalisis');
+    const btnEnvioAnalisis = document.getElementById('btnEnvioAnalisis');
+
+    
     const mejorasGrid = document.getElementById('mejorasGrid');
     const emptyState = document.getElementById('emptyState');
     const totalMejoras = document.getElementById('totalMejoras');
@@ -182,9 +190,15 @@
     });
 
     openModalBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal(modal));
+    closeModalBtn.addEventListener('click', () => {
+        
+        closeModal(modal)
+    });
     cancelBtn.addEventListener('click', closeModal);
-    closeModalAnalisisBtn.addEventListener('click', closeModal(modalAnalisis));
+    closeModalAnalisisBtn.addEventListener('click', (e) => {
+        
+        closeModal(modalAnalisis)  
+    } );
     // mejoraForm.addEventListener('submit', handleSubmit);
 
     // Event listener para botones de "abrir modal" en empty state
@@ -197,9 +211,41 @@
     // Cerrar modal al hacer clic fuera
     modal.addEventListener('click', function (e) {
         if (e.target === modal) {
-            closeModal();
+            closeModal(modal);
         }
     });
+    modalAnalisis.addEventListener('click', (e) => {
+    if (e.target === modalAnalisis) {
+        closeModal(modalAnalisis);
+      }
+    });
+
+    iconCloseModal.addEventListener('click', (e) => {
+      if (e.target === iconCloseModal) {
+        closeModal(modalAnalisis);
+      }
+    })
+    analisis.addEventListener('change', (e) => {
+        if(e.target.files.length > 0){
+            etiquetaAnalisis.textContent = e.target.files[0].name
+        }
+    })
+
+    btnEnvioAnalisis.addEventListener('click', (e) => {
+        if (analisis.files.length <= 0) {
+            alert('Debes de adjuntar el analisis de tu mejora')
+            return;
+        }
+        const mejora = mejoras.find(item => item.id == idAnalisis)
+        let miFormData = new FormData()
+        miFormData.append('tituloAnalisis', analisis.files[0],`analisis de mejora ${mejora.nombreMejora}-${new Date(Date.now().toLocaleString('en-US', { timeZone: 'America/Mexico_City' }))}.pdf`)
+        miFormData.append('id', idAnalisis)
+        miFormData.append('tipo', 'update')
+        miFormData.append('_csrf', tok)
+        miFormData.append('estatus', 'REGISTRADA')
+        envioFormData('crudMejoras', miFormData, 'mejoracontinua')
+    })
+
 
     // Funciones
     function openModal() {
@@ -277,15 +323,17 @@
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal(modal) {
-        modal.classList.remove('show');
+    function closeModal(modalElement) {
+        modalElement.classList.remove('show');
         document.body.style.overflow = 'auto';
         resetForm();
     }
 
     function resetForm() {
         document.getElementById('indexmejora').value = '';
+        idAnalisis = null
         mejoraForm.reset();
+        etiquetaAnalisis.innerHTML = '📂 Selecciona un archivo';
     }
 
 
@@ -304,7 +352,6 @@
     }
 
     function createMejoraCard(mejora) {
-        console.log(mejora)
         let colorcarta = 0;
         let btnActivo = '';
         let btnModificar = 'none';
@@ -395,8 +442,6 @@
         const badgesHtml = beneficiosA.map(tipo =>
             `<span class="badge ${getBadgeClass(tipo)}">${tipo}</span>`
         ).join('');
-
-        console.log(btnActivo, btnModificar, btnEvidenciaS)
         return `
         <div class="mejora-card" style="${colorcarta}">
             <div class="card-header">
@@ -480,7 +525,8 @@
         const record = mejoras.find(item => item.id === mejoraId);
         openModal2(record);
     }
-    function openModalSubirAnalisis(){
+    function openModalSubirAnalisis(id){
+        idAnalisis = id
         modalAnalisis.classList.add('show');
         document.body.style.overflow = 'hidden';
     }
