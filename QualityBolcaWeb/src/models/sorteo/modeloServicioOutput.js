@@ -77,6 +77,11 @@ const output = dbSorteo.define('output',{
         type: DataTypes.STRING(100),
         allowNull: false,
         defaultValue: "SIN DEFINIR"
+    },
+    rateNumber: {
+        type: DataTypes.DECIMAL(10,2),
+        allowNull: false,
+        defaultValue: 0
     }
 },{
     freezeTableName: true,

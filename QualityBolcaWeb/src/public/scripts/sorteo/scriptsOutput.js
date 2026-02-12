@@ -19,6 +19,8 @@ let editingMaterials = [];
 let editingMaterialId = null;
 let materialTargetId = null;
 let filtersCollapsed = false;
+let indiceMaterial = null
+let editingService = null
 
 
 // ──────────────────────── UTILITIES ────────────────────────
@@ -253,13 +255,17 @@ function getTotalPages(filtered) {
 
 /** Compute totals from filtered data */
 function computeTotals(filtered) {
-  let totalMXN = 0, totalUSD = 0, totalHorasAC = 0;
-  for (let i = 0; i < filtered.length; i++) {
-    totalMXN += filtered[i].totalMXN;
-    totalUSD += filtered[i].totalUSD;
-    totalHorasAC += filtered[i].horasAC;
-  }
-  return { totalMXN: totalMXN, totalUSD: totalUSD, totalHorasAC: totalHorasAC };
+  const totales = filtered.reduce((acu,e) => {
+    const reg = e.registros 
+    for(registro of reg){
+      acu.totalMXN += parseFloat(registro.totalMXN);
+      acu.totalHorasAC += parseFloat(registro.horasAC);
+      acu.totalUSD += parseFloat(registro.totalUSD) || 0;    
+    }
+      return acu
+  }, {totalMXN: 0, totalUSD: 0, totalHorasAC: 0});
+  return totales
+  
 }
 
 // ──────────────────────── CRUD OPERATIONS ────────────────────────
@@ -434,7 +440,7 @@ function renderTable(paginated) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
           <button class="action-btn action-btn--material" title="Agregar material" onclick="openMaterialModal('${row.id}')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M12 22V12"/><path d="m3.3 7 8.7 5 8.7-5"/><line x1="12" y1="17" x2="12" y2="22"/><path d="M12 12v5"/><path d="M20 15.5l-4-2.3"/><path d="M4 15.5l4-2.3"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
           </button>
           <button class="action-btn action-btn--delete" title="Eliminar servicio" onclick="confirmDeleteService('${row.id}')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
@@ -485,6 +491,7 @@ function renderAll() {
   renderTable(paginated);
   renderTotals(totals);
   renderPagination(filtered);
+  renderRegiones()
 }
 
 // ──────────────────────── MODAL HELPERS ────────────────────────
@@ -520,7 +527,7 @@ function openAddServiceModal() {
 function toggleRateNumberField(selectId, fieldId) {
   var selectEl = document.getElementById(selectId);
   var fieldEl = document.getElementById(fieldId);
-  if (selectEl.value === "Rate") {
+  if (selectEl.value === "RATE") {
     fieldEl.style.display = "flex";
   } else {
     fieldEl.style.display = "none";
@@ -538,7 +545,7 @@ function saveAddService() {
     costo: parseFloat(document.getElementById("svc-costo").value) || 0,
     moneda: document.getElementById("svc-moneda").value,
     rateTIH: document.getElementById("svc-rate").value,
-    rateNumber: document.getElementById("svc-rate").value === "Rate" ? (parseFloat(document.getElementById("svc-rate-number").value) || 0) : null,
+    rateNumber: document.getElementById("svc-rate").value === "RATE" ? (parseFloat(document.getElementById("svc-rate-number").value) || 0) : 0,
     nombreParte: document.getElementById("svc-parte").value.trim(),
   };
   if (validarInfo(formData) === false) {
@@ -558,7 +565,7 @@ function saveAddService() {
   formData.supervisor = superv;
   formData.tipo = 'insert';
   formData._csrf = tok;
-  formData.rateTIH == "Rate" ? formData.rateNumber = parseFloat(document.getElementById("svc-rate-number").value) : null;
+  formData.rateTIH == "RATE" ? formData.rateNumber = parseFloat(document.getElementById("svc-rate-number").value) : null;
 
   envioJson('crudOutput', formData, 'output');
   // addService(formData);
@@ -591,15 +598,15 @@ function saveAddMaterial() {
     alert('los campos fecha y cantidad de piezas/horas son obligatorios');
     return;
   }
+  nuevoMaterial.horasAC = servicio.rateTIH === "TIH" ? nuevoMaterial.piezasHoras : nuevoMaterial.piezasHoras/servicio.rateNumber;
   if (servicio.moneda === "USD") {
-    nuevoMaterial.totalUSD = (nuevoMaterial.piezasHoras * parseFloat(servicio.costo)).toFixed(2);
+    nuevoMaterial.totalUSD = (nuevoMaterial.horasAC * parseFloat(servicio.costo)).toFixed(2);
     nuevoMaterial.totalMXN = (nuevoMaterial.totalUSD * nuevoMaterial.tipoCambio).toFixed(2);
   } else {
-    nuevoMaterial.totalMXN = (parseFloat(servicio.costo) * nuevoMaterial.piezasHoras).toFixed(2);
+    nuevoMaterial.totalMXN = (parseFloat(servicio.costo) * nuevoMaterial.horasAC).toFixed(2);
   }
-  console.log(servicio);
+  
   servicio.registros.push(nuevoMaterial);
-
   const materialData = {
     registros: servicio.registros,
     id: materialTargetId,
@@ -618,32 +625,58 @@ function saveAddMaterial() {
 
 function openEditModal(serviceId) {
   const svc = services.find((s) => s.id == serviceId);
-  console.log(svc);
   if (!svc) return;
-
+  editingService = svc;
   editingServiceId = serviceId;
   editingMaterials = svc.registros.map(function (m) { return Object.assign({}, m); });
   editingMaterialId = null;
-
-  document.getElementById("edit-orden").value = svc.orden;
-  document.getElementById("edit-cliente").value = svc.clienteCobro;
-  document.getElementById("edit-planta").value = svc.plantaTrabajo;
-  document.getElementById("edit-parte").value = svc.nombreParte;
-  document.getElementById("edit-region").value = svc.region;
-  document.getElementById("edit-costo").value = svc.costo || "";
-  document.getElementById("edit-moneda").value = svc.moneda;
-  document.getElementById("edit-rate").value = svc.rateTIH;
-  document.getElementById("edit-rate-number").value = svc.rateNumber || "";
+  const campos = {
+    orden: document.getElementById("edit-orden"),
+    clienteCobro: document.getElementById("edit-cliente"),
+    plantaTrabajo: document.getElementById("edit-planta"),
+    nombreParte: document.getElementById("edit-parte"),
+    region: document.getElementById("edit-region"),
+    costo: document.getElementById("edit-costo"),
+    moneda: document.getElementById("edit-moneda"),
+    rateTIH: document.getElementById("edit-rate"),
+    rateNumber: document.getElementById("edit-rate-number"),
+    productividad: document.getElementById("edit-productividad"),
+    horas: document.getElementById("edit-horas"),
+    observaciones: document.getElementById("edit-obs"),
+  }
+  campos.orden.value = svc.orden;
+  campos.clienteCobro.value = svc.clienteCobro;
+  campos.plantaTrabajo.value = svc.plantaTrabajo;
+  campos.nombreParte.value = svc.nombreParte;
+  campos.region.value = svc.region;
+  campos.costo.value = svc.costo || 0;
+  campos.moneda.value = svc.moneda;
+  campos.rateTIH.value = svc.rateTIH;
+  campos.rateNumber.value = svc.rateNumber || 0;
+  campos.productividad.value = svc.productividad || 0;
+  campos.horas.value = svc.registros.reduce((acu, b) =>acu += b.horasAC, 0).toFixed(2);
+  campos.observaciones.value = svc.observaciones;
   toggleRateNumberField("edit-rate", "edit-rate-number-field");
-  document.getElementById("edit-productividad").value = svc.productividad || "";
-  document.getElementById("edit-horas").value = svc.horasAC || "";
-  document.getElementById("edit-obs").value = svc.observaciones;
+
+  // document.getElementById("edit-planta").value = svc.plantaTrabajo;
+  // document.getElementById("edit-parte").value = svc.nombreParte;
+  // document.getElementById("edit-region").value = svc.region;
+  // document.getElementById("edit-costo").value = svc.costo || "";
+  // document.getElementById("edit-moneda").value = svc.moneda;
+  // document.getElementById("edit-rate").value = svc.rateTIH;
+  // document.getElementById("edit-rate-number").value = svc.rateNumber || 0;
+  
+  // document.getElementById("edit-productividad").value = svc.productividad || 0;
+  // document.getElementById("edit-horas").value = svc.registros.reduce((acu, b) =>acu += b.horasAC, 0).toFixed(2)  || 0;
+  // document.getElementById("edit-obs").value = svc.observaciones;
+
+  
 
   renderMaterialsInEditModal();
   openModal("modal-edit-service");
 }
 
-function renderMaterialsInEditModal() {
+function renderMaterialsInEditModal(){
   const container = document.getElementById("materials-container");
   document.getElementById("mat-count").textContent = editingMaterials.length + " registro" + (editingMaterials.length !== 1 ? "s" : "");
 
@@ -651,13 +684,12 @@ function renderMaterialsInEditModal() {
     container.innerHTML = '<p class="empty-text">No hay registros de material para este servicio.</p>';
     return;
   }
-
   let html = '<table class="mat-table"><thead><tr><th>Fecha</th><th>Piezas/Horas</th><th>Observaciones</th><th class="text-center" style="width:90px;">Acciones</th></tr></thead><tbody>';
 
   for (let i = 0; i < editingMaterials.length; i++) {
     const mat = editingMaterials[i];
-
-    if (editingMaterialId === mat.id) {
+    if (editingMaterialId === i) {
+      
       // Inline editing row
       html += "<tr>"
         + '<td><input class="text-input" type="date" id="mat-edit-fecha" value="' + escapeHtml(mat.fecha) + '" /></td>'
@@ -679,10 +711,10 @@ function renderMaterialsInEditModal() {
         + '<td class="font-mono">' + mat.piezasHoras + "</td>"
         + '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(mat.observaciones) + "</td>"
         + '<td class="text-center"><div class="mat-actions">'
-          + '<button class="action-btn action-btn--edit" title="Editar" onclick="startMaterialInlineEdit(\'' + mat.id + '\')">'
+          + '<button class="action-btn action-btn--edit" title="Editar" onclick="startMaterialInlineEdit(\'' + i + '\')">'
             + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
           + "</button>"
-          + '<button class="action-btn action-btn--delete" title="Eliminar" onclick="deleteMaterialInEdit(\'' + mat.id + '\')">'
+          + '<button class="action-btn action-btn--delete" title="Eliminar" onclick="deleteMaterialInEdit(\'' + i + '\')">'
             + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>'
           + "</button>"
         + "</div></td>"
@@ -695,7 +727,8 @@ function renderMaterialsInEditModal() {
 }
 
 function startMaterialInlineEdit(materialId) {
-  editingMaterialId = materialId;
+  editingMaterialId = parseInt(materialId)
+  indiceMaterial = parseInt(materialId)
   renderMaterialsInEditModal();
 }
 
@@ -705,25 +738,26 @@ function cancelMaterialInlineEdit() {
 }
 
 function saveMaterialInlineEdit() {
-  if (!editingMaterialId) return;
+  if (editingMaterialId === null || editingMaterialId === undefined) return;
   const newFecha = document.getElementById("mat-edit-fecha").value;
   const newPiezas = parseFloat(document.getElementById("mat-edit-piezas").value) || 0;
   const newObs = document.getElementById("mat-edit-obs").value.trim();
+  //validacion de numeros aceptados y valores nulls
+  
+  editingMaterials[indiceMaterial].fecha = newFecha;
+  editingMaterials[indiceMaterial].piezasHoras = newPiezas;
+  editingMaterials[indiceMaterial].observaciones = newObs;
 
-  // Use the payload structure for consistency
-  const payload = buildMaterialPayload({ fecha: newFecha, piezasHoras: newPiezas, observaciones: newObs });
-  const parsed = parseMaterialPayload(payload);
-
-  editingMaterials = editingMaterials.map(function (m) {
-    if (m.id !== editingMaterialId) return m;
-    return Object.assign({}, m, {
-      fecha: parsed.fecha,
-      piezasHoras: parsed.piezasHoras,
-      observaciones: parsed.observaciones,
-    });
-  });
-
+  editingMaterials[indiceMaterial].horasAC = editingService.rateTIH === "TIH" ? newPiezas : newPiezas/editingService.rateNumber;
+  if (editingService.moneda === "USD") {
+    editingMaterials[indiceMaterial].totalUSD = (editingMaterials[indiceMaterial].horasAC * parseFloat(editingService.costo)).toFixed(2);
+    editingMaterials[indiceMaterial].totalMXN = (editingMaterials[indiceMaterial].totalUSD * editingMaterials[indiceMaterial].tipoCambio).toFixed(2);
+  } else {
+    editingMaterials[indiceMaterial].totalMXN = (parseFloat(editingService.costo) * newPiezas).toFixed(2);
+  }
+  
   editingMaterialId = null;
+  indiceMaterial = null
   renderMaterialsInEditModal();
 }
 
@@ -734,26 +768,26 @@ function deleteMaterialInEdit(materialId) {
 
 function saveEditService() {
   if (!editingServiceId) return;
-
+  // orden: document.getElementById("edit-orden").value.trim(),
+  //   clienteCobro: document.getElementById("edit-cliente").value.trim(),
+  //   plantaTrabajo: document.getElementById("edit-planta").value.trim(),
+  //   nombreParte: document.getElementById("edit-parte").value.trim(),
+  //   region: document.getElementById("edit-region").value.trim(),
+  //   costo: document.getElementById("edit-costo").value,
+  //   moneda: document.getElementById("edit-moneda").value,
+  //   rateTIH: document.getElementById("edit-rate").value,
+  //   rateNumber: document.getElementById("edit-rate").value === "RATE" ? (parseFloat(document.getElementById("edit-rate-number").value) || 0) : null,
+  //   productividad: document.getElementById("edit-productividad").value,
+  //   horasAC: document.getElementById("edit-horas").value,
   const updatedData = {
-    orden: document.getElementById("edit-orden").value.trim(),
-    clienteCobro: document.getElementById("edit-cliente").value.trim(),
-    plantaTrabajo: document.getElementById("edit-planta").value.trim(),
-    nombreParte: document.getElementById("edit-parte").value.trim(),
-    region: document.getElementById("edit-region").value.trim(),
-    costo: document.getElementById("edit-costo").value,
-    moneda: document.getElementById("edit-moneda").value,
-    rateTIH: document.getElementById("edit-rate").value,
-    rateNumber: document.getElementById("edit-rate").value === "Rate" ? (parseFloat(document.getElementById("edit-rate-number").value) || 0) : null,
-    productividad: document.getElementById("edit-productividad").value,
-    horasAC: document.getElementById("edit-horas").value,
     observaciones: document.getElementById("edit-obs").value.trim(),
-    tipo: 'insert',
+    registros:editingMaterials,
+    tipo: 'update',
     _csrf: tok
   };
-
-  updateService(editingServiceId, updatedData, editingMaterials);
-  closeModal("modal-edit-service");
+    envioJson('crudServices', updatedData, 'agregarService')
+  // updateService(editingServiceId, updatedData, editingMaterials);
+  // closeModal("modal-edit-service");
   editingServiceId = null;
   editingMaterials = [];
 }
@@ -785,14 +819,14 @@ function openDetailModal(serviceId) {
   }
 
   // Render summary cards
-  summaryEl.innerHTML = '<div class="detail-summary-grid">'
-    + '<div class="detail-stat"><span class="detail-stat-label">Total Registros</span><span class="detail-stat-value">' + registros.length + '</span></div>'
-    + '<div class="detail-stat"><span class="detail-stat-label">Total Piezas/Horas</span><span class="detail-stat-value font-mono">' + totalPiezas.toFixed(2) + '</span></div>'
-    + '<div class="detail-stat"><span class="detail-stat-label">Costo Unitario</span><span class="detail-stat-value font-mono">' + formatCurrency(svc.costo, svc.moneda) + '</span></div>'
-    + (svc.moneda === "USD" ? '<div class="detail-stat"><span class="detail-stat-label">Total USD</span><span class="detail-stat-value font-mono">' + formatCurrency(totalUSD, "USD") + '</span></div>' : '')
-    + '<div class="detail-stat"><span class="detail-stat-label">Total MXN</span><span class="detail-stat-value font-mono">' + formatCurrency(totalMXN, "MXN") + '</span></div>'
-    + '<div class="detail-stat"><span class="detail-stat-label">Rate/TIH</span><span class="detail-stat-value">' + escapeHtml(svc.rateTIH) + (svc.rateNumber ? ' (' + svc.rateNumber + ')' : '') + '</span></div>'
-    + '</div>';
+  summaryEl.innerHTML = `<div class="detail-summary-grid">
+    <div class="detail-stat"><span class="detail-stat-label">Total Registros</span><span class="detail-stat-value">${registros.length}</span></div>
+    <div class="detail-stat"><span class="detail-stat-label">Total Piezas/Horas</span><span class="detail-stat-value font-mono">${totalPiezas.toFixed(2)}</span></div>
+    <div class="detail-stat"><span class="detail-stat-label">Costo Unitario</span><span class="detail-stat-value font-mono">${formatCurrency(svc.costo, svc.moneda)}</span></div>
+    ${svc.moneda === "USD" ? `<div class="detail-stat"><span class="detail-stat-label">Total USD</span><span class="detail-stat-value font-mono">${formatCurrency(totalUSD, "USD")}</span></div>`: ''}
+    <div class="detail-stat"><span class="detail-stat-label">Total MXN</span><span class="detail-stat-value font-mono">${formatCurrency(totalMXN, "MXN")}</span></div>
+    <div class="detail-stat"><span class="detail-stat-label">Rate/TIH</span><span class="detail-stat-value">${escapeHtml(svc.rateTIH) + (svc.rateNumber ? `( ${svc.rateNumber} )` : '')} </span></div>
+    </div>`;
 
   // Render records table
   if (registros.length === 0) {
@@ -801,7 +835,8 @@ function openDetailModal(serviceId) {
     var html = '<table class="mat-table"><thead><tr>'
       + '<th>#</th>'
       + '<th>Fecha</th>'
-      + '<th>Piezas/Horas</th>';
+      + '<th>Piezas/Horas</th>'
+      + '<th >Horas AC</th>';
     if (svc.moneda === "USD") {
       html += '<th class="text-right">Total USD</th>'
         + '<th class="text-right">Tipo Cambio</th>';
@@ -819,7 +854,9 @@ function openDetailModal(serviceId) {
       html += '<tr>'
         + '<td class="font-mono">' + (j + 1) + '</td>'
         + '<td>' + escapeHtml(reg.fecha) + '</td>'
-        + '<td class="font-mono">' + (parseFloat(reg.piezasHoras) || 0) + '</td>';
+        + '<td class="font-mono">' + (parseFloat(reg.piezasHoras) || 0) + '</td>'
+        + '<td class="font-mono">' + (parseFloat(reg.horasAC) || 0).toFixed(2) + '</td>';
+        
       if (svc.moneda === "USD") {
         html += '<td class="text-right font-mono">' + formatCurrency(parseFloat(reg.totalUSD) || 0, "USD") + '</td>'
           + '<td class="text-right font-mono">' + (parseFloat(reg.tipoCambio) || 0).toFixed(2) + '</td>';
@@ -833,7 +870,7 @@ function openDetailModal(serviceId) {
     var colSpan = svc.moneda === "USD" ? 3 : 3;
     html += '</tbody><tfoot><tr class="detail-total-row">'
       + '<td colspan="2" style="font-weight:600;">TOTALES</td>'
-      + '<td class="font-mono" style="font-weight:600;">' + totalPiezas.toFixed(2) + '</td>';
+      + '<td class="font-mono" colspan="2" style="font-weight:600;">' + totalPiezas.toFixed(2) + '</td>';
     if (svc.moneda === "USD") {
       html += '<td class="text-right font-mono" style="font-weight:600;">' + formatCurrency(totalUSD, "USD") + '</td>'
         + '<td></td>';
@@ -1016,9 +1053,15 @@ function formatear() {
     try {
       ele.registros = JSON.parse(ele.registros);
     } catch (error) {
-      console.error("Error parsing registros:", error);
+      
     }
   });
 }
 
-
+function renderRegiones(){
+  let inputRegion = document.getElementById("edit-region");
+  let contenido = regiones.map(region => `<option value="${region}">${region}</option>`).join('');
+  inputRegion.innerHTML = contenido;
+  inputRegion = document.getElementById('svc-region')
+  inputRegion.innerHTML = contenido
+};
