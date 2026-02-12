@@ -194,13 +194,12 @@
         
         closeModal(modal)
     });
-    cancelBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', (e)=>{closeModal(modal)});
     closeModalAnalisisBtn.addEventListener('click', (e) => {
         
         closeModal(modalAnalisis)  
     } );
-    // mejoraForm.addEventListener('submit', handleSubmit);
-
+    
     // Event listener para botones de "abrir modal" en empty state
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('open-modal-btn')) {
@@ -238,9 +237,9 @@
         }
         const mejora = mejoras.find(item => item.id == idAnalisis)
         let miFormData = new FormData()
-        miFormData.append('tituloAnalisis', analisis.files[0],`analisis de mejora ${mejora.nombreMejora}-${new Date(Date.now().toLocaleString('en-US', { timeZone: 'America/Mexico_City' }))}.pdf`)
+        miFormData.append('tituloAnalisis', analisis.files[0],`analisis de mejora ${mejora.nombreMejora}-${Date.now()}.pdf`)
         miFormData.append('id', idAnalisis)
-        miFormData.append('tipo', 'update')
+        miFormData.append('tipo', 'subirAnalisis')
         miFormData.append('_csrf', tok)
         miFormData.append('estatus', 'REGISTRADA')
         envioFormData('crudMejoras', miFormData, 'mejoracontinua')

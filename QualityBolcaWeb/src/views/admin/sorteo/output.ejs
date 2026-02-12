@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Cuadrilla - Horas y Costos</title>
+  <meta name="description" content="Sistema de control de horas generadas y costos de cuadrilla de trabajo" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/sorteo/estilos_output.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="header-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2z"/><path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/><path d="M4 15v-3a6 6 0 0 1 6-6h0"/><path d="M14 6a6 6 0 0 1 6 6v3"/></svg>
+        </div>
+        <div>
+          <h1 class="header-title">Control de Servicios (<%=supervisor%>)</h1>
+          <p class="header-subtitle">Gestion de horas y costos generados</p>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btn-add-service" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agregar Nuevo Servicio
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="main-content">
+
+    <!-- Filters Card (collapsible) -->
+    <div class="card filter-card">
+      <button class="filter-toggle" id="filter-toggle" type="button">
+        <div class="filter-toggle-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="filter-toggle-label">Filtros de Busqueda</span>
+          <span class="filter-count" id="filter-count" style="display:none;">0 activos</span>
+        </div>
+        <svg class="filter-chevron" id="filter-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="filter-body" id="filter-body">
+        <div class="filter-grid">
+          <!-- Cliente -->
+          <div class="field">
+            <label class="field-label" for="filter-cliente">Cliente</label>
+            <select class="select-input" id="filter-cliente"><option value="all">Todos</option></select>
+          </div>
+          <!-- Orden -->
+          <div class="field">
+            <label class="field-label" for="filter-orden">Orden</label>
+            <select class="select-input" id="filter-orden"><option value="all">Todas</option></select>
+          </div>
+          <!-- Planta -->
+          <div class="field">
+            <label class="field-label" for="filter-planta">Planta</label>
+            <select class="select-input" id="filter-planta"><option value="all">Todas</option></select>
+          </div>
+          <!-- Region -->
+          <div class="field">
+            <label class="field-label" for="filter-region">Region</label>
+            <select class="select-input" id="filter-region"><option value="all">Todas</option></select>
+          </div>
+          <!-- Costo -->
+          <div class="field">
+            <label class="field-label" for="filter-costo">Costo</label>
+            <input class="text-input" type="text" id="filter-costo" placeholder="Buscar por costo..." />
+          </div>
+          <!-- Rate / TIH -->
+          <div class="field">
+            <label class="field-label" for="filter-rate">Rate / TIH</label>
+            <select class="select-input" id="filter-rate"><option value="all">Todos</option></select>
+          </div>
+          <!-- Nombre de la Parte -->
+          <div class="field">
+            <label class="field-label" for="filter-parte">Nombre de la Parte</label>
+            <select class="select-input" id="filter-parte"><option value="all">Todos</option></select>
+          </div>
+          <!-- Clear -->
+          <div class="field field-end">
+            <button class="btn btn-outline btn-sm" id="btn-clear-filters" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M21 21v-5h-5"/></svg>
+              Limpiar Filtros
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Totals -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-icon summary-icon--accent">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div>
+          <p class="summary-label">Total MXN</p>
+          <p class="summary-value" id="total-mxn">$0.00</p>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon summary-icon--primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        <div>
+          <p class="summary-label">Total USD</p>
+          <p class="summary-value" id="total-usd">$0.00</p>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon summary-icon--warm">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <p class="summary-label">Total Horas AC</p>
+          <p class="summary-value" id="total-horas">0.0 hrs</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card table-card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Orden</th>
+              <th>Cliente Cobro</th>
+              <th>Planta</th>
+              <th>Nombre Parte</th>
+              <th>Region</th>
+              <th class="text-right">Costo</th>
+              <th class="text-center">Moneda</th>
+              <th class="text-right">Total USD</th>
+              <th class="text-right">Total MXN</th>
+              <th class="text-center">Rate/TIH</th>
+              <th class="text-right">Productividad</th>
+              <th class="text-right">Horas AC</th>
+              <th>Observaciones</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr><td colspan="14" class="empty-row">No se encontraron registros.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card pagination-card">
+      <div class="pagination-info" id="pagination-info">
+        Mostrando <strong>0</strong> - <strong>0</strong> de <strong>0</strong> registros
+      </div>
+      <div class="pagination-controls">
+        <div class="pagination-size">
+          <span class="pagination-size-label">Filas por pagina:</span>
+          <select class="select-input select-input--sm" id="page-size">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div class="pagination-nav">
+          <button class="btn-icon" id="btn-first" title="Primera pagina" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+          </button>
+          <button class="btn-icon" id="btn-prev" title="Pagina anterior" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="pagination-page" id="pagination-page">Pagina <strong>1</strong> de <strong>1</strong></span>
+          <button class="btn-icon" id="btn-next" title="Pagina siguiente" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button class="btn-icon" id="btn-last" title="Ultima pagina" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== MODAL: Add Service ==================== -->
+   <form id="form-addService">
+  <div class="modal-overlay" id="modal-add-service">
+    <div class="modal modal--md">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Agregar Nuevo Servicio</h2>
+          <p class="modal-desc">Complete los campos para registrar un nuevo servicio de la cuadrilla.</p>
+        </div>
+        <button class="btn-close" data-close="modal-add-service" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label" for="svc-orden">Orden</label>
+            <input class="text-input" type="text" id="svc-orden" placeholder="Ej. OV-1234 ó OA-4567" maxlength="8" required/>
+          </div>
+          <div class="field">
+            <label class="field-label" for="svc-cliente">Cliente Cobro</label>
+            <input class="text-input" type="text" id="svc-cliente" placeholder="Nombre del cliente" required/>
+          </div>
+          <div class="field">
+            <label class="field-label" for="svc-planta">Planta de Trabajo</label>
+            <input class="text-input" type="text" id="svc-planta" placeholder="Planta"  required/>
+          </div>
+          <div class="field">
+            <label class="field-label" for="svc-region">Region</label>
+            <select class="select-input" id="svc-region" required>
+              <option value="">Seleccione una region</option>
+              <option value="Noreste">Noreste</option>
+              <option value="Norte">Norte</option>
+              <option value="Bajio">Bajio</option>
+              <option value="Occidente">Occidente</option>
+              <option value="Centro">Centro</option>
+              <option value="Sur">Sur</option>
+              <option value="Sureste">Sureste</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="svc-costo">Costo</label>
+            <input class="text-input" type="number" id="svc-costo" placeholder="0.00" step="0.01" required/>
+          </div>
+          <div class="field">
+            <label class="field-label" for="svc-moneda">Moneda</label>
+            <select class="select-input" id="svc-moneda" required>
+              <option value="USD">USD</option>
+              <option value="MXN">MXN</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="svc-rate">Rate / TIH</label>
+            <select class="select-input" id="svc-rate" required>
+              <option value="Rate">Rate</option>
+              <option value="TIH">TIH</option>
+            </select>
+          </div>
+          <div class="field" id="svc-rate-number-field" style="display:none;">
+            <label class="field-label" for="svc-rate-number">Numero de Rate</label>
+            <input class="text-input" type="number" id="svc-rate-number" placeholder="Ej. 25" step="0.01" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="svc-parte">Nombre de la Parte</label>
+            <input class="text-input" type="text" id="svc-parte" placeholder="Nombre de la parte" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="modal-add-service" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Cancelar
+        </button>
+        <button class="btn btn-primary" id="btn-save-service" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar Servicio
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+  <!-- ==================== MODAL: Add Material ==================== -->
+  <div class="modal-overlay" id="modal-add-material">
+    <div class="modal modal--sm">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Agregar Registro de Material</h2>
+          <p class="modal-desc">Servicio: <strong id="mat-service-name"></strong></p>
+        </div>
+        <button class="btn-close" data-close="modal-add-material" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-stack">
+          <div class="field">
+            <label class="field-label" for="mat-fecha">Fecha</label>
+            <input class="text-input" type="date" id="mat-fecha" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="mat-piezas">Cantidad de Piezas / Horas</label>
+            <input class="text-input" type="number" id="mat-piezas" placeholder="0" min="0" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="mat-obs">Observaciones</label>
+            <textarea class="textarea-input" id="mat-obs" rows="3" placeholder="Escriba sus observaciones aqui..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="modal-add-material" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Cancelar
+        </button>
+        <button class="btn btn-primary" id="btn-save-material" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar Registro
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: Edit Service ==================== -->
+  <div class="modal-overlay" id="modal-edit-service">
+    <div class="modal modal--lg">
+      <div class="modal-header">
+        <div class="modal-header-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <div>
+            <h2 class="modal-title">Editar Servicio</h2>
+            <p class="modal-desc">Modifique la informacion del servicio y sus registros de material.</p>
+          </div>
+        </div>
+        <button class="btn-close" data-close="modal-edit-service" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body modal-body--scroll">
+        <!-- Service Fields -->
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label" for="edit-orden">Orden</label>
+            <input class="text-input" type="text" id="edit-orden" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-cliente">Cliente Cobro</label>
+            <input class="text-input" type="text" id="edit-cliente" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-planta">Planta de Trabajo</label>
+            <input class="text-input" type="text" id="edit-planta" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-parte">Nombre de la Parte</label>
+            <input class="text-input" type="text" id="edit-parte" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-region">Region</label>
+            <select class="select-input" id="edit-region">
+              <option value="">Seleccione una region</option>
+              <option value="Noreste">Noreste</option>
+              <option value="Norte">Norte</option>
+              <option value="Bajio">Bajio</option>
+              <option value="Occidente">Occidente</option>
+              <option value="Centro">Centro</option>
+              <option value="Sur">Sur</option>
+              <option value="Sureste">Sureste</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-costo">Costo</label>
+            <input class="text-input" type="number" id="edit-costo" step="0.01" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-moneda">Moneda</label>
+            <select class="select-input" id="edit-moneda">
+              <option value="USD">USD</option>
+              <option value="MXN">MXN</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-rate">Rate / TIH</label>
+            <select class="select-input" id="edit-rate">
+              <option value="Rate">Rate</option>
+              <option value="TIH">TIH</option>
+            </select>
+          </div>
+          <div class="field" id="edit-rate-number-field" style="display:none;">
+            <label class="field-label" for="edit-rate-number">Numero de Rate</label>
+            <input class="text-input" type="number" id="edit-rate-number" placeholder="Ej. 25" step="0.01" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-productividad">Productividad</label>
+            <input class="text-input" type="number" id="edit-productividad" step="0.01" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="edit-horas">Horas AC</label>
+            <input class="text-input" type="number" id="edit-horas" step="0.1" />
+          </div>
+          <div class="field field--full">
+            <label class="field-label" for="edit-obs">Observaciones</label>
+            <textarea class="textarea-input" id="edit-obs" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- Materials -->
+        <div class="materials-section">
+          <div class="materials-header">
+            <h3 class="materials-title">Registros de Material</h3>
+            <span class="badge badge--secondary" id="mat-count">0 registros</span>
+          </div>
+          <div id="materials-container">
+            <p class="empty-text">No hay registros de material para este servicio.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="modal-edit-service" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Cancelar
+        </button>
+        <button class="btn btn-primary" id="btn-save-edit" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: Detail Records ==================== -->
+  <div class="modal-overlay" id="modal-detail-records">
+    <div class="modal modal--lg">
+      <div class="modal-header">
+        <div class="modal-header-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <div>
+            <h2 class="modal-title">Detalle de Registros</h2>
+            <p class="modal-desc">Servicio: <strong id="detail-service-name"></strong></p>
+          </div>
+        </div>
+        <button class="btn-close" data-close="modal-detail-records" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body modal-body--scroll">
+        <!-- Summary cards -->
+        <div class="detail-summary" id="detail-summary"></div>
+        <!-- Records table -->
+        <div class="detail-table-wrapper" id="detail-table-container">
+          <p class="empty-text">No hay registros para este servicio.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="modal-detail-records" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/scripts/sorteo/scriptsOutput.js"></script>
+  <script src="/clases/clase_fetch.js"></script>
+  <script>
+    let sortRegister = <%-JSON.stringify(registros)%>;
+    const tok = <%-JSON.stringify(token)%>;
+    const superv = <%-JSON.stringify(supervisor)%>;
+    const cambio = <%-JSON.stringify(tipoCambio)%>;
+</script>
+</body>
+</html>

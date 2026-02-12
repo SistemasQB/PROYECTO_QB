@@ -2,7 +2,6 @@ function validarAcceso(campos){
 return  (req, res, next) => {
     const permisosUsuario = JSON.parse(req.usuario.permisos);
     const {roles, permisos, jerarquia} = campos
-  
     if (!permisosUsuario || (!roles || !permisos || !jerarquia)) {
       return res.status(401).render('admin/default/permisos_insuficientes.ejs',{ error: 'Acceso denegado: usuario no autenticado o sin datos de acceso'});
     }

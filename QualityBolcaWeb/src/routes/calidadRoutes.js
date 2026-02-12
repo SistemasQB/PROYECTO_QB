@@ -2,6 +2,7 @@ import express from "express";
 import {default as calidadController} from './../controllers/calidadController.js';
 import miMulter from "../public/clases/multer.js";
 import permisos from '../middleware/validacion-permisos/barril_permisos.js'
+import validarAcceso from "../middleware/validacion-permisos/calidad/permisos.js";
 import protegerRuta from "../middleware/protegetRuta.js";
 
 const mimulter = new miMulter('src/public/evidencias')
@@ -9,18 +10,18 @@ const multer5S = new miMulter("src/public/evidencias/5s")
 const multerAnalisis = new miMulter(`src/public/evidencias/${new Date().getFullYear()}/mejoras`)
 const router = express.Router();
 
-router.get('/inicio', calidadController.inicio);
-
+router.get('/inicio', protegerRuta, validarAcceso({roles: ['calidad', 'administrador'], permisos: ['jefe calidad', 'permitido', 'analista de calidad', 'auxiliar de calidad'], jerarquia: 5}), calidadController.inicio);
 // rutas de 5s
-router.get('/evidencias' ,protegerRuta ,calidadController.evidencias);
-router.post('/evidencias',calidadController.evidencias2);
+router.get('/administracionEvidencias' ,protegerRuta, validarAcceso({
+    roles: ['calidad', 'administrador'], 
+    permisos: ['jefe calidad', 'permitido', 'analista de calidad', 'auxiliar de calidad'], 
+    jerarquia: 5}) ,calidadController.evidencias); //liga de visualizacion de evidencias
+router.post('/evidencias',protegerRuta,calidadController.evidencias2); 
 
 // rutas de mejora continua
-router.get('/administracionmejoras', protegerRuta,calidadController.administracionmejoras);
-router.post('/rechazarMejora', protegerRuta,calidadController.rechazarMejora);
-router.post("/actualizarMejoras", protegerRuta,calidadController.ActualizarMejoras)
-router.get('/mejoracontinua',protegerRuta, calidadController.mejoracontinua);
-router.post('/crudMejoras', protegerRuta, multerAnalisis.archivoUnico('tituloAnalisis', 1),calidadController.crudMejoras);
+router.get('/administracionmejoras', protegerRuta,calidadController.administracionmejoras); //vista de comite de mejoras (comite)
+router.get('/mejoracontinua',protegerRuta, calidadController.mejoracontinua); // vista de ingreso de mejoras nuevas (personal)
+router.post('/crudMejoras', protegerRuta, multerAnalisis.archivoUnico('tituloAnalisis', 1),calidadController.crudMejoras); //modificacion de mejoras (abstracta)
 
 // rutas de bitacora
 router.get('/bitacoraActividades', protegerRuta,permisos.permisosCalidad(

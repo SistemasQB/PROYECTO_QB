@@ -328,6 +328,15 @@ body {
     border-color: #fcd34d;
 }
 /* ------- */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  border-top-left-radius: calc(0.3rem - 1px);
+  border-top-right-radius: calc(0.3rem - 1px);
+}
 .modal {
   display: none; /* Oculto por defecto */
   position: fixed; /* Fijo para estar encima de todo */

@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function displayCards(dataArray) {
     const container = document.getElementById('cardsContainer');
-    
     // Parsear datos si es string
     let parsedData;
     if (typeof dataArray === 'string') {
@@ -40,6 +39,7 @@ function populateFilterOptions(data) {
     // Poblar opciones de Rubro (Tipo de Mejora)
     const rubroSelect = document.getElementById('filterRubro');
     const rubros = [...new Set(data.map(item => item.rubro))].filter(r => r).sort();
+    console.log(rubros)
     rubros.forEach(rubro => {
         const option = document.createElement('option');
         option.value = rubro;
@@ -128,18 +128,18 @@ function createListItem(data) {
         <div class="list-item" data-id="${data.id}">
             <div class="list-main-info">
                 <div class="list-header">
-                    <h3 class="list-title">${data.nombre_mejora}</h3>
+                    <h3 class="list-title">${data.nombreMejora}</h3>
                     <span class="list-id">ID: ${data.id}</span>
                 </div>
                 <div class="list-details">
-                    <span class="list-date">📅 ${data.fecha}</span>
-                    <span class="list-author">👤 ${data.generador_idea}</span>
+                    <span class="list-date">📅 ${new Date(data.fecha).toLocaleDateString('en-GB')}</span>
+                    <span class="list-author">👤 ${data.nombreRegistra}</span>
                     <span class="list-rubro">${data.rubro}</span>
                     <span id="labelestatus" class="list-rubro" style='color:black; background-color:${estatusColores[data.estatus]}'>${estatusMejora[data.estatus]}</span>
                 </div>
                 <div class="list-details">
-                    <span class="list-date">🗓️ ${data.fecha_respuesta_comite}</span>
-                    <span class="list-author" style='text-transform: uppercase;'>🏢 ${data.proceso_pertenece}</span>
+                    <span class="list-date">🗓️ ${new Date(data.respuestaComite).toLocaleDateString('en-GB')}</span>
+                    <span class="list-author" style='text-transform: uppercase;'>🏢 ${data.procesoPerteneces}</span>
                 </div>
             </div>
             
@@ -156,12 +156,12 @@ function createListItem(data) {
 }
 
 function generateAnalysisButton(data) {
-    if (!data.titulo_analisis || data.titulo_analisis.trim() === '') {
+    if (!data.tituloAnalisis || data.tituloAnalisis.trim() === '') {
         return `<span class="no-analysis">Sin análisis</span>`;
     }
     
     return `
-        <button class="analysis-btn" onclick="openModal('analisis', '${data.titulo_analisis}', '${data.validaranalisis}',0, '${data.id}')">
+        <button class="analysis-btn" onclick="openModal('analisis', '${data.tituloAnalisis}', '${data.validaranalisis}',0, '${data.id}')">
             📊 Ver Análisis
         </button>
     `;
@@ -169,7 +169,7 @@ function generateAnalysisButton(data) {
 
 function generateEvidenceButtons(data) {
     const evidences = [
-        { field: 'evidencia 1', file: data.evidencia1, date: data.fechaevidencia1, label: 'E1' },
+        { field: 'evidencia 1', file: data.evidencia1, date: data.entrega1, label: 'E1' },
         { field: 'evidencia 2', file: data.evidencia2, date: data.fechaevidencia2, label: 'E2' },
         { field: 'evidencia 3', file: data.evidencia3, date: data.fechaevidencia3, label: 'E3' },
         { field: 'evidencia 4', file: data.evidencia4, date: data.fechaevidencia4, label: 'E4' }

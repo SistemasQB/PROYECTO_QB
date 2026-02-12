@@ -1,7 +1,6 @@
 import express from "express";
 import {default as sorteoController} from './../controllers/sorteoController.js';
 import protegerRuta from "../middleware/protegetRuta.js";
-import upload from "../middleware/subirImagen.js";
 import miMulter from "../public/clases/multer.js";
 
 
@@ -45,6 +44,10 @@ router.get("/admin-entrega-material",sorteoController.adminEntregaMaterial) //ge
 //rutas de inventario de almacen
 router.get("/admin-almacen",sorteoController.adminAlmacen) //gestion de almacen
 router.get("/ingreso/:id",sorteoController.puntoEntrada) 
+
+//rutas de output
+router.get("/output",protegerRuta,sorteoController.output) //vista del output
+router.post("/crudOutput",protegerRuta,sorteoController.crudOutput) //crud de output
 
 
 export default router;

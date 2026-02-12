@@ -28,7 +28,8 @@ controller.verificacion5s2 = (req, res) => {
 }
 
 controller.evidencias = async (req, res) => {
-    const obtenerValores = await Mejora.findAll({ where: { estatus:{ [Op.gt]: 0} }, order: [[Sequelize.literal('fecha'), 'DESC']], });
+    const clase = new sequelizeClase({modelo: barrilcalidad.seguimientoMejoras})
+    const obtenerValores = await clase.obtenerDatosPorCriterio({criterio: {estatus: 'POR REVISAR'}})
     res.render('admin/calidad/evidencias', {
         csrfToken: req.csrfToken(),
         obtenerValores
@@ -51,19 +52,17 @@ controller.evidencias2 = async (req, res) => {
 
 controller.administracionmejoras = async (req, res) => {
     try {
-        let resultados = await Mejora.findAll({
-            where: { estatus: 1 }
-        })
-        //TODO: posible condicionante de 0 rows
+        let clase = new sequelizeClase({ modelo: barrilcalidad.modeloFormularioMejora})
+        const resultados = await clase.obtenerDatosPorCriterio({criterio: {estatus: 'POR REVISAR'}})
         let token = req.csrfToken()
-        res.render('admin/calidad/comitemejoracontinua',
+        res.render('admin/calidad/administracionmejoras',
             {
                 resultados,
                 csrfToken: token
             }
         )
     } catch (ex) {
-
+        return manejadorErrores(req, ex)
     };
 }
 controller.rechazarMejora = async (req, res) => {
@@ -149,9 +148,9 @@ controller.mejoracontinua = async (req, res) => {
 controller.crudMejoras = async(req, res) => {
     try {        
         const {tipo} = req.body
-        const analisis = req.file;
         let campos = req.body
         const clase = new sequelizeClase({modelo: barrilcalidad.modeloFormularioMejora})
+        const id = req.body.id
         switch(tipo){
             case 'insert':
                 delete campos.tipo
@@ -161,16 +160,23 @@ controller.crudMejoras = async(req, res) => {
             case 'delete':
                 break
             case 'update':
-                const id = req.body.id
+                delete campos._csrf
+                delete campos.id
+                delete campos.tipo
+                const actualizacionCampos = await clase.actualizarDatos({id: id, datos:campos})
+                if (!actualizacionCampos) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
+                    return res.json({ok: true, msg: 'la mejora fue actualizada exitosamente'})
+            case 'subirAnalisis':
+                const analisis = req.file;
                 delete campos._csrf
                 delete campos.id
                 delete campos.tipo
                 if (analisis) {
                     campos.tituloAnalisis = analisis.filename
                 }
-                let actualizacion = await clase.actualizarDatos({id: id, datos:campos})
+                const actualizacion = await clase.actualizarDatos({id: id, datos:campos})
                 if (!actualizacion) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})
-                    return res.json({ok: true, msg: analisis.length > 0 ? 'la mejora fue actualizada exitosamente con analisis' : 'la mejora fue actualizada exitosamente pero no se pudo subir el analisis'})}
+                    return res.json({ok: true, msg: actualizacion ? 'la mejora fue actualizada exitosamente' : 'la mejora fue actualizada exitosamente pero no se pudo subir el analisis'})}
     }
     catch (error) {
         console.log(error.message);

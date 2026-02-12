@@ -32,14 +32,15 @@ app.use( cookieParser() )
 try {
   await dbs.db.authenticate()
   dbs.db.sync()
-  console.log('Conexion Correcta a la base de datos');
   await dbs.dbCompras.authenticate()
   dbs.dbCompras.sync()
-  console.log('Conexion Correcta a la base de datos de compras');
   await dbs.dbCalidad.authenticate();
   dbs.dbCalidad.sync()
-  console.log('Conexion Correcta a la base de datos de calidad');
+  await dbs.dbSistemas.authenticate()
   dbs.dbSistemas.sync()
+  await dbs.dbSorteo.authenticate()
+  dbs.dbSorteo.sync()
+  console.log('Conexion Correcta a la base de datos');
 }
 catch (error) {
   console.log(error);
