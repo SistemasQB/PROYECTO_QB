@@ -62,6 +62,25 @@ body {
   color: var(--color-text);
 }
 
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+}
+
+.add-item {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
 nav {
   display: flex;
   gap: 0.5rem;
@@ -324,6 +343,7 @@ nav {
   padding: 1rem;
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-secondary);
+  font-size: 0.9rem;
 }
 
 .inventory-table tbody tr {

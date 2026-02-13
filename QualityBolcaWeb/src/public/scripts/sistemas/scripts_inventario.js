@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <td>${item.condition}</td>
       <td>${item.area}</td>
       <td>${item.lastMaintenance || '—'}</td>
+      <td>${item.fechaCompra || '-'}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -85,7 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
         area: item.usoExclusivo || 'No definida',
         status: item.folio && item.folio !== 0 ? 'assigned' : 'custody',
         condition: mapCondition(item.estado),
-        lastMaintenance: item.ultimoMantenimiento
+        lastMaintenance: item.ultimoMantenimiento,
+        fechaCompra: item.fechaCompra,
       }));
 
       updateStats();
@@ -106,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ${item.condition}
     ${item.area}
     ${item.lastMaintenance || ''}
+    ${item.fechaCompra || ''}
   `.toLowerCase();
 
   return searchableText.includes(searchTerm);

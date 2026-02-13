@@ -14,7 +14,8 @@ router.put('/admin-usuarios/:codigoempleado/permisos', protegetRuta,adminControl
 router.put('/admin-usuarios/:codigoempleado/estado', protegetRuta, adminController.actualizarEstadoUsuario);
 
 //rutas de tickets
-router.get('/tickets', protegetRuta,adminController.levantamientoTicket)
+router.get('/tickets', protegetRuta,adminController.levantamientoTicket);
+router.get('/misTickets', protegetRuta,adminController.misTickets);
 router.get('/admin-tickets', protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),
     adminController.administracionTickets)

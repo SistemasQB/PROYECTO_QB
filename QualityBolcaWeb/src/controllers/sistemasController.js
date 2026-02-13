@@ -587,7 +587,7 @@ function obtenerHorasPorPrioridad(prioridad) {
         case 'high':
             return 24;
         case 'critical':
-            return 8;
+            return 2;
         default:
             return 72;
     }
@@ -686,35 +686,70 @@ controller.crudTickets = async (req, res) => {
         return res.status(500).json({ ok: false });
     }
 }
+
 controller.misTickets = async (req, res) => {
     try {
-        const codigoEmpleado = req.session.usuario.codigoempleado;
+        const { codigoempleado } = req.usuario;
 
-        // Obtener TODOS los tickets
-        const ticketsDB = await crudTickets('select');
-        // Filtrar solo los del usuario
+        const empleado = await db.query(
+            `
+            SELECT nombre, apellidopaterno, nombrelargo
+            FROM nom10001
+            WHERE codigoempleado = :codigoempleado
+            LIMIT 1
+            `,
+            {
+                replacements: { codigoempleado },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        const nombreUsuario = empleado.length > 0
+            ? empleado[0].nombre
+            || `${empleado[0].nombre} ${empleado[0].apellidopaterno}`
+            : 'Usuario';
+
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll({
+            order: [['createdAt', 'DESC']]
+        });
+
         const misTickets = ticketsDB
-            .map(t => JSON.parse(t.datosTicket))
-            .filter(t => t.codigoEmpleado === codigoEmpleado)
-            .map(t => ({
-                id: t.folio,
-                asunto: t.titulo,
-                fecha: t.fechaCreacion,
-                estatus: normalizarEstatus(t.estatus),
-                tecnico: t.asignadoa ? `Ing. ${t.asignadoa}` : 'Pendiente de asignar'
-            }));
+            .map(t => {
+                const datos = typeof t.datosTicket === 'string'
+                    ? JSON.parse(t.datosTicket)
+                    : t.datosTicket;
+
+                return {
+                    id: t.folio,
+                    asunto: datos.titulo,
+                    fecha: new Date(t.createdAt).toLocaleDateString('es-MX', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    }),
+                    estatus: normalizarEstatus(datos.estatus),
+                    tecnico: datos.asignadoA
+                        ? `Ing. ${datos.asignadoA}`
+                        : 'Pendiente de asignar',
+                    codigoEmpleado: datos.codigoEmpleado
+                };
+            })
+            .filter(t => t.codigoEmpleado === codigoempleado);
 
         return res.render('admin/sistemas/misTickets.ejs', {
             csrfToken: req.csrfToken(),
-            tickets: misTickets
+            tickets: misTickets,
+            nombreUsuario
         });
+
     } catch (error) {
         console.error('Error en misTickets:', error);
-        res.render('admin/sistemas/misTickets', {
-            tickets: []
+        return res.render('admin/sistemas/misTickets.ejs', {
+            tickets: [],
+            nombreUsuario: 'Usuario'
         });
     }
-}
+};
 
 function normalizarEstatus(estatus) {
     switch (estatus) {
@@ -783,7 +818,7 @@ controller.asignarTicket = async (req, res) => {
         return res.json({ ok: true });
 
     } catch (error) {
-        console.error('❌ Error asignando ticket:', error);
+        console.error('Error asignando ticket:', error);
         return res.status(500).json({
             ok: false,
             message: 'Error interno del servidor'
@@ -1001,6 +1036,7 @@ controller.obtenerInventario = async (req, res) => {
                 i.estado,
                 i.usoExclusivo,
                 i.ultimoMantenimiento,
+                i.fechaCompra,
 
                 v.numeroEmpleado,
 
