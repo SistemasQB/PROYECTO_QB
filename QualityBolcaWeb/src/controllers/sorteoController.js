@@ -394,11 +394,14 @@ controller.crudOutput = async(req, res) => {
                 if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'});
                 return res.json({ok: true, msg: 'informacion enviada exitosamente'});
             case 'update':
+                console.log(campos);
                 let actualizado = await clase.actualizarDatos({id: id, datos: campos});
                 if (!actualizado) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'});
                 return res.json({ok: true, msg: 'informacion actualizada exitosamente'});
             case 'delete':
-                break;
+                let eliminado = await clase.eliminar({id: id});
+                if (!eliminado) return res.json({ok: false, msg: 'no se pudo eliminar la informacion'});
+                return res.json({ok: true, msg: 'informacion eliminada exitosamente'});
         }
     } catch (error) {
         manejadorErrores(req, error);    

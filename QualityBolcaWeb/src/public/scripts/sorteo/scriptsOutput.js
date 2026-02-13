@@ -299,16 +299,16 @@ function addService(formData) {
 
 /** Delete a service by ID */
 function deleteService(serviceId) {
-  services = services.filter(function (s) { return s.id !== serviceId; });
-  renderFilterDropdowns();
-  renderAll();
+  envioJson('crudOutput', {id: serviceId, tipo: 'delete', _csrf: tok}, 'output')
+  // services = services.filter(function (s) { return s.id !== serviceId; });
+  // renderFilterDropdowns();
+  // renderAll();
 }
 
 /** Update a service from edit modal */
 function updateService(serviceId, updatedData, updatedMaterials) {
   services = services.map(function (s) {
     if (s.id !== serviceId) return s;
-
     const costo = parseFloat(updatedData.costo) || 0;
     const moneda = updatedData.moneda;
     const totalUSD = moneda === "USD" ? costo : costo / EXCHANGE_RATE_USD_TO_MXN;
@@ -411,25 +411,24 @@ function renderTable(paginated) {
       <td><span class="badge badge--outline">${escapeHtml(row.region)}</span></td>
       <td class="text-right font-mono">${formatCurrency(row.costo, row.moneda)}</td>
       <td class="text-center"><span class="badge ${monedaBadgeClass}">${escapeHtml(row.moneda)}</span></td>`;
-
+    
     let totales = row.registros.reduce((acu, reg) => {
       acu.piezasHoras += parseFloat(reg.piezasHoras);
-      if (row.moneda === "USD") {
-        acu.totalUSD += parseFloat(reg.totalUSD);
-        acu.totalMXN += parseFloat(reg.totalUSD) * parseFloat(reg.tipoCambio);
+      // if (row.moneda === "USD") {
+        acu.totalUSD += parseFloat(reg.totalUSD) || 0;
+        acu.totalMXN += parseFloat(reg.totalMXN)||0;
+        acu.horasAC += parseFloat(reg.horasAC) ||0;
         return acu;
-      }
-      acu.totalMXN += parseFloat(reg.totalMXN);
-      return acu;
-    }, { piezasHoras: 0, totalMXN: 0, totalUSD: 0 });
-
+      // }
+      
+    }, { piezasHoras: 0, totalMXN: 0, totalUSD: 0 , horasAC:0});
     html += `
       <td class="text-right font-mono">${formatCurrency(totales.totalUSD, "USD")} </td>
       <td class="text-right font-mono">${formatCurrency(totales.totalMXN, "MXN")}</td>
 
       <td class="text-center"><span class="badge badge--secondary">${escapeHtml(row.rateTIH)}</span></td>
       <td class="text-right font-mono">${row.productividad.toFixed(2)}</td>
-      <td class="text-right font-mono">${row.horasAC.toFixed(1)}</td>
+      <td class="text-right font-mono">${totales.horasAC.toFixed(2)}</td>
       <td class="cell-truncate">${(row.observaciones ? escapeHtml(row.observaciones) : '<span style="color:var(--muted);">—</span>')}</td>
       <td class="text-center">
       <div style="display:flex;align-items:center;justify-content:center;gap:2px;">
@@ -657,6 +656,17 @@ function openEditModal(serviceId) {
   campos.horas.value = svc.registros.reduce((acu, b) =>acu += b.horasAC, 0).toFixed(2);
   campos.observaciones.value = svc.observaciones;
   toggleRateNumberField("edit-rate", "edit-rate-number-field");
+  if (svc.registros.length >  0 ){
+    for(const [llave, valor] of Object.entries(campos)){
+    if(llave === "observaciones") continue;
+    valor.disabled = true;
+    }
+  }else{
+    for(const [llave, valor] of Object.entries(campos)){
+    if(llave === "productividad" || llave === "horas") valor.disabled = true;
+    }
+  }
+  
 
   // document.getElementById("edit-planta").value = svc.plantaTrabajo;
   // document.getElementById("edit-parte").value = svc.nombreParte;
@@ -762,36 +772,46 @@ function saveMaterialInlineEdit() {
 }
 
 function deleteMaterialInEdit(materialId) {
-  editingMaterials = editingMaterials.filter(function (m) { return m.id !== materialId; });
+  editingMaterials.splice(materialId, 1)
   renderMaterialsInEditModal();
 }
 
 function saveEditService() {
+  
   if (!editingServiceId) return;
-  // orden: document.getElementById("edit-orden").value.trim(),
-  //   clienteCobro: document.getElementById("edit-cliente").value.trim(),
-  //   plantaTrabajo: document.getElementById("edit-planta").value.trim(),
-  //   nombreParte: document.getElementById("edit-parte").value.trim(),
-  //   region: document.getElementById("edit-region").value.trim(),
-  //   costo: document.getElementById("edit-costo").value,
-  //   moneda: document.getElementById("edit-moneda").value,
-  //   rateTIH: document.getElementById("edit-rate").value,
-  //   rateNumber: document.getElementById("edit-rate").value === "RATE" ? (parseFloat(document.getElementById("edit-rate-number").value) || 0) : null,
-  //   productividad: document.getElementById("edit-productividad").value,
-  //   horasAC: document.getElementById("edit-horas").value,
-  const updatedData = {
-    observaciones: document.getElementById("edit-obs").value.trim(),
-    registros:editingMaterials,
-    tipo: 'update',
-    _csrf: tok
-  };
-    envioJson('crudServices', updatedData, 'agregarService')
-  // updateService(editingServiceId, updatedData, editingMaterials);
-  // closeModal("modal-edit-service");
-  editingServiceId = null;
-  editingMaterials = [];
+  
+  let updatedData = null
+    if (editingMaterials.length === 0) {
+      updatedData = {
+        orden: document.getElementById("edit-orden").value.trim(),
+        clienteCobro: document.getElementById("edit-cliente").value.trim(),
+        plantaTrabajo: document.getElementById("edit-planta").value.trim(),
+        nombreParte: document.getElementById("edit-parte").value.trim(),
+        region: document.getElementById("edit-region").value.trim(),
+        costo: document.getElementById("edit-costo").value,
+        moneda: document.getElementById("edit-moneda").value,
+        rateTIH: document.getElementById("edit-rate").value,
+        rateNumber: document.getElementById("edit-rate").value === "RATE" ? (parseFloat(document.getElementById("edit-rate-number").value) || 0) : null,
+        observaciones: document.getElementById("edit-obs").value.trim(),
+        tipo: 'update',
+        _csrf: tok,
+        id: editingServiceId
+      };
+    } else {
+        updatedData = {
+          observaciones: document.getElementById("edit-obs").value.trim(),
+          registros:editingMaterials,
+          tipo: 'update',
+          _csrf: tok,
+          id: editingServiceId
+        }
+    }
+    envioJson('crudOutput', updatedData, 'output')
+        // updateService(editingServiceId, updatedData, editingMaterials);
+        // closeModal("modal-edit-service");
+        editingServiceId = null;
+        editingMaterials = [];
 }
-
 // ──────────────────────── MODAL: DETAIL RECORDS ────────────────────────
 
 function openDetailModal(serviceId) {
@@ -800,15 +820,19 @@ function openDetailModal(serviceId) {
 
   document.getElementById("detail-service-name").textContent = svc.orden + " - " + (svc.nombreParte || "Sin nombre");
 
-  var registros = svc.registros || [];
-  var summaryEl = document.getElementById("detail-summary");
-  var tableEl = document.getElementById("detail-table-container");
+  let registros = svc.registros || [];
+  let summaryEl = document.getElementById("detail-summary");
+  let tableEl = document.getElementById("detail-table-container");
 
   // Calculate totals from registros
-  var totalPiezas = 0;
-  var totalUSD = 0;
-  var totalMXN = 0;
+  let totalPiezas = 0;
+  let totalUSD = 0;
+  let totalMXN = 0;
+  let totalHorasAC = 0;
   for (var i = 0; i < registros.length; i++) {
+    
+    totalHorasAC += parseFloat(registros[i].horasAC) || 0;
+    tipoCambio = parseFloat(registros[i].tipoCambio) 
     totalPiezas += parseFloat(registros[i].piezasHoras) || 0;
     if (svc.moneda === "USD") {
       totalUSD += parseFloat(registros[i].totalUSD) || 0;
@@ -845,9 +869,9 @@ function openDetailModal(serviceId) {
       + '<th>Observaciones</th>'
       + '</tr></thead><tbody>';
 
-    for (var j = 0; j < registros.length; j++) {
-      var reg = registros[j];
-      var regTotalMXN = svc.moneda === "USD"
+    for (let j = 0; j < registros.length; j++) {
+      let reg = registros[j];
+      let regTotalMXN = svc.moneda === "USD"
         ? ((parseFloat(reg.totalUSD) || 0) * (parseFloat(reg.tipoCambio) || 1))
         : (parseFloat(reg.totalMXN) || 0);
 
@@ -867,10 +891,11 @@ function openDetailModal(serviceId) {
     }
 
     // Footer totals
-    var colSpan = svc.moneda === "USD" ? 3 : 3;
+    // var colSpan = svc.moneda === "USD" ? 3 : 3;
     html += '</tbody><tfoot><tr class="detail-total-row">'
       + '<td colspan="2" style="font-weight:600;">TOTALES</td>'
-      + '<td class="font-mono" colspan="2" style="font-weight:600;">' + totalPiezas.toFixed(2) + '</td>';
+      + '<td class="font-mono" colspan="1" style="font-weight:600;">' + totalPiezas.toFixed(2) + '</td>'
+      + '<td class="font-mono" colspan="1" style="font-weight:600;">' + totalHorasAC.toFixed(2) + '</td>';
     if (svc.moneda === "USD") {
       html += '<td class="text-right font-mono" style="font-weight:600;">' + formatCurrency(totalUSD, "USD") + '</td>'
         + '<td></td>';
