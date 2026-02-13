@@ -340,8 +340,6 @@ function updateService(serviceId, updatedData, updatedMaterials) {
 function addMaterialToService(serviceId, materialData) {
   // Build structured JSON for backend
   const payload = buildMaterialPayload(materialData);
-  console.log("Material payload for backend:", JSON.stringify(payload, null, 2));
-
   services = services.map(function (s) {
     if (s.id !== serviceId) return s;
     return Object.assign({}, s, {

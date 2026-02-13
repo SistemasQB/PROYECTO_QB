@@ -407,4 +407,25 @@ controller.crudOutput = async(req, res) => {
         manejadorErrores(req, error);    
     }
 }
+
+controller.dashBoardOutput = async(req, res) => {
+    try {
+        
+        const mesActual  =new Date().getMonth();
+        const anioActual = new Date().getFullYear();
+        console.log(mesActual, anioActual);
+        const fechas = customFunctions.generarFechas(mesActual, anioActual);
+        const criterios = {createdAt: {[Op.between]: [fechas.inicio, fechas.fin]}};
+        const clase = new sequelizeClase({modelo: modelosSorteo.output});
+        const resultados = await clase.obtenerDatosPorCriterio({criterio:criterios});
+        return res.render('admin/sorteo/outputDashboard.ejs', {token: req.csrfToken(), servs: resultados});
+    } catch (error) {
+        console.log(error);
+        manejadorErrores(res, error);
+    }
+    
+}
+
+
+
 export default controller;

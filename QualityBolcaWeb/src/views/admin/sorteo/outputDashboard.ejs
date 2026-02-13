@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0f1a" />
+  <title>Panel de Control - Operaciones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/styles/sorteo/estilos_outputDashboard.css" />
+</head>
+<body>
+
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-box">
+      <div class="loader-ring"></div>
+      <p class="loading-title">Consultando datos...</p>
+      <p class="loading-sub">Espera mientras se procesan los registros</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <div class="header-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+      <div>
+        <h1 class="header-title">Panel de Operaciones</h1>
+        <p class="header-sub">Estadisticas y control de ordenes de servicio</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-badge">
+        <span class="pulse-dot"></span>
+        <span>En linea</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- Query Panel -->
+    <section class="panel query-panel">
+      <div class="panel-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1"/><circle cx="6" cy="18" r="1"/></svg>
+        <span>Consulta al Backend</span>
+      </div>
+      <div class="query-inputs">
+        <div class="date-field">
+          <label for="fechaInicio">Fecha Inicio</label>
+          <input type="date" id="fechaInicio" />
+        </div>
+        <div class="date-field">
+          <label for="fechaFin">Fecha Fin</label>
+          <input type="date" id="fechaFin" />
+        </div>
+        <button id="btnQuery" class="btn-primary" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>Consultar</span>
+        </button>
+      </div>
+      <div id="queryError" class="query-error hidden"></div>
+      <p id="queryInfo" class="query-info hidden"></p>
+    </section>
+
+    <!-- Filters -->
+    <section class="panel filter-panel">
+      <div class="panel-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span>Filtros</span>
+        <button id="btnClearFilters" class="btn-ghost hidden">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Limpiar
+        </button>
+      </div>
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label>Supervisor</label>
+          <select id="filterSupervisor"><option value="">Todos los supervisores</option></select>
+        </div>
+        <div class="filter-field">
+          <label>Region</label>
+          <select id="filterRegion"><option value="">Todas las regiones</option></select>
+        </div>
+        <div class="filter-field">
+          <label>Semana</label>
+          <select id="filterSemana"><option value="">Todas las semanas</option></select>
+        </div>
+        <div class="filter-field">
+          <label>Mes</label>
+          <select id="filterMes"><option value="">Todos los meses</option></select>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPI Cards -->
+    <section id="kpiGrid" class="kpi-grid"></section>
+
+    <!-- Charts -->
+    <section class="charts-grid">
+      <div class="panel chart-panel">
+        <h3>Ingresos por Region</h3>
+        <p class="chart-sub">De mayor a menor ingreso (MXN)</p>
+        <div class="chart-wrap"><canvas id="chartRegion"></canvas></div>
+      </div>
+      <div class="panel chart-panel">
+        <h3>Ingresos Diarios</h3>
+        <p class="chart-sub">Tendencia de ingresos en MXN</p>
+        <div class="chart-wrap"><canvas id="chartDaily"></canvas></div>
+      </div>
+      <div class="panel chart-panel">
+        <h3>Distribucion por Servicio</h3>
+        <p class="chart-sub">Porcentaje de ingresos por parte/servicio</p>
+        <div class="chart-wrap"><canvas id="chartService"></canvas></div>
+      </div>
+      <div class="panel chart-panel">
+        <h3>Ingresos por Supervisor</h3>
+        <p class="chart-sub">Comparativa de desempeno (MXN)</p>
+        <div class="chart-wrap"><canvas id="chartSupervisor"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Data Table -->
+    <section class="panel data-panel">
+      <div class="data-panel-header">
+        <div class="panel-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          <span id="dataCount">Datos Detallados (0 ordenes)</span>
+        </div>
+        <div class="data-panel-actions">
+          <button id="btnExport" class="btn-outline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+          </button>
+          <button id="btnToggleTable" class="btn-outline">
+            <svg id="iconEye" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span id="toggleLabel">Mostrar Tabla</span>
+          </button>
+        </div>
+      </div>
+      <div id="tableContainer" class="table-container hidden">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-expand"></th>
+              <th>Orden</th>
+              <th>Cliente</th>
+              <th>Parte</th>
+              <th>Region</th>
+              <th>Planta</th>
+              <th>Moneda</th>
+              <th class="text-right">Total MXN</th>
+              <th>Supervisor</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div id="tablePlaceholder" class="table-placeholder">
+        Haz clic en "Mostrar Tabla" para ver el detalle de las ordenes
+      </div>
+    </section>
+
+  </main>
+  <script>
+    const servicios=<%-JSON.stringify(servs)%>
+  </script>
+  <script src="/scripts/sorteo/scriptsOutputDashBoard.js"></script>
+  
+  
+</body>
+</html>

@@ -26,6 +26,12 @@ class custonFunctions{
         }).catch(err => console.log(err));
     }
 
+    static generarFechas(numMesInicio, anioInicio ){
+        const inicio = new Date(anioInicio, numMesInicio, 1);
+        const fin = new Date(anioInicio, numMesInicio + 1, 1);
+        return {inicio, fin}
+    }
+
 }
 
 export default custonFunctions;

@@ -48,6 +48,7 @@ router.get("/ingreso/:id",sorteoController.puntoEntrada)
 //rutas de output
 router.get("/output",protegerRuta,sorteoController.output) //vista del output
 router.post("/crudOutput",protegerRuta,sorteoController.crudOutput) //crud de output
+router.get('/gestionOutput',protegerRuta,sorteoController.dashBoardOutput)
 
 
 export default router;
