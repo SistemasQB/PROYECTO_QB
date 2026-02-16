@@ -1,7 +1,7 @@
-import dbCalidad from "../../config/dbCalidad.js";
+import db from "../../config/db.js";
 import { DataTypes } from "sequelize";
 
-const modeloFormularioMejora = dbCalidad.define("formularioMejora", {
+const modeloFormularioMejora = db.define("formulariomejora", {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -30,7 +30,7 @@ const modeloFormularioMejora = dbCalidad.define("formularioMejora", {
         type: DataTypes.INTEGER,
         defaultValue: 0,
     },
-    nombreParticipantes : {
+    nombreParticpantes : {
         type: DataTypes.TEXT,
         defaultValue: "N/A",
     },
@@ -127,7 +127,7 @@ const modeloFormularioMejora = dbCalidad.define("formularioMejora", {
         defaultValue: 'N/A',
     }
 }, {
-    tableName: "formularioMejora",
+    tableName: "formulariomejora",
     timestamps: false,
     freezeTableName: true,
 })

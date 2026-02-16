@@ -132,7 +132,7 @@ controller.ActualizarMejoras = async (req, res) => {
         return res.json({ ok: false, msg: "no se pudo realizar la solicitud" })
     }
 }
-controller.mejoracontinua = async (req, res) => {
+controller.mejoracontinua = async (req, res) => { //vista de mejora continua (usuario)
     const { codigoempleado } = req.usuario
     let clase = new sequelizeClase({modelo: barrilmodelosgenerales.vistaempleados})
     const datosEmpleado = await clase.obtener1Registro({criterio: {codigoempleado: codigoempleado}})
@@ -172,7 +172,7 @@ controller.crudMejoras = async(req, res) => {
                 delete campos.id
                 delete campos.tipo
                 if (analisis) {
-                    campos.tituloAnalisis = analisis.filename
+                    campos.tituloAnalisis = analisis.path
                 }
                 const actualizacion = await clase.actualizarDatos({id: id, datos:campos})
                 if (!actualizacion) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'})

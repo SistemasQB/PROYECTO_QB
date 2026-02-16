@@ -136,7 +136,7 @@
             nombreParticipantes: formData.get('nombre_participantes'),
             nombreRegistra: formData.get('generador_idea'),
             puesto: '',
-            procesoAplicaMejora: formData.get('proceso_aplica_mejora'),
+            procesoAplicaMejora: formData.get('proceso_aplica_mejora') || 'TODAS LAS REGIONES',
             regionAplicaMejora: formData.get('region_aplica_mejora'),
             rubro: formData.get('rubro'),
             beneficios: formData.get('beneficios'),
@@ -241,7 +241,7 @@
         miFormData.append('id', idAnalisis)
         miFormData.append('tipo', 'subirAnalisis')
         miFormData.append('_csrf', tok)
-        miFormData.append('estatus', 'REGISTRADA')
+        miFormData.append('estatus', 'POR REVISAR')
         envioFormData('crudMejoras', miFormData, 'mejoracontinua')
     })
 
@@ -362,7 +362,7 @@
                 // colorcarta = '';
                 btnModificar = 'block'
                 break;
-            case 'REGISTRADA':
+            case 'POR REVISAR':
                 btnActivo = 'none';
                 colorcarta = 'background-color: #fff7d7; border: 2px solid rgb(255, 223, 100);'
                 break;
@@ -438,6 +438,12 @@
         const fechaFormateada = new Date(mejora.fecha);
         const beneficiosA = mejora.beneficios.split(',');
         fechaFormateada.setDate(fechaFormateada.getDate() + 1)
+
+//<div class="card-info">
+//                      <i class="fas fa-address-card"></i>
+//                    <span class="location">${mejora.inversion}</span>
+//              </div>
+
         const badgesHtml = beneficiosA.map(tipo =>
             `<span class="badge ${getBadgeClass(tipo)}">${tipo}</span>`
         ).join('');
@@ -459,10 +465,7 @@
                         <i class="fas fa-user"></i>
                         <span class="name">${mejora.generadorIdea}</span>
                     </div>
-                    <div class="card-info">
-                        <i class="fas fa-address-card"></i>
-                        <span class="location">${mejora.inversion}</span>
-                    </div>
+                    
                 </div>
                 
                 <div class="card-section">

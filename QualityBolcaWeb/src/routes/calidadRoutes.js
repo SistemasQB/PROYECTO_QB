@@ -7,19 +7,17 @@ import protegerRuta from "../middleware/protegetRuta.js";
 
 const mimulter = new miMulter('src/public/evidencias')
 const multer5S = new miMulter("src/public/evidencias/5s")
-const multerAnalisis = new miMulter(`src/public/evidencias/${new Date().getFullYear()}/mejoras`)
+const multerAnalisis = new miMulter(`src/public/evidencias/${new Date().getFullYear()}/mejoras/${new Date().getMonth() + 1}`)
 const router = express.Router();
 
 router.get('/inicio', protegerRuta, validarAcceso({roles: ['calidad', 'administrador'], permisos: ['jefe calidad', 'permitido', 'analista de calidad', 'auxiliar de calidad'], jerarquia: 5}), calidadController.inicio);
 // rutas de 5s
-router.get('/administracionEvidencias' ,protegerRuta, validarAcceso({
-    roles: ['calidad', 'administrador'], 
-    permisos: ['jefe calidad', 'permitido', 'analista de calidad', 'auxiliar de calidad'], 
+router.get('/administracionEvidencias' ,protegerRuta, validarAcceso({roles: ['calidad', 'administrador'], permisos: ['jefe calidad', 'permitido', 'analista de calidad', 'auxiliar de calidad'], 
     jerarquia: 5}) ,calidadController.evidencias); //liga de visualizacion de evidencias
 router.post('/evidencias',protegerRuta,calidadController.evidencias2); 
 
 // rutas de mejora continua
-router.get('/administracionmejoras', protegerRuta,calidadController.administracionmejoras); //vista de comite de mejoras (comite)
+router.get('/administracionmejoras', protegerRuta,validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar'], jerarquia: 5}), calidadController.administracionmejoras); //vista de comite de mejoras (comite)
 router.get('/mejoracontinua',protegerRuta, calidadController.mejoracontinua); // vista de ingreso de mejoras nuevas (personal)
 router.post('/crudMejoras', protegerRuta, multerAnalisis.archivoUnico('tituloAnalisis', 1),calidadController.crudMejoras); //modificacion de mejoras (abstracta)
 
@@ -44,11 +42,11 @@ router.post('/crud',protegerRuta ,calidadController.CrudDirectorio);
 router.get('/api/:documento', calidadController.api);
 
 // rutas 5´s
-router.get('/formatoVerificacion', protegerRuta,calidadController.verificacion5s)
-router.post('/ingresarFormatoVerificacion', protegerRuta, multer5S.multiplesArchivos('evidencia',10),calidadController.ingresarRegistro5s)
+router.get('/formatoVerificacion', protegerRuta,validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar', 'becario'], jerarquia: 5}),calidadController.verificacion5s)
+router.post('/ingresarFormatoVerificacion', protegerRuta,protegerRuta,validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar', 'becario'], jerarquia: 5}), multer5S.multiplesArchivos('evidencia',10),calidadController.ingresarRegistro5s)
 
 //rutas de auditorias
-router.get('/agregarAuditoria', protegerRuta,calidadController.agregarAuditoria)
-router.post('/crudAuditorias', protegerRuta, calidadController.crudAuditorias)
+router.get('/agregarAuditoria', protegerRuta, validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar'], jerarquia: 5}),calidadController.agregarAuditoria)
+router.post('/crudAuditorias', protegerRuta, validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar', 'becario'], jerarquia: 5}) ,calidadController.crudAuditorias)
 
 export default router;
