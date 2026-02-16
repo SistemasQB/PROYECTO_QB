@@ -9,19 +9,20 @@ const router = express.Router();
 router.get('/inicio', adminController.inicio);
 
 //rutas gestion de usuarios
-router.get('/admin-usuarios', adminController.adminUsuarios);
+router.get('/admin-usuarios', adminController.adminUsuarios); 
+router.put('/admin-usuarios/:codigoempleado/permisos', protegetRuta,adminController.actualizarPermisosUsuario);
+router.put('/admin-usuarios/:codigoempleado/estado', protegetRuta, adminController.actualizarEstadoUsuario);
 
 //rutas de tickets
-router.get('/tickets', protegetRuta,adminController.levantamientoTicket)
+router.get('/tickets', protegetRuta,adminController.levantamientoTicket);
+router.get('/misTickets', protegetRuta,adminController.misTickets);
 router.get('/admin-tickets', protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),
     adminController.administracionTickets)
 router.get('/crudTickets', protegetRuta,adminController.crudTickets)
 router.post('/crudTickets', protegetRuta,adminController.crudTickets)
 router.post('/tickets/:id/asignar', protegetRuta,adminController.asignarTicket);
-router.post('/tickets/:id/pausar', protegetRuta,adminController.pausarTicket);
 router.post('/tickets/:id/reanudar', protegetRuta,adminController.reanudarTicket);
-router.put('/tickets/:id/terminar', protegetRuta,adminController.terminarTicket);
 router.post('/tickets/:id/cerrar', protegetRuta,adminController.cerrarTicket);
 router.post('/tickets/:id/observacion', protegetRuta, adminController.agregarObservacionTicket);
 router.get('/tickets/:id/observaciones', protegetRuta, adminController.obtenerObservacionesTicket);
@@ -30,7 +31,9 @@ router.get('/tickets/:id/observaciones', protegetRuta, adminController.obtenerOb
 router.get('/inventario', protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.inventario)
 
-router.get('/addinventario', protegetRuta,validarAcceso({
+router.get('/inventario-data', protegetRuta,adminController.obtenerInventario); 
+router.get('/addinventario', protegetRuta, protegetRuta,validarAcceso({
+
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.addinventario); //para abrir la pagina de asignacion o de generar vale
 router.post('/addinventario',protegetRuta,adminController.addinventario2);
 router.get('/tablainventario',protegetRuta,validarAcceso({

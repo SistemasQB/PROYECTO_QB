@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="/styles/sistemas/estilos_administracion_tickets.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <div class="container">
         <header class="header">
@@ -64,7 +66,8 @@
 
         <div class="pagination-footer">
             <div class="pagination-info">
-                Mostrando <span id="showingStart">1</span> - <span id="showingEnd">20</span> de <span id="totalItems">0</span> tickets
+                Mostrando <span id="showingStart">1</span> - <span id="showingEnd">20</span> de <span
+                    id="totalItems">0</span> tickets
             </div>
             <div class="pagination-buttons">
                 <button class="pagination-btn" id="firstPage" title="Primera página">
@@ -84,10 +87,15 @@
         </div>
     </div>
 
+    <script>
+        const tok = <%- JSON.stringify(csrfToken) %>;
+    </script>
+
     <script src="/scripts/sistemas/scripts_administracion_tickets.js"></script>
     <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
     <script>
         const tok = <%-JSON.stringify(csrfToken)%>
     </script>
 </body>
+
 </html>

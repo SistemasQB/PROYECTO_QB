@@ -1,43 +1,96 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
-    const ticketCards = document.querySelectorAll('.ticket-card');
+  const searchInput = document.getElementById('searchInput');
+  const ticketCards = document.querySelectorAll('.ticket-card');
+  const tabs = document.querySelectorAll('.status-tab');
 
-    // Función principal de filtrado
-    const filterTickets = () => {
-        const searchTerm = searchInput.value.toLowerCase();
-        const statusValue = statusFilter.value;
-        // Actualiza la lógica de coincidencia
-        const matchesSearch = subject.includes(searchTerm) || id.includes(searchTerm) || tech.includes(searchTerm);
+  let activeStatus = 'todos';
 
-        ticketCards.forEach(card => {
-            // Obtenemos el texto del asunto y del ID para buscar
-            // Dentro del forEach en filterTickets:
-            const tech = card.querySelector('.ticket-tech').textContent.toLowerCase();
-            const subject = card.querySelector('.ticket-subject').textContent.toLowerCase();
-            const id = card.querySelector('.ticket-id').textContent.toLowerCase();
+  function matchesSearch(card, searchTerm) {
+    const subject = card.querySelector('.ticket-subject').textContent.toLowerCase();
+    const id = card.querySelector('.ticket-id').textContent.toLowerCase();
+    const tech = card.querySelector('.ticket-tech').textContent.toLowerCase();
 
-            // Obtenemos el estatus real de la tarjeta (data-status)
-            const cardStatus = card.getAttribute('data-status');
+    return (
+      subject.includes(searchTerm) ||
+      id.includes(searchTerm) ||
+      tech.includes(searchTerm)
+    );
+  }
 
-            // Lógica de coincidencia
-            const matchesSearch = subject.includes(searchTerm) || id.includes(searchTerm);
-            const matchesStatus = statusValue === 'todos' || cardStatus === statusValue;
+  function updateTabCounts(searchTerm = '') {
+    tabs.forEach(tab => {
+      const status = tab.dataset.status;
+      const countEl = tab.querySelector('.tab-count');
 
-            // Mostrar u ocultar
-            if (matchesSearch && matchesStatus) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    };
+      let count = 0;
 
-    // Escuchadores de eventos
-    searchInput.addEventListener('input', filterTickets);
-    statusFilter.addEventListener('change', filterTickets);
+      ticketCards.forEach(card => {
+        const cardStatus = card.dataset.status;
+
+        const matchesStatus =
+          status === 'todos' || cardStatus === status;
+
+        const matchesSearchText = matchesSearch(card, searchTerm);
+
+        if (matchesStatus && matchesSearchText) {
+          count++;
+        }
+      });
+
+      countEl.textContent = `${count}`;
+    });
+  }
+
+  function filterTickets() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const emptyState = document.getElementById('emptyState');
+    const emptyMessage = document.getElementById('emptyMessage');
+
+    let visibleCount = 0;
+
+    ticketCards.forEach(card => {
+      const cardStatus = card.dataset.status;
+
+      const matchesStatus =
+        activeStatus === 'todos' || cardStatus === activeStatus;
+
+      const matchesSearchText = matchesSearch(card, searchTerm);
+
+      if (matchesStatus && matchesSearchText) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    
+    if (visibleCount === 0) {
+      emptyMessage.textContent =
+        activeStatus === 'todos'
+          ? 'No hay tickets que coincidan con la búsqueda.'
+          : 'No hay tickets con este estatus.';
+      emptyState.style.display = 'block';
+    } else {
+      emptyState.style.display = 'none';
+    }
+
+    updateTabCounts(searchTerm);
+  }
 
 
+  searchInput.addEventListener('input', filterTickets);
 
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
 
+      activeStatus = tab.dataset.status;
+      filterTickets();
+    });
+  });
+
+  // Inicial
+  updateTabCounts();
 });

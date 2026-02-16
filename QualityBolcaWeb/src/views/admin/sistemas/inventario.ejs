@@ -11,7 +11,8 @@
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <h1>Sistema de Inventario IT</h1>
+                <h1>Sistema de Inventario TI</h1>
+                <button class="add-item" onclick="location.href='/sistemas/addinventario'">+Agregar Equipo</button>
             </div>
         </header>
 
@@ -112,9 +113,13 @@
                     </div>
                 </div>
 
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Buscar por título, categoría o número de serie...">
+                </div>
+
                 <!-- Table -->
                 <div class="table-container">
-                    <table class="tickets-table">
+                    <table class="inventory-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -125,11 +130,12 @@
                                 <th>Estado</th>
                                 <th>Area perteneciente</th>
                                 <th>Ultimo mantenimiento</th>
+                                <th>Fecha de compra</th>
                             </tr>
                         </thead>
-                        <tbody id="ticketsTableBody">
+                        <tbody id="inventoryTableBody">
                             <tr class="empty-state">
-                                <td colspan="8">
+                                <td colspan="9">
                                     <div class="empty-content">
                                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>

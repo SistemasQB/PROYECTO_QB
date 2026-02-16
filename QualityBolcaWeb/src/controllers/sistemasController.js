@@ -283,7 +283,7 @@ controller.obtenerColaboradoresSinVale = async (req, res) => {
 
         const empleadosConVale = vales.map(v => v.numeroEmpleado);
 
-        const colaboradores = await informaciongch.findAll({
+        const colaboradores = await Informaciongch.findAll({
             where: {
                 codigoempleado: {
                     [Op.notIn]: empleadosConVale.length > 0 ? empleadosConVale : ['']
@@ -535,8 +535,6 @@ controller.levantamientoTicket = async (req, res) => {
             puesto: empleado.idpuesto
         };
 
-        console.log('Datos Usuario:', datosUsuario);
-
         res.render('admin/sistemas/levantamiento_ticket.ejs', {
             info: datosUsuario,
             csrfToken: req.csrfToken()
@@ -569,8 +567,6 @@ controller.formularioTicket = async (req, res) => {
             puesto: empleado.puesto
         };
 
-        console.log('Datos Usuario:', datosUsuario);
-
         res.render('admin/sistemas/levantamiento_ticket.ejs', {
             info: datosUsuario,
             csrfToken: req.csrfToken()
@@ -591,7 +587,7 @@ function obtenerHorasPorPrioridad(prioridad) {
         case 'high':
             return 24;
         case 'critical':
-            return 8;
+            return 2;
         default:
             return 72;
     }
@@ -689,35 +685,70 @@ controller.crudTickets = async (req, res) => {
         return res.status(500).json({ ok: false });
     }
 }
+
 controller.misTickets = async (req, res) => {
     try {
-        const codigoEmpleado = req.session.usuario.codigoempleado;
+        const { codigoempleado } = req.usuario;
 
-        // Obtener TODOS los tickets
-        const ticketsDB = await crudTickets('select');
-        // Filtrar solo los del usuario
+        const empleado = await db.query(
+            `
+            SELECT nombre, apellidopaterno, nombrelargo
+            FROM nom10001
+            WHERE codigoempleado = :codigoempleado
+            LIMIT 1
+            `,
+            {
+                replacements: { codigoempleado },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        const nombreUsuario = empleado.length > 0
+            ? empleado[0].nombre
+            || `${empleado[0].nombre} ${empleado[0].apellidopaterno}`
+            : 'Usuario';
+
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll({
+            order: [['createdAt', 'DESC']]
+        });
+
         const misTickets = ticketsDB
-            .map(t => JSON.parse(t.datosTicket))
-            .filter(t => t.codigoEmpleado === codigoEmpleado)
-            .map(t => ({
-                id: t.folio,
-                asunto: t.titulo,
-                fecha: t.fechaCreacion,
-                estatus: normalizarEstatus(t.estatus),
-                tecnico: t.asignadoa ? `Ing. ${t.asignadoa}` : 'Pendiente de asignar'
-            }));
+            .map(t => {
+                const datos = typeof t.datosTicket === 'string'
+                    ? JSON.parse(t.datosTicket)
+                    : t.datosTicket;
+
+                return {
+                    id: t.folio,
+                    asunto: datos.titulo,
+                    fecha: new Date(t.createdAt).toLocaleDateString('es-MX', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    }),
+                    estatus: normalizarEstatus(datos.estatus),
+                    tecnico: datos.asignadoA
+                        ? `Ing. ${datos.asignadoA}`
+                        : 'Pendiente de asignar',
+                    codigoEmpleado: datos.codigoEmpleado
+                };
+            })
+            .filter(t => t.codigoEmpleado === codigoempleado);
 
         return res.render('admin/sistemas/misTickets.ejs', {
             csrfToken: req.csrfToken(),
-            tickets: misTickets
+            tickets: misTickets,
+            nombreUsuario
         });
+
     } catch (error) {
         console.error('Error en misTickets:', error);
-        res.render('admin/sistemas/misTickets', {
-            tickets: []
+        return res.render('admin/sistemas/misTickets.ejs', {
+            tickets: [],
+            nombreUsuario: 'Usuario'
         });
     }
-}
+};
 
 function normalizarEstatus(estatus) {
     switch (estatus) {
@@ -786,13 +817,14 @@ controller.asignarTicket = async (req, res) => {
         return res.json({ ok: true });
 
     } catch (error) {
-        console.error('❌ Error asignando ticket:', error);
+        console.error('Error asignando ticket:', error);
         return res.status(500).json({
             ok: false,
             message: 'Error interno del servidor'
         });
     }
 };
+
 
 controller.pausarTicket = async (req, res) => {   //pausar ticket
     try {
@@ -867,48 +899,6 @@ controller.reanudarTicket = async (req, res) => {
         res.json({ ok: true });
 
     } catch (error) {
-        res.status(500).json({ ok: false });
-    }
-};
-
-controller.terminarTicket = async (req, res) => {  //terminar ticket
-    try {
-        const { id } = req.params;
-
-        const ticket = await modelosSistemas.modeloTickets.findOne({
-            where: { folio: id }
-        });
-
-        if (!ticket) {
-            return res.status(404).json({ ok: false });
-        }
-
-        const datos = parseDatosTicket(ticket);
-
-        if (datos.estatus !== 'progress') {
-            return res.status(400).json({
-                ok: false,
-                msg: 'Solo se pueden terminar tickets en progreso'
-            });
-        }
-
-        // cerrar SLA
-        const ahora = Date.now();
-        const inicio = new Date(datos.slaInicio).getTime();
-        datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
-
-        datos.estatus = 'resolved';
-        datos.slaActivo = false;
-        datos.slaFin = new Date();
-        datos.slaInicio = null;
-
-        ticket.datosTicket = datos;
-        await ticket.save();
-
-        res.json({ ok: true });
-
-    } catch (error) {
-        console.error('Error terminar ticket:', error);
         res.status(500).json({ ok: false });
     }
 };
@@ -997,7 +987,7 @@ controller.agregarObservacionTicket = async (req, res) => {
             const inicio = new Date(datos.slaInicio);
             datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
 
-            datos.estatus = 'pending';
+            datos.estatus = 'pending';  //Aqui se pausa el ticket
             datos.slaActivo = false;
             datos.slaInicio = null;
         }
@@ -1007,7 +997,7 @@ controller.agregarObservacionTicket = async (req, res) => {
             const inicio = new Date(datos.slaInicio).getTime();
             datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
 
-            datos.estatus = 'resolved';
+            datos.estatus = 'resolved'; //Aqui se resuelve el ticket
             datos.slaActivo = false;
             datos.slaFin = new Date();
             datos.slaInicio = null;
@@ -1076,6 +1066,46 @@ controller.inventario = async (req, res) => {
     res.render('admin/sistemas/inventario.ejs')
 }
 
+controller.obtenerInventario = async (req, res) => {
+    try {
+        const inventario = await db.query(`
+            SELECT 
+                i.idInventario,
+                i.tipo,
+                i.marca,
+                i.serie,
+                i.folio,
+                i.estado,
+                i.usoExclusivo,
+                i.ultimoMantenimiento,
+                i.fechaCompra,
+
+                v.numeroEmpleado,
+
+                CONCAT(n.nombre, ' ', n.apellidopaterno) AS asignadoA
+            FROM inventario i
+            LEFT JOIN vales v 
+                ON i.folio = v.idFolio
+            LEFT JOIN nom10001 n 
+                ON v.numeroEmpleado = n.codigoempleado
+            ORDER BY i.idInventario ASC;
+        `, {
+            type: QueryTypes.SELECT
+        });
+
+        return res.json({
+            ok: true,
+            inventario
+        });
+    } catch (error) {
+        console.error('Error obteniendo inventario:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error al obtener inventario'
+        });
+    }
+}
+
 //controladores gestion de usuarios
 controller.adminUsuarios = async (req, res) => {
     try {
@@ -1086,6 +1116,7 @@ controller.adminUsuarios = async (req, res) => {
                     u.codigoempleado,
                     ig.nombrelargo,
                     ig.correoelectronico AS email,
+                    ig.estadoempleado,
                     n6.descripcion AS puesto,
                     n3.descripcion AS departamento,
                     u.permisos
@@ -1121,8 +1152,9 @@ controller.adminUsuarios = async (req, res) => {
                 puesto: u.puesto || 'Sin puesto',
                 departamento: u.departamento || 'No asignado',
                 email: u.email || 'No disponible',
-                permisos: u.permisos, //
-                rol
+                permisos: u.permisos,
+                rol,
+                estadoempleado: u.estadoempleado || 'R'
             };
         });
 
@@ -1133,6 +1165,109 @@ controller.adminUsuarios = async (req, res) => {
     } catch (error) {
         console.error("Error cargando usuarios:", error);
         res.status(500).send("Error al cargar los usuarios");
+    }
+}
+
+controller.actualizarPermisosUsuario = async (req, res) => {
+    try {
+        const { codigoempleado } = req.params;
+        const { permisos } = req.body;
+
+        console.log('PARAMS:', req.params);
+        console.log('BODY:', req.body);
+
+        if (!codigoempleado || !permisos) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Datos incompletos'
+            });
+        }
+
+        const { jerarquia, roles, permisos: permisosLista } = permisos;
+
+        if (
+            typeof jerarquia !== 'number' ||
+            !Array.isArray(roles) ||
+            !Array.isArray(permisosLista)
+        ) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Estructura de permisos inválida'
+            });
+        }
+
+        // Buscar usuario
+        const usuario = await Usuario.findOne({
+            where: { codigoempleado }
+        });
+
+        if (!usuario) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Usuario no encontrado'
+            });
+        }
+
+        // Guardar como JSON string
+        usuario.permisos = JSON.stringify({
+            jerarquia,
+            roles,
+            permisos: permisosLista
+        });
+
+        await usuario.save();
+
+        return res.json({
+            ok: true,
+            msg: 'Permisos actualizados correctamente'
+        });
+
+    } catch (error) {
+        console.error('Error actualizando permisos:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+}
+
+controller.actualizarEstadoUsuario = async (req, res) => {
+    try {
+        const { codigoempleado } = req.params;
+        const { estado } = req.body;
+
+        if (!codigoempleado || !['A', 'R'].includes(estado)) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Estado inválido'
+            });
+        }
+
+        const empleado = await Informaciongch.findOne({
+            where: { codigoempleado }
+        });
+
+        if (!empleado) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Empleado no encontrado'
+            });
+        }
+
+        empleado.estadoempleado = estado;
+        await empleado.save();
+
+        return res.json({
+            ok: true,
+            msg: `Usuario ${estado === 'A' ? 'activado' : 'desactivado'} correctamente`
+        });
+
+    } catch (error) {
+        console.error('Error actualizando estado del usuario:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
     }
 }
 
