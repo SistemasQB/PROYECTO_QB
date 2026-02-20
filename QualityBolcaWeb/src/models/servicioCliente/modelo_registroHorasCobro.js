@@ -73,6 +73,21 @@ const modelo_registroHorasCobro = db.define(
             type: DataTypes.DECIMAL,
             allowNull: false,
             defaultValue: 0.00,
+        },
+        moneda:{
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            defaultValue: "MXN",
+        },
+        costo:{
+            type: DataTypes.DECIMAL(10,2),
+            allowNull: false,
+            defaultValue: 0.00,
+        },
+        tipoCambio:{
+            type: DataTypes.DECIMAL(10,2),
+            allowNull: false,
+            defaultValue: 1.00,
         }
         
     },

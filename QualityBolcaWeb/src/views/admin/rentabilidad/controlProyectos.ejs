@@ -65,27 +65,62 @@
                         </div>
                     </div>
 
+                    <!-- Date Range Row -->
+                    <div class="date-range-row">
+                        <div class="form-group">
+                            <label for="fechaInicioFilter" class="form-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-right:4px;vertical-align:middle;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                Fecha Inicio
+                            </label>
+                            <input type="date" id="fechaInicioFilter" class="form-input">
+                        </div>
+                        <div class="date-range-separator">—</div>
+                        <div class="form-group">
+                            <label for="fechaFinFilter" class="form-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-right:4px;vertical-align:middle;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                Fecha Fin
+                            </label>
+                            <input type="date" id="fechaFinFilter" class="form-input">
+                        </div>
+                        <div class="date-range-btn">
+                            <button class="btn btn-primary" id="buscarFechasBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                                Buscar
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Filter Grid -->
                     <div class="filters-grid">
                         <div class="form-group">
                             <label for="regionFilter" class="form-label">Región</label>
                             <select id="regionFilter" class="form-select">
-                                <option value="">Todas las regiones</option>
-                                <option value="norte">Norte</option>
-                                <option value="centro">Centro</option>
-                                <option value="sur">Sur</option>
-                                <option value="occidente">Occidente</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="clienteFilter" class="form-label">Cliente</label>
-                            <input type="text" id="clienteFilter" class="form-input" placeholder="Filtrar por cliente">
+                            <input type="text" id="clienteFilter" class="form-input" placeholder="Filtrar por cliente" autocomplete="off">
+                            <div id="appendCliente" class="suggestions-dropdown"></div>
                         </div>
 
                         <div class="form-group">
                             <label for="analistaFilter" class="form-label">Analista</label>
-                            <input type="text" id="analistaFilter" class="form-input" placeholder="Filtrar por analista">
+                            <input type="text" id="analistaFilter" class="form-input" placeholder="Filtrar por analista" autocomplete="off">
+                            <div id="appendAnalista" class="suggestions-dropdown"></div>
                         </div>
 
                         <div class="form-group">
@@ -98,6 +133,7 @@
                 <!-- Pagination -->
                 <div class="pagination-section">
                     <p class="pagination-text">Página <span class="pagination-current" id="currentPage">1</span></p>
+                    <span class="pagination-info" id="pageInfo"></span>
                     <div class="pagination-buttons">
                         <button class="btn btn-outline btn-sm" id="prevPageBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -334,8 +370,10 @@
     </div>
 
     <script src="/scripts/rentabilidad/scriptsControlProyectos.js"></script>
+    <script src="/clases/clase_fetch.js"></script>
     <script>
-        let proyectos = <%- JSON.stringify(proyectos)%>
+        let proyectos = <%-JSON.stringify(proyectos)%>
+        const gastos = <%-JSON.stringify(gastos)%>
     </script>
 </body>
 </html>

@@ -5,7 +5,7 @@ import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import Empleados from "../models/empleado.js";
 import manejadrorErrores from "../middleware/manejadorErrores.js";
-import validarAcceso from '../middleware/validacion-permisos/calidad/permisos.js';
+import miNodemailer from "../public/clases/nodemailer.js";
 
 import {
     registroma,
@@ -17,8 +17,9 @@ import {
 
 import { Op, QueryTypes, where } from 'sequelize'
 import Informaciongch from "../models/informaciongch.js";
-import Informaciondepartamento from "../models/informaciondepartamento.js";
-import e from "express";
+import { min } from "@xenova/transformers";
+
+
 const app = express();
 
 const controller = {};
@@ -1294,7 +1295,7 @@ controller.requisicionEquipos = async (req, res) => {
 controller.administracionRequisicionEquipos = async (req, res) => {
     try {
         const clase = new sequelizeClase({ modelo: modelosSistemas.requisicionEquipos })
-        const resultados = await clase.obtenerDatosPorCriterio({ criterio: {}, orden: [['status', 'DESC']] })
+        const resultados = await clase.obtenerDatosPorCriterio({ criterio: {'status': {[Op.ne]: ['Completada']}}, orden: [['status', 'DESC']] })
         return res.render('admin/sistemas/administracionRequisicionesEquipos.ejs', { tok: req.csrfToken(), registros: resultados })
     } catch (error) {
         manejadrorErrores(res, error)
@@ -1302,7 +1303,7 @@ controller.administracionRequisicionEquipos = async (req, res) => {
     }
 }
 
-controller.CrudRequisicionEquipos = (req, res) => {
+controller.CrudRequisicionEquipos = async(req, res) => {
     try {
         const { tipo } = req.body
         let campos = req.body
@@ -1310,20 +1311,33 @@ controller.CrudRequisicionEquipos = (req, res) => {
         let clase = new sequelizeClase({ modelo: modelosSistemas.requisicionEquipos })
         switch (tipo) {
             case 'insert':
-                let resultado = clase.insertar({ datosInsertar: campos })
+                let resultado = await clase.insertar({ datosInsertar: campos })
                 if (!resultado) return res.json({ ok: false, msg: 'no se pudo realizar la requisicion' })
                 return res.json({ ok: true, msg: 'requisicion realizada exitosamente' })
             case 'delete':
-                let eliminacion = clase.eliminar({ id: campos.id })
+                let eliminacion = await clase.eliminar({ id: campos.id })
                 if (!eliminacion) return res.json({ ok: false })
                 return res.json({ ok: true })
             case 'update':
                 delete campos._csrf
-                let actualizacion = clase.actualizarDatos({ id: campos.id, datos:campos})
+                let actualizacion = await clase.actualizarDatos({ id: campos.id, datos:campos})
+                if (campos.status ==='Completada' && actualizacion){
+                    const nod = new miNodemailer({datosSmtp:{
+                        host: process.env.EMAIL_HOST,
+                        port: process.env.EMAIL_PORT,
+                        auth:{
+                            user: process.env.EMAIL_RECORDATORIO,
+                            pass: process.env.PASS_RECORDATORIO
+                        }
+                        
+                }})
+                    const info = {requesterName: campos.requesterName, id: campos.id, observaciones: campos.observaciones}
+                    const miHtml = nod.htmlNotificacionNuevaReqEquipo(info)
+                    await nod.enviarCorreo({Datoscorreo: {destinatario: campos.email, asunto: 'Requisicion Equipos Completada', html: miHtml}})
+                }   
                 if (!actualizacion) return res.json({ ok: false })
-                return res.json({ ok: true })
+                return res.json({ ok: true })    
         }
-
     } catch (error) {
         manejadrorErrores(res, error)
 

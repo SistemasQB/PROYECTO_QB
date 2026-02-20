@@ -440,6 +440,242 @@ htmlOrdenesCompra({datos}){
 </body>
 </html>`
 }
+htmlNotificacionNuevaReqEquipo(datosNotificacion){
+  console.log('lo que se le paso a la funcion:', datosNotificacion)
+  return `
+  <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solicitud Completada – IT</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0f1117;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+
+  <!-- Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f1117;padding:40px 16px;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table width="560" cellpadding="0" cellspacing="0" style="
+          background: linear-gradient(160deg, #1a1d2e 0%, #12151f 100%);
+          border-radius: 20px;
+          border: 1px solid #2a2f45;
+          box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+          overflow: hidden;
+        ">
+
+          <!-- Top accent bar -->
+          <tr>
+            <td style="
+              background: linear-gradient(90deg, #4f6ef7, #a66ff7, #4fc3f7);
+              height: 4px;
+              font-size: 0;
+              line-height: 0;
+            ">&nbsp;</td>
+          </tr>
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding: 40px 40px 24px;">
+
+              <!-- Icon badge -->
+              <div style="
+                width: 72px;
+                height: 72px;
+                background: linear-gradient(135deg, #4f6ef7 0%, #a66ff7 100%);
+                border-radius: 18px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 24px;
+                box-shadow: 0 8px 32px rgba(79,110,247,0.4);
+              ">
+                <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" valign="middle" style="height:72px;">
+                  <span style="font-size:32px;line-height:1;">✓</span>
+                </td></tr></table>
+              </div>
+
+              <h1 style="
+                margin: 0 0 8px;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: #4f6ef7;
+              ">Departamento de Tecnologías de la Información</h1>
+
+              <h2 style="
+                margin: 0;
+                font-size: 26px;
+                font-weight: 700;
+                color: #ffffff;
+                letter-spacing: -0.5px;
+                line-height: 1.3;
+              ">Solicitud Completada</h2>
+
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding: 0 40px;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#2a2f45,transparent);"></div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px 40px;">
+
+              <!-- Greeting -->
+              <p style="
+                margin: 0 0 20px;
+                font-size: 16px;
+                color: #9ba5c0;
+                line-height: 1.5;
+              ">Buenos días, <strong style="color:#ffffff;font-weight:600;">${datosNotificacion.requesterName}</strong> 👋</p>
+
+              <p style="
+                margin: 0 0 28px;
+                font-size: 15px;
+                color: #9ba5c0;
+                line-height: 1.7;
+              ">
+                Nos complace informarte que tu solicitud realizada al
+                <strong style="color:#c4cde8;">Departamento de IT</strong>
+                ha sido <span style="color:#6ee7a0;font-weight:600;">procesada y completada exitosamente</span>.
+                Tu requerimiento ha sido atendido y puedes hacer uso del servicio o recurso solicitado.
+              </p>
+
+              <!-- Info card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="
+                background: rgba(79,110,247,0.07);
+                border: 1px solid rgba(79,110,247,0.2);
+                border-radius: 12px;
+                margin-bottom: 28px;
+              ">
+                <tr>
+                  <td style="padding: 20px 24px;">
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Solicitante</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${datosNotificacion.requesterName}</p>
+                        </td>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">N° de Solicitud</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${datosNotificacion.id}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="50%">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Tipo de Solicitud</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">REQUISICION DE EQUIPOS</p>
+                        </td>
+                        <td width="50%">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Fecha de Cierre</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${new Date().toLocaleDateString('en-GB')}</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Status badge -->
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td style="
+                    background: rgba(110,231,160,0.1);
+                    border: 1px solid rgba(110,231,160,0.3);
+                    border-radius: 999px;
+                    padding: 8px 18px;
+                    display:inline-block;
+                  ">
+                    <span style="
+                      display:inline-block;
+                      width:8px;
+                      height:8px;
+                      background:#6ee7a0;
+                      border-radius:50%;
+                      margin-right:8px;
+                      vertical-align:middle;
+                    "></span>
+                    <span style="
+                      font-size:13px;
+                      font-weight:600;
+                      color:#6ee7a0;
+                      letter-spacing:0.5px;
+                      vertical-align:middle;
+                    ">${datosNotificacion.observaciones}</span>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="
+                margin: 0 0 28px;
+                font-size:14px;
+                color: #6b7599;
+                line-height: 1.7;
+              ">
+                Si tienes alguna duda sobre el servicio proporcionado o necesitas soporte adicional,
+                no dudes en contactarnos. Estamos aquí para ayudarte.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding: 0 40px;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#2a2f45,transparent);"></div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 40px 36px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <p style="margin:0 0 4px;font-size:12px;color:#4a5175;line-height:1.6;">
+                      Este mensaje fue generado automáticamente por el sistema de gestión de solicitudes de IT.
+                      Por favor no respondas a este correo directamente.
+                    </p>
+                    <p style="margin:0;font-size:12px;color:#4a5175;">
+                      © 2025 · Departamento de Tecnologías de la Información · Todos los derechos reservados.
+                    </p>
+                  </td>
+                  <td align="right" valign="middle" style="padding-left:16px;">
+                    <div style="
+                      width:36px;
+                      height:36px;
+                      background:linear-gradient(135deg,#4f6ef7,#a66ff7);
+                      border-radius:8px;
+                      opacity:0.5;
+                    "></div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+  `
+
+}
     formatearPesos(monto){
     return new Intl.NumberFormat('es-MX', {
             style: 'currency',
@@ -447,7 +683,5 @@ htmlOrdenesCompra({datos}){
         }).format(monto);
     }
 }
-
-
 
 export default miNodemailer;

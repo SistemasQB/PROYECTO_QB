@@ -3,211 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Cotización</title>
+    <title>Registro de Horas Cobro</title>
     <link rel="stylesheet" href="/styles/servicioCliente/styles_registroHorasCobro.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <main class="main-container">
-        <div class="form-wrapper">
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="card-title">Formulario de Cotización</h1>
-                    <p class="card-description">Complete todos los campos requeridos para registrar la cotización</p>
+        <div class="page-wrapper">
+
+            <!-- SECCIÓN TABLA -->
+            <div class="card table-card">
+                <div class="card-header table-header">
+                    <div>
+                        <h1 class="card-title">Registro de Horas Cobro</h1>
+                        <p class="card-description">Consulta, edita o elimina los registros existentes</p>
+                    </div>
+                    <button class="btn btn-primary btn-nuevo" onclick="abrirModalNuevo()">
+                        + Nuevo Registro
+                    </button>
                 </div>
 
-                <div class="card-content">
-                    <!-- Alertas -->
-                    <div id="successAlert" class="alert alert-success" style="display: none;">
-                        <span id="successMessage">✓ Progreso guardado automáticamente</span>
-                        <button class="alert-close" onclick="closeAlert('successAlert')">&times;</button>
+                <!-- Filtros -->
+                <div class="filtros-section">
+                    <div class="filtros-grid">
+                        <div class="form-group">
+                            <label class="label">Buscar</label>
+                            <input type="text" id="filtroTexto" class="input" placeholder="Cliente, responsable, cotización..." oninput="aplicarFiltros()">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Planta</label>
+                            <select id="filtroPlanta" class="select" onchange="aplicarFiltros()">
+                                <option value="">Todas</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Región</label>
+                            <select id="filtroRegion" class="select" onchange="aplicarFiltros()">
+                                <option value="">Todas</option>
+                                <option value="Aguascalientes">Aguascalientes</option>
+                                <option value="CD.Juares">Cd. Juárez</option>
+                                <option value="CD.Victoria">Cd. Victoria</option>
+                                <option value="Celaya">Celaya</option>
+                                <option value="Guadalajara">Guadalajara</option>
+                                <option value="Honda">Honda</option>
+                                <option value="León">León</option>
+                                <option value="Linares">Linares</option>
+                                <option value="Monterrey">Monterrey</option>
+                                <option value="Queretaro">Querétaro</option>
+                                <option value="Reynosa">Reynosa</option>
+                                <option value="San Luis">San Luis</option>
+                                <option value="Saltillo">Saltillo</option>
+                                <option value="Silao">Silao</option>
+                                <option value="Toluca">Toluca</option>
+                                <option value="Zacatecas">Zacatecas</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Estatus</label>
+                            <select id="filtroEstatus" class="select" onchange="aplicarFiltros()">
+                                <option value="">Todos</option>
+                                <option value="INGRESADO">Ingresado</option>
+                                <option value="APROBADO">Aprobado</option>
+                                <option value="RECHAZADO">Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Semana</label>
+                            <input type="number" id="filtroSemana" class="input" placeholder="Nro. semana" min="1" max="53" oninput="aplicarFiltros()">
+                        </div>
+                        <div class="form-group filtro-btn-group">
+                            <button class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+                        </div>
                     </div>
-
-                    <div id="errorAlert" class="alert alert-error" style="display: none;">
-                        <span id="errorMessage">Error</span>
-                        <button class="alert-close" onclick="closeAlert('errorAlert')">&times;</button>
+                    <div class="filtros-info">
+                        <span id="conteoRegistros">0 registros</span>
                     </div>
+                </div>
 
-                    <!-- Formulario -->
-                    <form id="quotationForm" class="form">
-                        <!-- Fila 1: Fechas -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="fecha" class="label">
-                                    Fecha
-                                    <span class="required">*</span>
-                                </label>
-                                <input 
-                                    type="date" 
-                                    id="fecha" 
-                                    name="fecha"
-                                    class="input"
-                                >
-                                <span class="error-message" id="error-fecha"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="fechaCotizacion" class="label">
-                                    Fecha de Cotización
-                                    <span class="required">*</span>
-                                </label>
-                                <input 
-                                    type="date" 
-                                    id="fechaCotizacion" 
-                                    name="fechaCotizacion"
-                                    class="input"
-                                >
-                                <span class="error-message" id="error-fechaCotizacion"></span>
-                            </div>
-                        </div>
-
-                        <!-- Fila 2: Cliente y Responsable -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="cliente" class="label">
-                                    Cliente
-                                    <span class="required">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="cliente" 
-                                    name="cliente"
-                                    placeholder="Nombre del cliente"
-                                    class="input"
-                                >
-                                <span class="error-message" id="error-cliente"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="responsable" class="label">
-                                    Responsable
-                                    <span class="required">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="responsable" 
-                                    name="responsable"
-                                    placeholder="Nombre del responsable"
-                                    class="input"
-                                >
-                                <span class="error-message" id="error-responsable"></span>
-                            </div>
-                        </div>
-
-                        <!-- Fila 3: Planta y Gasto -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="planta" class="label">
-                                    Planta
-                                    <span class="required">*</span>
-                                </label>
-                                <select id="planta" name="planta" class="select">
-                                    
-                                </select>
-                                <span class="error-message" id="error-planta"></span>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="gasto" class="label">
-                                    Tipo de Gasto
-                                    <span class="required">*</span>
-                                </label>
-                                <select id="gasto" name="gasto" class="select">
-                                    <option value="">Seleccionar tipo de gasto</option>
-                                    <option value="Gasolina">Gasolina</option>
-                                    <option value="Hospedaje">Hospedaje</option>
-                                    <option value="Otros">Otros</option>
-                                    <option value="Transporte">Transporte</option>
-                                    <option value="Viaticos">Viaticos</option>
-                                </select>
-                                <span class="error-message" id="error-gasto"></span>
-                                <span class="card-description" id="listadoGastos"></span>
-                            </div>
-                        </div>
-                        <!-- Fila 4: Horas -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="horas" class="label">
-                                    Horas
-                                    <span class="required">*</span>
-                                </label>
-                                <input 
-                                    type="number" 
-                                    id="horas" 
-                                    name="horas"
-                                    placeholder="0"
-                                    min="0"
-                                    step="0.01"
-                                    class="input"
-                                >
-                                <span class="error-message" id="error-horas"></span>
-                            </div>
-                            <!-- input de region -->
-                            <div class="form-group">
-                                <label for="region" class="label">
-                                    Region
-                                    <span class="required">*</span>
-                                </label>
-                                <select id="region" name="region" class="select" >
-                                    <option value="">Seleccionar region</option>
-                                    <option value="Aguascalientes">Aguascalientes</option>
-                                    <option value="CD.Juares">Cd. Juares</option>
-                                    <option value="CD.Victoria">Cd. Victoria</option>
-                                    <option value="Celaya">Celaya</option>
-                                    <option value="Guadalajara">Guadalajara</option>
-                                    <option value="Honda">Honda</option>
-                                    <option value="León">León</option>
-                                    <option value="Linares">Linares</option>
-                                    <option value="Monterrey">Monterrey</option>
-                                    <option value="Queretaro">Queretaro</option>
-                                    <option value="Reynosa">Reynosa</option>
-                                    <option value="San Luis">San Luis</option>
-                                    <option value="Saltillo">Saltillo</option>
-                                    <option value="Silao">Silao</option>
-                                    <option value="Toluca">Toluca</option>
-                                    <option value="Zacatecas">Zacatecas</option>
-                                </select>
-                                <span class="error-message" id="error-region"></span>
-                            </div>
-                            <!-- input de cotizacion -->
-                            <div class="form-group">
-                                <label for="cotizacion" class="label">
-                                    Cotizacion
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="text" id="cotizacion" name="cotizacion" placeholder="ingrese cotizacion completa" class="input">
-                                <span class="error-message" id="error-cotizacion"></span>
-                            </div>
-                            <!-- input de total -->
-                            <div class="form-group">
-                                <label for="gastoCotizado" class="label">
-                                    Gasto Cotizado
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="number" id="gastoCotizado" name="gastoCotizado" placeholder="0" min="0" step="0.01" class="input">
-                                <span class="error-message" id="error-gastoCotizado"></span>
-                            </div>
-
-                        </div>
-                        <!-- Botones -->
-                        <div class="form-buttons">
-                            <button type="submit" id="submitBtn" class="btn btn-primary">
-                                Enviar
-                            </button>
-                            <button type="button" id="cancelBtn" class="btn btn-secondary">
-                                Cancelar
-                            </button>
-                        </div>
-                    </form>
+                <!-- Tabla -->
+                <div class="table-container">
+                    <table class="data-table" id="tablaRegistros">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Planta</th>
+                                <th>Responsable</th>
+                                <th>Cotización</th>
+                                <th>Gastos</th>
+                                <th>Horas</th>
+                                <th>Gasto Cot.</th>
+                                <th>Costo</th>
+                                <th>Moneda</th>
+                                <th>Región</th>
+                                <th>Semana</th>
+                                <th>Estatus</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaBody">
+                            <tr>
+                                <td colspan="15" class="table-empty">Cargando registros...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="form-footer">
-                <p>Los datos se guardan automáticamente mientras completas el formulario</p>
-            </div>
         </div>
     </main>
+
+    <!-- MODAL FORMULARIO -->
+    <div id="modalOverlay" class="modal-overlay" onclick="cerrarModalClickOutside(event)">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div>
+                    <h2 class="card-title" id="modalTitle">Nuevo Registro</h2>
+                    <p class="card-description" id="modalDesc">Complete todos los campos requeridos</p>
+                </div>
+                <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Alertas dentro del modal -->
+                <div id="successAlert" class="alert alert-success" style="display: none;">
+                    <span id="successMessage">✓ Progreso guardado automáticamente</span>
+                    <button class="alert-close" onclick="closeAlert('successAlert')">&times;</button>
+                </div>
+                <div id="errorAlert" class="alert alert-error" style="display: none;">
+                    <span id="errorMessage">Error</span>
+                    <button class="alert-close" onclick="closeAlert('errorAlert')">&times;</button>
+                </div>
+
+                <!-- Formulario -->
+                <form id="quotationForm" class="form">
+                    <input type="hidden" id="editId" value="">
+
+                    <!-- Fila 1: Fechas -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha" class="label">Fecha <span class="required">*</span></label>
+                            <input type="date" id="fecha" name="fecha" class="input">
+                            <span class="error-message" id="error-fecha"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="fechaCotizacion" class="label">Fecha de Cotización <span class="required">*</span></label>
+                            <input type="date" id="fechaCotizacion" name="fechaCotizacion" class="input">
+                            <span class="error-message" id="error-fechaCotizacion"></span>
+                        </div>
+                    </div>
+
+                    <!-- Fila 2: Cliente y Responsable -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cliente" class="label">Cliente <span class="required">*</span></label>
+                            <input type="text" id="cliente" name="cliente" placeholder="Nombre del cliente" class="input">
+                            <span class="error-message" id="error-cliente"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="responsable" class="label">Responsable <span class="required">*</span></label>
+                            <input type="text" id="responsable" name="responsable" placeholder="Nombre del responsable" class="input">
+                            <span class="error-message" id="error-responsable"></span>
+                        </div>
+                    </div>
+
+                    <!-- Fila 3: Planta y Gasto -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="planta" class="label">Planta <span class="required">*</span></label>
+                            <select id="planta" name="planta" class="select"></select>
+                            <span class="error-message" id="error-planta"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="gasto" class="label">Tipo de Gasto <span class="required">*</span></label>
+                            <select id="gasto" name="gasto" class="select">
+                                <option value="">Seleccionar tipo de gasto</option>
+                                <option value="Gasolina">Gasolina</option>
+                                <option value="Hospedaje">Hospedaje</option>
+                                <option value="Otros">Otros</option>
+                                <option value="Transporte">Transporte</option>
+                                <option value="Viaticos">Viaticos</option>
+                            </select>
+                            <span class="error-message" id="error-gasto"></span>
+                            <span class="card-description" id="listadoGastos"></span>
+                        </div>
+                    </div>
+
+                    <!-- Fila 4: Horas, Región, Cotización, Gasto Cotizado -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="horas" class="label">Horas <span class="required">*</span></label>
+                            <input type="number" id="horas" name="horas" placeholder="0" min="0" step="0.01" class="input">
+                            <span class="error-message" id="error-horas"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="region" class="label">Región <span class="required">*</span></label>
+                            <select id="region" name="region" class="select">
+                                <option value="">Seleccionar region</option>
+                                <option value="Aguascalientes">Aguascalientes</option>
+                                <option value="CD.Juares">Cd. Juárez</option>
+                                <option value="CD.Victoria">Cd. Victoria</option>
+                                <option value="Celaya">Celaya</option>
+                                <option value="Guadalajara">Guadalajara</option>
+                                <option value="Honda">Honda</option>
+                                <option value="León">León</option>
+                                <option value="Linares">Linares</option>
+                                <option value="Monterrey">Monterrey</option>
+                                <option value="Queretaro">Queretaro</option>
+                                <option value="Reynosa">Reynosa</option>
+                                <option value="San Luis">San Luis</option>
+                                <option value="Saltillo">Saltillo</option>
+                                <option value="Silao">Silao</option>
+                                <option value="Toluca">Toluca</option>
+                                <option value="Zacatecas">Zacatecas</option>
+                            </select>
+                            <span class="error-message" id="error-region"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="cotizacion" class="label">Cotización <span class="required">*</span></label>
+                            <input type="text" id="cotizacion" name="cotizacion" placeholder="Ingrese cotización completa" class="input">
+                            <span class="error-message" id="error-cotizacion"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="gastoCotizado" class="label">Gasto Cotizado <span class="required">*</span></label>
+                            <input type="number" id="gastoCotizado" name="gastoCotizado" placeholder="0" min="0" step="0.01" class="input" disabled>
+                            <span class="error-message" id="error-gastoCotizado"></span>
+                        </div>
+                    </div>
+
+                    <!-- Fila 5: Costo y Moneda -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="costo" class="label">Costo <span class="required">*</span></label>
+                            <input type="number" id="costo" name="costo" placeholder="0.00" min="0" step="0.01" class="input">
+                            <span class="error-message" id="error-costo"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="moneda" class="label">Moneda <span class="required">*</span></label>
+                            <select id="moneda" name="moneda" class="select">
+                                <option value="">Seleccionar moneda</option>
+                                <option value="MXN">MXN — Peso Mexicano</option>
+                                <option value="USD">USD — Dólar Estadounidense</option>
+                            </select>
+                            <span class="error-message" id="error-moneda"></span>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="form-buttons">
+                        <button type="submit" id="submitBtn" class="btn btn-primary">Enviar</button>
+                        <button type="button" id="cancelBtn" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script src="/scripts/servicioCliente/scriptsRegistroHorasCobro.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -215,6 +266,7 @@
     <script>
         let tok = <%- JSON.stringify(tok)%>
         let plantas = <%- JSON.stringify(plantas)%>
+        let registrosData = <%- JSON.stringify(registros || [])%>
     </script>
 </body>
 </html>

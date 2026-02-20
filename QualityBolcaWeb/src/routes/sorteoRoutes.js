@@ -46,7 +46,7 @@ router.get("/ingreso/:id",sorteoController.puntoEntrada)
 
 //rutas de output
 router.get("/output",protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 4}) ,sorteoController.output) //vista del output
-router.post("/crudOutput",protegerRuta,validarAcceso({roles:['sorteo'], permisos:['supervisor regional de proyectos',], jerarquia: 4}),sorteoController.crudOutput) //crud de output
+router.post("/crudOutput",protegerRuta,validarAcceso({roles:['sorteo'], permisos:['supervisor regional de proyectos','supervisor'], jerarquia: 4}),sorteoController.crudOutput) //crud de output
 router.get('/gestionOutput',protegerRuta, validarAcceso({roles:['sorteo', 'calidad'], permisos:['director de sorteo', 'analista', 'gerente'], jerarquia: 4}) ,sorteoController.dashBoardOutput)
 
 

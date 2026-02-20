@@ -305,7 +305,7 @@ function handleSubmit() {
     if (validateForm()) {
         formState.tipo = 'insert'
         formState._csrf = tok
-        formState.status = 'En Proceso'
+        formState.status = 'INGRESADA'
         envioJson('crudRequisicionEquipos', formState, 'requisicionEquipos')
     } else {
         alert('Por favor, completa todos los campos requeridos.');

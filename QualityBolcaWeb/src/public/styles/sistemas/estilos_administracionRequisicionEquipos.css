@@ -268,6 +268,8 @@ body {
   border-radius: var(--radius-lg);
   background-color: var(--card);
   overflow: hidden;
+  overflow-x: auto;
+
 }
 
 .requests-table {

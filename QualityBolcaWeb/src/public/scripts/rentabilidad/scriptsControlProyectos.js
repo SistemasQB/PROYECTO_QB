@@ -1,138 +1,87 @@
-// Project Profitability Control - Main Application JavaScript
-
 // State Management
 const state = {
+  proyectosFiltrados: [],
   projects: [],
+  hayFiltros:false,
   filters: {
     search: "",
     region: "",
     cliente: "",
     analista: "",
     semana: "",
+    fechaInicio: "",
+    fechaFin: "",
   },
   currentPage: 1,
+  itemsPerPage: 50,
+  totalItems: 0,
   currentEditingProject: null,
   currentCompletingProject: null,
   currentDeletingId: null,
 }
 
-// Mock Data Generator
-// function generateMockData() {
-//   return [
-//     {
-//       id: "1",
-//       numeroSemana: 47,
-//       fechaCotizacion: "2024-11-20",
-//       cotizacion: "COT-2024-001",
-//       analistaEncargada: "María González",
-//       conceptoCobrar: "Consultoría de Sistemas ERP",
-//       personaResponsable: "Juan Pérez",
-//       region: "Norte",
-//       cliente: "TechCorp SA",
-//       planta: "Monterrey",
-//       horasCotizacion: 120,
-//       gastoCotizado: 150000,
-//       diferenciaCotizadoFacturado: 5000,
-//       cotizadoMenosDepositado: 10000,
-//       porcentaje20: 22.5,
-//     },
-//     {
-//       id: "2",
-//       numeroSemana: 48,
-//       fechaCotizacion: "2024-11-27",
-//       cotizacion: "COT-2024-002",
-//       analistaEncargada: "Carlos Rodríguez",
-//       conceptoCobrar: "Implementación de Software",
-//       personaResponsable: "Ana Martínez",
-//       region: "Centro",
-//       cliente: "IndustriasMX",
-//       planta: "CDMX",
-//       horasCotizacion: 80,
-//       gastoCotizado: 95000,
-//       diferenciaCotizadoFacturado: -2000,
-//       cotizadoMenosDepositado: 5000,
-//       porcentaje20: 18.2,
-//     },
-//     {
-//       id: "3",
-//       numeroSemana: 49,
-//       fechaCotizacion: "2024-12-04",
-//       cotizacion: "COT-2024-003",
-//       analistaEncargada: "Laura Fernández",
-//       conceptoCobrar: "Auditoría de Procesos",
-//       personaResponsable: "Roberto Silva",
-//       region: "Sur",
-//       cliente: "Comercial del Sureste",
-//       planta: "Mérida",
-//       horasCotizacion: 60,
-//       gastoCotizado: 72000,
-//       diferenciaCotizadoFacturado: 3000,
-//       cotizadoMenosDepositado: 0,
-//       porcentaje20: 25.8,
-//     },
-//     {
-//       id: "4",
-//       numeroSemana: 49,
-//       fechaCotizacion: "2024-12-05",
-//       cotizacion: "COT-2024-004",
-//       analistaEncargada: "María González",
-//       conceptoCobrar: "Capacitación en Tecnologías Web",
-//       personaResponsable: "Diana López",
-//       region: "Occidente",
-//       cliente: "Educación Digital",
-//       planta: "Guadalajara",
-//       horasCotizacion: 100,
-//       gastoCotizado: 120000,
-//       diferenciaCotizadoFacturado: 8000,
-//       cotizadoMenosDepositado: 3000,
-//       porcentaje20: 21.5,
-//     },
-//   ]
-// }
-
+  const inputCliente = document.getElementById("clienteFilter")
+  const inputAnalista = document.getElementById("analistaFilter")
+  const inputRegion = document.getElementById("regionFilter")
 // API Functions
 async function fetchProjects() {
+  
   showLoading()
+  if(state.hayFiltros){
+    renderTable(filtrarProyectos())
+    hideLoading()
+    return
+  }
+  renderTable(state.projects)
   hideLoading()
-  state.projects = proyectos
-  renderTable()
+
+  // Construir query params con los filtros activos
+  // const params = new URLSearchParams()
+  // if (state.filters.search)      params.append("search",      state.filters.search)
+  // if (state.filters.region)      params.append("region",      state.filters.region)
+  // if (state.filters.cliente)     params.append("cliente",     state.filters.cliente)
+  // if (state.filters.analista)    params.append("analista",    state.filters.analista)
+  // if (state.filters.semana)      params.append("semana",      state.filters.semana)
+  // if (state.filters.fechaInicio) params.append("fechaInicio", state.filters.fechaInicio)
+  // if (state.filters.fechaFin)    params.append("fechaFin",    state.filters.fechaFin)
+  // params.append("page",  state.currentPage)
+  // params.append("limit", state.itemsPerPage)
+
   // try {
-  //   // Build query parameters
-  //   const queryParams = new URLSearchParams({
-  //     page: state.currentPage.toString(),
-  //     ...state.filters,
-  //   })
-
-  //   // Simulate API call
-  //   const response = await fetch(`/api/projects?${queryParams}`)
-
-  //   if (!response.ok) {
-  //     throw new Error("Error loading projects")
-  //   }
-
+  //   const response = await fetch(`/api/rentabilidad/proyectos?${params.toString()}`)
+  //   if (!response.ok) throw new Error("Error al obtener proyectos")
   //   const data = await response.json()
-  //   state.projects = data.projects || []
+
+  //   // Se espera: { proyectos: [...], total: N }
+  //   state.projects = data.proyectos || data
+  //   state.totalItems = data.total || state.projects.length
+
+  //   // Actualizar texto de paginación
+  //   const from = ((state.currentPage - 1) * state.itemsPerPage) + 1
+  //   const to   = Math.min(state.currentPage * state.itemsPerPage, state.totalItems)
+  //   const pageInfo = document.getElementById("pageInfo")
+  //   if (pageInfo) pageInfo.textContent = `Mostrando ${from}–${to} de ${state.totalItems}`
+
+  //   renderTable(state.projects)
   // } catch (error) {
-  //   console.log("[v0] Error fetching projects, using mock data:", error)
-  //   // Use mock data on error
-  //   state.projects = []
-  //   showToast("Información", "Mostrando datos de ejemplo", "error")
+  //   console.error("[controlProyectos] Error al cargar proyectos:", error)
+  //   showToast("Error", "No se pudieron cargar los proyectos", "error")
+  //   renderTable([])
   // } finally {
   //   hideLoading()
-  //   renderTable()
   // }
 }
 
 async function deleteProject(id) {
   try {
-    const response = await fetch(`/api/projects/${id}`, {
-      method: "DELETE",
-    })
+    // const response = await fetch(`/api/projects/${id}`, {
+    //   method: "DELETE",
+    // })
 
-    if (!response.ok) {
-      throw new Error("Error deleting project")
-    }
-
+    // if (!response.ok) {
+    //   throw new Error("Error deleting project")
+    // }
+    
     showToast("Proyecto eliminado", "El proyecto se eliminó exitosamente", "success")
     await fetchProjects()
   } catch (error) {
@@ -220,27 +169,36 @@ function renderTable(lista = state.projects) {
   }
 
   lista.forEach((project) => {
-    console.log(project);
     const row = document.createElement("tr")
-
     const percentageClass = project.porcentaje20 >= 20 ? "badge-success" : "badge-danger"
     let gasto = JSON.parse(project.gasto)
     let miCoti = project.cotizacion
     // <td><div class="truncate" title="${project.conceptoCobrar}">${project.conceptoCobrar}</div></td>
-    row.innerHTML = `
+    let contenido = `
             <td class="font-medium">${project.semana}</td>
-            <td>${project.fechaCotizacion}</td>
-            <td>${project.cotizacion}</td>
+            <td>${new Date(project.fechaCotizacion).toLocaleDateString('en-GB')}</td>
+            <td>${project.cotizacion.toUpperCase()}</td>
             <td class="text-right font-mono">${project.cotizadora}</td>
             <td>${gasto.map((gasto) => gasto).join(", ")}</td>
-            
             <td>${project.responsable}</td>
             <td>${project.region}</td>
             <td>${project.cliente}</td>
             <td>${project.planta}</td>
             <td class="text-right font-mono">${project.horas}</td>
-            <td class="text-right font-mono">${formatCurrency(project.gastoCotizado)}</td>
-            <td class="text-right font-mono">${formatCurrency(project.diferenciaCotizadoFacturado || 0)}</td>
+            <td class="text-right font-mono">${formatCurrency(project.gastoCotizado)}</td>`
+            let total, diferencia = null
+            if(project.moneda !== 'MXN') {
+              total = extraerMonto(project.cotizacion, project.moneda, {horas: project.horas, costo: project.costo, tipoCambio:project.tipoCambio})
+              const conversion = project.
+              diferencia =  total > 0 ? total - project.gastoCotizado : 0
+            }else{
+              total = extraerMonto(project.cotizacion, project.moneda, {horas: project.horas, costo: project.costo, tipoCambio:project.tipoCambio})
+              diferencia =  total > 0 ? total - parseFloat(project.gastoCotizado) : 0
+            }
+            
+            
+           contenido +=  `
+            <td class="text-right font-mono">${formatCurrency(diferencia)}</td>
             <td class="text-right font-mono">${formatCurrency(project.cotizadoMenosDepositado || 0)}</td>
             <td class="text-center">
                 <span class="badge ${percentageClass}">${project.porcentaje20}%</span>
@@ -267,7 +225,7 @@ function renderTable(lista = state.projects) {
                 </div>
             </td>
         `
-
+    row.innerHTML = contenido
     tbody.appendChild(row)
   })
 }
@@ -291,12 +249,21 @@ function showToast(title, description, type = "success") {
 
 // Filter Functions
 function updateFilters() {
-  state.filters.search = document.getElementById("searchInput").value
-  state.filters.region = document.getElementById("regionFilter").value
-  state.filters.cliente = document.getElementById("clienteFilter").value
-  state.filters.analista = document.getElementById("analistaFilter").value
-  state.filters.semana = document.getElementById("semanaFilter").value
+  state.filters.search   = document.getElementById("searchInput").value.trim()
+  state.filters.region   = document.getElementById("regionFilter").value
+  state.filters.cliente  = document.getElementById("clienteFilter").value.trim()
+  state.filters.analista = document.getElementById("analistaFilter").value.trim()
+  state.filters.semana   = document.getElementById("semanaFilter").value.trim()
 
+  if(state.filters.semana || state.filters.search || state.filters.cliente || state.filters.analista || state.filters.region) {
+   state.hayFiltros = true
+  }else{
+    state.hayFiltros = false
+  }
+
+  // Las fechas solo se actualizan al pulsar "Buscar"
+  state.currentPage = 1
+  document.getElementById("currentPage").textContent = 1
   updateFilterBadge()
   fetchProjects()
 }
@@ -305,6 +272,7 @@ function updateFilterBadge() {
   const activeFilters = Object.values(state.filters).filter((v) => v !== "").length
   const badge = document.getElementById("filterBadge")
   const clearBtn = document.getElementById("clearFiltersBtn")
+
 
   if (activeFilters > 0) {
     badge.textContent = activeFilters
@@ -323,6 +291,8 @@ function clearFilters() {
     cliente: "",
     analista: "",
     semana: "",
+    fechaInicio: "",
+    fechaFin: "",
   }
 
   document.getElementById("searchInput").value = ""
@@ -330,7 +300,13 @@ function clearFilters() {
   document.getElementById("clienteFilter").value = ""
   document.getElementById("analistaFilter").value = ""
   document.getElementById("semanaFilter").value = ""
+  document.getElementById("fechaInicioFilter").value = ""
+  document.getElementById("fechaFinFilter").value = ""
+  document.getElementById("appendCliente").innerHTML = ""
+  document.getElementById("appendAnalista").innerHTML = ""
 
+  state.currentPage = 1
+  document.getElementById("currentPage").textContent = 1
   updateFilterBadge()
   fetchProjects()
 }
@@ -477,25 +453,65 @@ async function handleDelete() {
 
 // Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
+  state.projects = proyectos
   // Toggle Filters
   document.getElementById("toggleFiltersBtn").addEventListener("click", () => {
     const filtersContent = document.getElementById("filtersContent")
     const toggleText = document.getElementById("toggleFiltersText")
     const isVisible = filtersContent.style.display === "block"
-
     filtersContent.style.display = isVisible ? "none" : "block"
     toggleText.textContent = isVisible ? "Mostrar" : "Ocultar"
+    if (!isVisible) {
+      renderDatosFiltros()
+      // agregarListeners()
+    }
   })
 
   // Clear Filters
   document.getElementById("clearFiltersBtn").addEventListener("click", clearFilters)
 
-  // Filter inputs
+  // Filter inputs (disparan fetch al backend)
   document.getElementById("searchInput").addEventListener("input", updateFilters)
   document.getElementById("regionFilter").addEventListener("change", updateFilters)
-  document.getElementById("clienteFilter").addEventListener("input", updateFilters)
-  document.getElementById("analistaFilter").addEventListener("input", updateFilters)
   document.getElementById("semanaFilter").addEventListener("input", updateFilters)
+
+  // Cliente y analista: las sugerencias se generan sobre los datos ya cargados
+  document.getElementById("clienteFilter").addEventListener("input", (e) => {
+    filtrarInformacion("cliente", e.target.value)
+    updateFilters()
+  })
+  document.getElementById("analistaFilter").addEventListener("input", (e) => {
+    filtrarInformacion("cotizadora", e.target.value)
+    updateFilters()
+  })
+
+  // Cerrar sugerencias al hacer click fuera
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#appendCliente") && e.target !== document.getElementById("clienteFilter")) {
+      document.getElementById("appendCliente").innerHTML = ""
+    }
+    if (!e.target.closest("#appendAnalista") && e.target !== document.getElementById("analistaFilter")) {
+      document.getElementById("appendAnalista").innerHTML = ""
+    }
+  })
+
+  // Botón buscar por fechas
+  document.getElementById("buscarFechasBtn").addEventListener("click", () => {
+    const fechaInicio = document.getElementById("fechaInicioFilter").value
+    const fechaFin    = document.getElementById("fechaFinFilter").value
+
+    if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
+      showToast("Fechas inválidas", "La fecha de inicio no puede ser mayor que la fecha fin", "error")
+      return
+    }
+
+    state.filters.fechaInicio = fechaInicio
+    state.filters.fechaFin    = fechaFin
+    state.currentPage = 1
+    document.getElementById("currentPage").textContent = 1
+    updateFilterBadge()
+    fetchProjects()
+  })
 
   // Pagination
   document.getElementById("prevPageBtn").addEventListener("click", () => {
@@ -507,9 +523,12 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   document.getElementById("nextPageBtn").addEventListener("click", () => {
-    state.currentPage++
-    document.getElementById("currentPage").textContent = state.currentPage
-    fetchProjects()
+    const maxPage = Math.ceil(state.totalItems / state.itemsPerPage)
+    if (state.currentPage < maxPage || maxPage === 0) {
+      state.currentPage++
+      document.getElementById("currentPage").textContent = state.currentPage
+      fetchProjects()
+    }
   })
 
   // Edit Modal
@@ -535,6 +554,90 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === this) closeDeleteModal()
   })
 
-  // Initial load
+  // Carga inicial — ya no usa la variable EJS sino el endpoint
   fetchProjects()
 })
+
+function renderDatosFiltros() {
+  // Extraer regiones únicas de los proyectos cargados
+  const regiones = [...new Set(state.projects.map((p) => p.region).filter(Boolean))]
+  let datos = '<option value="">Todas las regiones</option>'
+  datos += regiones.map((r) => `<option value="${r}">${r}</option>`).join('')
+  inputRegion.innerHTML = datos
+}
+
+
+
+
+
+function filtrarInformacion(campo, buscado) {
+  let idDiv = null
+  let inputEl = null
+  switch (campo) {
+    case 'cotizadora':
+      idDiv   = 'appendAnalista'
+      inputEl = inputAnalista
+      break
+    case 'cliente':
+      idDiv   = 'appendCliente'
+      inputEl = inputCliente
+      break
+  }
+
+  const padre = document.getElementById(idDiv)
+  padre.innerHTML = '' // Limpiar siempre antes de renderizar
+
+  if (!buscado || buscado.length < 2) return
+
+  const resultados = state.projects.filter((p) =>
+    p[campo] && p[campo].toLowerCase().includes(buscado.toLowerCase())
+  )
+  const unicos = [...new Set(resultados.map((p) => p[campo]))]
+
+  if (unicos.length === 0) return
+
+  unicos.slice(0, 8).forEach((u) => {
+    const ndiv = document.createElement('div')
+    ndiv.className = 'suggestion-item'
+    ndiv.textContent = u
+    ndiv.addEventListener('click', () => {
+      inputEl.value = u
+      padre.innerHTML = ''
+      updateFilters()
+    })
+    padre.appendChild(ndiv)
+  })
+}
+
+// Ya no se usa para filtrar en frontend — los filtros se envían al backend.
+// Se conserva como referencia para filtrado local de emergencia.
+function filtrarProyectos() {
+  const { search, region, cliente, analista, semana } = state.filters
+  return state.projects.filter((p) => {
+    if (region && p.region !== region) return false
+    if (semana && String(p.semana) !== semana) return false
+    if (cliente && !p.cliente?.toLowerCase().includes(cliente.toLowerCase())) return false
+    if (analista && !p.cotizadora?.toLowerCase().includes(analista.toLowerCase())) return false
+    if (search) {
+      const term = search.toLowerCase()
+      const matchable = [p.cotizacion, p.cliente, p.responsable, p.cotizadora, p.planta, p.region]
+        .filter(Boolean).join(' ').toLowerCase()
+      if (!matchable.includes(term)) return false
+    }
+    return true
+  })
+}
+
+function extraerMonto(cotizacion, moneda, datos = null){
+  const gasto = gastos.find((gasto) => gasto.orden === cotizacion.toUpperCase())
+
+  if(moneda !== 'MXN') {
+    const sumatoria = datos.horas * datos.costo
+    const total = datos.tipoCambio * sumatoria
+    return total
+  }
+  
+
+  return gasto ? gasto.total : 0
+
+}

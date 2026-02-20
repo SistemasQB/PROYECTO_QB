@@ -237,9 +237,11 @@ function renderTable() {
   
   let contenido = paginatedRequests.map(
       (request) => {
+        
         let texto =  `
         <tr>
             <td class="id-cell">${request.id}</td>
+            <td>${new Date(request.createdAt).toLocaleDateString('en-GB')}</td>
             <td>
                 <div class="requester-info">
                     <span class="requester-name">${escapeHtml(request.requesterName)}</span>
@@ -344,12 +346,8 @@ function openNewRequestModal() {
 }
 
 function editRequest(id) {
-  
   const request = state.requests.find((r) => r.id === id)
-  
   if (!request) return
-  console.log(request)
-
   state.editingRequest = request
   state.formItems = [...JSON.parse(request.items)]
 
@@ -380,6 +378,8 @@ function obtenerStatus(statusBase){
       return 'Pendiente'
     case 'En Proceso':  
       return 'En Proceso'
+    case 'Completada':  
+      return 'Completada'
   }
 
 }
@@ -425,7 +425,6 @@ function renderFormItems() {
       '<p class="empty-items">No hay equipos agregados. Haz clic en "Agregar Equipo" para comenzar.</p>'
     return
   }
-
   container.innerHTML = state.formItems
     .map(
       (item, index) => `
@@ -456,6 +455,10 @@ function renderFormItems() {
                         <span>Surtido</span>
                     </label>
                 </div>
+                <div>
+                      <label>justificacion</label>
+                      <p>${item.justification}</p>
+                    </div>
             </div>
             <button type="button" class="btn-remove-item" onclick="removeItemFromForm(${index})">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -520,7 +523,6 @@ function showError(fieldName, message) {
 
 async function saveRequest() {
   if (!validateForm()) return
-
   const saveBtn = document.getElementById("save-request-btn")
   const originalText = saveBtn.textContent
   saveBtn.disabled = true
@@ -535,7 +537,6 @@ async function saveRequest() {
     observaciones: document.getElementById("observaciones").value.trim(),
     items: state.formItems,
   }
-  console.log("datos",requestData)
   try {
     if (state.editingRequest) {
       requestData.id = state.editingRequest.id
@@ -582,7 +583,7 @@ function getStatusBadge(status) {
   const statusMap = {
     pendiente: "badge-pendiente",
     "en proceso": "badge-proceso",
-    completada: "badge-completada",
+    'completada': "badge-completada",
     "parcialmente surtida": "badge-parcial",
     cancelada: "badge-cancelada",
   }

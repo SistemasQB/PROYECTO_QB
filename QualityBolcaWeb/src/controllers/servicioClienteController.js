@@ -4,6 +4,7 @@ import barrilModelosServicioCliente from "../models/servicioCliente/barrilModelo
 import modelosInfraestructura from "../models/infraestructura/barril_modelo_compras.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import { Op } from "sequelize";
+import custonFunctions from "../js/funcionesBackend.js";
 
 const controllerServicioCliente = {}
 
@@ -12,7 +13,11 @@ controllerServicioCliente.formularioHorasCobro = async(req, res) => {
     try {
         let clase = new sequelizeClase({modelo:modelosInfraestructura.modelo_plantas_gastos})
         let plantas = await clase.obtenerDatosPorCriterio({criterio: {id: {[Op.gt]: 0}},atributos: ['planta']})
-        return res.render("admin/servicioCliente/registroHorasCobro.ejs", {tok: req.csrfToken(), plantas: plantas});    
+        clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
+        let  datosUsuario = await clase.obtener1Registro({criterio: {codigoempleado: req.usuario.codigoempleado}})
+        clase = new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro})
+        const registros = await clase.obtenerDatosPorCriterio({criterio: {cotizadora: datosUsuario.nombrelargo}})
+        return res.render("admin/servicioCliente/registroHorasCobro.ejs", {tok: req.csrfToken(), plantas, registros});    
     } catch (ex) {
         return manejadorErrores(res, ex)    
     }
@@ -32,6 +37,11 @@ controllerServicioCliente.crudHorasCobro = async(req, res) => {
     switch (tipo){
         case "insert":
             campos.cotizadora = datosUsuario.nombrelargo
+            
+            if(campos.moneda !== "MXN"){
+                 campos.tipoCambio = await custonFunctions.peticionJson('https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/oportuno',{method: 'GET', 'Bmx-Token': process.env.tokenBanxico});
+            }
+            console.log(campos);
             let respuesta = await clase.insertar({datosInsertar: campos})
             if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
             return res.json({ok: respuesta, msg: 'informacion enviada exitosamente'})
