@@ -420,6 +420,10 @@ body {
 .table .text-right {
   text-align: right;
 }
+.personalizada{
+  display: flex;
+  flex-direction: column;
+}
 
 .table .text-center {
   text-align: center;

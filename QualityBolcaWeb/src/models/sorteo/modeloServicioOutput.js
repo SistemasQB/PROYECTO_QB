@@ -24,7 +24,7 @@ const output = dbSorteo.define('output',{
         defaultValue: "SIN DEFINIR",
     },
     nombreParte: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false,
         defaultValue: "SIN DEFINIR",
     },
@@ -63,7 +63,7 @@ const output = dbSorteo.define('output',{
         
     },
     observaciones: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
         defaultValue: "SIN OBSERVACIONES",
         

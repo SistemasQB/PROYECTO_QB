@@ -11,7 +11,7 @@ controllerRentabilidad.controlProyectos = async(req, res) => {
         let clase = new sequelizeClase({modelo: barrilmodelosServicioCliente.modelo_registroHorasCobro})
         const ahora = new Date();
         const proyectos = await clase.obtenerDatosPorCriterio({criterio: {fecha:{[Op.between]: [new Date(ahora.getFullYear(), 0, 1), new Date(ahora.getFullYear()+1, 0, 1)]}}, atributos: [
-            'id','fecha','fechaCotizacion', 'cliente', 'gasto', 'horas', 'planta', 'responsable', 'region','estatus','semana', 'cotizacion', 'cotizadora', 'gastoCotizado', 'moneda', 'costo']
+            'id','fecha','fechaCotizacion', 'cliente', 'gasto', 'horas', 'planta', 'responsable', 'region','estatus','semana', 'cotizacion', 'cotizadora', 'gastoCotizado', 'moneda', 'costo', 'tipoCambio']
         })
         const cotizaciones = proyectos.map((proyecto)=>{
             if(proyecto.cotizacion) return proyecto.cotizacion.toUpperCase()

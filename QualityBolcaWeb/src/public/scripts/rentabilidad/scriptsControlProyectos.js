@@ -170,7 +170,7 @@ function renderTable(lista = state.projects) {
 
   lista.forEach((project) => {
     const row = document.createElement("tr")
-    const percentageClass = project.porcentaje20 >= 20 ? "badge-success" : "badge-danger"
+    
     let gasto = JSON.parse(project.gasto)
     let miCoti = project.cotizacion
     // <td><div class="truncate" title="${project.conceptoCobrar}">${project.conceptoCobrar}</div></td>
@@ -184,24 +184,24 @@ function renderTable(lista = state.projects) {
             <td>${project.region}</td>
             <td>${project.cliente}</td>
             <td>${project.planta}</td>
-            <td class="text-right font-mono">${project.horas}</td>
-            <td class="text-right font-mono">${formatCurrency(project.gastoCotizado)}</td>`
-            let total, diferencia = null
+            <td class="text-right font-mono">${project.horas}</td>`
+            let totales = null, diferencia = null
             if(project.moneda !== 'MXN') {
-              total = extraerMonto(project.cotizacion, project.moneda, {horas: project.horas, costo: project.costo, tipoCambio:project.tipoCambio})
-              const conversion = project.
-              diferencia =  total > 0 ? total - project.gastoCotizado : 0
+              totales = extraerMontos(project.cotizacion, {horas: project.horas, costo: project.costo, tipoCambio: parseFloat(project.tipoCambio)})
+              diferencia =  totales.gasto > 0 ? project.gastoCotizado - totales.gasto  : 0
+              contenido += `<td class="text-right font-mono personalizada">${`MXN ${formatCurrency(totales.conversion.toFixed(2))} <spam>USD ${formatCurrency(project.gastoCotizado)}</spam>`}</td>`
             }else{
-              total = extraerMonto(project.cotizacion, project.moneda, {horas: project.horas, costo: project.costo, tipoCambio:project.tipoCambio})
-              diferencia =  total > 0 ? total - parseFloat(project.gastoCotizado) : 0
+              totales = extraerMontos(project.cotizacion, {horas: project.horas, costo: project.costo, tipoCambio:project.tipoCambio})
+              diferencia =  totales.sumatoriaGastos > 0 ?  project.gastoCotizado > formatCurrency(parseFloat(project.gastoCotizado) - totales.sumatoriaGastos) : 0
+              contenido += `<td class="text-right font-mono">${formatCurrency(project.gastoCotizado)}</td>`
             }
-            
-            
+            const percentageClass = totales.porcentaje <= .80 ? "badge-success" : "badge-danger"
+            console.log(totales)
            contenido +=  `
-            <td class="text-right font-mono">${formatCurrency(diferencia)}</td>
-            <td class="text-right font-mono">${formatCurrency(project.cotizadoMenosDepositado || 0)}</td>
+            <td class="text-right font-mono">${formatCurrency(0)}</td>
+            <td class="text-right font-mono">${formatCurrency(diferencia || 0)}</td>
             <td class="text-center">
-                <span class="badge ${percentageClass}">${project.porcentaje20}%</span>
+                <span class="badge ${percentageClass}">${totales.porcentaje}%</span>
             </td>
             <td class="sticky-col">
                 <div class="action-buttons">
@@ -628,16 +628,23 @@ function filtrarProyectos() {
   })
 }
 
-function extraerMonto(cotizacion, moneda, datos = null){
-  const gasto = gastos.find((gasto) => gasto.orden === cotizacion.toUpperCase())
+function extraerMontos(cotizacion, datos = null){
+  const gasto = parseFloat(gastos.filter((gasto) => gasto.orden.toUpperCase() === cotizacion.toUpperCase()).reduce((total, gasto) => total += parseFloat(gasto.total), 0))
+  const totalCotizado = parseFloat(datos.horas) * parseFloat(datos.costo)  || 0
+  const resultado = {
+    totalCotizado,
+    conversion: datos.tipoCambio * totalCotizado,
+    gasto,
+  }
+  if (!gasto || !totalCotizado ){ 
+    resultado.porcentaje = 0
+      return resultado 
+  }
 
-  if(moneda !== 'MXN') {
-    const sumatoria = datos.horas * datos.costo
-    const total = datos.tipoCambio * sumatoria
-    return total
+  resultado.porcentaje = ((gasto/totalCotizado)*100).toFixed(2) 
+    return resultado
   }
   
 
-  return gasto ? gasto.total : 0
+  
 
-}

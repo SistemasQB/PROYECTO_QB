@@ -3,7 +3,7 @@ class custonFunctions{
         this.functions = {}
     }
 
-    static peticionJson(liga, cabezales = {}){
+    static async peticionJson(liga, cabezales = {}){
         return fetch(liga,{
             method: 'GET',
             headers: cabezales
@@ -24,6 +24,16 @@ class custonFunctions{
             }
             
         }).catch(err => console.log(err));
+    }
+    static async peticionTipoCambioPorFecha(dia){
+        return await fetch(`https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/${dia}/${dia}`,
+        {method: 'GET', headers: {method: 'GET', 'Bmx-Token': process.env.tokenBanxico}}).then(
+            res => res.json().then(
+                (res) => {
+                    console.log('llego antes de la respuesta',res)
+                    return res.bmx.series[0].datos[0].dato}
+            )
+        ).catch(err => console.log(err));
     }
 
     static generarFechas(numMesInicio, anioInicio ){

@@ -5,6 +5,7 @@ import miMulter from "../public/clases/multer.js";
 import validarAcceso from "../middleware/validacion-permisos/calidad/permisos.js";
 
 const multer = new miMulter('src/public/evidencias_sorteo');
+const modelos = new miMulter('src/public/evidencias/modelos');
 const router = express.Router();
 
 router.get('/kiosk',sorteoController.kiosk);
@@ -48,6 +49,11 @@ router.get("/ingreso/:id",sorteoController.puntoEntrada)
 router.get("/output",protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 4}) ,sorteoController.output) //vista del output
 router.post("/crudOutput",protegerRuta,validarAcceso({roles:['sorteo'], permisos:['supervisor regional de proyectos','supervisor'], jerarquia: 4}),sorteoController.crudOutput) //crud de output
 router.get('/gestionOutput',protegerRuta, validarAcceso({roles:['sorteo', 'calidad'], permisos:['director de sorteo', 'analista', 'gerente'], jerarquia: 4}) ,sorteoController.dashBoardOutput)
+
+//rutas de produccion con tensor flex
+router.get('/contador-produccion', protegerRuta,sorteoController.contador)
+router.post('/evaluacion-produccion', protegerRuta,modelos.archivoUnico('imagen'),sorteoController.evaluacionProduccion)
+
 
 
 export default router;

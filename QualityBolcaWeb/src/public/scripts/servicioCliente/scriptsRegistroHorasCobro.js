@@ -76,23 +76,33 @@ function renderizarTabla(datos) {
 
   tbody.innerHTML = datos.map(r => {
     const gastos = parsearGastos(r.gasto)
-    const estatusBadge = `<span class="badge badge-${(r.estatus || "").toLowerCase()}">${r.estatus || "-"}</span>`
-    return `
-      <tr>
+    // const estatusBadge = `<span class="badge badge-${(r.estatus || "").toLowerCase()}">${r.estatus || "-"}</span>`
+    let contenido = `
+    <tr>
         <td>${r.id}</td>
         <td>${formatearFecha(r.fecha)}</td>
-        <td class="td-truncate" title="${r.cliente}">${r.cliente || "-"}</td>
-        <td class="td-truncate" title="${r.planta}">${r.planta || "-"}</td>
-        <td class="td-truncate" title="${r.responsable}">${r.responsable || "-"}</td>
-        <td class="td-truncate" title="${r.cotizacion}">${r.cotizacion || "-"}</td>
+        <td class="td-truncate" title="${r.cliente}">${r.cliente.toUpperCase() || "-"}</td>
+        <td class="td-truncate" title="${r.planta}">${r.planta.toUpperCase() || "-"}</td>
+        <td class="td-truncate" title="${r.responsable}">${r.responsable.toUpperCase() || "-"}</td>
+        <td class="td-truncate" title="${r.cotizacion}">${r.cotizacion.toUpperCase() || "-"}</td>
         <td><span class="gastos-tags">${gastos.map(g => `<span class="tag">${g}</span>`).join("")}</span></td>
         <td>${r.horas || "-"}</td>
-        <td>$${parseFloat(r.gastoCotizado || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>
+    `
+    if(r.moneda ==='USD'){
+      contenido += `<td>$${parseFloat(parseFloat(r.gastoCotizado) * parseFloat(r.tipoCambio) || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
+        <span class="badge badge-moneda badge-${(r.moneda || "").toLowerCase()}">USD ${r.gastoCotizado || "-"}</span>
+      </td>`
+    }else{
+      contenido += `<td>$${parseFloat(r.gastoCotizado || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>`
+    }
+    //<td>${"-"}</td>
+    contenido+= `
+        
         <td>$${parseFloat(r.costo || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>
         <td><span class="badge badge-moneda badge-${(r.moneda || "").toLowerCase()}">${r.moneda || "-"}</span></td>
-        <td>${r.region || "-"}</td>
+        <td>${r.region.toUpperCase() || "-"}</td>
         <td>${r.semana || "-"}</td>
-        <td>${estatusBadge}</td>
+        
         <td>
           <div class="acciones">
             <button class="btn-accion btn-editar" title="Editar" onclick="abrirModalEditar(${r.id})">
@@ -105,6 +115,10 @@ function renderizarTabla(datos) {
         </td>
       </tr>
     `
+
+    return contenido;
+
+    
   }).join("")
 }
 
@@ -124,7 +138,7 @@ function aplicarFiltros() {
   const texto = (document.getElementById("filtroTexto").value || "").toLowerCase().trim()
   const planta = document.getElementById("filtroPlanta").value
   const region = document.getElementById("filtroRegion").value
-  const estatus = document.getElementById("filtroEstatus").value
+  // const estatus = document.getElementById("filtroEstatus").value
   const semana = document.getElementById("filtroSemana").value
 
   registrosFiltrados = registrosData.filter(r => {
@@ -135,7 +149,7 @@ function aplicarFiltros() {
     }
     if (planta && r.planta !== planta) return false
     if (region && r.region !== region) return false
-    if (estatus && r.estatus !== estatus) return false
+    // if (estatus && r.estatus !== estatus) return false
     if (semana && parseInt(r.semana) !== parseInt(semana)) return false
     return true
   })
@@ -147,7 +161,7 @@ function limpiarFiltros() {
   document.getElementById("filtroTexto").value = ""
   document.getElementById("filtroPlanta").value = ""
   document.getElementById("filtroRegion").value = ""
-  document.getElementById("filtroEstatus").value = ""
+  // document.getElementById("filtroEstatus").value = ""
   document.getElementById("filtroSemana").value = ""
   registrosFiltrados = [...registrosData]
   renderizarTabla(registrosFiltrados)
@@ -276,8 +290,8 @@ document.addEventListener("DOMContentLoaded", () => {
   renderPlantas()
   attachEventListeners()
   fields.gasto.addEventListener("change", (e) => cambio(e))
-  fields.horas.addEventListener("change", (e) => calculoCosto(e))
-  fields.costo.addEventListener("change", (e) => calculoCosto(e))
+  // fields.horas.addEventListener("change", (e) => calculoCosto(e))
+  // fields.costo.addEventListener("change", (e) => calculoCosto(e))
 
 })
 
@@ -474,7 +488,6 @@ function renderPlantas() {
 }
 
 function calculoCosto(e){
-
   let horas = inputHoras.value
   let costo = inputCosto.value
   let total = horas*costo

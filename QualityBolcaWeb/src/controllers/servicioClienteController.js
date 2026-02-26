@@ -37,11 +37,12 @@ controllerServicioCliente.crudHorasCobro = async(req, res) => {
     switch (tipo){
         case "insert":
             campos.cotizadora = datosUsuario.nombrelargo
-            
             if(campos.moneda !== "MXN"){
-                 campos.tipoCambio = await custonFunctions.peticionJson('https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/oportuno',{method: 'GET', 'Bmx-Token': process.env.tokenBanxico});
+                 //campos.tipoCambio = await custonFunctions.peticionJson('https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/oportuno',{method: 'GET', 'Bmx-Token': process.env.tokenBanxico});
+                 console.log(campos)
+                 campos.tipoCambio = await custonFunctions.peticionTipoCambioPorFecha(campos.fecha);
             }
-            console.log(campos);
+            console.log(campos.tipoCambio)
             let respuesta = await clase.insertar({datosInsertar: campos})
             if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
             return res.json({ok: respuesta, msg: 'informacion enviada exitosamente'})

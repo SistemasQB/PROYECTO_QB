@@ -4,7 +4,7 @@ import Sequelize, { DATE, where } from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
 import fs from 'fs';
 
-import XlsxPopulate from "xlsx-populate";
+// import XlsxPopulate from "xlsx-populate";
 
 import { emailMejoraRespuesta } from "../helpers/emails.js";
 

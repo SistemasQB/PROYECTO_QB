@@ -19,7 +19,10 @@ import path from "path";
 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+   origin: 'http://localhost:3000',  // origen permitido
+  credentials: true   
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -85,40 +88,40 @@ try {
 }
 })
 
-app.post('/sorteo/cc1/controldepiezas2',async (req, res) =>{
+// app.post('/sorteo/cc1/controldepiezas2',async (req, res) =>{
 
 
-  const {piezasOK, piezasNG, mesas, inicio} = req.body;
+//   const {piezasOK, piezasNG, mesas, inicio} = req.body;
 
   
-  let fecha = new Date();
-  fecha.setHours(fecha.getHours() - 6);
+//   let fecha = new Date();
+//   fecha.setHours(fecha.getHours() - 6);
   
-  // console.log(piezas, mesas, fecha);
-  try {
-    await Controlpiezas2.create({
-      piezasOK,
-      piezasNG,
-      mesas,
-      inicio,
-      fecha
-    });
-    res.status(200).send({ msg: 'enviado con exito', ok: true });
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({ msg: 'Error al enviar la peticion' + error, ok: false });
-  }
-  })
+//   // console.log(piezas, mesas, fecha);
+//   try {
+//     await Controlpiezas2.create({
+//       piezasOK,
+//       piezasNG,
+//       mesas,
+//       inicio,
+//       fecha
+//     });
+//     res.status(200).send({ msg: 'enviado con exito', ok: true });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).send({ msg: 'Error al enviar la peticion' + error, ok: false });
+//   }
+//   })
 
   //declaracion de rutas
-app.use('/',csrfProtection, routers.userRouters);
+app.use('/', csrfProtection,routers.userRouters);
 app.use('/admin',csrfProtection, routers.adminRouters);
 app.use('/all',csrfProtection, routers.routerAll);
 app.use('/sistemas',csrfProtection, routers.sistemasRouters);
 app.use('/calidad',csrfProtection, routers.calidadRouters);
 app.use('/atraccion',csrfProtection, routers.atraccionRouters);
 app.use('/capitalhumano',csrfProtection, routers.capitalHumanoRouters);
-app.use('/sorteo',csrfProtection, routers.sorteoRouters);
+app.use('/sorteo',csrfProtection ,routers.sorteoRouters);
 app.use('/nominas',csrfProtection, routers.nominasRouters);
 app.use('/infraestructura', csrfProtection,routers.infraestructuraRouters);
 app.use('/contabilidad',  csrfProtection,routers.contabilidadRouters);
