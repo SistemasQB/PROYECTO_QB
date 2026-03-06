@@ -1,9 +1,4 @@
-/* ═══════════════════════════════════════════════
-   Dashboard App – Vanilla JS
-   ═══════════════════════════════════════════════ */
-  //  (function () {
   "use strict";
-
   /* ── State ─────────────────────────────────── */
   let allData = [...servicios];
   let filters = { supervisor: "", region: "", semana: "", mes: "" };
@@ -66,11 +61,13 @@
   }
   function getUniqueWeeks(data) {
     const set = new Set();
-    data.forEach((o) => o.registros.forEach((r) => {
+    data.forEach((o) =>{
+      if (o.registros.length === 0) return;
+      o.registros.forEach((r) => {
       const dt = new Date(r.fecha + "T00:00:00");
       const w = getISOWeek(dt);
       set.add(dt.getFullYear() + "-W" + String(w).padStart(2, "0"));
-    }));
+    })});
     return [...set].sort().map((w) => {
       const [y, wp] = w.split("-W");
       return { value: w, label: "Sem " + wp + " - " + y };

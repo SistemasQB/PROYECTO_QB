@@ -18,9 +18,7 @@
         body: JSON.stringify(cuerpo),
         credentials: 'include'  
     })
-        .then(response => response.json()).catch((error) => {
-            console.log(error);
-        })
+        .then(response => response.json())
         .then(res => {
             if (res.ok) {
                 Swal.close();
@@ -45,6 +43,8 @@
                     button: "OK"
                 });
             }
+        }).catch((error) => {
+            console.log(error);
         })
     }
     function envioFormData(link, cuerpo, destino){

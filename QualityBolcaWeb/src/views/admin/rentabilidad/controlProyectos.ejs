@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Rentabilidad de Proyectos</title>
     <link rel="stylesheet" href="/styles/rentabilidad/estilos_controlProyectos.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -175,11 +176,14 @@
                                 <th>Región</th>
                                 <th>Cliente</th>
                                 <th>Planta</th>
+                                <th>Moneda</th>
+                                <th>Costo</th>
                                 <th class="text-right">Horas Cotiz.</th>
                                 <th class="text-right">Gasto Cotiz.</th>
+                                <th class="text-right">Gasto Real</th>
                                 <th class="text-right">Dif. Cot-Fac</th>
                                 <th class="text-right">Cot-Dep</th>
-                                <th class="text-center">% ≥20%</th>
+                                <th class="text-center">%</th>
                                 <th class="text-center sticky-col">Acciones</th>
                             </tr>
                         </thead>
@@ -210,10 +214,10 @@
             <form id="editForm">
                 <div class="modal-body">
                     <div class="form-grid">
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="editNumeroSemana" class="form-label">Número de Semana</label>
                             <input type="number" id="editNumeroSemana" class="form-input" required>
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <label for="editFechaCotizacion" class="form-label">Fecha Cotización</label>
                             <input type="date" id="editFechaCotizacion" class="form-input" required>
@@ -222,14 +226,14 @@
                             <label for="editCotizacion" class="form-label">Cotización</label>
                             <input type="text" id="editCotizacion" class="form-input" required>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="editAnalistaEncargada" class="form-label">Analista Encargada</label>
                             <input type="text" id="editAnalistaEncargada" class="form-input" required>
-                        </div>
-                        <div class="form-group full-width">
+                        </div> -->
+                        <!-- <div class="form-group full-width">
                             <label for="editConceptoCobrar" class="form-label">Concepto a Cobrar</label>
                             <input type="text" id="editConceptoCobrar" class="form-input" required>
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <label for="editPersonaResponsable" class="form-label">Persona Responsable</label>
                             <input type="text" id="editPersonaResponsable" class="form-input" required>
@@ -254,7 +258,7 @@
                             <label for="editGastoCotizado" class="form-label">Gasto Cotizado</label>
                             <input type="number" step="0.01" id="editGastoCotizado" class="form-input" required>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="editDiferenciaCotizadoFacturado" class="form-label">Diferencia Cotizado-Facturado</label>
                             <input type="number" step="0.01" id="editDiferenciaCotizadoFacturado" class="form-input" required>
                         </div>
@@ -265,7 +269,7 @@
                         <div class="form-group">
                             <label for="editPorcentaje20" class="form-label">Porcentaje (≥20%)</label>
                             <input type="number" step="0.1" id="editPorcentaje20" class="form-input" required>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -372,8 +376,10 @@
     <script src="/scripts/rentabilidad/scriptsControlProyectos.js"></script>
     <script src="/clases/clase_fetch.js"></script>
     <script>
+        const token = <%-JSON.stringify(tok)%>
         let proyectos = <%-JSON.stringify(proyectos)%>
         const gastos = <%-JSON.stringify(gastos)%>
+        
     </script>
 </body>
 </html>

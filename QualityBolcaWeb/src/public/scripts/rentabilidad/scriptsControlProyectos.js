@@ -13,7 +13,7 @@ const state = {
     fechaFin: "",
   },
   currentPage: 1,
-  itemsPerPage: 50,
+  itemsPerPage: 10,
   totalItems: 0,
   currentEditingProject: null,
   currentCompletingProject: null,
@@ -25,14 +25,16 @@ const state = {
   const inputRegion = document.getElementById("regionFilter")
 // API Functions
 async function fetchProjects() {
-  
   showLoading()
   if(state.hayFiltros){
     renderTable(filtrarProyectos())
     hideLoading()
     return
   }
-  renderTable(state.projects)
+  state.totalItems = state.projects.length
+  const filtrados = state.projects.slice((state.currentPage - 1) * state.itemsPerPage, state.currentPage * state.itemsPerPage)
+  state.proyectosFiltrados = filtrados
+  renderTable(filtrados)
   hideLoading()
 
   // Construir query params con los filtros activos
@@ -57,10 +59,10 @@ async function fetchProjects() {
   //   state.totalItems = data.total || state.projects.length
 
   //   // Actualizar texto de paginación
-  //   const from = ((state.currentPage - 1) * state.itemsPerPage) + 1
-  //   const to   = Math.min(state.currentPage * state.itemsPerPage, state.totalItems)
-  //   const pageInfo = document.getElementById("pageInfo")
-  //   if (pageInfo) pageInfo.textContent = `Mostrando ${from}–${to} de ${state.totalItems}`
+    const from = ((state.currentPage - 1) * state.itemsPerPage) + 1
+    const to   = Math.min(state.currentPage * state.itemsPerPage, state.totalItems)
+    const pageInfo = document.getElementById("pageInfo")
+    if (pageInfo) pageInfo.textContent = `Mostrando ${from}–${to} de ${state.totalItems}`
 
   //   renderTable(state.projects)
   // } catch (error) {
@@ -170,9 +172,7 @@ function renderTable(lista = state.projects) {
 
   lista.forEach((project) => {
     const row = document.createElement("tr")
-    
     let gasto = JSON.parse(project.gasto)
-    let miCoti = project.cotizacion
     // <td><div class="truncate" title="${project.conceptoCobrar}">${project.conceptoCobrar}</div></td>
     let contenido = `
             <td class="font-medium">${project.semana}</td>
@@ -184,36 +184,33 @@ function renderTable(lista = state.projects) {
             <td>${project.region}</td>
             <td>${project.cliente}</td>
             <td>${project.planta}</td>
+            <td>${project.moneda}</td>
+            <td>${formatCurrency(project.costo)}</td>
             <td class="text-right font-mono">${project.horas}</td>`
             let totales = null, diferencia = null
             if(project.moneda !== 'MXN') {
-              totales = extraerMontos(project.cotizacion, {horas: project.horas, costo: project.costo, tipoCambio: parseFloat(project.tipoCambio)})
-              diferencia =  totales.gasto > 0 ? project.gastoCotizado - totales.gasto  : 0
-              contenido += `<td class="text-right font-mono personalizada">${`MXN ${formatCurrency(totales.conversion.toFixed(2))} <spam>USD ${formatCurrency(project.gastoCotizado)}</spam>`}</td>`
+              totales = extraerMontos(project.cotizacion, {horas: project.horas, costo: project.costo, tipoCambio: parseFloat(project.tipoCambio), cotizado: project.gastoCotizado})
+              diferencia =  totales.gasto > 0 ? project.gastoCotizado - totales.gasto: 0
+              contenido += `<td class="text-right font-mono ">${`${formatCurrency(project.gastoCotizado)} `}</td>` // se quita el spam <spam>USD ${formatCurrency(project.gastoCotizado)}</spam>
             }else{
               totales = extraerMontos(project.cotizacion, {horas: project.horas, costo: project.costo, tipoCambio:project.tipoCambio})
-              diferencia =  totales.sumatoriaGastos > 0 ?  project.gastoCotizado > formatCurrency(parseFloat(project.gastoCotizado) - totales.sumatoriaGastos) : 0
+              diferencia =  totales.sumatoriaGastos > 0 ?  project.gastoCotizado > formatCurrency(parseFloat(project.gastoCotizado) - totales.sumatoriaGastos) : 0.0
               contenido += `<td class="text-right font-mono">${formatCurrency(project.gastoCotizado)}</td>`
             }
-            const percentageClass = totales.porcentaje <= .80 ? "badge-success" : "badge-danger"
-            console.log(totales)
+            
+            const percentageClass =  totales.porcentaje <= .80 ? "badge-success" : "badge-danger"
            contenido +=  `
+            <td class="text-right font-mono">${formatCurrency(totales.gasto)}</td>
             <td class="text-right font-mono">${formatCurrency(0)}</td>
-            <td class="text-right font-mono">${formatCurrency(diferencia || 0)}</td>
+            <td class="text-right font-mono">${formatCurrency(diferencia || 0.0)}</td>
             <td class="text-center">
-                <span class="badge ${percentageClass}">${totales.porcentaje}%</span>
+                <span class="badge ${percentageClass}">${totales.porcentaje * 100}%</span>
             </td>
             <td class="sticky-col">
                 <div class="action-buttons">
                     <button class="action-btn action-btn-edit" onclick="openEditModal('${project.id}')" title="Editar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                        </svg>
-                    </button>
-                    <button class="action-btn action-btn-complete" onclick="openCompleteModal('${project.id}')" title="Completar">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
                         </svg>
                     </button>
                     <button class="action-btn action-btn-delete" onclick="openDeleteModal('${project.id}')" title="Eliminar">
@@ -229,6 +226,13 @@ function renderTable(lista = state.projects) {
     tbody.appendChild(row)
   })
 }
+
+//<button class="action-btn action-btn-complete" onclick="openCompleteModal('${project.id}')" title="Completar">
+  //                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    //                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      //                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        //                </svg>
+          //          </button>
 
 function showToast(title, description, type = "success") {
   const toast = document.getElementById("toast")
@@ -313,26 +317,25 @@ function clearFilters() {
 
 // Modal Functions
 function openEditModal(id) {
-  const project = state.projects.find((p) => p.id === id)
+  const project = state.projects.find((p) => p.id == id)
   if (!project) return
-
   state.currentEditingProject = project
 
   document.getElementById("editModalCotizacion").textContent = project.cotizacion
-  document.getElementById("editNumeroSemana").value = project.numeroSemana
-  document.getElementById("editFechaCotizacion").value = project.fechaCotizacion
+  // document.getElementById("editNumeroSemana").value = project.semana
+  document.getElementById("editFechaCotizacion").value = project.fechaCotizacion.split("T")[0]
   document.getElementById("editCotizacion").value = project.cotizacion
-  document.getElementById("editAnalistaEncargada").value = project.analistaEncargada
-  document.getElementById("editConceptoCobrar").value = project.conceptoCobrar
-  document.getElementById("editPersonaResponsable").value = project.personaResponsable
+  // document.getElementById("editAnalistaEncargada").value = project.cotizadora
+  // document.getElementById("editConceptoCobrar").value = JSON.parse(project.gasto).map((g) => g).join(", ")
+  document.getElementById("editPersonaResponsable").value = project.responsable
   document.getElementById("editRegion").value = project.region
   document.getElementById("editCliente").value = project.cliente
   document.getElementById("editPlanta").value = project.planta
-  document.getElementById("editHorasCotizacion").value = project.horasCotizacion
+  document.getElementById("editHorasCotizacion").value = project.horas
   document.getElementById("editGastoCotizado").value = project.gastoCotizado
-  document.getElementById("editDiferenciaCotizadoFacturado").value = project.diferenciaCotizadoFacturado
-  document.getElementById("editCotizadoMenosDepositado").value = project.cotizadoMenosDepositado
-  document.getElementById("editPorcentaje20").value = project.porcentaje20
+  // document.getElementById("editDiferenciaCotizadoFacturado").value = project.diferenciaCotizadoFacturado
+  // document.getElementById("editCotizadoMenosDepositado").value = project.cotizadoMenosDepositado
+  // document.getElementById("editPorcentaje20").value = project.porcentaje20
 
   document.getElementById("editModalOverlay").style.display = "flex"
 }
@@ -379,7 +382,6 @@ function closeDeleteModal() {
 // Form Handlers
 async function handleEditSubmit(e) {
   e.preventDefault()
-
   const saveBtn = document.getElementById("saveEditBtn")
   const spinner = saveBtn.querySelector(".btn-spinner")
   const btnText = saveBtn.querySelector(".btn-text")
@@ -389,24 +391,21 @@ async function handleEditSubmit(e) {
   saveBtn.disabled = true
 
   const updatedProject = {
-    ...state.currentEditingProject,
-    numeroSemana: Number.parseInt(document.getElementById("editNumeroSemana").value),
     fechaCotizacion: document.getElementById("editFechaCotizacion").value,
     cotizacion: document.getElementById("editCotizacion").value,
-    analistaEncargada: document.getElementById("editAnalistaEncargada").value,
-    conceptoCobrar: document.getElementById("editConceptoCobrar").value,
-    personaResponsable: document.getElementById("editPersonaResponsable").value,
+    // gasto: document.getElementById("editConceptoCobrar").value,
+    responsable: document.getElementById("editPersonaResponsable").value,
     region: document.getElementById("editRegion").value,
     cliente: document.getElementById("editCliente").value,
     planta: document.getElementById("editPlanta").value,
-    horasCotizacion: Number.parseFloat(document.getElementById("editHorasCotizacion").value),
-    gastoCotizado: Number.parseFloat(document.getElementById("editGastoCotizado").value),
-    diferenciaCotizadoFacturado: Number.parseFloat(document.getElementById("editDiferenciaCotizadoFacturado").value),
-    cotizadoMenosDepositado: Number.parseFloat(document.getElementById("editCotizadoMenosDepositado").value),
-    porcentaje20: Number.parseFloat(document.getElementById("editPorcentaje20").value),
+    horas: Number.parseFloat(document.getElementById("editHorasCotizacion").value),
+    // gastoCotizado: Number.parseFloat(document.getElementById("editGastoCotizado").value),
+    tipo: 'update',
+    id: state.currentEditingProject.id,
+    _csrf: token
   }
-
-  await updateProject(updatedProject)
+  envioJson('/servicioCliente/crudHorasCobro ', updatedProject, 'controlProyectos')
+  // await updateProject(updatedProject)
 
   spinner.style.display = "none"
   btnText.textContent = "Guardar Cambios"
@@ -436,8 +435,8 @@ async function handleCompleteSubmit(e) {
     fechaDeposito: document.getElementById("completeFechaDeposito").value,
     comentarios: document.getElementById("completeComentarios").value,
   }
-
-  await completeProject(state.currentCompletingProject.id, completeData)
+  console.log(completeData)
+  // await completeProject(state.currentCompletingProject.id, completeData)
 
   spinner.style.display = "none"
   btnText.textContent = "Guardar Información"
@@ -628,23 +627,26 @@ function filtrarProyectos() {
   })
 }
 
-function extraerMontos(cotizacion, datos = null){
-  const gasto = parseFloat(gastos.filter((gasto) => gasto.orden.toUpperCase() === cotizacion.toUpperCase()).reduce((total, gasto) => total += parseFloat(gasto.total), 0))
-  const totalCotizado = parseFloat(datos.horas) * parseFloat(datos.costo)  || 0
+function extraerMontos(cotizacion, datos = {}) {
+  const gasto = gastos
+    .filter(g => g.orden.toUpperCase() === cotizacion.toUpperCase())
+    .reduce((total, g) => total + (parseFloat(g.total) || 0), 0.0);
+
+  const horas = parseFloat(datos.horas) || 0.0;
+  const costo = parseFloat(datos.costo) || 0.0;
+  const tipoCambio = parseFloat(datos.tipoCambio) || 1;
+  const totalCotizado = datos.cotizado|| 0.0;
+
   const resultado = {
     totalCotizado,
-    conversion: datos.tipoCambio * totalCotizado,
+    conversion: (tipoCambio * horas).toFixed(2),
     gasto,
-  }
-  if (!gasto || !totalCotizado ){ 
-    resultado.porcentaje = 0
-      return resultado 
-  }
+  };
 
-  resultado.porcentaje = ((gasto/totalCotizado)*100).toFixed(2) 
-    return resultado
+  if (totalCotizado <= 0) {
+    resultado.porcentaje = 0.0;
+    return resultado;
   }
-  
-
-  
-
+  resultado.porcentaje = (gasto/ totalCotizado).toFixed(2);
+  return resultado;
+}

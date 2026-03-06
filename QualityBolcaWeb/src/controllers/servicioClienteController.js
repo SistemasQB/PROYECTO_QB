@@ -11,12 +11,16 @@ const controllerServicioCliente = {}
 //formulario de horas cobro servicio al cliente
 controllerServicioCliente.formularioHorasCobro = async(req, res) => {
     try {
+        const dia = new Date(Date.now())
+        const final = new Date(dia)
+        final.setMonth(dia.getMonth() - 3)
         let clase = new sequelizeClase({modelo:modelosInfraestructura.modelo_plantas_gastos})
         let plantas = await clase.obtenerDatosPorCriterio({criterio: {id: {[Op.gt]: 0}},atributos: ['planta']})
         clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
         let  datosUsuario = await clase.obtener1Registro({criterio: {codigoempleado: req.usuario.codigoempleado}})
-        clase = new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro})
-        const registros = await clase.obtenerDatosPorCriterio({criterio: {cotizadora: datosUsuario.nombrelargo}})
+        clase = new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro })
+        const criterios = {cotizadora: datosUsuario.nombrelargo, createdAt: {[Op.between]: [final, dia]}}
+        const registros = await clase.obtenerDatosPorCriterio({criterio: criterios})
         return res.render("admin/servicioCliente/registroHorasCobro.ejs", {tok: req.csrfToken(), plantas, registros});    
     } catch (ex) {
         return manejadorErrores(res, ex)    
@@ -55,6 +59,19 @@ controllerServicioCliente.crudHorasCobro = async(req, res) => {
             if (!eliminado) return res.json({ok: false, msg: 'no se pudo eliminar la informacion'})
             return res.json({ok: eliminado, msg: 'informacion eliminada exitosamente'})
     }
+    
+    
 }
+
+//controlador de api para requisiciones
+controllerServicioCliente.obtenerRequisiciones = async(req, res) => {
+        try {
+            let clase = new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro})
+            let registros = await clase.obtenerDatosPorCriterio({criterio: {estatus: {[Op.ne]: ["REGISTRADA"]}}, atributos: ['cotizacion']})
+            return res.json({ok: true, registros})
+        } catch (ex) {
+            return res.json({ok: false, msg: `no se pudo obtener la informacion, el error fue : ${ex}`})
+        }
+    }
 
 export default controllerServicioCliente;

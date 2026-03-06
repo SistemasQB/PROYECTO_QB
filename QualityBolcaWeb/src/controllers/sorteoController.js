@@ -3,19 +3,16 @@ import sequelizeClase from "../public/clases/sequelize_clase.js";
 import modelosgenerales from "../models/generales/barrilModelosGenerales.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import customFunctions from "../js/funcionesBackend.js";
-import utilidadesTensorFlow from "../public/clases/miTensor-flow.js";
+// import utilidadesTensorFlow from "../public/clases/miTensor-flow.js";
 import path from "path";
-import { fileURLToPath } from 'url';
+// import { fileURLToPath } from 'url';
 import env from "dotenv";
 env.config({ path: ".env" });
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 
 // import modelosSorteo from "../models/sorteo/barrilModelosSorteo.js";
-
-
-
 import {
     Checklistcc1,
     Empleados,
@@ -416,10 +413,8 @@ controller.crudOutput = async(req, res) => {
 
 controller.dashBoardOutput = async(req, res) => {
     try {
-        
         const mesActual  =new Date().getMonth();
         const anioActual = new Date().getFullYear();
-        console.log(mesActual, anioActual);
         const fechas = customFunctions.generarFechas(mesActual, anioActual);
         const criterios = {createdAt: {[Op.between]: [fechas.inicio, fechas.fin]}};
         const clase = new sequelizeClase({modelo: modelosSorteo.output});
@@ -432,51 +427,55 @@ controller.dashBoardOutput = async(req, res) => {
     
 }
 
-controller.contador = (req, res) => {
-    try {
-        return res.render('admin/sorteo/contador-tensor.ejs', {tok: req.csrfToken()});
-    } catch (error) {
-        console.log(error)
-        manejadorErrores(res, error);
-    }
-}
+// controller.contador = (req, res) => {
+//     try {
+//         return res.render('admin/sorteo/contador-tensor.ejs', {tok: req.csrfToken()});
+//     } catch (error) {
+//         console.log(error)
+//         manejadorErrores(res, error);
+//     }
+// }
 
-controller.evaluacionProduccion = async (req, res) => {
-    const mfile = req.file
-    const ubicacionImgOk = path.resolve(__dirname, '../public/evidencias/modelos/rastrillo/ok')
-    const ubicacionImgNG = path.resolve(__dirname, '../public/evidencias/modelos/rastrillo/ng')
-    const ubicacionModelo = path.resolve(__dirname, '../public/evidencias/modelos/rastrillo/modelo/model.json')
-    if(!mfile) return res.json({ ok: false, msg: 'No se subio recibio ninguna imagen'}) //tok: req.csrfToken()
-    try {
-        const {tipo}= req.body
-        let clase = new utilidadesTensorFlow.miTensorFlowClasificacion({imagenesOk: ubicacionImgOk, imagenesNG: ubicacionImgNG})
-        switch (tipo) {
-            case 'entrenar':
-                clase.crearModelo()
-                const {xs, ys} = await clase.cargarSet()
-                await clase.entrenarModelo(xs, ys, 25)
-                await clase.guardarModelo(ubicacionModelo)
-                return res.json({ ok: true, msg: 'Modelo entrenado correctamente', tok: req.csrfToken()})
+// controller.evaluacionProduccion = async (req, res) => {
+//     const mfile = req.file
+//     const ubicacionImgOk = path.resolve(__dirname, '../public/evidencias/modelos/rastrillo/ok')
+//     const ubicacionImgNG = path.resolve(__dirname, '../public/evidencias/modelos/rastrillo/ng')
+//     let ubicacionModelo = path.resolve(__dirname, '../public/evidencias/modelos/rastrillo/modelo/model.json')
+//     if(!mfile) return res.json({ ok: false, msg: 'No se subio recibio ninguna imagen'})
+//     try {
+//         const {tipo}= req.body
+//         let clase = new utilidadesTensorFlow.miTensorFlowClasificacion({imagenesOk: ubicacionImgOk, imagenesNG: ubicacionImgNG})
+//         switch (tipo) {
+//             case 'entrenar':
+//                 ubicacionModelo = path.resolve(__dirname, '../public/evidencias/modelos/rastrillo/modelo/')
+//                 await clase.crearModelo()
+//                 const {xs, ys} = await clase.cargarSet()
+//                 await clase.entrenarModelo(xs, ys, 25)
+//                 await clase.guardarModelo(ubicacionModelo)
+//                 return res.json({ ok: true, msg: 'Modelo entrenado correctamente'}) //, tok: req.csrfToken()
                 
-            case 'predecir':
-                const ubicacionArchivo = path.resolve(__dirname, '../public/evidencias/modelos/', mfile.filename)
-                await clase.cargarSet()
-                clase.cargarModelo(ubicacionModelo)
-                const valores = await clase.prediccion(ubicacionArchivo)
-                return res.json({ tok: req.csrfToken(),prediccion: valores})
-            case 'contar':
-                const nuevaClase = new utilidadesTensorFlow.miTensorFlowContador({imagenesOk: ubicacionImgOk, imagenesNG: ubicacionImgNG})
-                await nuevaClase.cargarDetectorPreentrenado()
-                const cantidad = await nuevaClase.contarPiezas(mfile.path)
-                return res.json({tok: req.csrfToken(), cantidad})       
-        }
+//             case 'predecir':
+//                 const ubicacionArchivo = path.resolve(__dirname, `../public/evidencias/modelos/${mfile.filename}`)
+//                 await clase.cargarSet()
+//                 console.log('set cargado')
+//                 await clase.cargarModelo(ubicacionModelo)
+//                 console.log('modelo cargados')
+//                 const valores = await clase.prediccion(ubicacionArchivo)
+//                 console.log('prediccion completada')
+//                 return res.json({ prediccion: valores}) //tok: req.csrfToken(),
+//             case 'contar':
+//                 const nuevaClase = new utilidadesTensorFlow.miTensorFlowContador({imagenesOk: ubicacionImgOk, imagenesNG: ubicacionImgNG})
+//                 await nuevaClase.cargarDetectorPreentrenado()
+//                 const cantidad = await nuevaClase.contarPiezas(mfile.path)
+//                 return res.json({tok: req.csrfToken(), cantidad})       
+//         }
         
-    } catch (error) {
-        console.log('entro al cartch')
-        return res.json({ ok: false, msg: error.message})
-        //tok: req.csrfToken()
-    }
-}
+//     } catch (error) {
+//         console.log('entro al cartch', error);
+//         return res.json({ ok: false, msg: error.message})
+//         //tok: req.csrfToken()
+//     }
+// }
 
 
 export default controller;

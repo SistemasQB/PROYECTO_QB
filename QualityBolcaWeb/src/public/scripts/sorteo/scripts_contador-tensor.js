@@ -177,7 +177,7 @@
       // formData.append('turno',      turno);
       // formData.append('timestamp',  timestamp);
       // formData.append('linea',      document.querySelector('.line-editable').value);
-      formData.append('tipo',      'predecir');
+      formData.append('tipo',      'entrenar');
 
       // ── Envío al servidor ─────────────────────────────
       

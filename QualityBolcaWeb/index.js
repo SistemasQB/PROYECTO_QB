@@ -125,8 +125,9 @@ app.use('/sorteo',csrfProtection ,routers.sorteoRouters);
 app.use('/nominas',csrfProtection, routers.nominasRouters);
 app.use('/infraestructura', csrfProtection,routers.infraestructuraRouters);
 app.use('/contabilidad',  csrfProtection,routers.contabilidadRouters);
-app.use('/servicioCliente',  csrfProtection,routers.servicioClienteRouters);
+app.use('/servicioCliente',csrfProtection,routers.servicioClienteRouters);
 app.use('/rentabilidad',csrfProtection, routers.rentabilidadRouters);
+app.use('/procedimientos', routers.routerGenerales);
 app.use((_, res) => {
   return res.render('admin/default/paginaNoEncontrada.ejs');
 });

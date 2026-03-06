@@ -92,12 +92,12 @@ function renderizarTabla(datos) {
       contenido += `<td>$${parseFloat(parseFloat(r.gastoCotizado) * parseFloat(r.tipoCambio) || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
         <span class="badge badge-moneda badge-${(r.moneda || "").toLowerCase()}">USD ${r.gastoCotizado || "-"}</span>
       </td>`
+      
     }else{
       contenido += `<td>$${parseFloat(r.gastoCotizado || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>`
     }
     //<td>${"-"}</td>
     contenido+= `
-        
         <td>$${parseFloat(r.costo || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>
         <td><span class="badge badge-moneda badge-${(r.moneda || "").toLowerCase()}">${r.moneda || "-"}</span></td>
         <td>${r.region.toUpperCase() || "-"}</td>

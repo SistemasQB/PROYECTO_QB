@@ -51,8 +51,8 @@ router.post("/crudOutput",protegerRuta,validarAcceso({roles:['sorteo'], permisos
 router.get('/gestionOutput',protegerRuta, validarAcceso({roles:['sorteo', 'calidad'], permisos:['director de sorteo', 'analista', 'gerente'], jerarquia: 4}) ,sorteoController.dashBoardOutput)
 
 //rutas de produccion con tensor flex
-router.get('/contador-produccion', protegerRuta,sorteoController.contador)
-router.post('/evaluacion-produccion', protegerRuta,modelos.archivoUnico('imagen'),sorteoController.evaluacionProduccion)
+// router.get('/contador-produccion', protegerRuta,sorteoController.contador)
+// router.post('/evaluacion-produccion',modelos.archivoUnico('imagen'),sorteoController.evaluacionProduccion)
 
 
 
