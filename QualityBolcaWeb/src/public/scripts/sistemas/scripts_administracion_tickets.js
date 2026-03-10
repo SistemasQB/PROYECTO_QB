@@ -100,7 +100,6 @@ function renderTable() {
     const pageData = filteredData.slice(start, end);
 
     tableBody.innerHTML = '';
-
     pageData.forEach(ticket => {
         const row = document.createElement('tr');
         row.className = `priority-${ticket.prioridad}`;

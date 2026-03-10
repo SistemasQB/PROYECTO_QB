@@ -45,6 +45,7 @@ let registrosFiltrados = []
 function inicializarTabla() {
   registrosFiltrados = [...registrosData]
   renderizarFiltroPlantas()
+  renderizarFiltroRegiones()
   renderizarTabla(registrosFiltrados)
 }
 
@@ -129,6 +130,14 @@ function renderizarFiltroPlantas() {
   filtroPlanta.innerHTML = `<option value="">Todas</option>` +
     plantasUnicas.map(p => `<option value="${p}">${p}</option>`).join("")
   filtroPlanta.value = opcionesActuales
+}
+function renderizarFiltroRegiones() {
+  const filtroRegion = document.getElementById("filtroRegion")
+  const regionesUnicas = [...new Set(registrosData.map(r => r.region).filter(Boolean))]
+  const opcionesActuales = filtroRegion.value
+  filtroRegion.innerHTML = `<option value="">Todas</option>` +
+    regionesUnicas.map(p => `<option value="${p}">${p}</option>`).join("")
+  filtroRegion.value = opcionesActuales
 }
 
 // ============================================================

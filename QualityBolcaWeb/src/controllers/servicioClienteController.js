@@ -19,7 +19,10 @@ controllerServicioCliente.formularioHorasCobro = async(req, res) => {
         clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
         let  datosUsuario = await clase.obtener1Registro({criterio: {codigoempleado: req.usuario.codigoempleado}})
         clase = new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro })
-        const criterios = {cotizadora: datosUsuario.nombrelargo, createdAt: {[Op.between]: [final, dia]}}
+        let criterios = null
+        datosUsuario.codigoempleado == 10617 ? 
+        criterios = {createdAt: {[Op.between]: [final, dia]}}:
+        criterios = {cotizadora: datosUsuario.nombrelargo, createdAt: {[Op.between]: [final, dia]}}
         const registros = await clase.obtenerDatosPorCriterio({criterio: criterios})
         return res.render("admin/servicioCliente/registroHorasCobro.ejs", {tok: req.csrfToken(), plantas, registros});    
     } catch (ex) {
