@@ -819,7 +819,7 @@ controller.valeresguardo2 = async (req, res, next) => {
     try {
         obtenerFolio.Firma = req.file.filename
         await obtenerFolio.save()
-        next()
+        //next()
         res.status(200).send({ msg: 'Firma enviada con exito', ok: true });
         return
     } catch (error) {

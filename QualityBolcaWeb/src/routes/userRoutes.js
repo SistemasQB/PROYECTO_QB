@@ -13,6 +13,8 @@ const router = express.Router();
 router.get('/',rutasPublicas,customerController.formularioLogin);
 router.get('/login', customerController.formularioLogin);
 router.post('/login', customerController.autenticar);
+//ruta logout
+router.post('/logout', protegerRuta,customerController.logout);
 //rutas de registro
 router.get('/registro', customerController.formularioRegistro);
 router.post('/registro', customerController.registrar);
@@ -27,7 +29,7 @@ router.post('/olvide-password/:token', customerController.nuevoPassword)
 router.get('/requisicion', customerController.requisicion);
 router.post('/requisicion', customerController.requisicion2);
 
-router.get('/inicio', customerController.inicio)
+router.get('/inicio', protegerRuta,customerController.inicio)
 router.get('/asistencia', customerController.asistencia)
 router.get('/asistencia/:plantaA', customerController.asistencia2)
 router.post('/asistencia', customerController.asistencia3)

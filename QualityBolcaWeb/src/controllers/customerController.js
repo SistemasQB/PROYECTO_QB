@@ -97,6 +97,15 @@ controller.autenticar = async (req, res) => {
     return
 }
 
+controller.logout = async (req, res) => {
+    res.clearCookie('_token');
+
+    return res.json({
+        ok: true,
+        redirect: '/login'
+    });
+}
+
 controller.formularioRegistro = (req, res) => {
     res.render('auth/registro', {
         errores: '',
@@ -280,7 +289,9 @@ controller.confirmar = async (req, res) => {
 }
 
 controller.inicio = (req, res) => {
-    res.render('auth/index')
+    res.render('auth/index', {
+        csrfToken: req.csrfToken()
+    })
 }
 
 controller.controlDispositivos = (req, res) => {
