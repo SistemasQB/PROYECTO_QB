@@ -151,43 +151,43 @@ function closeModal() {
 }
 
 // Guardar información completada
-// async function saveCompletion() {
-//   const observaciones = document.getElementById("observaciones").value
-//   const fechaEntrega = document.getElementById("fechaEntrega").value
+async function saveCompletion() {
+  const observaciones = document.getElementById("observaciones").value
+  const fechaEntrega = document.getElementById("fechaEntrega").value
   
-//   if (!observaciones || !fechaEntrega) {
-//     alert("Por favor complete todos los campos")
-//     return
-//   }
+  if (!observaciones || !fechaEntrega) {
+    alert("Por favor complete todos los campos")
+    return
+  }
 
-//   let complemento = {
-//     observacionesLogistica : {
-//       observaciones:observaciones,
-//       fechaEntrega:fechaEntrega,
-//     },
-//     id: currentEditId,
-//     tipo: 'update',
-//     _csrf: tok,
-//     estatus: 'CERRADO'
-//   }
-//   complemento.observacionesLogistica = JSON.stringify(complemento.observacionesLogistica)
+  let complemento = {
+    observacionesLogistica : {
+      observaciones:observaciones,
+      fechaEntrega:fechaEntrega,
+    },
+    id: currentEditId,
+    tipo: 'update',
+    _csrf: tok,
+    estatus: 'CERRADO'
+  }
+  complemento.observacionesLogistica = JSON.stringify(complemento.observacionesLogistica)
 
-//   alertaFetchCalidad('crudCheck-list-vehicular', complemento, 'historico_check_list_vehicular')
+  alertaFetchCalidad('crudCheck-list-vehicular', complemento, 'historico_check_list_vehicular')
   
-//   // Ejemplo: actualizar el estatus a completado
-//   const itemIndex = checklistData.findIndex((i) => i.id === currentEditId)
-//   if (itemIndex !== -1) {
-//     checklistData[itemIndex].estatus = "completado"
-//     // Aquí también podrías guardar las observaciones y fecha de entrega
-//     checklistData[itemIndex].observaciones = observaciones
-//     checklistData[itemIndex].fechaEntrega = fechaEntrega
-//   }
+  // Ejemplo: actualizar el estatus a completado
+  const itemIndex = checklistData.findIndex((i) => i.id === currentEditId)
+  if (itemIndex !== -1) {
+    checklistData[itemIndex].estatus = "completado"
+    // Aquí también podrías guardar las observaciones y fecha de entrega
+    checklistData[itemIndex].observaciones = observaciones
+    checklistData[itemIndex].fechaEntrega = fechaEntrega
+  }
 
-//   renderTable()
-//   closeModal()
+  renderTable()
+  closeModal()
   
-//   alert("Información guardada exitosamente")
-// }
+  alert("Información guardada exitosamente")
+}
 
 // Eliminar registro
 async function deleteRecord(id) {

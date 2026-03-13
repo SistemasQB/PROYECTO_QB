@@ -27,6 +27,9 @@ router.post('/tickets/:id/cerrar', protegetRuta,adminController.cerrarTicket);
 router.post('/tickets/:id/observacion', protegetRuta, adminController.agregarObservacionTicket);
 router.get('/tickets/:id/observaciones', protegetRuta, adminController.obtenerObservacionesTicket);
 
+//ruta de dashboard
+router.get('/dashboardTickets', protegetRuta,adminController.dashboardTickets);
+
 //rutas de inventario
 router.get('/inventario', protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.inventario)
@@ -62,12 +65,14 @@ router.get('/programamantenimiento',protegetRuta,adminController.programamanteni
 router.get('/listadosolicitudes',protegetRuta,adminController.listadosolicitudes); //listado de solicitudes, (hay que revisar)
 router.get('/mantenimientoautonomo',protegetRuta,adminController.mantenimientoautonomo); //vista de los mantenimientos que se han hecho
 
-//api de documentos
-router.get('/api/:query2',adminController.api);
+//apis
+router.get('/api/:query2',adminController.api); //api de documentos
+router.post('/apiDashboard', protegetRuta, adminController.apiDashboard); //api de dashboard
+
 
 //rutas de requisicion de equipos
-router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos)
-router.get('/adminRequisicionEquipos',protegetRuta,protegetRuta,validarAcceso({
+router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos) //formulario de requisicion
+router.get('/adminRequisicionEquipos',protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.administracionRequisicionEquipos)
 router.post('/crudRequisicionEquipos',protegetRuta,adminController.CrudRequisicionEquipos)
 

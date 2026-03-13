@@ -1343,7 +1343,40 @@ controller.CrudRequisicionEquipos = async(req, res) => {
 
     }
 }
+controller.dashboardTickets = async(req, res) => {
+    try {
+        const clase = new sequelizeClase({ modelo: modelosSistemas.modeloTickets})
+        const hoy = new Date(Date.now())
+        const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1 )
+        // const inicio = new Date(2026, 1, 1 )
+        let final = new Date(inicio)
+        final.setMonth(inicio.getMonth() + 1)
+        const criterios = {createdAt: {[Op.between]: [inicio, final]}}
+        const datos = await clase.obtenerDatosPorCriterio({criterio: criterios})
+        return res.render('admin/sistemas/dashboardTickets.ejs', {tok: req.csrfToken(), data:datos})
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: `Error interno del servidor: ${error.message}`
+        });
+    }
+}
 
+controller.apiDashboard = async (req, res) => {
+    try {
+        const {fechaInicio, fechaFin} = req.body
+        const clase = new sequelizeClase({modelo: modelosSistemas.modeloTickets})
+        const criterios = {createdAt: {[Op.between]: [fechaInicio, fechaFin]}}
+        const datos = await clase.obtenerDatosPorCriterio({criterio: criterios})
+    return res.json({ok: true, data: datos, tok: req.csrfToken()})    
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: `Error interno del servidor: ${error.message}`
+        })    
+    }
+    
+}
 function parseDatosTicket(ticket) {
     return typeof ticket.datosTicket === 'string'
         ? JSON.parse(ticket.datosTicket)

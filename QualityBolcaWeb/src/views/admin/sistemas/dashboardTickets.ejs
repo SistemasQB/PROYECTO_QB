@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Tickets · Corporativo</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/styles/sistemas/estilos_dashBoardTickets.css">
+  </head>
+  <body>
+    <div class="noise-overlay"></div>
+    <div class="layout">
+
+      <!-- ══ HEADER ══ -->
+      <header>
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          Ticket<strong>Report</strong>
+        </div>
+        <div class="header-center">
+          <div class="live-indicator"><span class="live-dot"></span>EN VIVO</div>
+        </div>
+        <div class="header-right">
+          <div class="header-date" id="hdate"></div>
+        </div>
+      </header>
+
+      <main>
+        <!-- ══ PAGE HEADING ══ -->
+        <div class="page-heading">
+          <div class="heading-accent">Panel Ejecutivo</div>
+          <h1>Gestión de Tickets <em>· TI</em></h1>
+          <p>Indicadores operativos en tiempo real · Tecnologías de Información</p>
+        </div>
+
+        <!-- ══ DATE RANGE PANEL ══ -->
+        <section class="range-panel" id="range-panel">
+          <div class="range-panel-inner">
+            <div class="range-left">
+              <div class="range-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              </div>
+              <div>
+                <div class="range-title">Rango de Consulta</div>
+                <div class="range-desc">Define el período que deseas analizar en el dashboard</div>
+              </div>
+            </div>
+
+            <div class="range-controls">
+              <div class="date-field">
+                <label for="fechaInicio">Desde</label>
+                <div class="date-input-wrap">
+                  <svg class="date-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <input type="date" id="fechaInicio" name="fechaInicio"/>
+                </div>
+              </div>
+              <div class="range-separator">→</div>
+              <div class="date-field">
+                <label for="fechaFin">Hasta</label>
+                <div class="date-input-wrap">
+                  <svg class="date-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  <input type="date" id="fechaFin" name="fechaFin"/>
+                </div>
+              </div>
+
+              <div class="quick-ranges">
+                <button class="qr-btn" data-days="7">7D</button>
+                <button class="qr-btn" data-days="30">30D</button>
+                <button class="qr-btn" data-days="90">90D</button>
+                <button class="qr-btn active" data-days="all">Todo</button>
+              </div>
+
+              <button class="fetch-btn" id="fetchBtn" onclick="fetchData()">
+                <span class="fetch-btn-inner">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+                  Actualizar datos
+                </span>
+                <div class="fetch-loader" id="fetchLoader"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- resultado de consulta -->
+          <div class="range-result" id="rangeResult" style="display:none">
+            <span class="range-result-badge" id="rangeResultText"></span>
+          </div>
+        </section>
+
+        <!-- ══ KPIs ══ -->
+        <div class="section-label">Indicadores Clave</div>
+        <div class="kpi-grid" id="kpi-grid"></div>
+
+        <!-- ══ ROW 1: estatus + prioridad + categorías ══ -->
+        <div class="section-label">Análisis de Distribución</div>
+        <div class="charts-grid">
+
+          <div class="card card-glow-blue">
+            <div class="card-head">
+              <div class="card-badge" style="--badge-color:#2563eb">Estatus</div>
+              <div class="card-title">Estado Actual</div>
+              <div class="card-desc">Distribución por ciclo de vida del ticket</div>
+            </div>
+            <div class="donut-wrap">
+              <div style="height:200px; position:relative"><canvas id="chartEstatus"></canvas></div>
+              <div id="estatus-legend" class="custom-legend"></div>
+            </div>
+          </div>
+
+          <div class="card card-glow-amber">
+            <div class="card-head">
+              <div class="card-badge" style="--badge-color:#d97706">Prioridad</div>
+              <div class="card-title">Nivel de Urgencia</div>
+              <div class="card-desc">Clasificación por impacto operativo</div>
+            </div>
+            <div style="height:240px"><canvas id="chartPrioridad"></canvas></div>
+          </div>
+
+          <div class="card card-glow-teal">
+            <div class="card-head">
+              <div class="card-badge" style="--badge-color:#0d9488">Categorías</div>
+              <div class="card-title">Tipo de Incidencia</div>
+              <div class="card-desc">Distribución por naturaleza del problema</div>
+            </div>
+            <div style="height:240px"><canvas id="chartCategoria"></canvas></div>
+          </div>
+
+          <!-- ══ Timeline full width ══ -->
+          <div class="card full card-timeline">
+            <div class="card-head timeline-head">
+              <div>
+                <div class="card-badge" style="--badge-color:#7c3aed">Tendencia</div>
+                <div class="card-title">Flujo Diario de Tickets</div>
+                <div class="card-desc">Tickets abiertos vs. cerrados — período seleccionado</div>
+              </div>
+              <div class="tl-legend">
+                <div class="leg-item"><div class="leg-line" style="background:#2563eb"></div>Abiertos</div>
+                <div class="leg-item"><div class="leg-line" style="background:#0d9488"></div>Cerrados</div>
+              </div>
+            </div>
+            <div style="height:190px"><canvas id="chartTimeline"></canvas></div>
+          </div>
+
+          <!-- ══ Departamentos wide + Agentes ══ -->
+          <div class="card wide card-glow-slate">
+            <div class="card-head">
+              <div class="card-badge" style="--badge-color:#475569">Departamentos</div>
+              <div class="card-title">Volumen por Área</div>
+              <div class="card-desc">Incidencias generadas por unidad organizacional</div>
+            </div>
+            <div style="height:210px"><canvas id="chartDep"></canvas></div>
+          </div>
+
+          <div class="card card-glow-blue">
+            <div class="card-head">
+              <div class="card-badge" style="--badge-color:#2563eb">Agentes</div>
+              <div class="card-title">Top Técnicos</div>
+              <div class="card-desc">Tickets resueltos por agente</div>
+            </div>
+            <div id="leaderboard"></div>
+          </div>
+
+          <!-- ══ SLA + Semanal ══ -->
+          <div class="card card-glow-rose">
+            <div class="card-head">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                <div>
+                  <div class="card-badge" style="--badge-color:#e11d48">SLA</div>
+                  <div class="card-title">Cumplimiento SLA</div>
+                </div>
+                <div id="sla-badge" class="sla-badge-pill">
+                  <span style="font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#64748b;">Promedio</span>
+                  <span id="sla-avg" class="sla-avg-num"></span>
+                </div>
+              </div>
+              <div class="card-desc">Porcentaje de cumplimiento por nivel de prioridad</div>
+            </div>
+            <div id="sla-meters" class="sla-meters" style="margin-top:14px"></div>
+          </div>
+
+          <div class="card wide card-glow-indigo">
+            <div class="card-head">
+              <div class="card-badge" style="--badge-color:#4f46e5">Semanal</div>
+              <div class="card-title">Volumen Semanal</div>
+              <div class="card-desc">Tendencia de carga · últimas semanas del período</div>
+            </div>
+            <div style="height:165px"><canvas id="chartSemanal"></canvas></div>
+          </div>
+
+        </div><!-- /charts-grid -->
+      </main>
+    </div><!-- /layout -->
+
+    <script>
+      const tok = <%-JSON.stringify(tok)%>;
+      const TICKETS = <%-JSON.stringify(data)%>;
+    </script>
+    <script src="/scripts/sistemas/scripts_dashboardTickets.js"></script>
+    <script src="/clases/clase_fetch.js"></script>
+  </body>
+</html>

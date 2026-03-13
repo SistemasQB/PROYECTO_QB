@@ -86,3 +86,20 @@
         }
     });
     }
+    function solicitudInformacion(url, body){
+        if (!url || !body) return false
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify(body),
+            credentials: 'include'
+        }).then(response => {
+                return response.json()
+        }
+        ).catch((error) => {
+            console.log(error);
+            return false
+        })
+    }
