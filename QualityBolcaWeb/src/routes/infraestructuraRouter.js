@@ -29,4 +29,12 @@ infraestructuraController.vistaCheckListVehicular);
 infraestructuraRouter.get('/historico_check_list_vehicular', protegerRuta, validarAcceso({roles: ['logistica vehicular'], permisos: ['analista logistica vehicular',"auxiliar logistica vehicular"], jerarquia: 5
 }),infraestructuraController.historicoCheckListVehicular);
 
+//rutas de requsiciones de gastos
+infraestructuraRouter.get('/requisicionGastos', protegerRuta,infraestructuraController.requisicionGastos);
+infraestructuraRouter.post('/crudRequisicionGastos', protegerRuta, infraestructuraController.crudRequisicionGastos);
+infraestructuraRouter.get('/requisicionGastos/crearRequisicionGastos', protegerRuta, infraestructuraController.crearRequisicionGastos);
+infraestructuraRouter.get('/requisicionGastos/aprobaciones', protegerRuta, infraestructuraController.aprobacionesRequisicionGastos);
+infraestructuraRouter.get('/requisicionGastos/misRequisiciones', protegerRuta, infraestructuraController.misRequisicionesGastos);
+infraestructuraRouter.get('/requisicionGastos/comprobar', protegerRuta, infraestructuraController.comprobarRequisicionesGastos);
+
 export default infraestructuraRouter;

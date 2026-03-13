@@ -2,6 +2,11 @@ import { DataTypes } from 'sequelize'
 import db from "../config/db.js";
 
 const Requisicion = db.define('requisicion', {
+    id:{
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     rentabilidad:{
         type: DataTypes.STRING,
         allowNull: false
@@ -15,39 +20,34 @@ const Requisicion = db.define('requisicion', {
         allowNull: false
     },
     orden:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
     },
     descripcion:{
-        type: DataTypes.TEXT,
-        allowNull: false
+        type: DataTypes.TEXT
     },
     fechaEntrega:{
-        type: DataTypes.DATE,
-        allowNull: false
+        type: DataTypes.DATE
     },
     total:{
         type: DataTypes.DOUBLE
     },
     situacionActual:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
     },
     detallesEspectativa:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.TEXT
     },
     comentariosAdicionales:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.TEXT
     },
     noCuenta:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
+    },
+    horaRegistro:{
+        type: DataTypes.DATE
     },
     estatus:{
-        type: DataTypes.INTEGER,
-        defaultValue: 1
+        type: DataTypes.STRING
     },
     solicitante:{
         type: DataTypes.STRING
@@ -56,30 +56,39 @@ const Requisicion = db.define('requisicion', {
         type: DataTypes.STRING
     },
     region:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
     },
     planta:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
     },
     jerarquiaSolicitante:{
         type: DataTypes.INTEGER
     },
     asunto:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
     },
     proceso:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: DataTypes.STRING
     },
     contacto:{
         type: DataTypes.STRING
     },
     foto:{
         type: DataTypes.STRING
+    },
+    
+    delegado:{
+        type: DataTypes.STRING
+    },
+
+    autorizo:{
+        type: DataTypes.STRING
     }
+
+},{
+    tableName: 'requisiciones',
+    freezeTableName: true,
+    timestamps: false
 })
 
 export default Requisicion;
