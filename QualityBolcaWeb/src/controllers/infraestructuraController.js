@@ -5,7 +5,6 @@ import { Op } from "sequelize";
 import db from "../config/db.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import nodemailerClase from "../public/clases/nodemailer.js";
-import Requisicion from "../models/requisicion.js";
 import { informacionpuesto } from "../models/index.js";
 import Informaciondepartamento from "../models/informaciondepartamento.js";
 
@@ -134,7 +133,7 @@ infraestructuraController.pedidoInsumos = async (req, res) => {
         let productos = await clase.obtenerDatosPorCriterio({ criterio: criterios })
         clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_plantas_gastos })
         criterios = { id: { [Op.gt]: 0 } }
-        let plantas = await clase.obtenerDatosPorCriterio({ criterio: criterios })
+        let plantas = await clase.obtenerDatosPorCriterio({ criterio: criterios,ordenamiento: [[ 'planta', 'ASC' ]]})
         return res.render('admin/infraestructura/formato_pedido_insumos.ejs', {
             productos: productos,
             plantas: plantas,
@@ -409,18 +408,26 @@ infraestructuraController.requisicionGastos = async (req, res) => {
 
 infraestructuraController.crudRequisicionGastos = async (req, res) => {
     try {
-
         let campos = req.body
         delete campos._csrf
-        let usuario = req.usuario.codigoempleado
-        let clase = new sequelizeClase({ modelo: Requisicion })
-
+        let clase = new sequelizeClase({ modelo: modelosGenerales.vistaempleados})
+        let usuario =await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
+        clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_requisiciones})
         const id = campos.id
-
         switch (campos.tipo) {
-
             case 'insert':
-
+                const archivo = req.file
+                if(archivo){
+                    campos.foto = archivo.filename
+                }else{
+                    campos.foto = 'NO'
+                } 
+                delete campos._csrf
+                delete campos.tipo
+                campos.solicitante = usuario.nombrelargo
+                const respuesta = await clase.insertar({ datosInsertar: campos })
+                if (!respuesta) return res.json({ ok: false, msg: 'no se pudo ingresar la informacion'})
+                return res.json({ ok: true, msg: 'informacion enviada exitosamente' })
             case 'misRequisiciones': //mis requisiciones
 
                 let misRequisiciones = await clase.obtenerDatosPorCriterio({
@@ -512,7 +519,23 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
 }
 
 infraestructuraController.crearRequisicionGastos = async (req, res) => {
-    res.render('admin/infraestructura/requisicionGastos_form.ejs', { tok: req.csrfToken() })
+    try {
+        let clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_plantas_gastos })
+        const plantas = await clase.obtenerDatosPorCriterio({ criterio: { id: { [Op.gt]: 0 } }, ordenamiento: [[ 'planta', 'ASC' ]] }) 
+        clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001})
+        const datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
+        clase = new sequelizeClase({ modelo: modelosGenerales.vistaempleados})
+        const puesto = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
+        if(!puesto) return res.status(501).json({ ok: false, msg: 'No se pudo obtener el puesto del empleado' })
+        const listaAutorizacion = Clasificacion(puesto.descripcion)
+        clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_regionesGastos})
+        const regiones = await clase.obtenerDatosPorCriterio({ criterio: { vigente: true } , ordenamiento: [[ 'region', 'ASC' ]], atributos: ['region'] })
+        // To do: realizar validacion si el usuario pertenece a SC y traer a los supervisores (delegado) asi como tambien a las cotizaciones con horas en caso de que sea cobro
+        res.render('admin/infraestructura/requisicionGastos_form.ejs', { tokin: req.csrfToken(), plantas, datosUsuario, listaAutorizacion, regiones})
+    } catch (error) {
+        manejadorErrores(res, error)
+    }
+    
 }
 
 infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
@@ -524,5 +547,38 @@ infraestructuraController.misRequisicionesGastos = async (req, res) => {
 }
 infraestructuraController.comprobarRequisicionesGastos = async (req, res) => {
     res.render('admin/infraestructura/comprobarRequisicionesGastos.ejs', { tok: req.csrfToken() })
+}
+
+function Clasificacion(puesto){
+    puesto = puesto.toLowerCase()
+    if (!puesto) return null
+    if(puesto.includes('gerente sorteo')){
+        return [
+        'ATRACCION DE CAPITAL HUMANO', 'CALIDAD', 'CAPITAL HUMANO','CAPTURACION','COMPRAS','FACTURACION Y COBRANZA','GASTOS','LOGISTICA VEHICULAR','DIRECTOR DE INGENIERIA Y CALIDAD',
+        'OPERACIONES','SERVICIO AL CLIENTE','TECNOLOGIAS DE LA INFORMACION','VENTAS','DIRECTOR DE ADMINISTRACION','DIRECTOR DE SORTEO','DIRECCIÓN DE CAPITAL HUMANO'
+    ]
+    }
+    if(puesto.includes('sorteo', 'supervisor')){
+        return ['COMPRAS','LOGISTICA VEHICULAR','TECNOLOGIAS DE LA INFORMACION', 'DIRECTOR DE ADMINISTRACION', 'DIRECTOR DE SORTEO', 'GERENCIA DE SORTEO']
+    }
+    
+    return [
+        'ATRACCION DE CAPITAL HUMANO',
+        'CALIDAD',
+        'CAPITAL HUMANO',
+        'CAPTURACION',
+        'COMPRAS',
+        'FACTURACION Y COBRANZA',
+        'GASTOS',
+        'LOGISTICA VEHICULAR',
+        'DIRECTOR DE INGENIERIA Y CALIDAD',
+        'OPERACIONES',
+        'SERVICIO AL CLIENTE',
+        'TECNOLOGIAS DE LA INFORMACION',
+        'VENTAS',
+        'DIRECTOR DE ADMINISTRACION',
+        'DIRECTOR DE SORTEO',
+        'DIRECCIÓN DE CAPITAL HUMANO',
+    ]
 }
 export default infraestructuraController;

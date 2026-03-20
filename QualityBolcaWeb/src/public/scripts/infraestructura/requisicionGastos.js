@@ -3,7 +3,6 @@ const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute
 
 // FUNCIÓN PARA CARGAR LA TABLA
 async function cargarTabla() {
-
     const res = await fetch('/infraestructura/crudRequisicionGastos', {
         method: 'POST',
         headers: {
@@ -78,7 +77,7 @@ function renderTabla(lista) {
     tbody.innerHTML = html
 }
 
-setInterval(cargarTabla, 20000)
+setInterval(cargarTabla, 200000)
 
 
 // Inicializar
