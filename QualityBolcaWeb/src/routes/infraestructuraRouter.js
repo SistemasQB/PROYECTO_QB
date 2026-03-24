@@ -35,7 +35,8 @@ infraestructuraRouter.get('/historico_check_list_vehicular', protegerRuta, valid
 infraestructuraRouter.get('/requisicionGastos', protegerRuta,infraestructuraController.requisicionGastos); //vista de inicio de usuario
 infraestructuraRouter.post('/crudRequisicionGastos', protegerRuta,uGas.archivoUnico('evidencia', 1) ,infraestructuraController.crudRequisicionGastos);
 infraestructuraRouter.get('/crearRequisicionGastos', protegerRuta, infraestructuraController.crearRequisicionGastos);
-infraestructuraRouter.get('/requisicionGastos/aprobaciones', protegerRuta, infraestructuraController.aprobacionesRequisicionGastos);
+infraestructuraRouter.get('/aprobaciones', protegerRuta, infraestructuraController.aprobacionesRequisicionGastos);
+
 infraestructuraRouter.get('/requisicionGastos/misRequisiciones', protegerRuta, infraestructuraController.misRequisicionesGastos);
 infraestructuraRouter.get('/requisicionGastos/comprobar', protegerRuta, infraestructuraController.comprobarRequisicionesGastos);
 
