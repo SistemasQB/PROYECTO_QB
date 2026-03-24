@@ -9,7 +9,7 @@ import nodemailerClase from "../public/clases/nodemailer.js";
 import Requisicion from "../models/requisicion.js";
 import { informacionpuesto, requisicion } from "../models/index.js";
 import Informaciondepartamento from "../models/informaciondepartamento.js";
-
+import { QueryTypes } from "sequelize";
 
 
 const infraestructuraController = {}
@@ -377,6 +377,58 @@ infraestructuraController.requisicionGastos = async (req, res) => {
             type: db.QueryTypes.SELECT
         })
 
+        const nombreAutorizador = nombreUsuario
+
+        const usuarioReq = await db.query(`
+                    SELECT departamento
+                    FROM usuariosRequisiciones
+                    WHERE nombre = :nombre
+                    LIMIT 1
+                `, {
+            replacements: { nombre: nombreAutorizador },
+            type: QueryTypes.SELECT
+        })
+
+        if (!usuarioReq.length) {
+            return res.render('admin/infraestructura/requisicionGastos.ejs', {
+                usuario: datosUsuario,
+                requisiciones,
+                pendientesConfirmacion: 0,
+                porComprobar: 0,
+                montoTotalMes: 0,
+                stats: { total_pendientes: 0, monto_total: 0 },
+                tok: req.csrfToken()
+            })
+        }
+
+        const { departamento: departamentoReq } = usuarioReq[0]
+
+        const usuarioJer = await db.query(`
+            SELECT jerarquia
+            FROM usuariosRequisiciones
+            WHERE nombre = :nombre
+            LIMIT 1
+        `, {
+            replacements: { nombre: nombreUsuario },
+            type: QueryTypes.SELECT
+        })
+
+        const jerarquia = usuarioJer[0]?.jerarquia || 5
+
+        const statsResult = await db.query(`
+                SELECT 
+                    COUNT(*) as total_pendientes,
+                    COALESCE(SUM(total), 0) as monto_total
+                FROM requisiciones
+                WHERE estatus = 'INGRESADA'
+                AND autoriza = :departamento
+        `, {
+            replacements: {
+                departamento: departamentoReq
+            },
+            type: QueryTypes.SELECT
+        })
+
         const requisiciones = await db.query(`
             SELECT 
                 id,
@@ -408,8 +460,11 @@ infraestructuraController.requisicionGastos = async (req, res) => {
             pendientesConfirmacion: pendientesConfirmacion,
             porComprobar: porComprobar,
             montoTotalMes: montoTotalMes,
+            stats: statsResult[0],
+            jerarquia,
             tok: req.csrfToken()
         })
+
     } catch (error) {
         manejadorErrores(res, error)
     }
@@ -509,13 +564,179 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
 
             case 'update':
 
+            case 'resolverRequisicion':
+                const justificacion = campos.justificacion || null
+
+                if (campos.estatus === 'RECHAZADA' && !justificacion) {
+                    return res.json({
+                        ok: false,
+                        msg: 'Debe ingresar una justificación'
+                    })
+                }
+
+                const datosUsuarioAuth = await db.query(`
+                    SELECT nombrelargo
+                    FROM nom10001
+                    WHERE codigoempleado = :usuario
+                `, {
+                    replacements: { usuario },
+                    type: QueryTypes.SELECT
+                })
+
+                const nombreAutorizador = datosUsuarioAuth[0].nombrelargo
+
+                const [reqDB] = await db.query(`
+                    SELECT *
+                    FROM requisiciones
+                    WHERE id = :id
+                `, {
+                    replacements: { id },
+                    type: QueryTypes.SELECT
+                })
+
+                if (!reqDB) {
+                    return res.json({ ok: false, msg: 'Requisición no encontrada' })
+                }
+
+                const usuarioSolicitante = await db.query(`
+                    SELECT correo
+                    FROM usuariosRequisiciones
+                    WHERE nombre = :nombre
+                    LIMIT 1
+                `, {
+                    replacements: { nombre: reqDB.solicitante },
+                    type: QueryTypes.SELECT
+                })
+
+                const correoSolicitante = usuarioSolicitante[0]?.correo || null
+
+                if (!correoSolicitante) {
+                    console.warn(`Usuario sin correo: ${reqDB.solicitante}`)
+                }
+
+                const usuarioReq = await db.query(`
+                    SELECT departamento
+                    FROM usuariosRequisiciones
+                    WHERE nombre = :nombre
+                    LIMIT 1
+                `, {
+                    replacements: { nombre: nombreAutorizador },
+                    type: QueryTypes.SELECT
+                })
+
+                if (!usuarioReq.length || usuarioReq[0].departamento !== reqDB.autoriza) {
+                    return res.json({
+                        ok: false,
+                        msg: 'No tienes permisos para aprobar esta requisición'
+                    })
+                }
+
+                // ACTUALIZAR ESTATUS
+                await db.query(`
+                UPDATE requisiciones
+                SET estatus = :estatus,
+                    autorizo = :autorizo
+                WHERE id = :id
+            `, {
+                    replacements: {
+                        estatus: campos.estatus,
+                        autorizo: nombreAutorizador,
+                        justificacion,
+                        id
+                    },
+                    type: QueryTypes.UPDATE
+                })
+
+                // ENVIAR CORREO SOLO SI SE APRUEBA
+                if (campos.estatus === 'APROBADA') {
+
+                    const correo = new nodemailerClase({
+                        datosSmtp: {
+                            host: process.env.EMAIL_HOST,
+                            port: process.env.EMAIL_PORT,
+                            auth: {
+                                user: process.env.EMAILR_USER,
+                                pass: process.env.EMAILR_PASS
+                            }
+                        }
+                    })
+
+                    const html = correo.htmlRequisicionAprobada({
+                        datos: reqDB,
+                        autorizador: nombreAutorizador
+                    })
+
+                    const correoCompras = 'info.sistemas@qualitybolca.com'
+
+                    const destinatarios = [correoCompras]
+
+                    if (correoSolicitante) {
+                        destinatarios.push(correoSolicitante)
+                    }
+
+                    await correo.enviarCorreo({
+                        Datoscorreo: {
+                            destinatario: correoCompras,
+                            cc: correoSolicitante || undefined,
+                            asunto: `Requisición APROBADA (${reqDB.id})`,
+                            texto: 'Requisición aprobada',
+                            html
+                        }
+                    })
+                }
+
+                if (campos.estatus === 'RECHAZADA') {
+
+                    const correo = new nodemailerClase({
+                        datosSmtp: {
+                            host: process.env.EMAIL_HOST,
+                            port: process.env.EMAIL_PORT,
+                            auth: {
+                                user: process.env.EMAILR_USER,
+                                pass: process.env.EMAILR_PASS
+                            }
+                        }
+                    })
+
+                    if (!correoSolicitante) {
+                        console.warn('No se encontró correo del solicitante')
+                    }
+
+                    const html = `
+                        <p>Buen día <b>${reqDB.solicitante}</b>,</p>
+
+                        <p>Tu requisición ha sido <b>RECHAZADA</b> por <b>${nombreAutorizador}</b>.</p>
+
+                        <p><b>Motivo del rechazo:</b></p>
+                        <p style="background:#f3f4f6; padding:10px; border-radius:5px;">
+                            ${justificacion}
+                        </p>
+
+                        <br>
+                        <p>EXPENSE SUPPORT SYSTEM</p>
+                        <p><b>No responda a este mensaje.</b></p>
+                    `
+                    if (correoSolicitante) {
+                        await correo.enviarCorreo({
+                            Datoscorreo: {
+                                destinatario: correoSolicitante,
+                                asunto: `Requisición RECHAZADA (${reqDB.id})`,
+                                texto: 'Requisición rechazada',
+                                html
+                            }
+                        })
+                    }
+                }
+
+                return res.json({
+                    ok: true,
+                    msg: `Requisición ${campos.estatus}`
+                })
         }
 
     } catch (error) {
-
         console.log(error)
         manejadorErrores(res, error)
-
     }
 }
 
@@ -524,7 +745,106 @@ infraestructuraController.crearRequisicionGastos = async (req, res) => {
 }
 
 infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
-    res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', { tok: req.csrfToken() })
+    try {
+        //obtener datos de usuario loggeado
+        let usuario = req.usuario.codigoempleado
+        let clase = new sequelizeClase({
+            modelo: modelosGenerales.modelonom10001
+        })
+        let datosUsuario = await clase.obtener1Registro({
+            criterio: { codigoempleado: usuario }
+        })
+
+        // obtener puesto
+        let clasePuesto = new sequelizeClase({
+            modelo: informacionpuesto
+        })
+
+        let puesto = await clasePuesto.obtener1Registro({
+            criterio: { idpuesto: datosUsuario.idpuesto }
+        })
+
+        // obtener departamento
+        let claseDepartamento = new sequelizeClase({
+            modelo: Informaciondepartamento
+        })
+
+        let departamentoUsuario = await claseDepartamento.obtener1Registro({
+            criterio: { iddepartamento: datosUsuario.iddepartamento }
+        })
+
+        datosUsuario.puesto = puesto ? puesto.descripcion : ''
+        datosUsuario.departamento = departamentoUsuario ? departamentoUsuario.descripcion : ''
+
+        const usuarioReq = await db.query(`
+                SELECT nombre, jerarquia, departamento
+                FROM usuariosRequisiciones
+                WHERE nombre = :nombre
+                LIMIT 1
+        `, {
+            replacements: {
+                nombre: datosUsuario.nombrelargo
+            },
+            type: QueryTypes.SELECT
+        })
+
+        if (!usuarioReq.length) {
+            return res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', {
+                usuario: datosUsuario,
+                tok: req.csrfToken(),
+                stats: { total_pendientes: 0, monto_total: 0 },
+                requisiciones: []
+            })
+        }
+
+        const { jerarquia, departamento: departamentoReq } = usuarioReq[0]
+
+
+        if (jerarquia > 4) {
+            return res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', {
+                usuario: datosUsuario,
+                tok: req.csrfToken(),
+                stats: { total_pendientes: 0, monto_total: 0 },
+                requisiciones: []
+            })
+        }
+
+        const statsResult = await db.query(`
+                SELECT 
+                    COUNT(*) as total_pendientes,
+                    COALESCE(SUM(total), 0) as monto_total
+                FROM requisiciones
+                WHERE estatus = 'INGRESADA'
+                AND autoriza = :departamento
+        `, {
+            replacements: {
+                departamento: departamentoReq
+            },
+            type: QueryTypes.SELECT
+        })
+
+        const requisiciones = await db.query(`
+                SELECT *
+                FROM requisiciones
+                WHERE estatus = 'INGRESADA'
+                AND autoriza = :departamento
+                ORDER BY horaRegistro DESC
+        `, {
+            replacements: { departamento: departamentoReq },
+            type: QueryTypes.SELECT
+        })
+
+
+        res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', {
+            usuario: datosUsuario,
+            tok: req.csrfToken(),
+            stats: statsResult[0],
+            requisiciones
+        })
+
+    } catch (error) {
+        manejadorErrores(res, error)
+    }
 }
 
 infraestructuraController.misRequisicionesGastos = async (req, res) => {

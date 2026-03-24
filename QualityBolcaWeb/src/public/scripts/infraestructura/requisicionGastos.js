@@ -1,7 +1,40 @@
 
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
-// FUNCIÓN PARA CARGAR LA TABLA
+const menuToggle = document.getElementById("menuToggle")
+const sidebar = document.getElementById("sidebar")
+const overlay = document.getElementById("sidebarOverlay")
+
+menuToggle.addEventListener("click", () => {
+    sidebar.classList.toggle("active")
+    overlay.classList.toggle("active")
+})
+
+overlay.addEventListener("click", () => {
+    cerrarSidebar()
+})
+
+document.querySelectorAll(".nav-item").forEach(item => {
+    item.addEventListener("click", () => {
+        cerrarSidebar()
+    })
+})
+
+function cerrarSidebar() {
+    sidebar.classList.remove("active")
+    overlay.classList.remove("active")
+}
+
+document.addEventListener("click", (e) => {
+    if (
+        sidebar.classList.contains("active") &&
+        !sidebar.contains(e.target) &&
+        !menuToggle.contains(e.target)
+    ) {
+        cerrarSidebar()
+    }
+})
+
 async function cargarTabla() {
 
     const res = await fetch('/infraestructura/crudRequisicionGastos', {
@@ -153,10 +186,6 @@ function crearModalRequisicion(req) {
                         ID: REQ-${req.id}
                     </span>
 
-                    <span class="status-badge ${obtenerClaseEstatus(req.estatus)}">
-                        ${req.estatus}
-                    </span>
-
                     <span class="badge-tipo">
                         ${req.rentabilidad}
                     </span>
@@ -214,8 +243,8 @@ function crearModalRequisicion(req) {
         </div>
 
         <div>
-        <label>Estatus</label>
-        <p>${req.estatus}</p>
+        <label>Estatus</label> <br>
+        <p class="status-badge ${obtenerClaseEstatus(req.estatus)}">${req.estatus}</p>
         </div>
 
         </div>
@@ -228,35 +257,35 @@ function crearModalRequisicion(req) {
         </h4>
 
 
-        <table class="tabla-conceptos">
-
-        <thead>
-
-        <tr>
-        <th>CONCEPTO</th>
-        <th>CANTIDAD</th>
-        <th>P. UNITARIO</th>
-        <th>SUBTOTAL</th>
-        </tr>
-
-        </thead>
-
-        <tbody>
-
-        ${tablaConceptos}
-
-        </tbody>
-
-        <tfoot>
-
-        <tr>
-        <td colspan="3">TOTAL</td>
-        <td class="total">${totalMXN}</td>
-        </tr>
-
-        </tfoot>
-
-        </table>
+        ${esMobile() ? `
+            <div class="contenedor-conceptos">
+                ${tablaConceptos}
+                <div class="total-mobile">
+                    <span>Total</span>
+                    <strong>${totalMXN}</strong>
+                </div>
+            </div>
+        ` : `
+            <table class="tabla-conceptos">
+                <thead>
+                    <tr>
+                        <th>CONCEPTO</th>
+                        <th>CANTIDAD</th>
+                        <th>P. UNITARIO</th>
+                        <th>SUBTOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tablaConceptos}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">TOTAL</td>
+                        <td class="total">${totalMXN}</td>
+                    </tr>
+                </tfoot>
+            </table>
+`}
 
 
         <div class="modal-divider"></div>
@@ -338,17 +367,41 @@ function generarTablaConceptos(descripcion) {
             currency: 'MXN'
         }).format(subtotal)
 
-        html += `
-        <tr>
-            <td>${concepto}</td>
-            <td>${cantidad}</td>
-            <td>${precioMXN}</td>
-            <td class="subtotal">${subtotalMXN}</td>
-        </tr>
-        `
+        if (esMobile()) {
+            html += `
+            <div class="concepto-card">
+                <div class="concepto-title">${concepto}</div>
+                <div class="concepto-row">
+                    <span>Cantidad:</span>
+                    <strong>${cantidad}</strong>
+                </div>
+                <div class="concepto-row">
+                    <span>P. Unitario:</span>
+                    <strong>${precioMXN}</strong>
+                </div>
+                <div class="concepto-row total">
+                    <span>Subtotal:</span>
+                    <strong>${subtotalMXN}</strong>
+                </div>
+            </div>
+            `
+        } else {
+            html += `
+            <tr>
+                <td>${concepto}</td>
+                <td>${cantidad}</td>
+                <td>${precioMXN}</td>
+                <td class="subtotal">${subtotalMXN}</td>
+            </tr>
+            `
+        }
     }
 
     return html
+}
+
+function esMobile() {
+    return window.matchMedia("(max-width: 600px)").matches;
 }
 
 function obtenerClaseEstatus(estatus) {

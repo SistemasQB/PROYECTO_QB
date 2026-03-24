@@ -13,49 +13,68 @@
 
 <body>
 
-    <aside class="sidebar">
-        <div class="logo">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo-container">
             <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
-            <h2>Requisiciones</h2>
+            <span>Requisiciones</span>
         </div>
 
-        <div class="user-profile">
+        <div class="profile-section">
             <div class="avatar" id="avatarUsuario"></div>
-            <h3>
+
+            <div class="profile-name">
                 <%= usuario.nombrelargo %>
-            </h3>
-            <span class="role">
+            </div>
+
+            <div class="profile-role">
                 <%= usuario.puesto || '' %>
-            </span>
-            <span class="dept">
+            </div>
+
+            <div class="profile-dept">
                 <%= usuario.departamento || '' %>
-            </span>
-            <span class="email">
+            </div>
+
+            <div class="profile-email">
                 <%= usuario.correoelectronico %>
-            </span>
+            </div>
         </div>
 
-        <nav class="nav-menu">
-            <a href="#" class="nav-item active"><i class="fa-solid fa-border-all"></i> Panel Principal</a>
-            <a href="requisicionGastos/misRequisiciones" class="nav-item"><i class="fa-solid fa-file-lines"></i> Mis Requisiciones</a>
-            <a href="requisicionGastos/aprobaciones" class="nav-item"><i class="fa-solid fa-check-double"></i> Aprobaciones</a>
-            <a href="requisicionGastos/comprobar" class="nav-item"><i class="fa-solid fa-file-invoice"></i> Comprobaciones</a>
-        </nav>
+        <ul class="nav-menu">
+            <a href="requisicionGastos" class="nav-item active">
+                <i class="fa-solid fa-border-all"></i> Panel Principal
+            </a>
 
-        <div class="logout">
-            <a href="#" class="nav-item text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar
-                Sesión</a>
-        </div>
+            <a href="requisicionGastos/misRequisiciones" class="nav-item">
+                <i class="fa-solid fa-file-lines"></i> Mis Requisiciones
+            </a>
+
+            <% if (jerarquia <=4) { %>
+                <a href="aprobaciones" class="nav-item">
+                    <i class="fa-solid fa-check-double"></i> Aprobaciones
+                </a>
+
+                <a href="requisicionGastos/comprobar" class="nav-item">
+                    <i class="fa-solid fa-file-invoice"></i> Comprobaciones
+                </a>
+                <% } %>
+        </ul>
+
     </aside>
 
     <main class="main-content">
         <header class="top-bar">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
             <div class="search-bar">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" placeholder="Buscar requisiciones, folios o conceptos...">
             </div>
             <div class="top-actions">
-                <button class="btn btn-primary" onclick="location.href='requisicionGastos/crearRequisicionGastos'"><i class="fa-solid fa-plus"></i> Crear Requisición</button>
+                <button class="btn btn-primary" onclick="location.href='requisicionGastos/crearRequisicionGastos'"><i
+                        class="fa-solid fa-plus"></i> Crear Requisición</button>
                 <button class="btn btn-refresh" id="btnRefresh">
                     <i class="fa-solid fa-rotate"></i> Actualizar
                 </button>
@@ -74,25 +93,39 @@
                         </h2>
                     </div>
                 </div>
-                <div class="card summary-card">
-                    <div class="card-icon blue-bg"><i class="fa-solid fa-file-signature blue-text"></i></div>
-                    <div class="card-info">
-                        <span class="card-label">POR COMPROBAR</span>
-                        <h2><span id="solicitudes-comprobar">
-                                <%= porComprobar %>
-                            </span> <small>solicitudes</small></h2>
+
+                <% if (jerarquia <=4) { %>
+                    <div class="card summary-card">
+                        <div class="card-icon blue-bg"><i class="fa-solid fa-file-signature blue-text"></i></div>
+                        <div class="card-info">
+                            <span class="card-label">POR COMPROBAR</span>
+                            <h2><span id="solicitudes-comprobar">
+                                    <%= porComprobar %>
+                                </span> <small>solicitudes</small></h2>
+                        </div>
                     </div>
-                </div>
-                <div class="card summary-card">
-                    <div class="card-icon success-bg"><i class="fa-solid fa-circle-check success-text"></i></div>
-                    <div class="card-info">
-                        <span class="card-label">TOTAL MES</span>
-                        <h2 id="monto-total">
-                            <%= new Intl.NumberFormat('es-MX', { style: 'currency' , currency: 'MXN'
-                                }).format(montoTotalMes) %>
-                        </h2>
+                    <div class="card summary-card">
+                        <div class="card-icon purple-bg"><i class="fa-solid fa-check-double purple-text"></i></div>
+                        <div class="card-info">
+                            <span class="card-label">POR APROBAR</span>
+                            <h2><span id="solicitudes-aprobar">
+                                    <%= stats.total_pendientes %>
+                                </span> <small>solicitudes</small></h2>
+                        </div>
                     </div>
-                </div>
+                    <% } %>
+
+                        <div class="card summary-card">
+                            <div class="card-icon success-bg"><i class="fa-solid fa-circle-check success-text"></i>
+                            </div>
+                            <div class="card-info">
+                                <span class="card-label">TOTAL MES</span>
+                                <h2 id="monto-total">
+                                    <%= new Intl.NumberFormat('es-MX', { style: 'currency' , currency: 'MXN'
+                                        }).format(montoTotalMes) %>
+                                </h2>
+                            </div>
+                        </div>
             </section>
 
             <section class="table-section">
@@ -119,7 +152,7 @@
                 </div>
             </section>
 
-            <!-- Pendiente seccion de comprobaciones --> 
+            <!-- Pendiente seccion de comprobaciones -->
             <section class="cards-section">
                 <div class="section-header">
                     <h3><i class="fa-solid fa-check-double blue-text"></i> Requisiciones Recibidas (Pendientes de
