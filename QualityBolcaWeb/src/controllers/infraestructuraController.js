@@ -186,6 +186,16 @@ infraestructuraController.crudPedidoInsumos = async (req, res) => {
                 let rechazado = await clase.actualizarDatos({ id: id, datos: campos })
                 if (!rechazado) return res.json({ ok: false, msg: 'no se pudo rechazar la informacion' })
                 return res.json({ ok: rechazado, msg: 'informacion actualizada exitosamente' })
+            case 'consultar':
+                const datos = await clase.obtener1Registro({ criterio: { id: id } })
+                if (!datos) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
+                    return res.render('admin/infraestructura/formatoPedidoInsumosDigital.ejs', { datos: datos, tok: req.csrfToken() })
+            case 'consultaPorFecha':
+                console.log('entro a la consulta');
+                const {inicio, fin} = req.body;
+                const consulta = await clase.obtenerDatosPorCriterio({ criterio: { createdAt: { [Op.between]: [inicio, fin] } } })
+                if(!consulta) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
+                return res.json({ ok: true, msg: 'exito', resultados: consulta })
         }
     } catch (error) {
         console.log(error)
@@ -193,22 +203,32 @@ infraestructuraController.crudPedidoInsumos = async (req, res) => {
     }
 
 }
+infraestructuraController.formatoPedidoInsumos = async (req, res) => {
+    try {
+        const clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_pedido_insumos })
+        const resultados = await clase.obtener1Registro({ criterio: { id: req.params.id } })  
+        if(!resultados) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
+        return res.render('admin/infraestructura/formatoPedidoInsumosDigital.ejs', { resultados})
+    } catch (error) {
+        manejadorErrores(res, error);
+    }
+}
 
 infraestructuraController.gestionPedidosInsumos = async (req, res) => {
     try {
         let clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_pedido_insumos })
         let resultados = await clase.obtenerDatosPorCriterio({ criterio: { estatus: 'PENDIENTE' } })
+        const completos = await clase.obtenerDatosPorCriterio({ criterio: { estatus: {[Op.or] :['PARCIALMENTE SURTIDO', 'SURTIDO'] }} })
         clase = new sequelizeClase({ modelo: modelosInfraestructura.modeloComprasInventario })
         let criterios = { estatus: { [Op.ne]: 'NO ACTIVO' } }
         let productos = await clase.obtenerDatosPorCriterio({ criterio: criterios })
         let usuario = req.usuario.codigoempleado
         clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
         let datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: usuario } })
-        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', { pendientes: resultados, productos: productos, usuario: datosUsuario.nombrelargo, tok: req.csrfToken() })
+        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', { pendientes: resultados, productos: productos, usuario: datosUsuario.nombrelargo, tok: req.csrfToken(), completos})
     } catch (error) {
         manejadorErrores(res, ex)
     }
-
 }
 
 
@@ -402,6 +422,7 @@ infraestructuraController.requisicionGastos = async (req, res) => {
             tok: req.csrfToken()
         })
     } catch (error) {
+        console.log(error)  
         manejadorErrores(res, error)
     }
 }
@@ -411,12 +432,13 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
         let campos = req.body
         delete campos._csrf
         let clase = new sequelizeClase({ modelo: modelosGenerales.vistaempleados})
-        let usuario =await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
+        let usuarioM =await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
+        let usuario = usuarioM.codigoempleado
         clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_requisiciones})
         const id = campos.id
         switch (campos.tipo) {
             case 'insert':
-                const archivo = req.file
+                const archivo = req.file;
                 if(archivo){
                     campos.foto = archivo.filename
                 }else{
@@ -424,7 +446,9 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 } 
                 delete campos._csrf
                 delete campos.tipo
-                campos.solicitante = usuario.nombrelargo
+                campos.solicitante = usuarioM.apellidopaterno + ' ' + usuarioM.apellidomaterno + ' ' + usuarioM.nombre
+                campos.puesto = usuarioM.departamentoLocal
+                campos.contacto = usuarioM.correo
                 const respuesta = await clase.insertar({ datosInsertar: campos })
                 if (!respuesta) return res.json({ ok: false, msg: 'no se pudo ingresar la informacion'})
                 return res.json({ ok: true, msg: 'informacion enviada exitosamente' })

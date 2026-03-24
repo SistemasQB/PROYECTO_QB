@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido de Insumos - Quality BOLCA</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap');
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #d0d0d0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;          /* ← centra horizontalmente */
+      min-height: 100vh;
+      padding: 30px 16px;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    /* ══════════════════════════════════
+       FORM WRAPPER — responsive
+    ══════════════════════════════════ */
+    .form-wrapper {
+      background: #f0ede8;
+      width: 100%;
+      max-width: 760px;             /* máximo en desktop */
+      padding: 24px 28px 20px 28px;
+      border: 1px solid #bbb;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.18);
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 10px;
+      flex-wrap: wrap;              /* se apila en pantallas pequeñas */
+    }
+
+    .logo-area {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      min-width: 100px;
+    }
+
+    .logo-icon svg {
+      width: 52px;
+      height: 42px;
+    }
+
+    .logo-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      line-height: 1;
+    }
+
+    .logo-quality {
+      font-size: 11px;
+      font-weight: 400;
+      color: #333;
+      letter-spacing: 1px;
+    }
+
+    .logo-bolca {
+      font-size: 26px;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: 1px;
+    }
+
+    .title-area {
+      flex: 1;
+      text-align: center;
+      min-width: 160px;
+    }
+
+    .form-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(18px, 4vw, 26px);
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #111;
+      text-transform: uppercase;
+    }
+
+    .form-number {
+      margin-top: 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(16px, 3.5vw, 22px);
+      font-weight: 600;
+      color: #c0392b;
+      letter-spacing: 2px;
+    }
+
+    .meta-area {
+      text-align: right;
+      font-size: 10px;
+      color: #333;
+      line-height: 1.7;
+      min-width: 160px;
+    }
+
+    /* ── FIELDS ROW ── */
+    .fields-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 4px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .fields-row-2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 10px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .field-group {
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .field-label {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #222;
+      white-space: nowrap;
+    }
+
+    .field-line {
+      border: none;
+      border-bottom: 1px solid #555;
+      background: transparent;
+      outline: none;
+      font-family: 'Barlow', sans-serif;
+      font-size: 11.5px;
+      color: #111;
+      padding: 0 4px 1px 4px;
+      height: 20px;
+      max-width: 100%;
+    }
+
+    .field-fecha  { width: 170px; }
+    .field-planta { width: 200px; }
+    .field-nombre { width: 300px; }
+    .field-semana { width: 120px; }
+
+    /* ══════════════════════════════════
+       TABLE
+    ══════════════════════════════════ */
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;             /* scroll en móvil */
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      min-width: 520px;             /* evita colapso total en móvil */
+      table-layout: fixed;
+    }
+
+    /* Anchos de columna: 
+       col 1 Solicitada | col 2 Entregada | cols 3-6 Descripción | col 7 Mat.Pend Cantidad | col 8 Mat.Pend Fecha */
+    table colgroup col:nth-child(1) { width: 70px;  }
+    table colgroup col:nth-child(2) { width: 70px;  }
+    table colgroup col:nth-child(3),
+    table colgroup col:nth-child(4),
+    table colgroup col:nth-child(5),
+    table colgroup col:nth-child(6) { width: auto;  } /* descripción ocupa el resto */
+    table colgroup col:nth-child(7) { width: 70px;  }
+    table colgroup col:nth-child(8) { width: 90px;  }
+
+    table th, table td {
+      border: 1px solid #555;
+      padding: 0;
+      text-align: center;
+    }
+
+    /* Encabezados */
+    .th-group {
+      background: #e8e4de;
+      font-weight: 600;
+      font-size: 11.5px;
+      color: #111;
+      padding: 4px 6px;
+    }
+
+    .th-sub {
+      background: #e8e4de;
+      font-weight: 600;
+      font-size: 11px;
+      color: #111;
+      padding: 3px 6px;
+    }
+
+    /* ── Celda genérica con input ── */
+    .td-input {
+      padding: 0;
+    }
+
+    .td-input input {
+      width: 100%;
+      height: 100%;
+      min-height: 22px;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      color: #111;
+      text-align: center;
+      padding: 0 4px;
+    }
+
+    /* ── Celda de DESCRIPCIÓN: multilínea ── */
+    .td-desc {
+      padding: 4px 6px;
+      text-align: left;
+      vertical-align: top;
+      word-break: break-word;
+      white-space: normal;
+      line-height: 1.5;
+    }
+
+    /* Usamos un <span> o <div> en vez de <input> para que el texto fluya */
+    .td-desc .desc-text {
+      display: block;
+      width: 100%;
+      min-height: 22px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      color: #111;
+      text-align: left;
+      word-break: break-word;
+      white-space: normal;
+      line-height: 1.5;
+      /* si aún quieres que sea editable: */
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;           /* textarea sin resize handle */
+      overflow: hidden;
+      padding: 2px 0;
+    }
+
+    /* ── Footer rows ── */
+    .footer-row td {
+      padding: 4px 8px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 500;
+      color: #222;
+    }
+
+    .footer-row .footer-field {
+      border: none;
+      border-bottom: 1px solid #555;
+      background: transparent;
+      outline: none;
+      font-family: 'Barlow', sans-serif;
+      font-size: 11px;
+      color: #111;
+      width: 140px;
+      padding: 0 4px 1px 4px;
+      height: 18px;
+      max-width: 100%;
+    }
+
+    .footer-label {
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    /* ── Botón imprimir ── */
+    .print-btn {
+      display: block;
+      margin: 18px auto 0;
+      padding: 8px 28px;
+      background: #222;
+      color: #fff;
+      border: none;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background 0.2s;
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .print-btn:hover {
+      background: #c0392b;
+    }
+
+    /* ══════════════════════════════════
+       RESPONSIVE — móvil < 540 px
+    ══════════════════════════════════ */
+    @media (max-width: 540px) {
+      .form-wrapper {
+        padding: 16px 12px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .meta-area {
+        text-align: left;
+      }
+
+      .fields-row,
+      .fields-row-2 {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .field-fecha,
+      .field-planta,
+      .field-nombre,
+      .field-semana {
+        width: 100%;
+      }
+
+      .footer-row .footer-field {
+        width: 100px;
+      }
+    }
+
+    /* ── Print ── */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        display: block;
+      }
+      .form-wrapper {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+      }
+      .print-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="5,28 22,44 55,8" stroke="#222" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-quality">Quality</div>
+        <div class="logo-bolca">BOLCA</div>
+      </div>
+    </div>
+
+    <div class="title-area">
+      <div class="form-title">Pedido de Insumos</div>
+      <div class="form-number">N°&nbsp;&nbsp;&nbsp;<%=resultados.id%></div>
+    </div>
+
+    <div class="meta-area">
+      Código: QB-FI-A-18<br>
+      Rev: 03<br>
+      Fecha de Emisión: 29-02-2012<br>
+      Fecha de Revisión: 02-03-2023
+    </div>
+
+  </div>
+
+  <!-- FIELDS -->
+  <div class="fields-row">
+    <div class="field-group">
+      <span class="field-label">Fecha:</span>
+      <input class="field-line field-fecha" type="text" id="fecha" value=""/>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Planta:</span>
+      <input class="field-line field-planta" type="text" value="<%=resultados.planta%>"/>
+    </div>
+  </div>
+
+  <div class="fields-row-2">
+    <div class="field-group">
+      <span class="field-label">Nombre de quien solicita:</span>
+      <input class="field-line field-nombre" type="text" value="<%=resultados.solicitante%>"/>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Semana:</span>
+      <input class="field-line field-semana" type="text" />
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-scroll">
+    <table>
+      <colgroup>
+        <col><!-- Solicitada -->
+        <col><!-- Entregada -->
+        <col><!-- Descripción cols 3-6 (colspan=4) -->
+        <col>
+        <col>
+        <col>
+        <col><!-- Mat. Pend. Cantidad -->
+        <col><!-- Mat. Pend. Fecha -->
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="th-group" colspan="2">Cantidad</th>
+          <th class="th-group" rowspan="2" colspan="4">Descripción</th>
+          <th class="th-group" colspan="2">Material Pendiente</th>
+        </tr>
+        <tr>
+          <th class="th-sub">Solicitada</th>
+          <th class="th-sub">Entregada</th>
+          <th class="th-sub">Cantidad</th>
+          <th class="th-sub">Fecha de entrega</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-table">
+        <!-- Filas generadas por JS -->
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨 Imprimir</button>
+
+<script>
+  let order = <%-JSON.stringify(resultados)%>
+  order.solicitado = JSON.parse(order.solicitado)
+  console.log(order)
+
+  const campos = {
+    fecha: document.getElementById('fecha'),
+    tbody: document.getElementById('tbody-table'),
+  }
+
+  campos.fecha.value = order.createdAt.split('T')[0]
+
+  let contenido = ''
+
+  for (let i = 0; i < order.solicitado.length - 1; i++) {
+    const e   = order.solicitado[i]
+    const fecha = new Date(order.createdAt)
+    const dia   = fecha.toLocaleDateString('es-ES').split('T')[0]
+
+    // Escapamos comillas para no romper el HTML
+    const desc = (e.descripcion || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+    contenido += `<tr>
+      <td class="td-input"><input type="text" value="${e.cantidad}"/></td>
+      <td class="td-input"><input type="text" value="${e.surtido}"/></td>
+      <td class="td-desc" colspan="4">
+        <textarea class="desc-text" rows="1"
+          oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+        >${desc}</textarea>
+      </td>
+      <td class="td-input"><input type="text" value="${e.descripcion === 'SURTIDO' ? 0 : e.cantidad - e.surtido}"/></td>
+      <td class="td-input"><input type="text" value="${dia}"/></td>
+    </tr>`
+  }
+
+  contenido += `
+    <tr class="footer-row">
+      <td colspan="2" style="padding:4px 8px;">
+        <span class="footer-label">Fecha de Entrega:</span>
+        <input class="footer-field" type="text" style="width:110px;" value="${order.updatedAt.split('T')[0]}"/>
+      </td>
+      <td colspan="3" style="padding:4px 8px;">
+        <span class="footer-label">Firma de Recibido:</span>
+        <input class="footer-field" type="text"/>
+      </td>
+    </tr>
+    <tr class="footer-row">
+      <td colspan="2" style="padding:4px 8px;">
+        <span class="footer-label">Firma de Recibido:</span>
+        <input class="footer-field" type="text" style="width:110px;"/>
+      </td>
+      <td colspan="3" style="padding:4px 8px;">
+        <span class="footer-label">Firma de Entregado:</span>
+        <input class="footer-field" type="text"/>
+      </td>
+    </tr>`
+
+  campos.tbody.innerHTML = contenido
+
+  // Ajusta altura de todos los textarea al cargar
+  document.querySelectorAll('.desc-text').forEach(ta => {
+    ta.style.height = 'auto'
+    ta.style.height = ta.scrollHeight + 'px'
+  })
+</script>
+
+</body>
+</html>

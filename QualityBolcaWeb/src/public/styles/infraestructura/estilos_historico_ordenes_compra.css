@@ -1,40 +1,207 @@
 /* Órdenes de Compra Specific Styles */
 
 /* Page Header */
-/* .table-container {
-    overflow-x: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 25px;
-} */
 .page-header {
   margin-bottom: 30px;
 }
-
 .page-header h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
   color: #f5f5f5;
 }
-
 .page-header p {
   color: #999;
   font-size: 1.1rem;
 }
 
-/* Search Section */
+/* =============================================
+   SECCIÓN FILTRO POR FECHAS
+   ============================================= */
+.date-filter-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+
+.date-filter-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.date-filter-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-filter-title i {
+  color: #4a90e2;
+  font-size: 1.1rem;
+}
+
+.date-filter-title h2 {
+  color: #f5f5f5;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.date-filter-body {
+  padding: 20px;
+}
+
+.date-filter-inputs {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.date-input-group label {
+  color: #aaa;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.date-input-group label i {
+  color: #4a90e2;
+}
+
+.date-input-group input[type="date"] {
+  padding: 10px 14px;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #f5f5f5;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.date-input-group input[type="date"]:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.date-filter-separator {
+  color: #555;
+  font-size: 1.2rem;
+  padding-bottom: 10px;
+  align-self: flex-end;
+}
+
+.btn-buscar,
+.btn-limpiar {
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  align-self: flex-end;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-limpiar {
+  background-color: #2a2a2a;
+  color: #aaa;
+  border: 1px solid #444;
+}
+
+.btn-limpiar:hover {
+  background-color: #3a3a3a;
+  color: #f5f5f5;
+}
+
+/* =============================================
+   SECCIONES COLAPSABLES
+   ============================================= */
+.table-section {
+  margin-bottom: 28px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid #2a2a2a;
+  transition: background-color 0.2s;
+}
+
+.table-section-header:hover {
+  background-color: #222;
+}
+
+.table-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-section-title i {
+  color: #4a90e2;
+  font-size: 1rem;
+}
+
+.table-section-title h2 {
+  color: #f5f5f5;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.toggle-icon {
+  color: #666;
+  font-size: 0.9rem;
+  transition: transform 0.25s;
+}
+
+.badge-resultados {
+  background-color: #4a90e2;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* =============================================
+   SEARCH SECTION (dentro de tabla 1)
+   ============================================= */
 .search-section {
   display: flex;
   gap: 20px;
   align-items: center;
-  margin-bottom: 30px;
+  padding: 16px 20px 0 20px;
   flex-wrap: wrap;
 }
 
 .search-container {
   position: relative;
   flex: 1;
-  min-width: 300px;
+  min-width: 260px;
 }
 
 .search-icon {
@@ -48,44 +215,27 @@
 .search-container input {
   width: 100%;
   padding: 12px 15px 12px 45px;
-  background-color: #1a1a1a;
+  background-color: #2a2a2a;
   border: 1px solid #333;
   border-radius: 8px;
   color: #f5f5f5;
   font-size: 1rem;
 }
-.mi-input{
-  height: 100%;
-  width: 100%;
-  padding: 3px;
-  border-radius: 8px;
-  outline: solid 1px #444;
-  background-color: #7f8b97;
-  font-weight: 400;
-}
-.mi-btn{
-  height: 100%;
-  width: 100%;
-  padding: 3px;
-  border-radius: 8px;
-}
+
 .search-container input:focus {
   outline: none;
   border-color: #4a90e2;
 }
 
-/* Table Styles */
+/* =============================================
+   TABLA
+   ============================================= */
 .table-container {
   background-color: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 12px;
-  overflow: hidden;
-
+  border-radius: 0 0 12px 12px;
   overflow-x: auto;
-  margin-bottom: 25px;
-  padding: 1%;
+  padding: 16px;
 }
-
 
 .orders-table {
   width: 100%;
@@ -103,22 +253,35 @@
 
 .orders-table td {
   padding: 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #2a2a2a;
   color: #ccc;
 }
 
-.orders-table tr:hover {
-  background-color: #2a2a2a;
+.orders-table tr:last-child td {
+  border-bottom: none;
 }
 
+.orders-table tr:hover td {
+  background-color: #222;
+}
+
+.empty-row {
+  text-align: center;
+  color: #666;
+  padding: 30px !important;
+  font-size: 0.95rem;
+}
+
+.empty-row i {
+  margin-right: 8px;
+}
+
+/* Actions */
 .actions-cell {
   display: flex;
   gap: 8px;
   align-items: center;
-  flex-direction: row;
   flex-wrap: wrap;
-  
-  
 }
 
 .action-btn {
@@ -130,65 +293,42 @@
   transition: all 0.3s;
 }
 
-.action-btn.edit {
-  background-color: #4a90e2;
-  color: white;
+.action-btn.edit  { background-color: #4a90e2; color: white; }
+.action-btn.edit:hover  { background-color: #357abd; }
+.action-btn.send  { background-color: #27ae60; color: white; }
+.action-btn.send:hover  { background-color: #219a52; }
+.action-btn.delete{ background-color: #e74c3c; color: white; }
+.action-btn.delete:hover{ background-color: #c0392b; }
+.action-btn.view  { background-color: #8e44ad; color: white; }
+.action-btn.view:hover  { background-color: #732d91; }
+
+/* =============================================
+   INPUTS TABLA EDICIÓN
+   ============================================= */
+.mi-input {
+  height: 100%;
+  width: 100%;
+  padding: 3px;
+  border-radius: 8px;
+  outline: solid 1px #444;
+  background-color: #7f8b97;
+  font-weight: 400;
 }
 
-.action-btn.edit:hover {
-  background-color: #357abd;
+.mi-btn {
+  height: 100%;
+  width: 100%;
+  padding: 3px;
+  border-radius: 8px;
 }
 
-.action-btn.send {
-  background-color: #27ae60;
-  color: white;
-}
-
-.action-btn.send:hover {
-  background-color: #219a52;
-}
-
-.action-btn.delete {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.action-btn.delete:hover {
-  background-color: #c0392b;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .page-header h1 {
-    font-size: 2rem;
-  }
-
-  .search-section {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-container {
-    min-width: auto;
-  }
-
-  .table-container {
-    overflow-x: auto;
-  }
-
-  .orders-table {
-    min-width: 800px;
-  }
-}
-
-
-/* estilos modal */
+/* =============================================
+   MODALES
+   ============================================= */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
@@ -273,54 +413,157 @@
   margin-top: 30px;
 }
 
-/* estilos totales */
+/* =============================================
+   MODAL VISUALIZAR
+   ============================================= */
+.view-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.view-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 12px 15px;
+  border-left: 3px solid #4a90e2;
+}
+
+.view-label {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-label i {
+  color: #4a90e2;
+}
+
+.view-value {
+  color: #f5f5f5;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.view-section-title {
+  color: #ccc;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 8px;
+}
+
+.view-section-title i {
+  color: #4a90e2;
+}
+
+/* =============================================
+   TOTALES
+   ============================================= */
 .form-group-t {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
+
 .totals-section {
-    background: linear-gradient(135deg, #151515 0%, #6d6e6e 100%);
-    padding: 25px;
-    border-radius: 10px;
-    border: 2px solid #e1e8ed;
+  background: linear-gradient(135deg, #151515 0%, #6d6e6e 100%);
+  padding: 25px;
+  border-radius: 10px;
+  border: 2px solid #e1e8ed;
 }
-totals-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    max-width: 600px;
-    margin-left: auto;
+
+.totals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  max-width: 600px;
+  margin-left: auto;
 }
+
 .total-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    background: rgb(232, 212, 212);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: rgb(232, 212, 212);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .total-item label {
-    font-weight: 600;
-    color: #495057;
+  font-weight: 600;
+  color: #495057;
 }
 
 .total-item span {
-    font-weight: 700;
-    color: #0d4a8c;
-    font-size: 1.1rem;
+  font-weight: 700;
+  color: #0d4a8c;
+  font-size: 1.1rem;
 }
 
 .total-final {
-    grid-column: 1 / -1;
-    background: linear-gradient(135deg, #0d4a8c 0%, #1e5f99 100%);
-    color: white;
-    font-size: 1.2rem;
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #0d4a8c 0%, #1e5f99 100%);
+  color: white;
 }
 
 .total-final label,
 .total-final span {
-    color: white;
-    font-size: 1.3rem;
+  color: white;
+  font-size: 1.3rem;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .date-filter-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .date-filter-separator {
+    display: none;
+  }
+
+  .btn-buscar,
+  .btn-limpiar {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-section {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 12px 0 12px;
+  }
+
+  .search-container {
+    min-width: auto;
+  }
+
+  .orders-table {
+    min-width: 700px;
+  }
+
+  .view-grid {
+    grid-template-columns: 1fr;
+  }
 }

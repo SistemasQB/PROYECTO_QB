@@ -22,6 +22,7 @@ infraestructuraRouter.post('/crudOrdenesCompra', protegerRuta, validarAcceso({ro
 infraestructuraRouter.get('/pedidoInsumos', protegerRuta,infraestructuraController.pedidoInsumos);
 infraestructuraRouter.post('/crudPedidosInsumos', protegerRuta,validarAcceso({roles:['compras'], permisos: ['auxiliar de compras y suministros', 'jefe de compras y suministros'], jerarquia: 5}), infraestructuraController.crudPedidoInsumos);
 infraestructuraRouter.get('/gestionPedidosInsumos', protegerRuta,validarAcceso({roles:['compras'], permisos: ['auxiliar de compras y suministros', 'jefe de compras y suministros'], jerarquia: 5}),infraestructuraController.gestionPedidosInsumos);
+infraestructuraRouter.get('/formatoPedidoInsumos/:id', protegerRuta,validarAcceso({roles: ['compras'], permisos: ['auxiliar de compras y suministros', 'jefe de compras y suministros'], jerarquia: 5}),infraestructuraController.formatoPedidoInsumos);
 
 
 //rutas de logistica vehicular 

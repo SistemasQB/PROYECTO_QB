@@ -99,7 +99,7 @@
                 return response.json()
         }
         ).catch((error) => {
-            console.log(error);
+            console.log(error.message);
             return false
         })
     }

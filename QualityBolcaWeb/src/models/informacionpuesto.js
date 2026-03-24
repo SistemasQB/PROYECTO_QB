@@ -23,9 +23,9 @@ const Informacionpuesto = db.define('nom10006', {
         type: DataTypes.STRING,
         allowNull: true
     }
+
 },{
     tableName: 'nom10006',
-    // sequelize,
     freezeTableName: true, // Desactiva la pluralización automática
     timestamps: false
 }
