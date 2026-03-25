@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TI Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/styles/sistemas/dashboard.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Dashboard TI</h1>
+        <div class="header-actions">
+            <div class="user-profile">
+                <div class="user-info">
+                    <h4><%= nombreUsuario %></h4>
+                    <p><%= puestoUsuario %></p>
+                </div>
+                <div class="avatar"><span class="material-symbols-rounded" id="user-icon">person</span></div>
+            </div>
+        </div>
+    </header>
+
+    <section class="kpi-grid">
+        <div class="card kpi-card">
+            <div class="icon-box blue"><span class="material-symbols-rounded">inventory_2</span></div>
+            <div class="kpi-info">
+                <h3>Inventario Total</h3>
+                <div class="kpi-value">
+                    <%= inventarioTotal %>
+                </div>
+            </div>
+        </div>
+        <div class="card kpi-card">
+            <div class="icon-box orange"><span class="material-symbols-rounded">confirmation_number</span></div>
+            <div class="kpi-info">
+                <h3>Tickets Abiertos</h3>
+                <div class="kpi-value">
+                    <%= ticketsAbiertos %>
+                </div>
+            </div>
+        </div>
+        <div class="card kpi-card">
+            <div class="icon-box green"><span class="material-symbols-rounded">group</span></div>
+            <div class="kpi-info">
+                <h3>Usuarios Activos</h3>
+                <div class="kpi-value">
+                    <%= usuariosActivos %> <span class="kpi-subtext">/ <%= usuariosTotales %></span>
+                </div>
+            </div>
+        </div>
+        <div class="card kpi-card">
+            <div class="icon-box purple"><span class="material-symbols-rounded">dns</span></div>
+            <div class="kpi-info">
+                <h3>Vales Existentes</h3>
+                <div class="kpi-value">
+                    <%= valesExistentes %>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <h2 class="section-title">Quick Actions</h2>
+    <section class="quick-actions">
+        <div class="card action-card" onclick="location.href='listadopersonal'">
+            <div class="action-icon bg-blue-light"><span class="material-symbols-rounded">add_box</span></div>
+            <span>Crear Vale</span>
+        </div>
+        <div class="card action-card" onclick="location.href='admin-tickets'">
+            <div class="action-icon bg-orange-light"><span class="material-symbols-rounded">local_activity</span></div>
+            <span>Ver Tickets</span>
+        </div>
+        <div class="card action-card" onclick="location.href='admin-usuarios'">
+            <div class="action-icon bg-purple-light"><span class="material-symbols-rounded">person_add</span></div>
+            <span>Agregar Usuario</span>
+        </div>
+        <div class="card action-card" onclick="location.href='inventario'">
+            <div class="action-icon bg-indigo-light"><span class="material-symbols-rounded">inventory</span></div>
+            <span>Ver Inventario</span>
+        </div>
+        <div class="card action-card" onclick="location.href='adminRequisicionEquipos'">
+            <div class="action-icon bg-green-light"><span class="material-symbols-rounded">computer</span></div>
+            <span>Ver requisición de equipos</span>
+        </div>
+    </section>
+
+    <div class="bottom-panels">
+        <section class="card">
+            <div class="panel-header">
+                <h2>Actividad Reciente de Tickets</h2>
+                <a href="/sistemas/admin-tickets" class="view-all">Ver Tickets</a>
+            </div>
+
+            <div class="ticket-list">
+                <% ultimosTickets.forEach(ticket=> { %>
+                    <div class="ticket-item">
+                        <div class="ticket-icon standard">
+                            <span class="material-symbols-rounded">confirmation_number</span>
+                        </div>
+                        <div class="ticket-details">
+                            <div class="ticket-title">
+                                <%= ticket.titulo %>
+                            </div>
+                            <div class="ticket-meta">
+                                <span class="badge <%= ticket.estatus %>">
+                                    <%= ticket.estatus %>
+                                </span>
+                                <span>#<%= ticket.folio %> • <%= ticket.tecnico %></span>
+                            </div>
+                        </div>
+                        <div class="ticket-time">
+                            <%= new Date(ticket.fecha).toLocaleDateString('es-MX') %>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="panel-header">
+                <h2>Peticiones de equipo recientes</h2>
+                <span class="material-symbols-rounded icon-btn">more_vert</span>
+            </div>
+            <table class="assets-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Equipo</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (ultimasRequisiciones && ultimasRequisiciones.length> 0) { %>
+                        <% ultimasRequisiciones.forEach(req=> { %>
+                            <tr>
+                                <td>
+                                    <span class="asset-name"><%= req.requesterName %></span>
+                                </td>
+                                <td>
+                                    <%= req.equipment || '—' %>
+                                </td>
+                                <td>
+                                    <span class="status-badge <%= req.status.toLowerCase().replace(/\s/g,'-') %>">
+                                        <%= req.status %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="3" style="text-align:center;">
+                                            No hay requisiciones recientes
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+            <a href="/sistemas/adminRequisicionEquipos" class="full-inventory-btn">VER REQUISICIONES</a>
+        </section>
+    </div>
+
+</body>
+
+</html>

@@ -164,6 +164,8 @@ function createEditUserModal() {
                 <option value="calidad">Calidad</option>
                 <option value="logistica vehicular">Logística Vehicular</option>
                 <option value="compras">Compras</option>
+                <option value="gastos">Gastos</option>
+                <option value="sorteo">Sorteo</option>
                 <option value="alta direccion">Alta Dirección</option>
             </select>
             </div>
@@ -175,6 +177,8 @@ function createEditUserModal() {
             <select id="eu-permiso-select">
                 <option value="">Agregar permiso</option>
                 <option value="administrador">Administrador</option>
+                <option value="becario">Becario</option>
+                <option value="supervisor">Supervisor</option>
                 <option value="analista">Analista</option>
                 <option value="auxiliar">Auxiliar</option>
                 <option value="jefe calidad">Jefe de calidad</option>
