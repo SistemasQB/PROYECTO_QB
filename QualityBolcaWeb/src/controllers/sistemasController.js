@@ -5,7 +5,7 @@ import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import Empleados from "../models/empleado.js";
 import manejadrorErrores from "../middleware/manejadorErrores.js";
-import validarAcceso from '../middleware/validacion-permisos/calidad/permisos.js';
+import miNodemailer from "../public/clases/nodemailer.js";
 
 import {
     registroma,
@@ -785,7 +785,6 @@ controller.crudTickets = async (req, res) => {
                 if (!empleado) {
                     return res.status(404).json({ ok: false, message: 'Empleado no encontrado' });
                 }
-
                 //nombre del departamento
                 const departamentoDB = await db.query(
                     `
@@ -974,6 +973,49 @@ controller.asignarTicket = async (req, res) => {
             ok: false,
             message: 'Error interno del servidor'
         });
+    }
+};
+
+
+controller.pausarTicket = async (req, res) => {   //pausar ticket
+    try {
+        console.log('pausar ticket');
+        const { id } = req.params;
+
+        const ticket = await modelosSistemas.modeloTickets.findOne({
+            where: { folio: id }
+        });
+
+        if (!ticket) {
+            return res.status(404).json({ ok: false });
+        }
+
+        const datos = parseDatosTicket(ticket);
+
+        if (datos.estatus !== 'progress') {
+            return res.status(400).json({
+                ok: false,
+                msg: 'El ticket no está en progreso'
+            });
+        }
+
+        // sumar tiempo consumido
+        const ahora = new Date();
+        const inicio = new Date(datos.slaInicio);
+        datos.slaConsumido += Math.floor((ahora - inicio) / 1000);
+
+        datos.estatus = 'pending';
+        datos.slaActivo = false;
+        datos.slaInicio = null;
+
+        ticket.datosTicket = datos;
+        await ticket.save();
+
+        res.json({ ok: true });
+
+    } catch (error) {
+        console.error('Error pausar ticket:', error);
+        res.status(500).json({ ok: false });
     }
 };
 
@@ -1589,7 +1631,7 @@ controller.requisicionEquipos = async (req, res) => {
         let datosEmpleado = await clase.obtener1Registro({ criterio: criterios })
         let datos = {
             nombreCompleto: datosEmpleado.nombrelargo,
-            departamento: empleado.descripcion,
+            departamento: empleado.departamento,
             email: datosEmpleado.correoelectronico
         }
         return res.render('admin/sistemas/requisicionEquipos.ejs', { info: datos, tok: req.csrfToken() })
@@ -1602,7 +1644,7 @@ controller.requisicionEquipos = async (req, res) => {
 controller.administracionRequisicionEquipos = async (req, res) => {
     try {
         const clase = new sequelizeClase({ modelo: modelosSistemas.requisicionEquipos })
-        const resultados = await clase.obtenerDatosPorCriterio({ criterio: {}, orden: [['status', 'DESC']] })
+        const resultados = await clase.obtenerDatosPorCriterio({ criterio: {'status': {[Op.ne]: ['Completada']}}, orden: [['status', 'DESC']] })
         return res.render('admin/sistemas/administracionRequisicionesEquipos.ejs', { tok: req.csrfToken(), registros: resultados })
     } catch (error) {
         manejadrorErrores(res, error)
@@ -1610,7 +1652,7 @@ controller.administracionRequisicionEquipos = async (req, res) => {
     }
 }
 
-controller.CrudRequisicionEquipos = (req, res) => {
+controller.CrudRequisicionEquipos = async(req, res) => {
     try {
         const { tipo } = req.body
         let campos = req.body
@@ -1618,25 +1660,72 @@ controller.CrudRequisicionEquipos = (req, res) => {
         let clase = new sequelizeClase({ modelo: modelosSistemas.requisicionEquipos })
         switch (tipo) {
             case 'insert':
-                let resultado = clase.insertar({ datosInsertar: campos })
+                let resultado = await clase.insertar({ datosInsertar: campos })
                 if (!resultado) return res.json({ ok: false, msg: 'no se pudo realizar la requisicion' })
                 return res.json({ ok: true, msg: 'requisicion realizada exitosamente' })
             case 'delete':
-                let eliminacion = clase.eliminar({ id: campos.id })
+                let eliminacion = await clase.eliminar({ id: campos.id })
                 if (!eliminacion) return res.json({ ok: false })
                 return res.json({ ok: true })
             case 'update':
-                let actualizacion = clase.actualizarDatos({ id: campos.id, datos: campos })
+                delete campos._csrf
+                let actualizacion = await clase.actualizarDatos({ id: campos.id, datos:campos})
+                if (campos.status ==='Completada' && actualizacion){
+                    const nod = new miNodemailer({datosSmtp:{
+                        host: process.env.EMAIL_HOST,
+                        port: process.env.EMAIL_PORT,
+                        auth:{
+                            user: process.env.EMAIL_RECORDATORIO,
+                            pass: process.env.PASS_RECORDATORIO
+                        }
+                        
+                }})
+                    const info = {requesterName: campos.requesterName, id: campos.id, observaciones: campos.observaciones}
+                    const miHtml = nod.htmlNotificacionNuevaReqEquipo(info)
+                    await nod.enviarCorreo({Datoscorreo: {destinatario: campos.email, asunto: 'Requisicion Equipos Completada', html: miHtml}})
+                }   
                 if (!actualizacion) return res.json({ ok: false })
-                return res.json({ ok: true })
+                return res.json({ ok: true })    
         }
-
     } catch (error) {
         manejadrorErrores(res, error)
 
     }
 }
+controller.dashboardTickets = async(req, res) => {
+    try {
+        const clase = new sequelizeClase({ modelo: modelosSistemas.modeloTickets})
+        const hoy = new Date(Date.now())
+        const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1 )
+        // const inicio = new Date(2026, 1, 1 )
+        let final = new Date(inicio)
+        final.setMonth(inicio.getMonth() + 1)
+        const criterios = {createdAt: {[Op.between]: [inicio, final]}}
+        const datos = await clase.obtenerDatosPorCriterio({criterio: criterios})
+        return res.render('admin/sistemas/dashboardTickets.ejs', {tok: req.csrfToken(), data:datos})
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: `Error interno del servidor: ${error.message}`
+        });
+    }
+}
 
+controller.apiDashboard = async (req, res) => {
+    try {
+        const {fechaInicio, fechaFin} = req.body
+        const clase = new sequelizeClase({modelo: modelosSistemas.modeloTickets})
+        const criterios = {createdAt: {[Op.between]: [fechaInicio, fechaFin]}}
+        const datos = await clase.obtenerDatosPorCriterio({criterio: criterios})
+    return res.json({ok: true, data: datos, tok: req.csrfToken()})    
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: `Error interno del servidor: ${error.message}`
+        })    
+    }
+    
+}
 function parseDatosTicket(ticket) {
     return typeof ticket.datosTicket === 'string'
         ? JSON.parse(ticket.datosTicket)

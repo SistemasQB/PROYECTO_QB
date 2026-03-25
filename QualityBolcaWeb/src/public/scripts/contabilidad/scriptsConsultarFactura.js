@@ -3,12 +3,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         conversionObjetos()
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('issueDate').value = today;
+        // document.getElementById('issueDate').value = today;
+        cargarData()
         
         // Set due date to 30 days from now
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 30);
-        document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+        // document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
         
         // Add initial item row
         addItem();
@@ -298,4 +299,13 @@
         miFactura.datosEmision = JSON.parse(miFactura.datosEmision)
         miFactura.datosEmision.folioCompuesto = miFactura.datosEmision.serie + "-" + miFactura.datosEmision.folio
     }
-  
+    
+    function cargarData(){
+      console.log(miFactura)
+      const form = document.getElementById("invoiceForm")
+      const inputs = form.querySelectorAll("input, select, textarea")
+      console.log(inputs.length)
+      for(const input of inputs){
+        console.log('el nombre:',input.id)
+      }
+    }

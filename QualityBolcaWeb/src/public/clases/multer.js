@@ -21,7 +21,7 @@ constructor(destino, limite, tiposPermitidos) { //, mimetypesPermitidos
     }
 
     this.storage = multer.diskStorage({
-      destination: (req, file, cb) => {
+      destination: (req, _, cb) => { //se quita el req, file, cb
         cb(null, this.destino);
       },
       filename: (req, file, cb) => {

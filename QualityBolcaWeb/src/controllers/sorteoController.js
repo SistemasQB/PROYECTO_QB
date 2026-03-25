@@ -1,10 +1,18 @@
 import express from "express";
-import db from "../config/db.js";
 import sequelizeClase from "../public/clases/sequelize_clase.js";
+import modelosgenerales from "../models/generales/barrilModelosGenerales.js";
+import manejadorErrores from "../middleware/manejadorErrores.js";
+import customFunctions from "../js/funcionesBackend.js";
+// import utilidadesTensorFlow from "../public/clases/miTensor-flow.js";
+import path from "path";
+// import { fileURLToPath } from 'url';
+import env from "dotenv";
+env.config({ path: ".env" });
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
+
 // import modelosSorteo from "../models/sorteo/barrilModelosSorteo.js";
-
-
-
 import {
     Checklistcc1,
     Empleados,
@@ -291,7 +299,6 @@ controller.envioMaterial = async (req, res)=>{
     let archivos = req.files
     if(!archivos) return res.json({ok:false, msg: "no se subieron las imagenes"});
     let datos = req.body
-    console.log(datos)
     delete datos._csrf
     let firmas = {}
     
@@ -332,7 +339,6 @@ controller.adminAlmacen = async (req, res)=>{
         let fi = new Date(`${ano}-${mes-1}-${dia}`)
         
         fecha = `${ano}-${mesi}-${dia+1}`
-        console.log(fecha)
         let clase = new sequelizeClase({modelo: modeloEdgewell});
         let criterios = {[Op.and]:[
             {fecha:{[Op.between]: [fi, fecha]}},
@@ -363,5 +369,62 @@ controller.prueba = (req, res)=>{
     res.render('admin/sorteo/formulario-entrega-material.ejs', {tok:tok})
 }
 
+controller.output = async(req,res) => {
+    try {
+        let clase = new sequelizeClase({modelo: modelosgenerales.modelonom10001 });
+        const datosUsuario = await clase.obtener1Registro({criterio:{codigoempleado: req.usuario.codigoempleado}, atributos: ['nombrelargo']});
+        clase = new sequelizeClase({modelo: modelosSorteo.output});
+        const resultados = await clase.obtenerDatosPorCriterio({criterio:{supervisor: datosUsuario.nombrelargo}});
+        // const tipoCambio = 0
+        let tipoCambio = await customFunctions.peticionJson('https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/oportuno',{method: 'GET', 'Bmx-Token': process.env.tokenBanxico});
+        return res.render('admin/sorteo/output.ejs', {registros: resultados, token: req.csrfToken(), supervisor: datosUsuario.nombrelargo, tipoCambio});
+    } catch (error) {
+        manejadorErrores(res, error);
+    }
+}
+
+controller.crudOutput = async(req, res) => {
+    try {
+        let campos = req.body;
+        const clase = new sequelizeClase({modelo: modelosSorteo.output});
+        const {tipo, id} = req.body
+        delete campos.id
+        delete campos._csrf
+        delete campos.tipo
+        switch(tipo){
+            case 'insert':
+                let respuesta = await clase.insertar({datosInsertar: campos});
+                if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'});
+                return res.json({ok: true, msg: 'informacion enviada exitosamente'});
+            case 'update':
+                console.log(campos);
+                let actualizado = await clase.actualizarDatos({id: id, datos: campos});
+                if (!actualizado) return res.json({ok: false, msg: 'no se pudo actualizar la informacion'});
+                return res.json({ok: true, msg: 'informacion actualizada exitosamente'});
+            case 'delete':
+                let eliminado = await clase.eliminar({id: id});
+                if (!eliminado) return res.json({ok: false, msg: 'no se pudo eliminar la informacion'});
+                return res.json({ok: true, msg: 'informacion eliminada exitosamente'});
+        }
+    } catch (error) {
+        manejadorErrores(req, error);    
+    }
+}
+
+controller.dashBoardOutput = async(req, res) => {
+    try {
+        const mesActual  =new Date().getMonth();
+        const anioActual = new Date().getFullYear();
+        const fechas = customFunctions.generarFechas(mesActual, anioActual);
+        const criterios = {createdAt: {[Op.between]: [fechas.inicio, fechas.fin]}};
+        const clase = new sequelizeClase({modelo: modelosSorteo.output});
+        const resultados = await clase.obtenerDatosPorCriterio({criterio:criterios});
+        return res.render('admin/sorteo/outputDashboard.ejs', {token: req.csrfToken(), servs: resultados});
+    } catch (error) {
+        console.log(error);
+        manejadorErrores(res, error);
+    }
+    
+}
 
 export default controller;

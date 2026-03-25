@@ -44,10 +44,13 @@ router.get('/mapa', adminController.mapa);
 router.get('/valeSalida', adminController.valeSalida);
 router.get('/voz', adminController.voz);
 router.get('/crear', adminController.crear);
-router.get('/mejoracontinua',protegetRuta, adminController.mejoracontinua);
-router.get('/mejoracontinuaall',protegetRuta, adminController.mejoracontinua4);
-router.post('/mejoracontinua', protegetRuta, adminController.mejoracontinua2);
-router.post('/mejoracontinua2', protegetRuta, adminController.mejoracontinua3);
+
+// router.get('/mejoracontinua',protegetRuta, adminController.mejoracontinua);
+
+
+// router.get('/mejoracontinuaall',protegetRuta, adminController.mejoracontinua4);//muestra las mejoras de manera publica
+// router.post('/mejoracontinua', protegetRuta, adminController.mejoracontinua2);
+// router.post('/mejoracontinua2', protegetRuta, adminController.mejoracontinua3);
 router.get('/blogayuda', adminController.blogayuda);
 router.post('/blogayuda', adminController.blogayuda2);
 router.post('/blogayuda2', adminController.blogayuda3);
@@ -55,6 +58,7 @@ router.get('/subiranalisis/:mejoraid', protegetRuta, adminController.subiranalis
 router.post('/subiranalisis/:mejoraid', protegetRuta,upload3.single('analisisFile'), adminController.subiranalisis2);
 router.get('/subirevidencia/:mejoraid', protegetRuta, adminController.subirevidencia);
 router.post('/subirevidencia/:mejoraid', protegetRuta,upload4.single('evidenciaFile'), adminController.subirevidencia2);
+
 router.get('/reuniones', adminController.reuniones);
 router.post('/reuniones', adminController.reuniones2);
 router.get('/glosario', adminController.glosario);

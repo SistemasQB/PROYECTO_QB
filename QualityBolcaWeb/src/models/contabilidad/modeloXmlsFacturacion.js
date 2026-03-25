@@ -122,6 +122,11 @@ const xmls_facturacion = db.define('xmls_facturacion', {
         type: DataTypes.JSON,
         allowNull: false,
         defaultValue: []
+    },
+    fechaVencimiento:{
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: new Date('2000-01-01T00:00:00')
     }
 },
     {

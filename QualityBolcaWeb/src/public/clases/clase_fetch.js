@@ -1,6 +1,6 @@
 
 
-    function envioJson(link, cuerpo, destino){
+    function envioJson(entrada, cuerpo, destino){
     Swal.fire({
         title: 'Procesando...',
         html: '<div class="spinner"></div>',
@@ -9,7 +9,7 @@
     })
 
     
-    fetch(link, {
+    fetch(entrada, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -43,6 +43,8 @@
                     button: "OK"
                 });
             }
+        }).catch((error) => {
+            console.log(error);
         })
     }
     function envioFormData(link, cuerpo, destino){
@@ -83,4 +85,21 @@
             });
         }
     });
+    }
+    function solicitudInformacion(url, body){
+        if (!url || !body) return false
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body:JSON.stringify(body),
+            credentials: 'include'
+        }).then(response => {
+                return response.json()
+        }
+        ).catch((error) => {
+            console.log(error.message);
+            return false
+        })
     }

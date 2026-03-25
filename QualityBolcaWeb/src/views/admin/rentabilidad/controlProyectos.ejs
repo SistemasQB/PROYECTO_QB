@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de Rentabilidad de Proyectos</title>
     <link rel="stylesheet" href="/styles/rentabilidad/estilos_controlProyectos.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -65,27 +66,62 @@
                         </div>
                     </div>
 
+                    <!-- Date Range Row -->
+                    <div class="date-range-row">
+                        <div class="form-group">
+                            <label for="fechaInicioFilter" class="form-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-right:4px;vertical-align:middle;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                Fecha Inicio
+                            </label>
+                            <input type="date" id="fechaInicioFilter" class="form-input">
+                        </div>
+                        <div class="date-range-separator">—</div>
+                        <div class="form-group">
+                            <label for="fechaFinFilter" class="form-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-right:4px;vertical-align:middle;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                Fecha Fin
+                            </label>
+                            <input type="date" id="fechaFinFilter" class="form-input">
+                        </div>
+                        <div class="date-range-btn">
+                            <button class="btn btn-primary" id="buscarFechasBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                                Buscar
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Filter Grid -->
                     <div class="filters-grid">
                         <div class="form-group">
                             <label for="regionFilter" class="form-label">Región</label>
                             <select id="regionFilter" class="form-select">
-                                <option value="">Todas las regiones</option>
-                                <option value="norte">Norte</option>
-                                <option value="centro">Centro</option>
-                                <option value="sur">Sur</option>
-                                <option value="occidente">Occidente</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label for="clienteFilter" class="form-label">Cliente</label>
-                            <input type="text" id="clienteFilter" class="form-input" placeholder="Filtrar por cliente">
+                            <input type="text" id="clienteFilter" class="form-input" placeholder="Filtrar por cliente" autocomplete="off">
+                            <div id="appendCliente" class="suggestions-dropdown"></div>
                         </div>
 
                         <div class="form-group">
                             <label for="analistaFilter" class="form-label">Analista</label>
-                            <input type="text" id="analistaFilter" class="form-input" placeholder="Filtrar por analista">
+                            <input type="text" id="analistaFilter" class="form-input" placeholder="Filtrar por analista" autocomplete="off">
+                            <div id="appendAnalista" class="suggestions-dropdown"></div>
                         </div>
 
                         <div class="form-group">
@@ -98,6 +134,7 @@
                 <!-- Pagination -->
                 <div class="pagination-section">
                     <p class="pagination-text">Página <span class="pagination-current" id="currentPage">1</span></p>
+                    <span class="pagination-info" id="pageInfo"></span>
                     <div class="pagination-buttons">
                         <button class="btn btn-outline btn-sm" id="prevPageBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -139,11 +176,14 @@
                                 <th>Región</th>
                                 <th>Cliente</th>
                                 <th>Planta</th>
+                                <th>Moneda</th>
+                                <th>Costo</th>
                                 <th class="text-right">Horas Cotiz.</th>
                                 <th class="text-right">Gasto Cotiz.</th>
+                                <th class="text-right">Gasto Real</th>
                                 <th class="text-right">Dif. Cot-Fac</th>
                                 <th class="text-right">Cot-Dep</th>
-                                <th class="text-center">% ≥20%</th>
+                                <th class="text-center">%</th>
                                 <th class="text-center sticky-col">Acciones</th>
                             </tr>
                         </thead>
@@ -174,10 +214,10 @@
             <form id="editForm">
                 <div class="modal-body">
                     <div class="form-grid">
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="editNumeroSemana" class="form-label">Número de Semana</label>
                             <input type="number" id="editNumeroSemana" class="form-input" required>
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <label for="editFechaCotizacion" class="form-label">Fecha Cotización</label>
                             <input type="date" id="editFechaCotizacion" class="form-input" required>
@@ -186,14 +226,14 @@
                             <label for="editCotizacion" class="form-label">Cotización</label>
                             <input type="text" id="editCotizacion" class="form-input" required>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="editAnalistaEncargada" class="form-label">Analista Encargada</label>
                             <input type="text" id="editAnalistaEncargada" class="form-input" required>
-                        </div>
-                        <div class="form-group full-width">
+                        </div> -->
+                        <!-- <div class="form-group full-width">
                             <label for="editConceptoCobrar" class="form-label">Concepto a Cobrar</label>
                             <input type="text" id="editConceptoCobrar" class="form-input" required>
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <label for="editPersonaResponsable" class="form-label">Persona Responsable</label>
                             <input type="text" id="editPersonaResponsable" class="form-input" required>
@@ -218,7 +258,7 @@
                             <label for="editGastoCotizado" class="form-label">Gasto Cotizado</label>
                             <input type="number" step="0.01" id="editGastoCotizado" class="form-input" required>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="editDiferenciaCotizadoFacturado" class="form-label">Diferencia Cotizado-Facturado</label>
                             <input type="number" step="0.01" id="editDiferenciaCotizadoFacturado" class="form-input" required>
                         </div>
@@ -229,7 +269,7 @@
                         <div class="form-group">
                             <label for="editPorcentaje20" class="form-label">Porcentaje (≥20%)</label>
                             <input type="number" step="0.1" id="editPorcentaje20" class="form-input" required>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -334,8 +374,12 @@
     </div>
 
     <script src="/scripts/rentabilidad/scriptsControlProyectos.js"></script>
+    <script src="/clases/clase_fetch.js"></script>
     <script>
-        let proyectos = <%- JSON.stringify(proyectos)%>
+        const token = <%-JSON.stringify(tok)%>
+        let proyectos = <%-JSON.stringify(proyectos)%>
+        const gastos = <%-JSON.stringify(gastos)%>
+        
     </script>
 </body>
 </html>

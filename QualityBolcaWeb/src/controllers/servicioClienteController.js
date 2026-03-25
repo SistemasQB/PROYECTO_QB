@@ -4,15 +4,27 @@ import barrilModelosServicioCliente from "../models/servicioCliente/barrilModelo
 import modelosInfraestructura from "../models/infraestructura/barril_modelo_compras.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import { Op } from "sequelize";
+import custonFunctions from "../js/funcionesBackend.js";
 
 const controllerServicioCliente = {}
 
 //formulario de horas cobro servicio al cliente
 controllerServicioCliente.formularioHorasCobro = async(req, res) => {
     try {
+        const dia = new Date(Date.now())
+        const final = new Date(dia)
+        final.setMonth(dia.getMonth() - 3)
         let clase = new sequelizeClase({modelo:modelosInfraestructura.modelo_plantas_gastos})
         let plantas = await clase.obtenerDatosPorCriterio({criterio: {id: {[Op.gt]: 0}},atributos: ['planta']})
-        return res.render("admin/servicioCliente/registroHorasCobro.ejs", {tok: req.csrfToken(), plantas: plantas});    
+        clase = new sequelizeClase({modelo: modelosGenerales.modelonom10001})
+        let  datosUsuario = await clase.obtener1Registro({criterio: {codigoempleado: req.usuario.codigoempleado}})
+        clase = new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro })
+        let criterios = null
+        datosUsuario.codigoempleado == 10617 ? 
+        criterios = {createdAt: {[Op.between]: [final, dia]}}:
+        criterios = {cotizadora: datosUsuario.nombrelargo, createdAt: {[Op.between]: [final, dia]}}
+        const registros = await clase.obtenerDatosPorCriterio({criterio: criterios})
+        return res.render("admin/servicioCliente/registroHorasCobro.ejs", {tok: req.csrfToken(), plantas, registros});    
     } catch (ex) {
         return manejadorErrores(res, ex)    
     }
@@ -32,6 +44,12 @@ controllerServicioCliente.crudHorasCobro = async(req, res) => {
     switch (tipo){
         case "insert":
             campos.cotizadora = datosUsuario.nombrelargo
+            if(campos.moneda !== "MXN"){
+                 //campos.tipoCambio = await custonFunctions.peticionJson('https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/oportuno',{method: 'GET', 'Bmx-Token': process.env.tokenBanxico});
+                 console.log(campos)
+                 campos.tipoCambio = await custonFunctions.peticionTipoCambioPorFecha(campos.fecha);
+            }
+            console.log(campos.tipoCambio)
             let respuesta = await clase.insertar({datosInsertar: campos})
             if (!respuesta) return res.json({ok: false, msg: 'no se pudo ingresar la informacion'})
             return res.json({ok: respuesta, msg: 'informacion enviada exitosamente'})
@@ -44,6 +62,19 @@ controllerServicioCliente.crudHorasCobro = async(req, res) => {
             if (!eliminado) return res.json({ok: false, msg: 'no se pudo eliminar la informacion'})
             return res.json({ok: eliminado, msg: 'informacion eliminada exitosamente'})
     }
+    
+    
 }
+
+//controlador de api para requisiciones
+controllerServicioCliente.obtenerRequisiciones = async(req, res) => {
+        try {
+            let clase = new sequelizeClase({modelo: barrilModelosServicioCliente.modelo_registroHorasCobro})
+            let registros = await clase.obtenerDatosPorCriterio({criterio: {estatus: {[Op.ne]: ["REGISTRADA"]}}, atributos: ['cotizacion']})
+            return res.json({ok: true, registros})
+        } catch (ex) {
+            return res.json({ok: false, msg: `no se pudo obtener la informacion, el error fue : ${ex}`})
+        }
+    }
 
 export default controllerServicioCliente;

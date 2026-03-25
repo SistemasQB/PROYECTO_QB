@@ -34,14 +34,20 @@ router.post('/crudTickets', protegetRuta,adminController.crudTickets)
 router.post('/tickets/:id/asignar', protegetRuta,adminController.asignarTicket);
 router.post('/tickets/:id/reanudar', protegetRuta,adminController.reanudarTicket);
 router.post('/tickets/:id/cerrar', protegetRuta,adminController.cerrarTicket);
-router.post('/tickets/:id/observacion', protegetRuta,adminController.agregarObservacionTicket);
+router.post('/tickets/:id/observacion', protegetRuta, adminController.agregarObservacionTicket);
 router.get('/tickets/:id/observaciones', protegetRuta, adminController.obtenerObservacionesTicket);
 
+//ruta de dashboard
+router.get('/dashboardTickets', protegetRuta,adminController.dashboardTickets);
+
 //rutas de inventario
-router.get('/inventario',protegetRuta,validarAcceso({
+
+router.get('/inventario', protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.inventario)
+
 router.get('/inventario-data', protegetRuta,adminController.obtenerInventario); 
 router.get('/addinventario', protegetRuta, protegetRuta,validarAcceso({
+
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.addinventario); //para abrir la pagina de asignacion o de generar vale
 router.post('/addinventario',protegetRuta,adminController.addinventario2);
 router.get('/tablainventario',protegetRuta,validarAcceso({
@@ -59,26 +65,25 @@ router.get('/equipos-asignados/:folio', protegetRuta,adminController.equiposAsig
 router.post('/remover-equipos/:folio', protegetRuta,adminController.removerEquipos); //remover equipos del vale
 router.post('/crear-vale', protegetRuta,adminController.crearVale); // crear vales
 router.get('/colaboradores-sin-vale', protegetRuta,adminController.obtenerColaboradoresSinVale) //jalar los colaboradores sin vale
-
-
-//rutas de los vales
 router.get('/addvales',protegetRuta,protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.addvales);
 router.post('/addvales',protegetRuta,adminController.addvales2);
 
 //rutas de mantenimiento
-router.get('/registroma',protegetRuta,adminController.registroMA); //lista de mantenimientos autonomos (realizados)
+router.get('/registroma',protegetRuta,adminController.registroMA); //lista de mantenimientos autonomos (realizados) no funciona y esta re fea candidata a eliminacion o reemplazo
 router.get('/registromantenimiento',protegetRuta,adminController.registromantenimiento); //vista de mantenimientos autonomos realizados (mejor que el anterior)
 router.get('/programamantenimiento',protegetRuta,adminController.programamantenimiento); // vista de mantenimiento (formato controlado)
-router.get('/listadosolicitudes',protegetRuta,adminController.listadosolicitudes);
+router.get('/listadosolicitudes',protegetRuta,adminController.listadosolicitudes); //listado de solicitudes, (hay que revisar)
 router.get('/mantenimientoautonomo',protegetRuta,adminController.mantenimientoautonomo); //vista de los mantenimientos que se han hecho
 
-//api de documentos
-router.get('/api/:query2',adminController.api);
+//apis
+router.get('/api/:query2',adminController.api); //api de documentos
+router.post('/apiDashboard', protegetRuta, adminController.apiDashboard); //api de dashboard
+
 
 //rutas de requisicion de equipos
-router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos)
-router.get('/adminRequisicionEquipos',protegetRuta,protegetRuta,validarAcceso({
+router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos) //formulario de requisicion
+router.get('/adminRequisicionEquipos',protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.administracionRequisicionEquipos)
 router.post('/crudRequisicionEquipos',protegetRuta,adminController.CrudRequisicionEquipos)
 

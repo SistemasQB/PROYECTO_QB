@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contador de Producción</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/sorteo/estilos_contador-tensor.css">
+
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🏭</div>
+    <div class="logo-text">Pro<span>Count</span></div>
+  </div>
+  <div class="shift-badge" id="shift-badge">Turno 1</div>
+  <div class="topbar-right">
+    <div class="live-pill"><div class="live-dot"></div>EN VIVO</div>
+    <div class="top-time"><span id="clock-top">00:00:00</span></div>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Contador de Producción</h2>
+      <input class="line-editable" type="text" value="Línea A — Turno Matutino" maxlength="50" title="Clic para editar">
+    </div>
+    <div class="elapsed-badge">
+      ⏱ Tiempo activo: <strong id="elapsed-top">00:00:00</strong>
+    </div>
+  </div>
+
+  <!-- KPI ROW (3 cards, sin Ritmo) -->
+  <div class="kpi-row">
+    <div class="kpi blue">
+      <div class="kpi-top">
+        <div class="kpi-label">Contador</div>
+        <div class="kpi-icon">📦</div>
+      </div>
+      <div class="kpi-value" id="k-count">0</div>
+      <div class="kpi-footer">piezas contadas</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-top">
+        <div class="kpi-label">Meta</div>
+        <div class="kpi-icon">🎯</div>
+      </div>
+      <div class="kpi-value" id="k-meta">100</div>
+      <div class="kpi-footer">piezas objetivo</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-top">
+        <div class="kpi-label">Restantes</div>
+        <div class="kpi-icon">✅</div>
+      </div>
+      <div class="kpi-value" id="k-rest">100</div>
+      <div class="kpi-footer">para completar meta</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- COUNTER CARD -->
+    <div class="counter-card">
+      <div class="counter-card-header">
+        <h3>Panel de Conteo</h3>
+        <div class="counter-chip" id="pct-chip">0%</div>
+      </div>
+      <div class="counter-display">
+
+        <!-- NÚMERO CENTRAL -->
+        <div class="counter-number-wrap">
+          <div class="counter-number" id="main-num">0</div>
+        </div>
+
+        <!-- BARRA DE PROGRESO -->
+        <div class="progress-wrap">
+          <div class="progress-info">
+            <span class="label">Progreso hacia meta</span>
+            <span class="value" id="prog-txt">0 / 100</span>
+          </div>
+          <div class="track">
+            <div class="fill" id="prog-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- VISTA DE CÁMARA -->
+        <div class="camera-section">
+          <div class="camera-label">
+            <div class="cam-dot" id="cam-dot"></div>
+            Vista de Cámara
+          </div>
+
+          <div class="camera-box" id="camera-box">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+            <div class="camera-status" id="cam-status">● EN VIVO</div>
+            <div class="camera-placeholder" id="cam-placeholder">
+              <div class="cam-icon">📷</div>
+              <p>Cámara no iniciada</p>
+              <small>Haz clic en "Activar cámara" para comenzar</small>
+            </div>
+          </div>
+
+          <!-- Botón activar cámara -->
+          <button class="btn-start-cam" id="btn-start-cam" onclick="startCamera()">
+            📷 Activar cámara
+          </button>
+
+          <!-- Botón capturar imagen -->
+          <button class="btn-capture" id="btn-capture" disabled onclick="captureAndSend()">
+            <span class="cam-flash">📸</span> Capturar imagen
+          </button>
+
+          <!-- Preview de última captura -->
+          <div class="capture-preview" id="capture-preview">
+            <div class="capture-preview-label">Última captura</div>
+            <img id="preview-img" src="" alt="Captura">
+            <div class="capture-status" id="capture-status">✓ Captura lista</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <!-- SETTINGS -->
+      <div class="card">
+        <div class="card-head">⚙️ Configuración</div>
+        <div class="card-body">
+          <div class="field">
+            <label>URL de envío (endpoint)</label>
+            <input type="text" id="inp-url" value="https://tu-servidor.com/api/captura" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label>Meta de piezas</label>
+            <input type="number" id="inp-meta" value="100" min="1" max="99999">
+          </div>
+          <div class="field">
+            <label>Nombre del turno</label>
+            <input type="text" id="inp-turno" value="Turno 1" maxlength="20">
+          </div>
+          <button class="apply-btn" onclick="applyMeta()">Aplicar Configuración</button>
+        </div>
+      </div>
+
+      <!-- STATUS -->
+      <div class="card">
+        <div class="card-head">📊 Estado en Tiempo Real</div>
+        <div class="card-body">
+          <div class="status-list">
+            <div class="status-row">
+              <span class="s-label">Estado</span>
+              <span class="s-val green" id="st-estado">● Operando</span>
+            </div>
+            <div class="status-row">
+              <span class="s-label">Avance</span>
+              <span class="s-val blue" id="st-avance">0%</span>
+            </div>
+            <div class="status-row">
+              <span class="s-label">ETA meta</span>
+              <span class="s-val muted" id="st-eta">—</span>
+            </div>
+            <div class="status-row">
+              <span class="s-label">Cámara</span>
+              <span class="s-val muted" id="st-cam">Sin iniciar</span>
+            </div>
+            <div class="status-row">
+              <span class="s-label">Capturas enviadas</span>
+              <span class="s-val blue" id="st-captures">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="card" style="flex:1">
+        <div class="card-head">🗂 Registro de Acciones</div>
+        <div class="card-body" style="padding-top:14px">
+          <div class="hist-list" id="hist-list">
+            <div class="hist-empty">Sin acciones registradas</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">ProCount · Sistema de Conteo de Producción · <span id="date-foot">—</span></div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap" id="toast-wrap"></div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+<script src="/scripts/sorteo/scripts_contador-tensor.js"></script>
+<script>let toki = <%-JSON.stringify(tok)%></script>
+</body>
+</html>

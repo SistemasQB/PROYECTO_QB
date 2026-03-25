@@ -3,7 +3,7 @@ const state = {
   requests: [],
   filteredRequests: [],
   currentPage: 1,
-  itemsPerPage: 2,
+  itemsPerPage: 20,
   searchTerm: "",
   statusFilter: "all",
   isLoading: true,
@@ -44,24 +44,27 @@ function initializeEventListeners() {
 async function fetchRequests() {
   state.isLoading = true
   showLoading()
-  try {
-    const response = await fetch(API_BASE_URL)
-    if (!response.ok) throw new Error("Error al cargar solicitudes")
+  state.requests = solicitudes
+  filterAndRender()
+  hideLoading()
+  // try {
+  //   const response = await fetch(API_BASE_URL)
+  //   if (!response.ok) throw new Error("Error al cargar solicitudes")
 
-    state.requests = await response.json()
-    if(!state.requests) state.requests = solicitudes
-    state.isLoading = false
-    filterAndRender()
-  } catch (error) {
-    console.error("Error fetching requests:", error)
-    state.isLoading = false
-    hideLoading()
-    // En caso de error, usar datos de ejemplo
-    state.requests = solicitudes
-    state.isLoading = false
-    filterAndRender()
-    // loadMockData()
-  }
+  //   state.requests = await response.json()
+  //   if(!state.requests) state.requests = solicitudes
+  //   state.isLoading = false
+  //   filterAndRender()
+  // } catch (error) {
+  //   console.error("Error fetching requests:", error)
+  //   state.isLoading = false
+  //   hideLoading()
+  //   // En caso de error, usar datos de ejemplo
+  //   state.requests = solicitudes
+  //   state.isLoading = false
+  //   filterAndRender()
+  //   // loadMockData()
+  // }
 }
 
 async function createRequest(requestData) {
@@ -86,19 +89,9 @@ async function createRequest(requestData) {
 
 async function updateRequest(requestData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/${requestData.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestData),
-    })
-
-    if (!response.ok) throw new Error("Error al actualizar solicitud")
-
-    const index = state.requests.findIndex((r) => r.id === requestData.id)
-    if (index !== -1) {
-      state.requests[index] = requestData
-    }
-    filterAndRender()
+    requestData._csrf = tok
+    requestData.tipo = 'update'
+    await envioJson('crudRequisicionEquipos', requestData, 'adminRequisicionEquipos')
   } catch (error) {
     console.error("Error updating request:", error)
     throw error
@@ -244,9 +237,11 @@ function renderTable() {
   
   let contenido = paginatedRequests.map(
       (request) => {
+        
         let texto =  `
         <tr>
             <td class="id-cell">${request.id}</td>
+            <td>${new Date(request.createdAt).toLocaleDateString('en-GB')}</td>
             <td>
                 <div class="requester-info">
                     <span class="requester-name">${escapeHtml(request.requesterName)}</span>
@@ -351,11 +346,8 @@ function openNewRequestModal() {
 }
 
 function editRequest(id) {
-  
   const request = state.requests.find((r) => r.id === id)
-  
   if (!request) return
-
   state.editingRequest = request
   state.formItems = [...JSON.parse(request.items)]
 
@@ -365,11 +357,11 @@ function editRequest(id) {
   document.getElementById("save-request-btn").textContent = "Actualizar"
 
   // Llenar el formulario
-  document.getElementById("requesterName").value = request.equipment
+  document.getElementById("requesterName").value = request.requesterName
   document.getElementById("email").value = request.email
   document.getElementById("phone").value = request.phone
   document.getElementById("department").value = request.department
-  document.getElementById("status").value = request.status
+  document.getElementById("status").value = obtenerStatus(request.status)
   document.getElementById("observaciones").value = request.observaciones || ""
 
   renderFormItems()
@@ -380,7 +372,17 @@ function closeRequestModal() {
   document.getElementById("request-modal").classList.remove("active")
   resetForm()
 }
+function obtenerStatus(statusBase){
+  switch (statusBase) {
+    case "INGRESADA":
+      return 'Pendiente'
+    case 'En Proceso':  
+      return 'En Proceso'
+    case 'Completada':  
+      return 'Completada'
+  }
 
+}
 function resetForm() {
   document.getElementById("requesterName").value = ""
   document.getElementById("email").value = ""
@@ -423,7 +425,6 @@ function renderFormItems() {
       '<p class="empty-items">No hay equipos agregados. Haz clic en "Agregar Equipo" para comenzar.</p>'
     return
   }
-
   container.innerHTML = state.formItems
     .map(
       (item, index) => `
@@ -449,11 +450,15 @@ function renderFormItems() {
                         <input 
                             type="checkbox" 
                             ${item.surtido ? "checked" : ""}
-                            onchange="updateFormItem(${index}, 'fulfilled', this.checked)"
+                            onchange="updateFormItem(${index}, 'surtido', this.checked)"
                         />
                         <span>Surtido</span>
                     </label>
                 </div>
+                <div>
+                      <label>justificacion</label>
+                      <p>${item.justification}</p>
+                    </div>
             </div>
             <button type="button" class="btn-remove-item" onclick="removeItemFromForm(${index})">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -518,7 +523,6 @@ function showError(fieldName, message) {
 
 async function saveRequest() {
   if (!validateForm()) return
-
   const saveBtn = document.getElementById("save-request-btn")
   const originalText = saveBtn.textContent
   saveBtn.disabled = true
@@ -533,7 +537,6 @@ async function saveRequest() {
     observaciones: document.getElementById("observaciones").value.trim(),
     items: state.formItems,
   }
-
   try {
     if (state.editingRequest) {
       requestData.id = state.editingRequest.id
@@ -567,10 +570,11 @@ async function confirmDelete() {
   if (!state.deleteRequestId) return
 
   try {
-    await deleteRequestAPI(state.deleteRequestId)
+    envioJson('crudRequisicionEquipos', {id: state.deleteRequestId, tipo: 'delete', _csrf: tok}, 'adminRequisicionEquipos')
+    // await deleteRequestAPI(state.deleteRequestId)
     closeDeleteModal()
   } catch (error) {
-    alert("Error al eliminar la solicitud. Por favor intenta de nuevo.")
+    alert(`Error al eliminar la solicitud. Por favor intenta de nuevo.${error.message}`)
   }
 }
 
@@ -579,7 +583,7 @@ function getStatusBadge(status) {
   const statusMap = {
     pendiente: "badge-pendiente",
     "en proceso": "badge-proceso",
-    completada: "badge-completada",
+    'completada': "badge-completada",
     "parcialmente surtida": "badge-parcial",
     cancelada: "badge-cancelada",
   }

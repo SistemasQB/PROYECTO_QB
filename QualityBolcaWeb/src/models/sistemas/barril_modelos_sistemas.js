@@ -5,7 +5,6 @@ import requisicionEquipos from "./requisicionEquipo.js";
 const modelosSistemas = {
     modeloTickets,
     base,
-    requisicionEquipos  
+    requisicionEquipos
 }
-
 export default modelosSistemas;
