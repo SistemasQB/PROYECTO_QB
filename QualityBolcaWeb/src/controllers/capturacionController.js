@@ -36,7 +36,6 @@ controlador.controlRegiones = async (req,res) => {
                 delete cap.departamento
                 delete cap.nombre                
                 cap.permisosCaptura = e.permisos.permisosCaptura || [];
-                console.log(cap);
                 capturistas.push(cap); 
             }
         });
@@ -50,19 +49,23 @@ controlador.crudPermisos = async(req, res) => {
     try {
         const {id} = req.body
         let clase = new sequelizeClase({modelo: modelosGenerales.usuarios});
-        switch (req.tipo){
+        switch (req.body.tipo){
         case 'insert':
                 break;
         case 'update':
-            console.log(req.body);
-                // let actualizacion = await clase.actualizarDatos({id: id, datos: req.body.permisosCaptura});
+                const usuario = await clase.obtener1Registro({codigoempleado: req.body.codigoCapturista});
+                let permisos = JSON.parse(usuario.permisos);
+                permisos.permisosCaptura = req.body.permisosCaptura;
+                const actualizacion = await clase.actualizarDatos({permisos: JSON.stringify(permisos)}, {codigoempleado: req.body.codigoCapturista});
+            return res.json({ok: true, msg: 'los permisos fueron actualizados exitosamente', token: req.csrfToken()});
+                
                 // if (!actualizacion) return res.status(500).json({ok: false, msg: 'no se pudo actualizar la informacion'});
                 // return res.stutus(200).json({ok: true, msg: 'los permisos fueron actualizados exitosamente'});
         case 'delete':
             break;
         }    
     } catch (error) {
-        
+        console.log(error);
     }
     
 }

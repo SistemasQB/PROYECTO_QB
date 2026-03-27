@@ -44,67 +44,7 @@ function buildPermisos(pares) {
 }
  
 // ─── ESTADO ─────────────────────────────────────────────────────────────────
-// Empleados que ya tienen permisos (simulados desde backend)
-// La llave de identidad es codigoempleado
-let members = [
-  {
-    codigoempleado:"10011", name:"GONZALEZ GUTIERREZ MARIA GUADALUPE",
-    correo:"maria.gonzalez@qualitybolca.com", departamentoLocal:"CAPTURACION",
-    descripcion:"Auxiliar de Captura de Datos",
-    permisosCaptura:["honda varios","toyota aptiv"],
-    date:"2024-11-10"
-  },
-  {
-    codigoempleado:"10022", name:"RAMIREZ LOPEZ CARLOS ALBERTO",
-    correo:"carlos.ramirez@qualitybolca.com", departamentoLocal:"SISTEMAS",
-    descripcion:"Analista de Sistemas",
-    permisosCaptura:["nissan varios"],
-    date:"2024-11-15"
-  },
-  {
-    codigoempleado:"10033", name:"TORRES SANCHEZ ELENA PATRICIA",
-    correo:"elena.torres@qualitybolca.com", departamentoLocal:"CALIDAD",
-    descripcion:"Inspector de Calidad",
-    permisosCaptura:["bmw aptiv","ford varios"],
-    date:"2024-12-01"
-  },
-  {
-    codigoempleado:"10044", name:"HERRERA RUIZ FERNANDO JOSE",
-    correo:"fernando.herrera@qualitybolca.com", departamentoLocal:"PRODUCCION",
-    descripcion:"Supervisor de Producción",
-    permisosCaptura:["volkswagen aptiv"],
-    date:"2025-01-08"
-  },
-  {
-    codigoempleado:"10055", name:"MENDOZA VEGA GABRIELA CRISTINA",
-    correo:"gabriela.mendoza@qualitybolca.com", departamentoLocal:"LOGISTICA",
-    descripcion:"Coordinadora Logística",
-    permisosCaptura:["chevrolet varios","mazda varios"],
-    date:"2025-01-22"
-  },
-  {
-    codigoempleado:"10066", name:"CASTILLO PEREZ HUGO ENRIQUE",
-    correo:"hugo.castillo@qualitybolca.com", departamentoLocal:"MANTENIMIENTO",
-    descripcion:"Técnico de Mantenimiento",
-    permisosCaptura:["hyundai aptiv"],
-    date:"2025-02-03"
-  },
-  {
-    codigoempleado:"10077", name:"ORTEGA JIMENEZ KAREN LIZETH",
-    correo:"karen.ortega@qualitybolca.com", departamentoLocal:"RRHH",
-    descripcion:"Analista de Recursos Humanos",
-    permisosCaptura:["kia varios"],
-    date:"2025-02-14"
-  },
-  {
-    codigoempleado:"10088", name:"SALINAS NUÑEZ LUIS ANTONIO",
-    correo:"luis.salinas@qualitybolca.com", departamentoLocal:"CONTABILIDAD",
-    descripcion:"Contador General",
-    permisosCaptura:["honda aptiv","nissan varios"],
-    date:"2025-03-01"
-  },
-];
- 
+
 let sortKey = 'name', sortAsc = true;
 let editingCodigo = null, deleteCodigo = null;
 let page = 1, perPage = 7;
@@ -195,7 +135,6 @@ function renderTable() {
   } else {
     empty.style.display = 'none';
     tbody.innerHTML = slice.map(m => {
-      console.log(m);
       const pares = parsePermisos(m.permisosCaptura);
       const regionesHTML = pares.map(p => `<span class="region-pill">${p.region}</span>`).join(' ');
       const tiposHTML    = pares.map(p => `<span class="tag tag-${p.tipo}">${p.tipo}</span>`).join(' ');
@@ -225,7 +164,6 @@ function renderTable() {
 
     //<td class="hide-md" style="color:var(--muted);font-size:12px">${fmtDate(m.date)}</td>
   }
- console.log('va a renderizar');
   renderPagination(total, pages);
 }
  
@@ -353,12 +291,31 @@ function closeModal(e) {
  
 function saveMember() {
   if (permisosTemp.length === 0) { showToast('Agrega al menos un permiso.', 'red'); return; }
- 
   if (editingCodigo) {
     // EDITAR
     const idx = members.findIndex(m => m.codigoempleado === editingCodigo);
     members[idx].permisosCaptura = buildPermisos(permisosTemp);
-    showToast('Permisos actualizados correctamente.', 'blue');
+    console.log(members[idx]);
+    const datos = { 
+      permisosCaptura: members[idx].permisosCaptura,
+      _csrf: tok,
+      id: editingCodigo,
+      tipo: 'update' ,
+      codigoCapturista: members[idx].codigoempleado
+    };
+    try {
+      envioJsonSinRefresh('crudPermisosCaptura',  datos).then(res => { 
+      console.log(res);
+      if (res.ok) {
+        tok = res.token;
+        showToast('Permisos actualizados correctamente.', 'blue');
+      }
+      alert('finalizado');
+    });  
+    } catch (error) {
+        console.log(error);
+    }
+    
   } else {
     // AGREGAR NUEVO
     const codigoSeleccionado = document.getElementById('fieldPerson').value;
@@ -372,8 +329,8 @@ function saveMember() {
       departamentoLocal: empleado.departamentoLocal,
       descripcion:     empleado.descripcion,
       permisosCaptura: buildPermisos(permisosTemp),
-      date:            new Date().toISOString().slice(0,10)
     });
+    // date:            new Date().toISOString().slice(0,10)
     showToast('Miembro asignado exitosamente.', 'green');
   }
  

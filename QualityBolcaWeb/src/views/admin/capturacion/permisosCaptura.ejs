@@ -21,7 +21,7 @@
       <div class="logo-sub">Administración de permisos</div>
     </div>
   </div>
-  <div class="header-actions">
+  <div class="header-actions" style="display: none;">
     <span class="badge-count" id="totalBadge">0 miembros</span>
     <button class="btn btn-primary" onclick="openModal('add')">
       <span>＋</span> Asignar miembro
@@ -165,8 +165,10 @@
 </div>
 
 <script src="/scripts/capturacion/scripts_permisosCaptura.js"></script>
+<script src="/clases/clase_fetch.js"></script>
 <script>
     const capts = <%-JSON.stringify(capturistas);%>
+    let tok = <%-JSON.stringify(token);%>
 </script>
 </body>
 </html>
