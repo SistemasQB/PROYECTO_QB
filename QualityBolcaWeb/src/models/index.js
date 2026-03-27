@@ -65,6 +65,7 @@ const compras = new Sequelize(process.env.BD_COMPRAS, process.env.BD_USER, proce
 const calidad = new Sequelize(process.env.BD_CALIDAD, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
 const sistemas = new Sequelize(process.env.BD_SISTEMAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
 
+
 // Definir asociaciones
 // Comunicacion.belongsTo(Gch_Alta, { foreignKey: 'curp', targetKey: 'id' });
 // Gch_Alta.hasOne(Comunicacion, { foreignKey: 'curp', sourceKey: 'id' });

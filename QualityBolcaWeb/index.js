@@ -33,17 +33,20 @@ app.use( cookieParser() )
 
 //conexion a la base de datos
 try {
-  await dbs.db.authenticate()
-  dbs.db.sync()
-  await dbs.dbCompras.authenticate()
-  dbs.dbCompras.sync()
+  await dbs.db.authenticate();
+  dbs.db.sync();
+  await dbs.dbCompras.authenticate();
+  dbs.dbCompras.sync();
   await dbs.dbCalidad.authenticate();
-  dbs.dbCalidad.sync()
-  await dbs.dbSistemas.authenticate()
-  dbs.dbSistemas.sync()
-  await dbs.dbSorteo.authenticate()
-  dbs.dbSorteo.sync()
+  dbs.dbCalidad.sync();
+  await dbs.dbSistemas.authenticate();
+  dbs.dbSistemas.sync();
+  await dbs.dbCapturacion.authenticate();
+  dbs.dbCapturacion.sync();
+  await dbs.dbSorteo.authenticate();
+  dbs.dbSorteo.sync();
   console.log('Conexion Correcta a la base de datos');
+
 }
 catch (error) {
   console.log(error);
@@ -128,6 +131,7 @@ app.use('/contabilidad',  csrfProtection,routers.contabilidadRouters);
 app.use('/servicioCliente',csrfProtection,routers.servicioClienteRouters);
 app.use('/rentabilidad',csrfProtection, routers.rentabilidadRouters);
 app.use('/procedimientos', routers.routerGenerales);
+app.use('/capturacion', routers.capturacionRouters);
 app.use((_, res) => {
   return res.render('admin/default/paginaNoEncontrada.ejs');
 });

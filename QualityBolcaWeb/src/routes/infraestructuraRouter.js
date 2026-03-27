@@ -37,7 +37,7 @@ infraestructuraRouter.post('/crudRequisicionGastos', protegerRuta,uGas.archivoUn
 infraestructuraRouter.get('/crearRequisicionGastos', protegerRuta, infraestructuraController.crearRequisicionGastos);
 infraestructuraRouter.get('/aprobaciones', protegerRuta, infraestructuraController.aprobacionesRequisicionGastos);
 
-infraestructuraRouter.get('/requisicionGastos/misRequisiciones', protegerRuta, infraestructuraController.misRequisicionesGastos);
-infraestructuraRouter.get('/requisicionGastos/comprobar', protegerRuta, infraestructuraController.comprobarRequisicionesGastos);
+infraestructuraRouter.get('/misRequisiciones', protegerRuta, infraestructuraController.misRequisicionesGastos);
+infraestructuraRouter.get('/comprobar', protegerRuta, infraestructuraController.comprobarRequisicionesGastos);
 
 export default infraestructuraRouter;
