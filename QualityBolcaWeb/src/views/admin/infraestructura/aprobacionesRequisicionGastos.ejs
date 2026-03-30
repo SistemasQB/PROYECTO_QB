@@ -116,7 +116,8 @@
 
                                             <td>
                                                 <div class="solicitante">
-                                                    <div class="solicitante-avatar" data-nombre="<%= req.solicitante %>">
+                                                    <div class="solicitante-avatar"
+                                                        data-nombre="<%= req.solicitante %>">
                                                         <%= req.solicitante?.charAt(0) || 'U' %>
                                                     </div>
                                                     <%= req.solicitante %>
@@ -134,7 +135,8 @@
                                             </td>
 
                                             <td>
-                                                <button class="btn-outline verRequisicion" onclick="abrirModal(<%= req.id %>)">
+                                                <button class="btn-outline verRequisicion"
+                                                    onclick="abrirModal(<%= req.id %>)">
                                                     Ver Detalle
                                                 </button>
                                             </td>
@@ -153,6 +155,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const nombreUsuario = "<%= usuario.nombrelargo %>"
+    </script>
+    <script>
+        const esSuperAdmin = <% - JSON.stringify(esSuperAdmin) %>;
+        const esNivelAlto = <% - JSON.stringify(esNivelAlto) %>;
     </script>
     <script src="/scripts/infraestructura/aprobacionesRequisicionGastos.js"></script>
 </body>

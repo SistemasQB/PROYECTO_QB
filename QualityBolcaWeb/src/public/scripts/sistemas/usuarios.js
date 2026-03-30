@@ -1,3 +1,8 @@
+
+const csrfToken = document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+
 const tabla = document.getElementById("tablaUsuarios");
 const searchInput = document.querySelector(".search-box input");
 
@@ -135,12 +140,12 @@ function renderTabla() {
         <td>
         <div class="action-buttons">
 
-        <button class="btn-edit">
+        <button class="btn-edit" onclick="editarUsuario('${u.codigoempleado}')">
         <i class="fa-solid fa-pen"></i>
         </button>
 
-        <button class="btn-toggle" onclick="toggleUsuario('${u.codigoempleado}','${u.estadoempleado}')">
-        <i class="fa-solid fa-power-off"></i>
+        <button class="btn-toggle" onclick="eliminarUsuario('${u.codigoempleado}','${u.nombrelargo}')">
+        <i class="fa-solid fa-trash"></i>
         </button>
 
         </div>
@@ -234,9 +239,6 @@ function abrirModalCrearUsuario() {
     modalOverlay.className = "modal-overlay";
     modalOverlay.id = "modalCrearUsuario";
 
-    // Generamos un código de empleado simulado para el ejemplo
-    const anioActual = new Date().getFullYear();
-    const codigoGenerado = `EMP-${anioActual}-001`;
 
     // 2. Definir el HTML interno
     modalOverlay.innerHTML = `
@@ -252,7 +254,7 @@ function abrirModalCrearUsuario() {
                 
                 <div class="form-group col-span-3">
                     <label>Código de Empleado</label>
-                    <input type="text" class="form-input" style="color: var(--primary-blue); font-weight: 600;" value="${codigoGenerado}" readonly>
+                    <input type="text" id="inpCodigoEmpleado" class="form-input" style="color: var(--primary-blue); font-weight: 600;" readonly>
                 </div>
 
                 <div class="form-group">
@@ -278,19 +280,15 @@ function abrirModalCrearUsuario() {
                 <div class="form-group col-span-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     <div class="form-group">
                         <label>Departamento</label>
-                        <select class="form-input">
+                        <select class="form-input" id="selectDepartamento">
                             <option value="" disabled selected>Seleccionar departamento</option>
-                            <option value="Sistemas">Sistemas</option>
-                            <option value="RH">Recursos Humanos</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Puesto</label>
-                        <select class="form-input">
+                        <select class="form-input" id="selectPuesto">
                             <option value="" disabled selected>Seleccionar puesto</option>
-                            <option value="Dev">Desarrollador</option>
-                            <option value="Admin">Administrativo</option>
                         </select>
                     </div>
                 </div>
@@ -337,10 +335,10 @@ function abrirModalCrearUsuario() {
         </div>
     `;
 
-    // 3. Añadir el modal al body
+    // Añadir el modal al body
     document.body.appendChild(modalOverlay);
 
-    // 4. Lógica para autocompletar el nombre completo
+    // Lógica para autocompletar el nombre completo
     const inpNombre = document.getElementById("inpNombre");
     const inpPaterno = document.getElementById("inpPaterno");
     const inpMaterno = document.getElementById("inpMaterno");
@@ -355,7 +353,7 @@ function abrirModalCrearUsuario() {
     inpPaterno.addEventListener("input", actualizarNombreCompleto);
     inpMaterno.addEventListener("input", actualizarNombreCompleto);
 
-    // 5. Lógica para cerrar el modal (Destruye el elemento del DOM)
+    // Lógica para cerrar el modal (Destruye el elemento del DOM)
     const cerrarModal = () => {
         modalOverlay.remove();
     };
@@ -364,7 +362,7 @@ function abrirModalCrearUsuario() {
     document.getElementById("btnCancelarModal").addEventListener("click", cerrarModal);
     modalOverlay.addEventListener("click", cerrarModal); // Cierra al hacer clic fuera
 
-    // Opcional: Cerrar con la tecla ESC
+    // Cerrar con la tecla ESC
     document.addEventListener("keydown", function escListener(e) {
         if (e.key === "Escape") {
             cerrarModal();
@@ -372,7 +370,7 @@ function abrirModalCrearUsuario() {
         }
     });
 
-    // 6. Lógica de "Crear Usuario" (Aquí puedes hacer tu POST a la API)
+    // Lógica de "Crear Usuario" (Aquí puedes hacer tu POST a la API)
     document.getElementById("btnGuardarUsuario").addEventListener("click", async () => {
 
         const nombre = document.getElementById("inpNombre").value.trim();
@@ -380,8 +378,8 @@ function abrirModalCrearUsuario() {
         const apellidomaterno = document.getElementById("inpMaterno").value.trim();
         const nombrelargo = document.getElementById("inpCompleto").value.trim();
 
-        const correo = document.querySelector('input[type="email"]').value.trim();
-        const telefono = document.querySelector('input[type="text"][placeholder*="+52"]').value.trim();
+        const correo = document.querySelector('#modalCrearUsuario input[type="email"]').value.trim();
+        const telefono = document.querySelector('#modalCrearUsuario input[placeholder*="+52"]').value.trim();
 
         const selects = document.querySelectorAll("select");
         const departamento = selects[0].value;
@@ -396,11 +394,11 @@ function abrirModalCrearUsuario() {
         }
 
         try {
-
             const res = await fetch("/sistemas/usuarios", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "CSRF-Token": csrfToken
                 },
                 body: JSON.stringify({
                     nombre,
@@ -408,12 +406,14 @@ function abrirModalCrearUsuario() {
                     apellidomaterno,
                     nombrelargo,
                     correo,
+                    telefono,
                     departamento,
                     puesto,
                     esBecario
                 })
             });
 
+            console.log("STATUS:", res.status);
             const data = await res.json();
 
             if (!data.ok) {
@@ -421,24 +421,317 @@ function abrirModalCrearUsuario() {
                 return;
             }
 
+            console.log("Antes de Swal")
             // ÉXITO
             Swal.fire({
                 icon: "success",
                 title: "Usuario creado",
                 text: "El usuario fue registrado correctamente"
             });
+
+
+
             cerrarModal();
             cargarUsuarios(); // refresca tabla
 
         } catch (error) {
-            console.error(error);
+            console.error("error:", error);
             alert("Error de conexión");
         }
     });
+
+    async function cargarDatosModal() {
+        try {
+            const res = await fetch("/sistemas/usuarios/datos-nuevo");
+            const data = await res.json();
+
+            if (!data.ok) return;
+
+            // Código empleado
+            document.getElementById("inpCodigoEmpleado").value = data.siguienteCodigo;
+
+            // Departamentos
+            const selectDep = document.getElementById("selectDepartamento");
+            selectDep.innerHTML = `<option value="" disabled selected>Seleccionar departamento</option>`;
+
+            data.departamentos.forEach(dep => {
+                selectDep.innerHTML += `<option value="${dep.iddepartamento}">${dep.descripcion}</option>`;
+            });
+
+            // Puestos
+            const selectPuesto = document.getElementById("selectPuesto");
+            selectPuesto.innerHTML = `<option value="" disabled selected>Seleccionar puesto</option>`;
+
+            data.puestos.forEach(p => {
+                selectPuesto.innerHTML += `<option value="${p.idpuesto}">${p.descripcion}</option>`;
+            });
+
+        } catch (error) {
+            console.error("Error cargando datos del modal:", error);
+        }
+    }
+
+    cargarDatosModal();
 }
 
-// 7. Escuchar el evento del botón principal
+async function eliminarUsuario(codigo, nombre) {
+
+    const confirmacion = await Swal.fire({
+        title: "¿Eliminar usuario?",
+        text: `Se eliminará a ${nombre}. Esta acción no se puede deshacer.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc2626",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+
+        const res = await fetch(`/sistemas/usuarios/${codigo}`, {
+            method: "DELETE",
+            headers: {
+                "CSRF-Token": csrfToken
+            }
+        });
+
+        const data = await res.json();
+
+        if (!data.ok) {
+            Swal.fire("Error", data.msg || "No se pudo eliminar", "error");
+            return;
+        }
+
+        Swal.fire({
+            icon: "success",
+            title: "Usuario eliminado",
+            text: data.msg || "El usuario fue eliminado correctamente"
+        });
+
+        cargarUsuarios();
+        
+    } catch (error) {
+        console.error("Error:", error);
+
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Error de conexión"
+        });
+    }
+}
+
+async function editarUsuario(codigo) {
+
+    const usuario = listaUsuarios.find(u => u.codigoempleado == codigo);
+
+    if (!usuario) {
+        alert("Usuario no encontrado");
+        return;
+    }
+
+    abrirModalEditarUsuario(usuario);
+}
+
+function abrirModalEditarUsuario(usuario) {
+
+    const modalOverlay = document.createElement("div");
+    modalOverlay.className = "modal-overlay";
+    modalOverlay.id = "modalEditarUsuario";
+
+    modalOverlay.innerHTML = `
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="btn-close" id="btnCerrarModal"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="modal-header">
+                <h2>Editar Usuario</h2>
+                <p>Actualiza la información del usuario.</p>
+            </div>
+
+            <div class="modal-form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                
+                <div class="form-group col-span-3">
+                    <label>Código de Empleado</label>
+                    <input type="text" id="editCodigo" class="form-input" value="${usuario.codigoempleado}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre(s)</label>
+                    <input type="text" class="form-input" id="editNombre" value="${usuario.nombrelargo?.split(" ")[2] || ""}">
+                </div>
+
+                <div class="form-group">
+                    <label>Apellido Paterno</label>
+                    <input type="text" class="form-input" id="editPaterno" value="${usuario.nombrelargo?.split(" ")[0] || ""}">
+                </div>
+
+                <div class="form-group">
+                    <label>Apellido Materno</label>
+                    <input type="text" class="form-input" id="editMaterno" value="${usuario.nombrelargo?.split(" ")[1] || ""}">
+                </div>
+
+                <div class="form-group col-span-3">
+                    <label>Nombre Completo</label>
+                    <input type="text" class="form-input" id="editCompleto" value="${usuario.nombrelargo}" readonly>
+                </div>
+
+                <div class="form-group col-span-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label>Departamento</label>
+                        <select class="form-input" id="editDepartamento"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Puesto</label>
+                        <select class="form-input" id="editPuesto"></select>
+                    </div>
+                </div>
+
+                <div class="form-group col-span-3">
+                <div class="form-group">
+                    <label>Telefono</label>
+                    <input type="text" class="form-input" id="editTelefono" value="${usuario.telefono || ""}">
+                </div>
+
+                    <label>Correo Electrónico</label>
+                    <input type="email" class="form-input" id="editCorreo" value="${usuario.correoelectronico || ""}">
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnCancelarModal">Cancelar</button>
+                <button class="btn-primary" id="btnActualizarUsuario">
+                    <i class="fa-solid fa-save"></i> Actualizar Usuario
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modalOverlay);
+
+    const cerrarModal = () => modalOverlay.remove();
+
+    document.getElementById("btnCerrarModal").onclick = cerrarModal;
+    document.getElementById("btnCancelarModal").onclick = cerrarModal;
+    modalOverlay.onclick = cerrarModal;
+
+    cargarDatosEdicion(usuario);
+
+    document.getElementById("btnActualizarUsuario").addEventListener("click", () => actualizarUsuario(usuario.codigoempleado, cerrarModal));
+
+    const inpNombre = document.getElementById("editNombre");
+    const inpPaterno = document.getElementById("editPaterno");
+    const inpMaterno = document.getElementById("editMaterno");
+    const inpCompleto = document.getElementById("editCompleto");
+
+    const actualizarNombreCompleto = () => {
+        const partes = [inpPaterno.value, inpMaterno.value, inpNombre.value]
+            .filter(val => val.trim() !== "");
+        inpCompleto.value = partes.join(" ");
+    };
+
+    inpNombre.addEventListener("input", actualizarNombreCompleto);
+    inpPaterno.addEventListener("input", actualizarNombreCompleto);
+    inpMaterno.addEventListener("input", actualizarNombreCompleto);
+}
+
+async function cargarDatosEdicion(usuario) {
+
+    const res = await fetch("/sistemas/usuarios/datos-nuevo");
+    const data = await res.json();
+
+    if (!data.ok) return;
+
+    const selectDep = document.getElementById("editDepartamento");
+    const selectPuesto = document.getElementById("editPuesto");
+
+    selectDep.innerHTML = `<option value="">Seleccionar departamento</option>`;
+    selectPuesto.innerHTML = `<option value="">Seleccionar puesto</option>`;
+
+    data.departamentos.forEach(dep => {
+        const selected = dep.iddepartamento == usuario.iddepartamento ? "selected" : "";
+        selectDep.innerHTML += `<option value="${dep.iddepartamento}" ${selected}>${dep.descripcion}</option>`;
+    });
+
+    data.puestos.forEach(p => {
+        const selected = p.idpuesto === usuario.idpuesto ? "selected" : "";
+        selectPuesto.innerHTML += `<option value="${p.idpuesto}" ${selected}>${p.descripcion}</option>`;
+    });
+}
+
+// Escuchar el evento del botón principal
 if (btnAgregarUsuario) {
     btnAgregarUsuario.addEventListener("click", abrirModalCrearUsuario);
 }
 
+async function actualizarUsuario(codigo, cerrarModal) {
+
+    const nombre = document.getElementById("editNombre").value.trim();
+    const apellidopaterno = document.getElementById("editPaterno").value.trim();
+    const apellidomaterno = document.getElementById("editMaterno").value.trim();
+    const telefono = document.getElementById("editTelefono").value.trim();
+
+    const nombrelargo = `${apellidopaterno} ${apellidomaterno} ${nombre}`;
+
+    const correo = document.getElementById("editCorreo").value.trim();
+    const departamento = document.getElementById("editDepartamento").value;
+    const puesto = document.getElementById("editPuesto").value;
+
+    if (!nombre || !apellidopaterno || !correo || !departamento || !puesto) {
+        Swal.fire({
+            icon: "warning",
+            title: "Campos incompletos",
+            text: "Completa todos los campos obligatorios"
+        });
+        return;
+    }
+
+    try {
+        console.log({ nombre, apellidopaterno, apellidomaterno, nombrelargo, correo, departamento, puesto })
+        const res = await fetch(`/sistemas/usuarios/${codigo}/actualizar`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "CSRF-Token": csrfToken
+            },
+            body: JSON.stringify({
+                nombre,
+                apellidopaterno,
+                apellidomaterno,
+                nombrelargo,
+                correo,
+                telefono,
+                departamento,
+                puesto
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+            throw new Error(data.msg || "Error al actualizar");
+        }
+
+        Swal.fire({
+            icon: "success",
+            title: "Usuario actualizado",
+            text: data.msg || "Actualización exitosa"
+        });
+
+        cerrarModal();
+        cargarUsuarios();
+
+    } catch (error) {
+        console.error("Error:", error);
+
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message || "No se pudo actualizar el usuario"
+        });
+    }
+}

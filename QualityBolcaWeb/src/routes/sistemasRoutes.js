@@ -12,8 +12,10 @@ router.get('/dashboard', protegetRuta,adminController.dashboardTI);
 //rutas de usuarios (nom10001)
 router.get('/usuarios', protegetRuta, adminController.usuarios);
 router.get('/api/usuarios', protegetRuta, adminController.obtenerUsuarios);
-router.patch('/usuarios/:codigoempleado/estado', protegetRuta, adminController.actualizarEstadoUsuario);
+router.put('/usuarios/:codigoempleado/actualizar', protegetRuta, adminController.actualizarUsuario);
 router.post("/usuarios", adminController.crearUsuario);
+router.get("/usuarios/datos-nuevo", adminController.obtenerDatosNuevoUsuario);
+router.delete("/usuarios/:codigoempleado", protegetRuta, adminController.eliminarUsuario);
 
 //rutas gestion de permisos usuarios
 router.get('/admin-usuarios', adminController.adminUsuarios); 

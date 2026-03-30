@@ -8,6 +8,7 @@ let filteredRows = [...rows];
 let selectedUser = null;
 let selectedRoles = [];
 let selectedPermisos = [];
+let selectedPermisosRequisiciones = [];
 
 function renderTable() {
     rows.forEach(row => row.style.display = 'none');
@@ -102,6 +103,11 @@ function removePermiso(permiso) {
     renderChips('permisos-chips', selectedPermisos, removePermiso);
 }
 
+function removePermisoRequisicion(value) {
+    selectedPermisosRequisiciones = selectedPermisosRequisiciones.filter(v => v !== value);
+    renderChips('requisiciones-chips', selectedPermisosRequisiciones, removePermisoRequisicion);
+}
+
 function actualizarBadgeEstado(badge, estado) {
     if (estado === 'A') {
         badge.textContent = 'Activo';
@@ -182,11 +188,15 @@ function createEditUserModal() {
                 <option value="analista">Analista</option>
                 <option value="auxiliar">Auxiliar</option>
                 <option value="jefe calidad">Jefe de calidad</option>
+                <option value="jefe de compras y suministros">Jefe de Compras y Suministros</option>
+                <option value="auxiliar de compras y suministros">Auxiliar de Compras y Suministros</option>
                 <option value="auxiliar logistica vehicular">Auxiliar Logística Vehicular</option>
                 <option value="jefe">Jefe</option>
                 <option value="gerente">Gerente</option>
                 <option value="director">Director</option>
             </select>
+
+            
         </div>
 
         <div class="chips-container" id="permisos-chips"></div>
@@ -201,6 +211,32 @@ function createEditUserModal() {
               <option value="5">nivel 5</option>
             </select>
           </div>
+
+        <div class="requisicion-toggle">
+            <span>Habilitar requisiciones</span>
+            <label class="switch">
+                <input type="checkbox" id="permiso-requisiciones-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="divider"></div>
+
+          <div class="form-section" id="requisiciones-container" style="display:none;">
+            <label>Permisos de requisiciones</label>
+            <select id="eu-requisicion-select">
+              <option value="">Agregar permiso</option>
+              <option value="administrador">Administrador</option>
+              <option value="director">Director</option>
+              <option value="gerente">Gerente</option>
+              <option value="jefe">Jefe</option>
+              <option value="analista">Analista</option>
+              <option value="auxiliar">Auxiliar</option>
+            </select>
+          </div>
+
+          <div class="chips_container" id="requisiciones-chips"></div>
+          
 
           <div class="modal-actions">
             <button type="button" class="btn-secondary" onclick="closeEditUser()">Cancelar</button>
@@ -218,6 +254,7 @@ function openEditUser(user) {
     selectedUser = user;
 
     const permisos = user.permisos ? JSON.parse(user.permisos) : {};
+    const selectedPermisosRequisiciones = permisos.requisicionPermisos || [];
 
     // Header
     document.getElementById('eu-name').innerText = user.nombre;
@@ -272,6 +309,18 @@ function openEditUser(user) {
     // Dropdowns
     selectedRoles = permisos.roles || [];
     selectedPermisos = permisos.permisos || [];
+    const toggleReq = document.getElementById('permiso-requisiciones-toggle');
+    const containerReq = document.getElementById('requisiciones-container');
+
+    if (selectedPermisosRequisiciones.length > 0) {
+        toggleReq.checked = true;
+        containerReq.style.display = 'block';
+    } else {
+        toggleReq.checked = false;
+        containerReq.style.display = 'none';
+    }
+
+    renderChips('requisiciones-chips', selectedPermisosRequisiciones, removePermisoRequisicion);
 
     renderChips('roles-chips', selectedRoles, removeRole);
     renderChips('permisos-chips', selectedPermisos, removePermiso);
@@ -297,7 +346,8 @@ document.addEventListener('submit', async (e) => {
         permisos: {
             jerarquia: parseInt(document.getElementById('eu-jerarquia').value),
             roles: selectedRoles,
-            permisos: selectedPermisos
+            permisos: selectedPermisos,
+            requisicionPermisos: selectedPermisosRequisiciones
         }
     };
 
@@ -350,6 +400,32 @@ document.addEventListener('change', e => {
         }
         e.target.value = '';
     }
+});
+
+document.addEventListener('change', e => {
+
+    if (e.target.id === 'permiso-requisiciones-toggle') {
+        const container = document.getElementById('requisiciones-container');
+
+        if (e.target.checked) {
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+            selectedPermisosRequisiciones = [];
+            renderChips('requisiciones-chips', selectedPermisosRequisiciones, removePermisoRequisicion);
+        }
+    }
+
+    // SELECT REQUISICIONES
+    if (e.target.id === 'eu-requisicion-select') {
+        const value = e.target.value;
+        selectedPermisosRequisiciones = value ? [value] : [];
+
+        renderChips('requisiciones-chips', selectedPermisosRequisiciones, removePermisoRequisicion);
+
+        e.target.value = '';
+    }
+
 });
 
 

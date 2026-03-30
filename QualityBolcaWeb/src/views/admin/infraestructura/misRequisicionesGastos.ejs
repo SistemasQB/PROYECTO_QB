@@ -1,11 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="csrf-token" content="<%= tok %>">
+    <title>mis Requisiciones de Gastos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles/infraestructura/misRequisicionesGastos.css">
 </head>
+
 <body>
-    <h1>Mis Requisiciones</h1>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+            <span>Requisiciones</span>
+        </div>
+
+        <div class="profile-section">
+            <div class="avatar" id="avatarUsuario"></div>
+
+            <div class="profile-name">
+                Nombre usuario
+            </div>
+
+            <div class="profile-role">
+                puesto usuario
+            </div>
+
+            <div class="profile-dept">
+                departamento usuario
+            </div>
+
+            <div class="profile-email">
+                correo usuario
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <a href="requisicionGastos" class="nav-item">
+                <i class="fa-solid fa-border-all"></i> Panel Principal
+            </a>
+
+            <a href="misRequisiciones" class="nav-item active">
+                <i class="fa-solid fa-file-lines"></i> Mis Requisiciones
+            </a>
+
+            <a href="aprobaciones" class="nav-item">
+                <i class="fa-solid fa-check-double"></i> Aprobaciones
+            </a>
+
+            <a href="comprobar" class="nav-item">
+                <i class="fa-solid fa-file-invoice"></i> Comprobaciones
+            </a>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar requisiciones, folios o conceptos...">
+            </div>
+        </header>
+
+        <div class="top-actions">
+            <button class="btn btn-primary" onclick="location.href='crearRequisicionGastos'"><i
+                    class="fa-solid fa-plus"></i> Crear Requisición</button>
+            <button class="btn btn-refresh" id="btnRefresh">
+                <i class="fa-solid fa-rotate"></i> Actualizar
+            </button>
+        </div>
+    </main>
 </body>
+
 </html>

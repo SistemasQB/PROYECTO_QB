@@ -8,17 +8,18 @@ import nodemailerClase from "../public/clases/nodemailer.js";
 import { informacionpuesto } from "../models/index.js";
 import Informaciondepartamento from "../models/informaciondepartamento.js";
 import { QueryTypes } from "sequelize";
+import { type } from "os";
 
 
 const infraestructuraController = {}
 //controlador de inicio
-infraestructuraController.inicio = (req, res)=>{
-    try{
+infraestructuraController.inicio = (req, res) => {
+    try {
         return res.render('admin/infraestructura/inicio_Infraestructura.ejs')
     }
-    catch(ex){
-        manejadorErrores(res,ex)
-    }   
+    catch (ex) {
+        manejadorErrores(res, ex)
+    }
 }
 
 //controlador de control de inventario
@@ -135,7 +136,7 @@ infraestructuraController.pedidoInsumos = async (req, res) => {
         let productos = await clase.obtenerDatosPorCriterio({ criterio: criterios })
         clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_plantas_gastos })
         criterios = { id: { [Op.gt]: 0 } }
-        let plantas = await clase.obtenerDatosPorCriterio({ criterio: criterios,ordenamiento: [[ 'planta', 'ASC' ]]})
+        let plantas = await clase.obtenerDatosPorCriterio({ criterio: criterios, ordenamiento: [['planta', 'ASC']] })
         return res.render('admin/infraestructura/formato_pedido_insumos.ejs', {
             productos: productos,
             plantas: plantas,
@@ -191,12 +192,12 @@ infraestructuraController.crudPedidoInsumos = async (req, res) => {
             case 'consultar':
                 const datos = await clase.obtener1Registro({ criterio: { id: id } })
                 if (!datos) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
-                    return res.render('admin/infraestructura/formatoPedidoInsumosDigital.ejs', { datos: datos, tok: req.csrfToken() })
+                return res.render('admin/infraestructura/formatoPedidoInsumosDigital.ejs', { datos: datos, tok: req.csrfToken() })
             case 'consultaPorFecha':
                 console.log('entro a la consulta');
-                const {inicio, fin} = req.body;
+                const { inicio, fin } = req.body;
                 const consulta = await clase.obtenerDatosPorCriterio({ criterio: { createdAt: { [Op.between]: [inicio, fin] } } })
-                if(!consulta) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
+                if (!consulta) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
                 return res.json({ ok: true, msg: 'exito', resultados: consulta })
         }
     } catch (error) {
@@ -208,9 +209,9 @@ infraestructuraController.crudPedidoInsumos = async (req, res) => {
 infraestructuraController.formatoPedidoInsumos = async (req, res) => {
     try {
         const clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_pedido_insumos })
-        const resultados = await clase.obtener1Registro({ criterio: { id: req.params.id } })  
-        if(!resultados) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
-        return res.render('admin/infraestructura/formatoPedidoInsumosDigital.ejs', { resultados})
+        const resultados = await clase.obtener1Registro({ criterio: { id: req.params.id } })
+        if (!resultados) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
+        return res.render('admin/infraestructura/formatoPedidoInsumosDigital.ejs', { resultados })
     } catch (error) {
         manejadorErrores(res, error);
     }
@@ -220,14 +221,14 @@ infraestructuraController.gestionPedidosInsumos = async (req, res) => {
     try {
         let clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_pedido_insumos })
         let resultados = await clase.obtenerDatosPorCriterio({ criterio: { estatus: 'PENDIENTE' } })
-        const completos = await clase.obtenerDatosPorCriterio({ criterio: { estatus: {[Op.or] :['PARCIALMENTE SURTIDO', 'SURTIDO'] }} })
+        const completos = await clase.obtenerDatosPorCriterio({ criterio: { estatus: { [Op.or]: ['PARCIALMENTE SURTIDO', 'SURTIDO'] } } })
         clase = new sequelizeClase({ modelo: modelosInfraestructura.modeloComprasInventario })
         let criterios = { estatus: { [Op.ne]: 'NO ACTIVO' } }
         let productos = await clase.obtenerDatosPorCriterio({ criterio: criterios })
         let usuario = req.usuario.codigoempleado
         clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
         let datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: usuario } })
-        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', { pendientes: resultados, productos: productos, usuario: datosUsuario.nombrelargo, tok: req.csrfToken(), completos})
+        return res.render('admin/infraestructura/gestionPedidosInsumos.ejs', { pendientes: resultados, productos: productos, usuario: datosUsuario.nombrelargo, tok: req.csrfToken(), completos })
     } catch (error) {
         manejadorErrores(res, ex)
     }
@@ -367,60 +368,51 @@ infraestructuraController.requisicionGastos = async (req, res) => {
         datosUsuario.departamento = departamento ? departamento.descripcion : ''
         const nombreUsuario = datosUsuario.nombrelargo
 
-        //contadores dashboard
-        const [dashboard] = await db.query(`
-            SELECT
-                SUM(CASE 
-                    WHEN estatus = 'INGRESADA' 
-                    THEN 1 ELSE 0 
-                END) AS pendientesConfirmacion,
+        const nivelesAltos = ['director', 'administrador', 'gerente', 'jefe']
+        let esNivelAlto = false
+        let esSuperAdmin = false
 
-                SUM(CASE 
-                    WHEN estatus = 'APROBADA' 
-                    THEN 1 ELSE 0 
-                END) AS porComprobar,
-
-                SUM(CASE
-                    WHEN fechaEntrega >= DATE_FORMAT(NOW(), '%Y-%m-01')
-                    THEN total
-                    ELSE 0
-                END) AS montoTotalMes
-
-            FROM requisiciones
-            WHERE solicitante = :nombreUsuario
+        const permisosGet = await db.query(`
+            SELECT permisos
+            FROM usuarios
+            WHERE codigoempleado = :usuario
+            LIMIT 1
         `, {
-            replacements: { nombreUsuario },
+            replacements: { usuario },
             type: db.QueryTypes.SELECT
         })
 
-        const nombreAutorizador = nombreUsuario
 
-        const usuarioReq = await db.query(`
-                    SELECT departamento
-                    FROM usuariosRequisiciones
-                    WHERE nombre = :nombre
-                    LIMIT 1
-                `, {
-            replacements: { nombre: nombreAutorizador },
-            type: QueryTypes.SELECT
-        })
+        if (permisosGet.length) {
+            const permisos = typeof permisosGet[0].permisos === 'string'
+                ? JSON.parse(permisosGet[0].permisos)
+                : permisosGet[0].permisos
 
-        if (!usuarioReq.length) {
-            return res.render('admin/infraestructura/requisicionGastos.ejs', {
-                usuario: datosUsuario,
-                requisiciones,
-                pendientesConfirmacion: 0,
-                porComprobar: 0,
-                montoTotalMes: 0,
-                stats: { total_pendientes: 0, monto_total: 0 },
-                tok: req.csrfToken()
-            })
+            const nivelesAltos = ['director', 'administrador', 'gerente', 'jefe']
+            const nivelRequisicion = permisos?.requisicionPermisos
+
+            if (Array.isArray(nivelRequisicion)) {
+                esNivelAlto = nivelRequisicion.some(n => nivelesAltos.includes(n.toLowerCase()))
+            }
+
         }
 
-        const { departamento: departamentoReq } = usuarioReq[0]
+        if (permisosGet.length) {
+            const permisos = typeof permisosGet[0].permisos === 'string'
+                ? JSON.parse(permisosGet[0].permisos)
+                : permisosGet[0].permisos
 
-        const usuarioJer = await db.query(`
-            SELECT jerarquia
+            const nivelRequisicion = permisos?.requisicionPermisos
+
+            if (Array.isArray(nivelRequisicion)) {
+                esSuperAdmin = nivelRequisicion.some(n => n.toLowerCase() === 'administrador')
+                esNivelAlto = !esSuperAdmin && nivelRequisicion.some(n => nivelesAltos.includes(n.toLowerCase()))
+            }
+        }
+
+        // Obtener departamento del usuario en usuariosRequisiciones
+        const usuarioReq = await db.query(`
+            SELECT departamento
             FROM usuariosRequisiciones
             WHERE nombre = :nombre
             LIMIT 1
@@ -429,29 +421,110 @@ infraestructuraController.requisicionGastos = async (req, res) => {
             type: QueryTypes.SELECT
         })
 
-        const jerarquia = usuarioJer[0]?.jerarquia || 5
+        const departamentoReq = usuarioReq[0]?.departamento || null
 
-        const statsResult = await db.query(`
-                SELECT 
-                    COUNT(*) as total_pendientes,
-                    COALESCE(SUM(total), 0) as monto_total
+        // Contadores — varían según nivel
+        let pendientesConfirmacion = 0
+        let porComprobar = 0
+        let montoTotalMes = 0
+        let statsResult = [{ total_pendientes: 0, monto_total: 0 }]
+
+        if (esSuperAdmin) {
+            // Ve todo sin filtro de solicitante ni departamento
+            const [dashboard] = await db.query(`
+                SELECT
+                SUM(CASE WHEN estatus = 'INGRESADA' THEN 1 ELSE 0 END) AS pendientesConfirmacion,
+                SUM(CASE WHEN estatus = 'APROBADA'  THEN 1 ELSE 0 END) AS porComprobar,
+                SUM(CASE WHEN fechaEntrega >= DATE_FORMAT(NOW(), '%Y-%m-01') THEN total ELSE 0 END) AS montoTotalMes
+                FROM requisiciones
+            `, { type: db.QueryTypes.SELECT })
+
+            pendientesConfirmacion = dashboard.pendientesConfirmacion || 0
+            porComprobar = dashboard.porComprobar || 0
+            montoTotalMes = dashboard.montoTotalMes || 0
+
+            const stats = await db.query(`
+                SELECT COUNT(*) as total_pendientes, COALESCE(SUM(total), 0) as monto_total
+                FROM requisiciones
+                WHERE estatus = 'INGRESADA'
+            `, { type: db.QueryTypes.SELECT })
+
+            statsResult = stats
+
+        } else if (esNivelAlto && departamentoReq) {
+            // Ve su departamento
+            const [dashboard] = await db.query(`
+                SELECT
+                    SUM(CASE WHEN estatus = 'INGRESADA' THEN 1 ELSE 0 END) AS pendientesConfirmacion,
+                    SUM(CASE WHEN estatus = 'APROBADA'  THEN 1 ELSE 0 END) AS porComprobar,
+                    SUM(CASE WHEN fechaEntrega >= DATE_FORMAT(NOW(), '%Y-%m-01') THEN total ELSE 0 END) AS montoTotalMes
+                FROM requisiciones
+                WHERE departamento = :departamento OR solicitante = :nombreUsuario
+            `, {
+                replacements: { departamento: departamentoReq, nombreUsuario },
+                type: db.QueryTypes.SELECT
+            })
+
+            pendientesConfirmacion = dashboard.pendientesConfirmacion || 0
+            porComprobar = dashboard.porComprobar || 0
+            montoTotalMes = dashboard.montoTotalMes || 0
+
+            const stats = await db.query(`
+                SELECT COUNT(*) as total_pendientes, COALESCE(SUM(total), 0) as monto_total
                 FROM requisiciones
                 WHERE estatus = 'INGRESADA'
                 AND autoriza = :departamento
+            `, {
+                replacements: { departamento: departamentoReq },
+                type: db.QueryTypes.SELECT
+            })
+
+            statsResult = stats
+
+        } else {
+            // Usuario normal — solo las propias
+            const [dashboard] = await db.query(`
+                SELECT
+                    SUM(CASE WHEN estatus = 'INGRESADA' THEN 1 ELSE 0 END) AS pendientesConfirmacion,
+                    SUM(CASE WHEN estatus = 'APROBADA'  THEN 1 ELSE 0 END) AS porComprobar,
+                    SUM(CASE WHEN fechaEntrega >= DATE_FORMAT(NOW(), '%Y-%m-01') THEN total ELSE 0 END) AS montoTotalMes
+                FROM requisiciones
+                WHERE solicitante = :nombreUsuario
+            `, {
+                replacements: { nombreUsuario },
+                type: db.QueryTypes.SELECT
+            })
+
+            pendientesConfirmacion = dashboard.pendientesConfirmacion || 0
+            porComprobar = dashboard.porComprobar || 0
+            montoTotalMes = dashboard.montoTotalMes || 0
+
+            if (departamentoReq) {
+                const stats = await db.query(`
+                    SELECT COUNT(*) as total_pendientes, COALESCE(SUM(total), 0) as monto_total
+                    FROM requisiciones
+                    WHERE estatus = 'INGRESADA'
+                    AND autoriza = :departamento
+                `, {
+                    replacements: { departamento: departamentoReq },
+                    type: db.QueryTypes.SELECT
+                })
+                statsResult = stats
+            }
+        }
+
+        const usuarioJer = await db.query(`
+            SELECT jerarquia FROM usuariosRequisiciones
+            WHERE nombre = :nombre LIMIT 1
         `, {
-            replacements: {
-                departamento: departamentoReq
-            },
+            replacements: { nombre: nombreUsuario },
             type: QueryTypes.SELECT
         })
 
+        const jerarquia = usuarioJer[0]?.jerarquia || 5
+
         const requisiciones = await db.query(`
-            SELECT 
-                id,
-                horaRegistro,
-                asunto,
-                total,
-                estatus
+            SELECT id, horaRegistro, asunto, total, estatus
             FROM requisiciones
             WHERE solicitante = :nombreUsuario
             ORDER BY horaRegistro DESC
@@ -460,26 +533,22 @@ infraestructuraController.requisicionGastos = async (req, res) => {
             replacements: { nombreUsuario },
             type: db.QueryTypes.SELECT
         })
-        const pendientesConfirmacion = dashboard.pendientesConfirmacion || 0
-        const porComprobar = dashboard.porComprobar || 0
-        const montoTotalMes = dashboard.montoTotalMes || 0
-
-
 
         return res.render('admin/infraestructura/requisicionGastos.ejs', {
             usuario: datosUsuario,
             requisiciones,
-            //comprobaciones: comprobaciones,
-            pendientesConfirmacion: pendientesConfirmacion,
-            porComprobar: porComprobar,
-            montoTotalMes: montoTotalMes,
+            pendientesConfirmacion,
+            porComprobar,
+            montoTotalMes,
             stats: statsResult[0],
             jerarquia,
+            esNivelAlto,
+            esSuperAdmin,
             tok: req.csrfToken()
         })
 
     } catch (error) {
-        console.log(error)  
+        console.log(error)
         manejadorErrores(res, error)
     }
 }
@@ -488,26 +557,26 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
     try {
         let campos = req.body
         delete campos._csrf
-        let clase = new sequelizeClase({ modelo: modelosGenerales.vistaempleados})
-        let usuarioM =await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
+        let clase = new sequelizeClase({ modelo: modelosGenerales.vistaempleados })
+        let usuarioM = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
         let usuario = usuarioM.codigoempleado
-        clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_requisiciones})
+        clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_requisiciones })
         const id = campos.id
         switch (campos.tipo) {
             case 'insert':
                 const archivo = req.file;
-                if(archivo){
+                if (archivo) {
                     campos.foto = archivo.filename
-                }else{
+                } else {
                     campos.foto = 'NO'
-                } 
+                }
                 delete campos._csrf
                 delete campos.tipo
                 campos.solicitante = usuarioM.apellidopaterno + ' ' + usuarioM.apellidomaterno + ' ' + usuarioM.nombre
                 campos.puesto = usuarioM.departamentoLocal
                 campos.contacto = usuarioM.correo
                 const respuesta = await clase.insertar({ datosInsertar: campos })
-                if (!respuesta) return res.json({ ok: false, msg: 'no se pudo ingresar la informacion'})
+                if (!respuesta) return res.json({ ok: false, msg: 'no se pudo ingresar la informacion' })
                 return res.json({ ok: true, msg: 'informacion enviada exitosamente' })
             case 'misRequisiciones': //mis requisiciones
 
@@ -544,33 +613,119 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                     SELECT nombrelargo
                     FROM nom10001
                     WHERE codigoempleado = :usuario
-                `, {
+            `, {
                     replacements: { usuario },
                     type: db.QueryTypes.SELECT
                 })
 
                 const nombreUsuario = datosUsuario[0].nombrelargo
 
-                const requisiciones = await db.query(`
-                    SELECT 
-                        id,
-                        horaRegistro,
-                        asunto,
-                        total,
-                        estatus
-                    FROM requisiciones
-                    WHERE solicitante = :nombreUsuario
-                    ORDER BY horaRegistro DESC
-                    LIMIT 10
+                // Obtener permisos desde la tabla usuarios
+                const permisosResult = await db.query(`
+                    SELECT permisos
+                    FROM usuarios
+                    WHERE codigoempleado = :usuario
+                    LIMIT 1
                 `, {
-                    replacements: { nombreUsuario },
+                    replacements: { usuario },
                     type: db.QueryTypes.SELECT
                 })
 
+                let requisiciones = []
+                let esNivelAlto = false
+                let esSuperAdmin = false
+
+                if (permisosResult.length) {
+                    const permisos = typeof permisosResult[0].permisos === 'string'
+                        ? JSON.parse(permisosResult[0].permisos)
+                        : permisosResult[0].permisos
+
+                    const nivelesAltos = ['director', 'gerente', 'jefe']
+                    const nivelRequisicion = permisos?.requisicionPermisos
+
+                    if (Array.isArray(nivelRequisicion)) {
+                        esSuperAdmin = nivelRequisicion.some(n => n.toLowerCase() === 'administrador')
+                        esNivelAlto = !esSuperAdmin && nivelRequisicion.some(n => nivelesAltos.includes(n.toLowerCase()))
+                    }
+                }
+                if (esSuperAdmin) {
+                    requisiciones = await db.query(`
+                        SELECT
+                            id,
+                            horaRegistro,
+                            asunto,
+                            total,
+                            estatus,
+                            solicitante
+                        FROM requisiciones
+                        ORDER BY horaRegistro DESC
+                        LIMIT 35
+                    `, {
+                        type: db.QueryTypes.SELECT
+                    })
+
+                } else if (esNivelAlto) {
+                    const deptUsuario = await db.query(`
+                        SELECT departamento
+                        FROM usuariosRequisiciones
+                        WHERE nombre = :nombre
+                        LIMIT 1 
+                    `, {
+                        replacements: { nombre: nombreUsuario },
+                        type: db.QueryTypes.SELECT
+                    })
+
+                    if (!deptUsuario.length) {
+                        return res.json({ ok: true, datos: [], esNivelAlto: false })
+                    }
+
+                    const departamento = deptUsuario[0].departamento
+
+                    requisiciones = await db.query(`
+                        SELECT 
+                            id,
+                            horaRegistro,
+                            asunto,
+                            total,
+                            estatus,
+                            solicitante
+                        FROM requisiciones
+                        WHERE departamento = :departamento
+                            OR solicitante = :nombreUsuario
+                        ORDER BY horaRegistro DESC
+                        LIMIT 35
+                    `, {
+                        replacements: { departamento, nombreUsuario },
+                        type: db.QueryTypes.SELECT
+                    })
+
+                } else {
+                    // Comportamiento actual: solo las propias
+                    requisiciones = await db.query(`
+                        SELECT 
+                            id,
+                            horaRegistro,
+                            asunto,
+                            total,
+                            estatus,
+                            solicitante
+                        FROM requisiciones
+                        WHERE solicitante = :nombreUsuario
+                        ORDER BY horaRegistro DESC
+                        LIMIT 10
+                    `, {
+                        replacements: { nombreUsuario },
+                        type: db.QueryTypes.SELECT
+                    })
+                }
+
                 return res.json({
                     ok: true,
-                    datos: requisiciones
+                    datos: requisiciones,
+                    esNivelAlto,
+                    esSuperAdmin
                 })
+
 
             case 'detalleRequisicion':
                 const requisicion = await db.query(`
@@ -768,21 +923,21 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
 infraestructuraController.crearRequisicionGastos = async (req, res) => {
     try {
         let clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_plantas_gastos })
-        const plantas = await clase.obtenerDatosPorCriterio({ criterio: { id: { [Op.gt]: 0 } }, ordenamiento: [[ 'planta', 'ASC' ]] }) 
-        clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001})
+        const plantas = await clase.obtenerDatosPorCriterio({ criterio: { id: { [Op.gt]: 0 } }, ordenamiento: [['planta', 'ASC']] })
+        clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
         const datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
-        clase = new sequelizeClase({ modelo: modelosGenerales.vistaempleados})
+        clase = new sequelizeClase({ modelo: modelosGenerales.vistaempleados })
         const puesto = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
-        if(!puesto) return res.status(501).json({ ok: false, msg: 'No se pudo obtener el puesto del empleado' })
+        if (!puesto) return res.status(501).json({ ok: false, msg: 'No se pudo obtener el puesto del empleado' })
         const listaAutorizacion = Clasificacion(puesto.descripcion)
-        clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_regionesGastos})
-        const regiones = await clase.obtenerDatosPorCriterio({ criterio: { vigente: true } , ordenamiento: [[ 'region', 'ASC' ]], atributos: ['region'] })
+        clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_regionesGastos })
+        const regiones = await clase.obtenerDatosPorCriterio({ criterio: { vigente: true }, ordenamiento: [['region', 'ASC']], atributos: ['region'] })
         // To do: realizar validacion si el usuario pertenece a SC y traer a los supervisores (delegado) asi como tambien a las cotizaciones con horas en caso de que sea cobro
-        res.render('admin/infraestructura/requisicionGastos_form.ejs', { tokin: req.csrfToken(), plantas, datosUsuario, listaAutorizacion, regiones})
+        res.render('admin/infraestructura/requisicionGastos_form.ejs', { tokin: req.csrfToken(), plantas, datosUsuario, listaAutorizacion, regiones })
     } catch (error) {
         manejadorErrores(res, error)
     }
-    
+
 }
 
 infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
@@ -817,6 +972,33 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
         datosUsuario.puesto = puesto ? puesto.descripcion : ''
         datosUsuario.departamento = departamentoUsuario ? departamentoUsuario.descripcion : ''
 
+        const permisosGet = await db.query(`
+            SELECT permisos
+            FROM usuarios
+            WHERE codigoempleado = :usuario
+            LIMIT 1
+            `, {
+            replacements: { usuario },
+            type: QueryTypes.SELECT
+        })
+
+        let esNivelAlto = false
+        let esSuperAdmin = false
+
+        if (permisosGet.length) {
+            const permisos = typeof permisosGet[0].permisos === 'string'
+                ? JSON.parse(permisosGet[0].permisos)
+                : permisosGet[0].permisos
+
+            const nivelesAltos = ['director', 'gerente', 'jefe']
+            const nivelRequisicion = permisos?.requisicionPermisos
+
+            if (Array.isArray(nivelRequisicion)) {
+                esSuperAdmin = nivelRequisicion.some(n => n.toLowerCase() === 'administrador')
+                esNivelAlto = !esSuperAdmin && nivelRequisicion.some(n => nivelesAltos.includes(n.toLowerCase()))
+            }
+        }
+
         const usuarioReq = await db.query(`
                 SELECT nombre, jerarquia, departamento
                 FROM usuariosRequisiciones
@@ -829,58 +1011,84 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
             type: QueryTypes.SELECT
         })
 
-        if (!usuarioReq.length) {
+        if (!usuarioReq.length && !esSuperAdmin) {
             return res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', {
                 usuario: datosUsuario,
                 tok: req.csrfToken(),
                 stats: { total_pendientes: 0, monto_total: 0 },
-                requisiciones: []
+                requisiciones: [],
+                esSuperAdmin,
+                esNivelAlto
             })
         }
 
-        const { jerarquia, departamento: departamentoReq } = usuarioReq[0]
+        const { jerarquia = 5, departamento: departamentoReq = null } = usuarioReq[0] || {}
 
 
-        if (jerarquia > 4) {
+        if (!esSuperAdmin && !esNivelAlto && jerarquia > 4) {
             return res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', {
                 usuario: datosUsuario,
                 tok: req.csrfToken(),
                 stats: { total_pendientes: 0, monto_total: 0 },
-                requisiciones: []
+                requisiciones: [],
+                esSuperAdmin,
+                esNivelAlto
             })
         }
 
-        const statsResult = await db.query(`
+        let statsResult
+        let requisiciones
+
+        if (esSuperAdmin) {
+            // Ve TODAS las pendientes de aprobación del sistema
+            statsResult = await db.query(`
+                SELECT 
+                    COUNT(*) as total_pendientes,
+                    COALESCE(SUM(total), 0) as monto_total
+                FROM requisiciones
+                WHERE estatus = 'INGRESADA'
+            `, { type: QueryTypes.SELECT })
+
+            requisiciones = await db.query(`
+                SELECT *
+                FROM requisiciones
+                WHERE estatus = 'INGRESADA'
+                ORDER BY horaRegistro DESC
+            `, { type: QueryTypes.SELECT })
+
+        } else if (esNivelAlto || jerarquia <= 4) {
+            // Ve las pendientes de su departamento
+            statsResult = await db.query(`
                 SELECT 
                     COUNT(*) as total_pendientes,
                     COALESCE(SUM(total), 0) as monto_total
                 FROM requisiciones
                 WHERE estatus = 'INGRESADA'
                 AND autoriza = :departamento
-        `, {
-            replacements: {
-                departamento: departamentoReq
-            },
-            type: QueryTypes.SELECT
-        })
+            `, {
+                replacements: { departamento: departamentoReq },
+                type: QueryTypes.SELECT
+            })
 
-        const requisiciones = await db.query(`
+            requisiciones = await db.query(`
                 SELECT *
                 FROM requisiciones
                 WHERE estatus = 'INGRESADA'
                 AND autoriza = :departamento
                 ORDER BY horaRegistro DESC
-        `, {
-            replacements: { departamento: departamentoReq },
-            type: QueryTypes.SELECT
-        })
-
+            `, {
+                replacements: { departamento: departamentoReq },
+                type: QueryTypes.SELECT
+            })
+        }
 
         res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', {
             usuario: datosUsuario,
             tok: req.csrfToken(),
             stats: statsResult[0],
-            requisiciones
+            requisiciones,
+            esSuperAdmin,
+            esNivelAlto
         })
 
     } catch (error) {
@@ -895,19 +1103,19 @@ infraestructuraController.comprobarRequisicionesGastos = async (req, res) => {
     res.render('admin/infraestructura/comprobarRequisicionesGastos.ejs', { tok: req.csrfToken() })
 }
 
-function Clasificacion(puesto){
+function Clasificacion(puesto) {
     puesto = puesto.toLowerCase()
     if (!puesto) return null
-    if(puesto.includes('gerente sorteo')){
+    if (puesto.includes('gerente sorteo')) {
         return [
-        'ATRACCION DE CAPITAL HUMANO', 'CALIDAD', 'CAPITAL HUMANO','CAPTURACION','COMPRAS','FACTURACION Y COBRANZA','GASTOS','LOGISTICA VEHICULAR','DIRECTOR DE INGENIERIA Y CALIDAD',
-        'OPERACIONES','SERVICIO AL CLIENTE','TECNOLOGIAS DE LA INFORMACION','VENTAS','DIRECTOR DE ADMINISTRACION','DIRECTOR DE SORTEO','DIRECCIÓN DE CAPITAL HUMANO'
-    ]
+            'ATRACCION DE CAPITAL HUMANO', 'CALIDAD', 'CAPITAL HUMANO', 'CAPTURACION', 'COMPRAS', 'FACTURACION Y COBRANZA', 'GASTOS', 'LOGISTICA VEHICULAR', 'DIRECTOR DE INGENIERIA Y CALIDAD',
+            'OPERACIONES', 'SERVICIO AL CLIENTE', 'TECNOLOGIAS DE LA INFORMACION', 'VENTAS', 'DIRECTOR DE ADMINISTRACION', 'DIRECTOR DE SORTEO', 'DIRECCIÓN DE CAPITAL HUMANO'
+        ]
     }
-    if(puesto.includes('sorteo', 'supervisor')){
-        return ['COMPRAS','LOGISTICA VEHICULAR','TECNOLOGIAS DE LA INFORMACION', 'DIRECTOR DE ADMINISTRACION', 'DIRECTOR DE SORTEO', 'GERENCIA DE SORTEO']
+    if (puesto.includes('sorteo', 'supervisor')) {
+        return ['COMPRAS', 'LOGISTICA VEHICULAR', 'TECNOLOGIAS DE LA INFORMACION', 'DIRECTOR DE ADMINISTRACION', 'DIRECTOR DE SORTEO', 'GERENCIA DE SORTEO']
     }
-    
+
     return [
         'ATRACCION DE CAPITAL HUMANO',
         'CALIDAD',
