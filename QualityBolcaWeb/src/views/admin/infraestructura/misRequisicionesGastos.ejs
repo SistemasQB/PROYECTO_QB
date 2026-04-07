@@ -1,11 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="csrf-token" content="<%= tok %>">
+    <title>Mis Requisiciones de Gastos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles/infraestructura/misRequisicionesGastos.css">
 </head>
+
 <body>
-    <h1>Mis Requisiciones</h1>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+            <span>Requisiciones</span>
+        </div>
+
+        <div class="profile-section">
+            <div class="avatar" id="avatarUsuario"></div>
+
+            <div class="profile-name">
+                <%= usuario.nombrelargo %>
+            </div>
+
+            <div class="profile-role">
+                <%= usuario.puesto %>
+            </div>
+
+            <div class="profile-dept">
+                <%= usuario.departamento %>
+            </div>
+
+            <div class="profile-email">
+                <%= usuario.correoelectronico %>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <a href="requisicionGastos" class="nav-item">
+                <i class="fa-solid fa-border-all"></i> Panel Principal
+            </a>
+
+            <a href="misRequisiciones" class="nav-item active">
+                <i class="fa-solid fa-file-lines"></i> Mis Requisiciones
+            </a>
+
+            <a href="aprobaciones" class="nav-item">
+                <i class="fa-solid fa-check-double"></i> Aprobaciones
+            </a>
+
+            <a href="comprobar" class="nav-item">
+                <i class="fa-solid fa-file-invoice"></i> Comprobaciones
+            </a>
+        </ul>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass" style="color: #adb5bd;"></i>
+                <input type="text" placeholder="Buscar requisiciones, folios o conceptos...">
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="page-header">
+                <h1 class="page-title">Mis Requisiciones</h1>
+
+                <button class="btn btn-primary" onclick="location.href='crearRequisicionGastos'">
+                    <i class="fa-solid fa-plus"></i> Crear Requisición
+                </button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Requisiciones Pendientes</span>
+                        <i class="fa-solid fa-clipboard-list" style="color: var(--primary-blue);"></i>
+                    </div>
+                    <div class="stat-value">
+                        <%= requisicionesPendientes || 0 %>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Requisiciones Aceptadas</span>
+                        <i class="fa-solid fa-circle-check" style="color: green;"></i>
+                    </div>
+                    <div class="stat-value">
+                        <%= requisicionesAceptadas || 0 %>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Requisiciones Rechazadas</span>
+                        <i class="fa-solid fa-circle-xmark" style="color: red;"></i>
+                    </div>
+                    <div class="stat-value">
+                        <%= requisicionesRechazadas || 0 %>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Monto Total Mensual</span>
+                        <i class="fa-solid fa-money-bill-wave" style=" color: var(--primary-blue);"></i>
+                    </div>
+                    <div class="stat-value">
+                        $<%= Number(montoTotalMes).toLocaleString('es-MX') %>
+                            <span class="stat-sub text-muted">MXN</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Asunto</th>
+                                <th>Fecha de solicitud</th>
+                                <th>Estatus</th>
+                                <th>Monto</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-requisiciones">
+                            <% if (requisiciones.length===0) { %>
+                                <tr>
+                                    <td colspan="6" style="text-align:center; padding:20px;">
+                                        No hay requisiciones pendientes
+                                    </td>
+                                </tr>
+                                <% } %>
+
+                                    <% requisiciones.forEach(req=> { %>
+                                        <tr>
+                                            <td style="color: var(--primary-blue); font-weight: 600;">
+                                                #REQ-<%= req.id || '' %>
+                                            </td>
+
+                                            <td>
+                                                <%= req.asunto || '' %>
+                                            </td>
+
+                                            <td>
+                                                <%= new Date(req.horaRegistro).toLocaleDateString('es-MX') %>
+                                            </td>
+
+                                            <td>
+                                                <%
+                                                    let badgeClass = 'status-proceso'
+                                                    let icon = 'fa-clock'
+
+                                                    if (req.estatus === 'INGRESADA') {
+                                                        badgeClass = 'status-pendiente'
+                                                        icon = 'fa-clock'
+                                                    } else if (req.estatus === 'APROBADA') {
+                                                        badgeClass = 'status-aprobada'
+                                                        icon = 'fa-circle-check'
+                                                    } else if (req.estatus === 'RECHAZADA') {
+                                                        badgeClass = 'status-rechazada'
+                                                        icon = 'fa-circle-xmark'
+                                                    }
+                                                %>
+
+                                                    <span class="status-badge <%= badgeClass %>">
+                                                        <i class="fa-solid <%= icon %>"></i>
+                                                        <%= req.estatus %>
+                                                    </span>
+                                            </td>
+
+                                            <td style="font-weight: 600;">
+                                                $<%= Number(req.total).toLocaleString('es-MX') %>
+                                            </td>
+
+                                            <td>
+                                                <button class="btn-outline verRequisicion"
+                                                    onclick="abrirModal(<%= req.id %>)">
+                                                    Ver Detalle
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <% if (requisiciones.length > 0) { %>
+                    <div class="pagination-container">
+                        <div class="pagination-summary" id="pagination-summary"></div>
+                        <div class="pagination-controls" id="pagination-controls"></div>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+    <div id="modal-root"></div>
+
+    <script>
+        const nombreUsuario = "<%= usuario.nombrelargo %>"
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="/scripts/infraestructura/misRequisicionesGastos.js"></script>
 </body>
+
 </html>

@@ -146,34 +146,72 @@ function generarTablaConceptos(descripcion) {
 
     if (!descripcion) return ''
 
-    const partes = descripcion.split('|')
     let html = ''
 
-    for (let i = 0; i < partes.length; i += 4) {
+    const esJSON = descripcion.trim().startsWith('[') || descripcion.trim().startsWith('{')
 
-        const concepto = partes[i] || ''
-        const cantidad = partes[i + 1] || ''
-        const precio = partes[i + 2] || 0
-        const subtotal = partes[i + 3] || 0
+    if (esJSON) {
+        try {
+            const items = JSON.parse(descripcion)
 
-        const precioMXN = new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN'
-        }).format(precio)
+            items.forEach(item => {
+                const precioMXN = new Intl.NumberFormat('es-MX', {
+                    style: 'currency',
+                    currency: 'MXN'
+                }).format(item.precio || 0)
 
-        const subtotalMXN = new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN'
-        }).format(subtotal)
+                const subtotal = (item.precio || 0) * (item.unidad || 1)
 
-        html += `
-            <tr>
-                <td>${concepto}</td>
-                <td>${cantidad}</td>
-                <td>${precioMXN}</td>
-                <td class="subtotal">${subtotalMXN}</td>
-            </tr>
-         `
+                const subtotalMXN = new Intl.NumberFormat('es-MX', {
+                    style: 'currency',
+                    currency: 'MXN'
+                }).format(subtotal)
+
+                html += `
+                    <tr>
+                        <td>${item.desc || ''}</td>
+                        <td>${item.unidad || ''}</td>
+                        <td>${precioMXN}</td>
+                        <td class="subtotal">${subtotalMXN}</td>
+                    </tr>
+                `
+            })
+
+        } catch (e) {
+            console.error('Error al parsear descripción JSON:', e)
+            html = '<tr><td colspan="4">Error al leer los conceptos</td></tr>'
+        }
+
+    } else {
+        // CONCEPTO|CANTIDAD|PRECIO|SUBTOTAL
+        const partes = descripcion.split('|')
+
+        for (let i = 0; i < partes.length; i += 4) {
+
+            const concepto = partes[i] || ''
+            const cantidad = partes[i + 1] || ''
+            const precio = partes[i + 2] || 0
+            const subtotal = partes[i + 3] || 0
+
+            const precioMXN = new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            }).format(precio)
+
+            const subtotalMXN = new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            }).format(subtotal)
+
+            html += `
+                <tr>
+                    <td>${concepto}</td>
+                    <td>${cantidad}</td>
+                    <td>${precioMXN}</td>
+                    <td class="subtotal">${subtotalMXN}</td>
+                </tr>
+            `
+        }
     }
 
     return html

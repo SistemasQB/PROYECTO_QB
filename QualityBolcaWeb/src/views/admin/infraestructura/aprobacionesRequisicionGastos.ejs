@@ -37,7 +37,7 @@
 
         <ul class="nav-menu">
             <a href="requisicionGastos" class="nav-item"><i class="fa-solid fa-border-all"></i> Panel Principal</a>
-            <a href="requisiciones" class="nav-item"><i class="fa-solid fa-file-lines"></i> Mis Requisiciones</a>
+            <a href="misRequisiciones" class="nav-item"><i class="fa-solid fa-file-lines"></i> Mis Requisiciones</a>
             <a href="aprobaciones" class="nav-item active"><i class="fa-solid fa-check-double"></i> Aprobaciones</a>
             <a href="comprobaciones" class="nav-item"><i class="fa-solid fa-file-invoice"></i> Comprobaciones</a>
         </ul>
@@ -116,7 +116,8 @@
 
                                             <td>
                                                 <div class="solicitante">
-                                                    <div class="solicitante-avatar" data-nombre="<%= req.solicitante %>">
+                                                    <div class="solicitante-avatar"
+                                                        data-nombre="<%= req.solicitante %>">
                                                         <%= req.solicitante?.charAt(0) || 'U' %>
                                                     </div>
                                                     <%= req.solicitante %>
@@ -134,7 +135,8 @@
                                             </td>
 
                                             <td>
-                                                <button class="btn-outline verRequisicion" onclick="abrirModal(<%= req.id %>)">
+                                                <button class="btn-outline verRequisicion"
+                                                    onclick="abrirModal(<%= req.id %>)">
                                                     Ver Detalle
                                                 </button>
                                             </td>
@@ -153,6 +155,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const nombreUsuario = "<%= usuario.nombrelargo %>"
+    </script>
+    <script>
+        const esSuperAdmin = <% - JSON.stringify(esSuperAdmin) %>;
+        const esNivelAlto = <% - JSON.stringify(esNivelAlto) %>;
     </script>
     <script src="/scripts/infraestructura/aprobacionesRequisicionGastos.js"></script>
 </body>

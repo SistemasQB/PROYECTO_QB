@@ -73,7 +73,7 @@
                 <input type="text" placeholder="Buscar requisiciones, folios o conceptos...">
             </div>
             <div class="top-actions">
-                <button class="btn btn-primary" onclick="location.href='requisicionGastos/crearRequisicionGastos'"><i
+                <button class="btn btn-primary" onclick="location.href='crearRequisicionGastos'"><i
                         class="fa-solid fa-plus"></i> Crear Requisición</button>
                 <button class="btn btn-refresh" id="btnRefresh">
                     <i class="fa-solid fa-rotate"></i> Actualizar
@@ -84,48 +84,71 @@
         <div class="dashboard-body">
 
             <section class="summary-cards">
+
                 <div class="card summary-card">
-                    <div class="card-icon warning-bg"><i class="fa-solid fa-clipboard-list warning-text"></i></div>
+                    <div class="card-icon warning-bg">
+                        <i class="fa-solid fa-clipboard-list warning-text"></i>
+                    </div>
                     <div class="card-info">
-                        <span class="card-label">PENDIENTES DE CONFIRMACIÓN</span>
-                        <h2 id="monto-pendientes">
-                            <%= pendientesConfirmacion.length %>
+                        <span class="card-label">
+                            <% if (esSuperAdmin) { %>
+                                TOTAL PENDIENTES (SISTEMA)
+                            <% } else if (esNivelAlto) { %>
+                                PENDIENTES DE MI DEPARTAMENTO
+                            <% } else { %>
+                                PENDIENTES DE CONFIRMACIÓN
+                            <% } %>
+                        </span>
+                        <h2 id="monto-pendientes"><%= pendientesConfirmacion %></h2>
+                    </div>
+                </div>
+
+                <% if (jerarquia <= 4 || esNivelAlto || esSuperAdmin) { %>
+                    <div class="card summary-card">
+                        <div class="card-icon blue-bg">
+                            <i class="fa-solid fa-file-signature blue-text"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-label">POR COMPROBAR</span>
+                            <h2>
+                                <span id="solicitudes-comprobar"><%= porComprobar %></span>
+                                <small>solicitudes</small>
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="card summary-card">
+                        <div class="card-icon purple-bg">
+                            <i class="fa-solid fa-check-double purple-text"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-label">
+                                <% if (esSuperAdmin) { %>
+                                    POR APROBAR (TOTAL)
+                                <% } else { %>
+                                    POR APROBAR (MI DEPTO.)
+                                <% } %>
+                            </span>
+                            <h2>
+                                <span id="solicitudes-aprobar"><%= stats.total_pendientes %></span>
+                                <small>solicitudes</small>
+                            </h2>
+                        </div>
+                    </div>
+                <% } %>
+
+                <div class="card summary-card">
+                    <div class="card-icon success-bg">
+                        <i class="fa-solid fa-circle-check success-text"></i>
+                    </div>
+                    <div class="card-info">
+                        <span class="card-label">TOTAL MES</span>
+                        <h2 id="monto-total">
+                            <%= new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(montoTotalMes) %>
                         </h2>
                     </div>
                 </div>
 
-                <% if (jerarquia <=4) { %>
-                    <div class="card summary-card">
-                        <div class="card-icon blue-bg"><i class="fa-solid fa-file-signature blue-text"></i></div>
-                        <div class="card-info">
-                            <span class="card-label">POR COMPROBAR</span>
-                            <h2><span id="solicitudes-comprobar">
-                                    <%= porComprobar %>
-                                </span> <small>solicitudes</small></h2>
-                        </div>
-                    </div>
-                    <div class="card summary-card">
-                        <div class="card-icon purple-bg"><i class="fa-solid fa-check-double purple-text"></i></div>
-                        <div class="card-info">
-                            <span class="card-label">POR APROBAR</span>
-                            <h2><span id="solicitudes-aprobar">
-                                    <%= stats.total_pendientes %>
-                                </span> <small>solicitudes</small></h2>
-                        </div>
-                    </div>
-                    <% } %>
-
-                        <div class="card summary-card">
-                            <div class="card-icon success-bg"><i class="fa-solid fa-circle-check success-text"></i>
-                            </div>
-                            <div class="card-info">
-                                <span class="card-label">TOTAL MES</span>
-                                <h2 id="monto-total">
-                                    <%= new Intl.NumberFormat('es-MX', { style: 'currency' , currency: 'MXN'
-                                        }).format(montoTotalMes) %>
-                                </h2>
-                            </div>
-                        </div>
             </section>
 
             <section class="table-section">
@@ -166,6 +189,10 @@
         </div>
     </main>
 
+    <script>
+        const esNivelAlto = <%- JSON.stringify(esNivelAlto) %>;
+        const esSuperAdmin = <%- JSON.stringify(esSuperAdmin) %>;
+    </script>
     <script>
         const nombreUsuario = "<%= usuario.nombrelargo %>"
     </script>

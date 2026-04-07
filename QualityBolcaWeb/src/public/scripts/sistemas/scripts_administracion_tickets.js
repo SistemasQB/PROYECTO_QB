@@ -302,7 +302,8 @@ function renderAsignacion(ticket) {
             <option value="Omar Vazquez">Omar Vazquez</option>
             <option value="Alejandro Robledo">Alejandro Robledo</option>
             <option value="Guillermo Reyes">Guillermo Reyes</option>
-            <option value="Luis Oliva">Luis Oliva</option>
+            <option value="Fernando de la Cruz">Fernando de la Cruz</option>
+            <option value="Cesar Reyes">Cesar Reyes</option>
         </select>
     `;
 }

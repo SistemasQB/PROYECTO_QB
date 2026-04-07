@@ -17,9 +17,10 @@ import {
 
 import { Op, QueryTypes, where } from 'sequelize'
 import Informaciongch from "../models/informaciongch.js";
-import { min } from "@xenova/transformers";
-
-
+import Informaciondepartamento from "../models/informaciondepartamento.js";
+import e from "express";
+import dbSistemas from "../config/dbSistemas.js";
+import modeloRequisicionEquipo from "../models/sistemas/requisicionEquipo.js";
 const app = express();
 
 const controller = {};
@@ -274,6 +275,155 @@ controller.inicio = (req, res) => {
     }
 }
 
+controller.dashboardTI = async (req, res) => {
+    try {
+        const { codigoempleado } = req.usuario;
+
+        const empleado = await db.query(
+            `
+                SELECT 
+                    n.nombre,
+                    n.apellidopaterno,
+                    n.nombrelargo,
+                    p.descripcion AS puesto
+                FROM nom10001 n
+                LEFT JOIN nom10006 p
+                    ON n.idpuesto = p.idpuesto
+                WHERE n.codigoempleado = :codigoempleado
+                LIMIT 1
+                `,
+            {
+                replacements: { codigoempleado },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        let nombreUsuario = 'Usuario';
+        let puestoUsuario = 'Sin puesto';
+        let fullName = "";
+
+        if (empleado.length > 0) {
+            const emp = empleado[0];
+
+            nombreUsuario = emp.nombrelargo
+                || `${emp.nombre} ${emp.apellidopaterno}`;
+
+            puestoUsuario = emp.puesto || 'Sin puesto';
+        }
+
+        fullName = nombreUsuario.split(" ");
+        nombreUsuario = fullName[2] + " " + fullName[0]
+
+        /*  Inventario Total */
+        const totalInventario = await db.query(
+            `SELECT COUNT(*) AS total FROM inventario`,
+            { type: QueryTypes.SELECT }
+        );
+
+        /* Obtener todos los tickets */
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll();
+
+        const ticketsProcesados = ticketsDB.map(t => {
+            const datos = typeof t.datosTicket === 'string'
+                ? JSON.parse(t.datosTicket)
+                : t.datosTicket;
+
+            return {
+                folio: t.folio,
+                titulo: datos.titulo,
+                estatus: datos.estatus?.toLowerCase(),
+                tecnico: datos.asignadoA || 'Sin asignar',
+                fecha: t.createdAt
+            };
+        });
+
+
+
+        /* Contar tickets abiertos */
+        const ticketsAbiertos = ticketsProcesados.filter(t =>
+            ['open', 'progress', 'pending'].includes(t.estatus)
+        ).length;
+
+        /* Últimos 5 tickets */
+        const ultimosTickets = ticketsProcesados
+            .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+            .slice(0, 5);
+
+        /* Usuarios activos */
+        const usuariosActivos = await db.query(
+            `
+            SELECT COUNT(*) AS total
+            FROM nom10001
+            WHERE estadoempleado = 'A'
+            `,
+            { type: QueryTypes.SELECT }
+        );
+
+        /* Usuarios totales */
+        const usuariosTotales = await db.query(
+            `
+            SELECT COUNT(*) AS total from nom10001
+            `,
+            { type: QueryTypes.SELECT }
+        )
+
+        /* Vales existentes */
+        const valesExistentes = await db.query(
+            `SELECT COUNT(*) AS total FROM vales`,
+            { type: QueryTypes.SELECT }
+        );
+
+        /*  Últimas requisiciones */
+        const ultimasRequisiciones = await dbSistemas.query(
+            `
+            SELECT 
+                id,
+                requesterName,
+                JSON_UNQUOTE(JSON_EXTRACT(items, '$[0].equipment')) AS equipment,
+                status
+            FROM requisicionEquipos
+            ORDER BY createdAt DESC
+            LIMIT 5
+            `,
+            { type: QueryTypes.SELECT }
+        );
+
+        const ultimasRequisicionesFormateadas = ultimasRequisiciones.map(req => {
+            if (!req.requesterName) return req;
+
+            const partes = req.requesterName.trim().split(/\s+/);
+
+            let nombreCorto = req.requesterName;
+
+            if (partes.length >= 3) {
+                const primerApellido = partes[0];
+                const primerNombre = partes[2];
+                nombreCorto = `${primerNombre} ${primerApellido}`;
+            }
+
+            return {
+                ...req,
+                requesterName: nombreCorto
+            };
+        });
+
+        return res.render('admin/sistemas/dashboard.ejs', {
+            inventarioTotal: totalInventario[0].total,
+            ticketsAbiertos,
+            usuariosActivos: usuariosActivos[0].total,
+            usuariosTotales: usuariosTotales[0].total,
+            valesExistentes: valesExistentes[0].total,
+            ultimosTickets,
+            ultimasRequisiciones: ultimasRequisicionesFormateadas,
+            nombreUsuario: nombreUsuario,
+            puestoUsuario: puestoUsuario
+        });
+
+    } catch (error) {
+        console.error('Error dashboard:', error);
+    }
+};
+
 //Jalar los usuarios sin vale creado
 controller.obtenerColaboradoresSinVale = async (req, res) => {
     try {
@@ -352,7 +502,7 @@ controller.crearVale = async (req, res) => {
             vale: nuevoVale
         });
     } catch (error) {
-        console.error("❌ Error al crear vale:", error);
+        console.error("Error al crear vale:", error);
         return res.status(500).json({ message: "Error al crear vale" });
     }
 }
@@ -1107,6 +1257,182 @@ controller.obtenerInventario = async (req, res) => {
     }
 }
 
+//controlador de lista de usuarios (nom10001)
+controller.usuarios = async (req, res) => {
+    try {
+        res.render('admin/sistemas/usuarios.ejs', {
+            csrfToken: req.csrfToken()
+        })
+    } catch (error) {
+        console.error("Error cargando usuarios: ", error);
+    }
+}
+
+controller.obtenerDatosNuevoUsuario = async (req, res) => {
+    try {
+
+        const [[{ ultimoCodigo }]] = await db.query(
+            `SELECT IFNULL(MAX(codigoempleado),0) AS ultimoCodigo FROM nom10001`
+        );
+
+        const ultimoCodigoInt = parseInt(ultimoCodigo) + 1;
+        //console.log(ultimoCodigoInt);
+        const ultimoCodigostr = ultimoCodigoInt.toString();
+        console.log(ultimoCodigo)
+
+        const departamentos = await db.query(
+            `SELECT iddepartamento, descripcion 
+             FROM nom10003
+             ORDER BY descripcion ASC`,
+            { type: QueryTypes.SELECT }
+        );
+
+        const puestos = await db.query(
+            `SELECT idpuesto, descripcion 
+             FROM nom10006
+             ORDER BY descripcion ASC`,
+            { type: QueryTypes.SELECT }
+        );
+
+        return res.json({
+            ok: true,
+            siguienteCodigo: ultimoCodigostr,
+            departamentos,
+            puestos
+        });
+
+    } catch (error) {
+        console.error("Error obteniendo datos de usuario:", error);
+        return res.status(500).json({ ok: false });
+    }
+};
+
+controller.actualizarUsuario = async (req, res) => {
+    try {
+        const { codigoempleado } = req.params;
+
+        const {
+            nombre,
+            apellidopaterno,
+            apellidomaterno,
+            nombrelargo,
+            correo,
+            telefono,
+            departamento,
+            puesto
+        } = req.body;
+
+        if (!nombre || !apellidopaterno || !apellidomaterno || !nombrelargo || !correo || !departamento || !puesto) {
+            return res.status(400).json({
+                ok: false,
+                msg: "Faltan campos obligatorios"
+            })
+        }
+
+        const usuario = await db.query(
+            `SELECT codigoempleado FROM nom10001 WHERE codigoempleado = :codigoempleado`,
+            {
+                replacements: { codigoempleado },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        if (usuario.length === 0) {
+            return res.status(404).json({
+                ok: false,
+                msg: "Usuario no encontrado"
+            });
+        }
+
+        await db.query(`
+            UPDATE nom10001
+            SET
+                nombre = :nombre,
+                apellidopaterno = :apellidopaterno,
+                apellidomaterno = :apellidomaterno,
+                nombrelargo = :nombrelargo,
+                correoelectronico = :correo,
+                telefono = :telefono,
+                iddepartamento = :departamento,
+                idpuesto = :puesto
+            WHERE codigoempleado = :codigoempleado
+        `, {
+            replacements: {
+                nombre,
+                apellidopaterno,
+                apellidomaterno,
+                nombrelargo,
+                correo,
+                telefono,
+                departamento,
+                puesto,
+                codigoempleado
+            }
+        });
+
+        return res.json({
+            ok: true,
+            msg: "Usuario actualizado correctamente"
+        });
+
+    } catch (error) {
+        console.error("Error actualizando usuario:", error);
+        return res.status(500).json({
+            ok: false,
+            msg: "Error interno del servidor"
+        });
+    }
+};
+
+controller.obtenerUsuarios = async (req, res) => {
+    try {
+
+        const { search = "" } = req.query;
+
+        const usuarios = await db.query(
+            `
+            SELECT 
+                n.codigoempleado,
+                n.nombrelargo,
+                n.telefono,
+                n.correoelectronico,
+                n.estadoempleado,
+                n.esBecario,
+                n.iddepartamento,
+                n.idpuesto,
+                n6.descripcion AS puesto,
+                n3.descripcion AS departamento
+            FROM nom10001 n
+            LEFT JOIN nom10006 n6
+                ON n.idpuesto = n6.idpuesto
+            LEFT JOIN nom10003 n3
+                ON n.iddepartamento = n3.iddepartamento
+            WHERE 
+                n.nombrelargo LIKE :search
+                OR n.correoelectronico LIKE :search
+            ORDER BY n.nombrelargo ASC
+            `,
+            {
+                replacements: {
+                    search: `%${search}%`
+                },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        return res.json({
+            ok: true,
+            usuarios
+        });
+
+    } catch (error) {
+        console.error("Error obteniendo usuarios:", error);
+        return res.status(500).json({
+            ok: false
+        });
+    }
+};
+
 //controladores gestion de usuarios
 controller.adminUsuarios = async (req, res) => {
     try {
@@ -1137,13 +1463,16 @@ controller.adminUsuarios = async (req, res) => {
 
         const usuarios = usuariosDB.map(u => {
             let rol = 'Sin permisos';
+            let requisicionPermisos = [];
 
             if (u.permisos) {
                 try {
                     const permisos = JSON.parse(u.permisos);
                     rol = permisos.roles?.join(', ') || 'Sin permisos';
+                    requisicionPermisos = permisos.requisicionPermisos || [];
                 } catch (e) {
                     rol = 'Sin permisos';
+                    requisicionPermisos = [];
                 }
             }
 
@@ -1155,6 +1484,7 @@ controller.adminUsuarios = async (req, res) => {
                 email: u.email || 'No disponible',
                 permisos: u.permisos,
                 rol,
+                requisicionPermisos,
                 estadoempleado: u.estadoempleado || 'R'
             };
         });
@@ -1184,7 +1514,7 @@ controller.actualizarPermisosUsuario = async (req, res) => {
             });
         }
 
-        const { jerarquia, roles, permisos: permisosLista } = permisos;
+        const { jerarquia, roles, permisos: permisosLista, requisicionPermisos } = permisos;
 
         if (
             typeof jerarquia !== 'number' ||
@@ -1213,7 +1543,8 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         usuario.permisos = JSON.stringify({
             jerarquia,
             roles,
-            permisos: permisosLista
+            permisos: permisosLista,
+            requisicionPermisos: requisicionPermisos || []
         });
 
         await usuario.save();
@@ -1272,6 +1603,201 @@ controller.actualizarEstadoUsuario = async (req, res) => {
     }
 }
 
+controller.nuevoUsuario = async (req, res) => {
+    try {
+
+        const departamentos = await db.query(
+            `SELECT iddepartamento, descripcion 
+             FROM nom10003
+             ORDER BY descripcion ASC`,
+            { type: QueryTypes.SELECT }
+        );
+
+        const puestos = await db.query(
+            `SELECT idpuesto, descripcion 
+             FROM nom10006
+             ORDER BY descripcion ASC`,
+            { type: QueryTypes.SELECT }
+        );
+
+        res.render('admin/sistemas/nuevoUsuario.ejs', {
+            departamentos,
+            puestos
+        });
+
+    } catch (error) {
+        console.error("Error cargando la vista de registro de usuario", error);
+    }
+}
+
+controller.crearUsuario = async (req, res) => {
+    try {
+
+        const {
+            nombre,
+            apellidopaterno,
+            apellidomaterno,
+            nombrelargo,
+            correo,
+            telefono,
+            departamento,
+            puesto,
+            esBecario
+        } = req.body;
+
+        // VALIDACIONES
+        if (!nombre || !apellidopaterno || !nombrelargo || !correo || !departamento || !puesto) {
+            return res.status(400).json({
+                ok: false,
+                msg: "Faltan campos obligatorios"
+            });
+        }
+
+        // VALIDAR EMAIL DUPLICADO
+        const existeCorreo = await db.query(
+            `SELECT codigoempleado FROM nom10001 WHERE correoelectronico = :correo`,
+            {
+                replacements: { correo },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        if (existeCorreo.length > 0) {
+            return res.status(400).json({
+                ok: false,
+                msg: "El correo ya está registrado"
+            });
+        }
+
+        //  GENERAR IDS
+        const [[{ ultimoId }]] = await db.query(
+            `SELECT IFNULL(MAX(idempleado),0) AS ultimoId FROM nom10001`
+        );
+
+        const [[{ ultimoCodigo }]] = await db.query(
+            `SELECT IFNULL(MAX(codigoempleado),0) AS ultimoCodigo FROM nom10001`
+        );
+
+
+        const nuevoIdEmpleado = ultimoId + 1;
+        const nuevoCodigoEmpleado = parseInt(ultimoCodigo) + 1;
+        const ultimoCodigostr = nuevoCodigoEmpleado.toString();
+
+        const becarioValor = esBecario ? 1 : 0;
+
+        // INSERT
+        await db.query(
+            `
+            INSERT INTO nom10001 
+            (
+                idempleado,
+                codigoempleado,
+                nombre,
+                apellidopaterno,
+                apellidomaterno,
+                nombrelargo,
+                telefono,
+                correoelectronico,
+                iddepartamento,
+                idpuesto,
+                estadoempleado,
+                esBecario
+            )
+            VALUES
+            (
+                :idempleado,
+                :codigoempleado,
+                :nombre,
+                :apellidopaterno,
+                :apellidomaterno,
+                :nombrelargo,
+                :telefono,
+                :correo,
+                :departamento,
+                :puesto,
+                'A',
+                :esBecario
+            )
+            `,
+            {
+                replacements: {
+                    idempleado: nuevoIdEmpleado,
+                    codigoempleado: ultimoCodigostr,
+                    nombre,
+                    apellidopaterno,
+                    apellidomaterno,
+                    nombrelargo,
+                    telefono,
+                    correo,
+                    departamento,
+                    puesto,
+                    esBecario: becarioValor
+                }
+            }
+        );
+
+        return res.json({
+            ok: true,
+            msg: "Usuario creado correctamente",
+            codigoempleado: ultimoCodigostr
+        });
+
+    } catch (error) {
+        console.error("Error creando usuario:", error);
+        return res.status(500).json({
+            ok: false,
+            msg: "Error interno del servidor"
+        });
+    }
+};
+
+controller.eliminarUsuario = async (req, res) => {
+    try {
+        const { codigoempleado } = req.params;
+
+        if (!codigoempleado) {
+            return res.status(400).json({
+                ok: false,
+                msg: "Código de empleado requerido"
+            });
+        }
+
+        const usuario = await db.query(
+            `SELECT codigoempleado FROM nom10001 WHERE codigoempleado = :codigoempleado`,
+            {
+                replacements: { codigoempleado },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        if (usuario.length === 0) {
+            return res.status(404).json({
+                ok: false,
+                msg: "Usuario no encontrado"
+            });
+        }
+
+        await db.query(
+            `DELETE FROM nom10001 WHERE codigoempleado = :codigoempleado`,
+            {
+                replacements: { codigoempleado }
+            }
+        );
+
+        return res.json({
+            ok: true,
+            msg: "Usuario eliminado correctamente"
+        });
+
+    } catch (error) {
+        console.error("Error eliminando usuario:", error);
+        return res.status(500).json({
+            ok: false,
+            msg: "Error interno del servidor"
+        });
+    }
+}
+
 //controladores de equisicion de equipos
 controller.requisicionEquipos = async (req, res) => {
     try {
@@ -1295,7 +1821,7 @@ controller.requisicionEquipos = async (req, res) => {
 controller.administracionRequisicionEquipos = async (req, res) => {
     try {
         const clase = new sequelizeClase({ modelo: modelosSistemas.requisicionEquipos })
-        const resultados = await clase.obtenerDatosPorCriterio({ criterio: {'status': {[Op.ne]: ['Completada']}}, orden: [['status', 'DESC']] })
+        const resultados = await clase.obtenerDatosPorCriterio({ criterio: { 'status': { [Op.ne]: ['Completada'] } }, orden: [['status', 'DESC']] })
         return res.render('admin/sistemas/administracionRequisicionesEquipos.ejs', { tok: req.csrfToken(), registros: resultados })
     } catch (error) {
         manejadrorErrores(res, error)
@@ -1303,7 +1829,7 @@ controller.administracionRequisicionEquipos = async (req, res) => {
     }
 }
 
-controller.CrudRequisicionEquipos = async(req, res) => {
+controller.CrudRequisicionEquipos = async (req, res) => {
     try {
         const { tipo } = req.body
         let campos = req.body
@@ -1320,40 +1846,42 @@ controller.CrudRequisicionEquipos = async(req, res) => {
                 return res.json({ ok: true })
             case 'update':
                 delete campos._csrf
-                let actualizacion = await clase.actualizarDatos({ id: campos.id, datos:campos})
-                if (campos.status ==='Completada' && actualizacion){
-                    const nod = new miNodemailer({datosSmtp:{
-                        host: process.env.EMAIL_HOST,
-                        port: process.env.EMAIL_PORT,
-                        auth:{
-                            user: process.env.EMAIL_RECORDATORIO,
-                            pass: process.env.PASS_RECORDATORIO
+                let actualizacion = await clase.actualizarDatos({ id: campos.id, datos: campos })
+                if (campos.status === 'Completada' && actualizacion) {
+                    const nod = new miNodemailer({
+                        datosSmtp: {
+                            host: process.env.EMAIL_HOST,
+                            port: process.env.EMAIL_PORT,
+                            auth: {
+                                user: process.env.EMAIL_RECORDATORIO,
+                                pass: process.env.PASS_RECORDATORIO
+                            }
+
                         }
-                        
-                }})
-                    const info = {requesterName: campos.requesterName, id: campos.id, observaciones: campos.observaciones}
+                    })
+                    const info = { requesterName: campos.requesterName, id: campos.id, observaciones: campos.observaciones }
                     const miHtml = nod.htmlNotificacionNuevaReqEquipo(info)
-                    await nod.enviarCorreo({Datoscorreo: {destinatario: campos.email, asunto: 'Requisicion Equipos Completada', html: miHtml}})
-                }   
+                    await nod.enviarCorreo({ Datoscorreo: { destinatario: campos.email, asunto: 'Requisicion Equipos Completada', html: miHtml } })
+                }
                 if (!actualizacion) return res.json({ ok: false })
-                return res.json({ ok: true })    
+                return res.json({ ok: true })
         }
     } catch (error) {
         manejadrorErrores(res, error)
 
     }
 }
-controller.dashboardTickets = async(req, res) => {
+controller.dashboardTickets = async (req, res) => {
     try {
-        const clase = new sequelizeClase({ modelo: modelosSistemas.modeloTickets})
+        const clase = new sequelizeClase({ modelo: modelosSistemas.modeloTickets })
         const hoy = new Date(Date.now())
-        const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1 )
+        const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
         // const inicio = new Date(2026, 1, 1 )
         let final = new Date(inicio)
         final.setMonth(inicio.getMonth() + 1)
-        const criterios = {createdAt: {[Op.between]: [inicio, final]}}
-        const datos = await clase.obtenerDatosPorCriterio({criterio: criterios})
-        return res.render('admin/sistemas/dashboardTickets.ejs', {tok: req.csrfToken(), data:datos})
+        const criterios = { createdAt: { [Op.between]: [inicio, final] } }
+        const datos = await clase.obtenerDatosPorCriterio({ criterio: criterios })
+        return res.render('admin/sistemas/dashboardTickets.ejs', { tok: req.csrfToken(), data: datos })
     } catch (error) {
         return res.status(500).json({
             ok: false,
@@ -1364,18 +1892,18 @@ controller.dashboardTickets = async(req, res) => {
 
 controller.apiDashboard = async (req, res) => {
     try {
-        const {fechaInicio, fechaFin} = req.body
-        const clase = new sequelizeClase({modelo: modelosSistemas.modeloTickets})
-        const criterios = {createdAt: {[Op.between]: [fechaInicio, fechaFin]}}
-        const datos = await clase.obtenerDatosPorCriterio({criterio: criterios})
-    return res.json({ok: true, data: datos, tok: req.csrfToken()})    
+        const { fechaInicio, fechaFin } = req.body
+        const clase = new sequelizeClase({ modelo: modelosSistemas.modeloTickets })
+        const criterios = { createdAt: { [Op.between]: [fechaInicio, fechaFin] } }
+        const datos = await clase.obtenerDatosPorCriterio({ criterio: criterios })
+        return res.json({ ok: true, data: datos, tok: req.csrfToken() })
     } catch (error) {
         return res.status(500).json({
             ok: false,
             msg: `Error interno del servidor: ${error.message}`
-        })    
+        })
     }
-    
+
 }
 function parseDatosTicket(ticket) {
     return typeof ticket.datosTicket === 'string'

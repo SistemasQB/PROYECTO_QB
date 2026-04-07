@@ -7,11 +7,23 @@ import validarAcceso from "../middleware/validacion-permisos/calidad/permisos.js
 const router = express.Router();
 //ruta de inicio
 router.get('/inicio', adminController.inicio);
+router.get('/dashboard', protegetRuta,adminController.dashboardTI);
 
-//rutas gestion de usuarios
+//rutas de usuarios (nom10001)
+router.get('/usuarios', protegetRuta, adminController.usuarios);
+router.get('/api/usuarios', protegetRuta, adminController.obtenerUsuarios);
+router.put('/usuarios/:codigoempleado/actualizar', protegetRuta, adminController.actualizarUsuario);
+router.post("/usuarios", adminController.crearUsuario);
+router.get("/usuarios/datos-nuevo", adminController.obtenerDatosNuevoUsuario);
+router.delete("/usuarios/:codigoempleado", protegetRuta, adminController.eliminarUsuario);
+
+//rutas gestion de permisos usuarios
 router.get('/admin-usuarios', adminController.adminUsuarios); 
 router.put('/admin-usuarios/:codigoempleado/permisos', protegetRuta,adminController.actualizarPermisosUsuario);
 router.put('/admin-usuarios/:codigoempleado/estado', protegetRuta, adminController.actualizarEstadoUsuario);
+router.get('/nuevoUsuario', protegetRuta, adminController.nuevoUsuario);
+router.post('/nuevoUsuario', protegetRuta,adminController.crearUsuario);
+
 
 //rutas de tickets
 router.get('/tickets', protegetRuta,adminController.levantamientoTicket);
@@ -31,6 +43,7 @@ router.get('/tickets/:id/observaciones', protegetRuta, adminController.obtenerOb
 router.get('/dashboardTickets', protegetRuta,adminController.dashboardTickets);
 
 //rutas de inventario
+
 router.get('/inventario', protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.inventario)
 

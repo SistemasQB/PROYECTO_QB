@@ -48,7 +48,6 @@ async function cargarTabla() {
     })
 
     const data = await res.json()
-
     if (!data.ok) return
 
     renderTabla(data.datos)
@@ -56,10 +55,21 @@ async function cargarTabla() {
 
 function renderTabla(lista) {
     const tbody = document.getElementById('tabla-requisiciones')
+    // Ajustar encabezado de la tabla si es nivel alto
+    const thead = document.querySelector('#tabla-requisiciones').closest('table')?.querySelector('thead tr')
+    if (thead && esNivelAlto) {
+        // Insertar columna Solicitante si no existe aún
+        if (!thead.querySelector('[data-col="solicitante"]')) {
+            const th = document.createElement('th')
+            th.textContent = 'Solicitante'
+            th.dataset.col = 'solicitante'
+            thead.insertBefore(th, thead.children[2]) // antes de Asunto
+        }
+    }
     let html = ''
     lista.forEach(req => {
-        const fecha = new Date(req.horaRegistro)
-            .toLocaleDateString('es-MX')
+
+        const fecha = new Date(req.horaRegistro).toLocaleDateString('es-MX')
 
         const monto = new Intl.NumberFormat('es-MX', {
             style: 'currency',
@@ -83,10 +93,16 @@ function renderTabla(lista) {
             icon = 'fa-circle-xmark'
         }
 
+        // Columna solicitante solo para nivel alto
+        const colSolicitante = esNivelAlto
+            ? `<td>${req.solicitante || '—'}</td>`
+            : ''
+
         html += `
         <tr>
             <td>#REQ-${req.id}</td>
             <td>${fecha}</td>
+            ${colSolicitante}
             <td>${req.asunto}</td>
             <td>${monto}</td>
             <td>
@@ -216,6 +232,11 @@ function crearModalRequisicion(req) {
         <div>
         <label>Usuario solicitante</label>
         <p>${req.solicitante}</p>
+        </div>
+
+        <div>
+        <label>Usuario autoriza</label>
+        <p>${req.autoriza}</p>
         </div>
 
         <div>
