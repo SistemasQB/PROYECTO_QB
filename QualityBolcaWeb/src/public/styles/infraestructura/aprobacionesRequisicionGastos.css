@@ -240,18 +240,6 @@ body {
     gap: 15px;
 }
 
-.filters {
-    display: flex;
-    gap: 20px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
-
-.filters span.active {
-    color: var(--primary-blue);
-    font-weight: 600;
-}
-
 .table-responsive {
     overflow-x: auto;
 }

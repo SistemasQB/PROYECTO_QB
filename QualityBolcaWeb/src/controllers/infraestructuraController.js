@@ -940,6 +940,89 @@ infraestructuraController.crearRequisicionGastos = async (req, res) => {
 
 }
 
+infraestructuraController.misRequisicionesGastos = async (req, res) => {
+    try {
+        let usuario = req.usuario.codigoempleado
+        let clase = new sequelizeClase({
+            modelo: modelosGenerales.modelonom10001
+        })
+        let datosUsuario = await clase.obtener1Registro({
+            criterio: { codigoempleado: usuario }
+        })
+
+        // obtener puesto
+        let clasePuesto = new sequelizeClase({
+            modelo: informacionpuesto
+        })
+
+        let puesto = await clasePuesto.obtener1Registro({
+            criterio: { idpuesto: datosUsuario.idpuesto }
+        })
+
+        // obtener departamento
+        let claseDepartamento = new sequelizeClase({
+            modelo: Informaciondepartamento
+        })
+
+        let departamentoUsuario = await claseDepartamento.obtener1Registro({
+            criterio: { iddepartamento: datosUsuario.iddepartamento }
+        })
+
+        datosUsuario.puesto = puesto ? puesto.descripcion : ''
+        datosUsuario.departamento = departamentoUsuario ? departamentoUsuario.descripcion : ''
+
+        const nombreUsuario = datosUsuario.nombrelargo
+
+        //requisiciones del usuario
+        const requisiciones = await db.query(`
+                SELECT *
+                FROM requisiciones
+                WHERE solicitante = :nombreUsuario
+                ORDER BY horaRegistro DESC
+            `, {
+            replacements: { nombreUsuario },
+            type: QueryTypes.SELECT
+        })
+
+        let requisicionesPendientes = 0;
+        let requisicionesAceptadas = 0;
+        let requisicionesRechazadas = 0;
+        let montoTotalMes = 0;
+
+        //contadores dashboard
+        const [dashboard] = await db.query(`
+                SELECT
+                    SUM(CASE WHEN estatus = 'INGRESADA' THEN 1 ELSE 0 END) AS requisicionesPendientes,
+                    SUM(CASE WHEN estatus = 'APROBADA'  THEN 1 ELSE 0 END) AS requisicionesAceptadas,
+                    SUM(CASE WHEN estatus = 'RECHAZADA' THEN 1 ELSE 0 END) AS requisicionesRechazadas,
+                    SUM(CASE WHEN fechaEntrega >= DATE_FORMAT(NOW(), '%Y-%m-01') THEN total ELSE 0 END) AS montoTotalMes
+                FROM requisiciones
+                WHERE solicitante = :nombreUsuario
+            `, {
+                replacements: { nombreUsuario },
+                type: db.QueryTypes.SELECT
+            })
+
+            requisicionesPendientes = dashboard.requisicionesPendientes || 0;
+            requisicionesAceptadas = dashboard.requisicionesAceptadas || 0;
+            requisicionesRechazadas = dashboard.requisicionesRechazadas || 0;
+            montoTotalMes = dashboard.montoTotalMes || 0;
+
+        return res.render('admin/infraestructura/misRequisicionesGastos.ejs', {
+            usuario: datosUsuario,
+            tok: req.csrfToken(),
+            requisiciones,
+            requisicionesPendientes,
+            requisicionesAceptadas,
+            requisicionesRechazadas,
+            montoTotalMes
+        })
+
+    } catch (error) {
+        manejadorErrores(res, error)
+    }
+}
+
 infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
     try {
         //obtener datos de usuario loggeado
@@ -1096,9 +1179,6 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
     }
 }
 
-infraestructuraController.misRequisicionesGastos = async (req, res) => {
-    res.render('admin/infraestructura/misRequisicionesGastos.ejs', { tok: req.csrfToken() })
-}
 infraestructuraController.comprobarRequisicionesGastos = async (req, res) => {
     res.render('admin/infraestructura/comprobarRequisicionesGastos.ejs', { tok: req.csrfToken() })
 }
