@@ -53,14 +53,13 @@ controlador.crudPermisos = async(req, res) => {
         case 'insert':
                 break;
         case 'update':
-                const usuario = await clase.obtener1Registro({codigoempleado: req.body.codigoCapturista});
+                const usuario = await clase.obtener1Registro({criterio:{codigoempleado: req.body.codigoCapturista}, atributos : ['codigoempleado','permisos']});
                 let permisos = JSON.parse(usuario.permisos);
                 permisos.permisosCaptura = req.body.permisosCaptura;
-                const actualizacion = await clase.actualizarDatos({permisos: JSON.stringify(permisos)}, {codigoempleado: req.body.codigoCapturista});
-            return res.json({ok: true, msg: 'los permisos fueron actualizados exitosamente', token: req.csrfToken()});
-                
-                // if (!actualizacion) return res.status(500).json({ok: false, msg: 'no se pudo actualizar la informacion'});
-                // return res.stutus(200).json({ok: true, msg: 'los permisos fueron actualizados exitosamente'});
+                const actualizacion = await clase.ejecutarQuery({query:'update usuarios set permisos = :permisos where codigoempleado = :codigoempleado', 
+                    replacements:{permisos, codigoempleado: req.body.codigoCapturista}, mapToModel:true});
+                if(!actualizacion) return res.json({ok: false, msg: 'no se pudo actualizar los permisos', token: req.csrfToken()});
+                return res.json({ok: true, msg: 'los permisos fueron actualizados exitosamente', token: req.csrfToken()});
         case 'delete':
             break;
         }    
