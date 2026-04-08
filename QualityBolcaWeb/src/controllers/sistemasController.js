@@ -1905,9 +1905,332 @@ controller.apiDashboard = async (req, res) => {
     }
 
 }
+
+controller.dashboardMonitoreo = async (req, res) => {
+    try {
+        res.render('admin/sistemas/monitoreo.ejs', { tok: req.csrfToken() })
+    } catch (error) {
+        manejadrorErrores(res, error);
+    }
+}
+
+controller.ticketsMonitoreo = async (req, res) => {
+    try {
+        // Filtro opcional por planta/departamento. Vacío o 'todas' = sin filtro.
+        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
+            ? req.query.planta.trim()
+            : null;
+
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll({
+            order: [['createdAt', 'DESC']]
+        });
+
+        const ahora = Date.now();
+
+        // Mapear y enriquecer cada ticket con los datos que necesita el dashboard
+        const ticketsMapeados = ticketsDB.map(t => {
+            const datos = parseDatosTicket(t);
+
+            const estatus = datos.estatus || 'open';
+
+            // Calcular horas transcurridas desde la creación
+            const horasTranscurridas = Math.floor(
+                (ahora - new Date(t.createdAt).getTime()) / (1000 * 60 * 60)
+            );
+
+            // Determinar si está vencido: SLA consumido + tiempo activo supera el límite
+            let tiempoConsumidoHoras = Math.floor((datos.slaConsumido || 0) / 3600);
+            if (datos.slaActivo && datos.slaInicio) {
+                const tiempoActivoSeg = Math.floor((ahora - new Date(datos.slaInicio).getTime()) / 1000);
+                tiempoConsumidoHoras += Math.floor(tiempoActivoSeg / 3600);
+            }
+            const slaHoras = datos.slaHoras || 72;
+            const estaVencido = tiempoConsumidoHoras >= slaHoras
+                && !['resolved', 'closed'].includes(estatus);
+
+            // Mapear prioridad a etiqueta en español
+            const prioridadMap = {
+                low: 'Baja',
+                medium: 'Media',
+                high: 'Alta',
+                critical: 'Crítica'
+            };
+
+            return {
+                id: t.id,
+                folio: t.folio,
+                titulo: datos.titulo || 'Sin título',
+                estatus,
+                asignadoA: datos.asignadoA || null,
+                prioridad: datos.prioridad || 'low',
+                prioridadLabel: prioridadMap[datos.prioridad] || 'Baja',
+                horasTranscurridas,
+                tiempoConsumidoHoras,
+                slaHoras,
+                estaVencido,
+                departamento: datos.departamento || '',
+                nombreUsuario: datos.nombreUsuario || '',
+                createdAt: t.createdAt
+            };
+        });
+
+        // Aplicar filtro por planta/departamento si fue indicado
+        const ticketsFiltrados = plantaFiltro
+            ? ticketsMapeados.filter(t =>
+                t.departamento &&
+                t.departamento.toLowerCase() === plantaFiltro.toLowerCase()
+            )
+            : ticketsMapeados;
+
+        // Separar por categorías para el dashboard
+        const abiertos = ticketsFiltrados.filter(t =>
+            t.estatus === 'open' && !t.estaVencido
+        );
+
+        const vencidos = ticketsFiltrados.filter(t =>
+            t.estaVencido
+        );
+
+        const enCurso = ticketsFiltrados.filter(t =>
+            (t.estatus === 'progress' || t.estatus === 'pending') && !t.estaVencido
+        );
+
+        // Estadísticas por día de la semana actual (lun–hoy)
+        const hoyDate = new Date();
+        const diaSemana = hoyDate.getDay(); // 0=Dom, 1=Lun ... 6=Sab
+        const inicioSemana = new Date(hoyDate);
+        // ajustar al lunes de la semana actual
+        const diffLunes = (diaSemana === 0 ? -6 : 1 - diaSemana);
+        inicioSemana.setDate(hoyDate.getDate() + diffLunes);
+        inicioSemana.setHours(0, 0, 0, 0);
+
+        const labels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Hoy'];
+        const atendidosPorDia = [0, 0, 0, 0, 0, 0, 0];
+        const noAtendidosPorDia = [0, 0, 0, 0, 0, 0, 0];
+        const vencidosPorDia = [0, 0, 0, 0, 0, 0, 0];
+
+        ticketsFiltrados.forEach(t => {
+            const fechaTicket = new Date(t.createdAt);
+            fechaTicket.setHours(0, 0, 0, 0);
+            const diffDias = Math.floor(
+                (fechaTicket - inicioSemana) / (1000 * 60 * 60 * 24)
+            );
+
+            if (diffDias < 0 || diffDias > 6) return;
+
+            const idx = diffDias === 6 ? 6 : diffDias;
+
+            if (['resolved', 'closed'].includes(t.estatus)) {
+                atendidosPorDia[idx]++;
+            } else if (t.estaVencido) {
+                vencidosPorDia[idx]++;
+            } else {
+                noAtendidosPorDia[idx]++;
+            }
+        });
+
+        // Número de semana ISO del año
+        const primerDiaAnio = new Date(hoyDate.getFullYear(), 0, 1);
+        const numeroSemana = Math.ceil(
+            (((hoyDate - primerDiaAnio) / 86400000) + primerDiaAnio.getDay() + 1) / 7
+        );
+
+        // Resumen semanal: tickets creados esta semana (respeta el filtro de planta)
+        const ticketsSemana = ticketsFiltrados.filter(t => {
+            const fechaTicket = new Date(t.createdAt);
+            return fechaTicket >= inicioSemana;
+        });
+
+        const atendidosSemana = ticketsSemana.filter(t =>
+            ['resolved', 'closed'].includes(t.estatus)
+        ).length;
+
+        const noAtendidosSemana = ticketsSemana.filter(t =>
+            !['resolved', 'closed'].includes(t.estatus)
+        ).length;
+
+        const totalSemana = atendidosSemana + noAtendidosSemana;
+        const efectividad = totalSemana > 0
+            ? Math.round((atendidosSemana / totalSemana) * 100)
+            : 0;
+
+        return res.json({
+            ok: true,
+            semana: numeroSemana,
+            totales: {
+                abiertos: abiertos.length,
+                vencidos: vencidos.length,
+                enCurso: enCurso.length,
+                activos: abiertos.length + vencidos.length + enCurso.length
+            },
+            tickets: {
+                abiertos,
+                vencidos,
+                enCurso
+            },
+            grafica: {
+                labels,
+                atendidos: atendidosPorDia,
+                noAtendidos: noAtendidosPorDia,
+                vencidos: vencidosPorDia
+            },
+            resumenSemanal: {
+                atendidos: atendidosSemana,
+                noAtendidos: noAtendidosSemana,
+                efectividad
+            }
+        });
+
+    } catch (error) {
+        console.error('Error en ticketsMonitoreo:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+}
+
+controller.requisicionesMonitoreo = async (req, res) => {
+    try {
+        // Filtro opcional por planta/departamento. Vacío o 'todas' = sin filtro.
+        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
+            ? req.query.planta.trim()
+            : null;
+
+        const whereClause = plantaFiltro
+            ? { department: { [Op.like]: plantaFiltro } }
+            : {};
+
+        const requisiciones = await modelosSistemas.requisicionEquipos.findAll({
+            where: whereClause,
+            order: [['createdAt', 'DESC']]
+        });
+
+        const requisicionesFormateadas = requisiciones.map(r => {
+            let items = r.items;
+
+            if (typeof items === 'string') {
+                try {
+                    items = JSON.parse(items);
+                } catch {
+                    items = [];
+                }
+            }
+
+            if (items && !Array.isArray(items)) {
+                items = [items];
+            }
+
+            return {
+                ...r.toJSON(),
+                items
+            };
+        });
+
+        // Agrupar por status: INGRESADA = abiertas, EN_PROCESO = enCurso, Completada = cerradas
+        const abiertas = requisicionesFormateadas.filter(r => r.status === 'Pendiente');
+        const enCurso = requisicionesFormateadas.filter(r => r.status === 'En Proceso');
+        const cerradas = requisicionesFormateadas.filter(r => r.status === 'Completada');
+
+        return res.json({
+            ok: true,
+            total: requisiciones.length,
+            abiertas,
+            enCurso,
+            cerradas
+        });
+
+    } catch (error) {
+        console.error('Error en requisicionesMonitoreo:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+}
+
+controller.inventarioMonitoreo = async (req, res) => {
+    try {
+        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
+            ? req.query.planta.trim()
+            : null;
+
+        const inventario = await db.query(`
+            SELECT 
+                i.idInventario,
+                i.tipo,
+                i.marca,
+                i.serie,
+                i.folio,
+                i.estado,
+
+                n3.descripcion AS region
+
+            FROM inventario i
+
+            LEFT JOIN vales v 
+                ON i.folio = v.idFolio
+
+            LEFT JOIN nom10001 n1 
+                ON v.numeroEmpleado = n1.codigoempleado
+
+            LEFT JOIN nom10003 n3 
+                ON n1.iddepartamento = n3.iddepartamento
+
+            ORDER BY i.idInventario ASC;
+        `, {
+            type: QueryTypes.SELECT
+        });
+
+        // Filtrar por planta (igual que tickets)
+        const inventarioFiltrado = plantaFiltro
+            ? inventario.filter(i =>
+                i.region &&
+                i.region.toLowerCase() === plantaFiltro.toLowerCase()
+            )
+            : inventario;
+
+        // Agrupar por tipo
+        const data = {
+            laptops: [],
+            ensamblados: [],
+            impresoras: [],
+            celulares: []
+        };
+
+        inventarioFiltrado.forEach(i => {
+            const tipo = (i.tipo || '').toLowerCase();
+
+            if (tipo.includes('laptop')) data.laptops.push(i);
+            else if (tipo.includes('ensamblado') || tipo.includes('allinone')) data.ensamblados.push(i);
+            else if (tipo.includes('impresora')) data.impresoras.push(i);
+            else if (tipo.includes('celular')) data.celulares.push(i);
+        });
+
+        return res.json({
+            ok: true,
+            totales: {
+                laptops: data.laptops.length,
+                ensamblados: data.ensamblados.length,
+                impresoras: data.impresoras.length,
+                celulares: data.celulares.length
+            },
+            inventario: data
+        });
+
+    } catch (error) {
+        console.error('Error en inventarioMonitoreo:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+};
+
 function parseDatosTicket(ticket) {
     return typeof ticket.datosTicket === 'string'
         ? JSON.parse(ticket.datosTicket)
         : ticket.datosTicket;
 }
 export default controller;
+

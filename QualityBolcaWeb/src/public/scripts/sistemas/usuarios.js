@@ -314,7 +314,7 @@ function abrirModalCrearUsuario() {
                 <div class="form-group col-span-3">
                     <div class="special-state-box">
                         <div class="special-state-text">
-                            <h4><i class="fa-solid fa-graduation-cap" style="color: #94a3b8; margin-right: 8px;"></i> Estado Especial</h4>
+                            <h4><i class="fa-solid fa-graduation-cap" style="color: #94a3b8; margin-right: 8px;"></i> Es becario?</h4>
                             <p>¿Este usuario es actualmente un becario?</p>
                         </div>
                         <label class="switch">

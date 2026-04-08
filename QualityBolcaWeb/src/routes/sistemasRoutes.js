@@ -9,6 +9,12 @@ const router = express.Router();
 router.get('/inicio', adminController.inicio);
 router.get('/dashboard', protegetRuta,adminController.dashboardTI);
 
+//rutas de dashboard monitoreo
+router.get('/monitoreo', protegetRuta, adminController.dashboardMonitoreo);
+router.get('/api/monitoreo/tickets', protegetRuta, adminController.ticketsMonitoreo);
+router.get('/api/monitoreo/requisiciones', protegetRuta, adminController.requisicionesMonitoreo);
+router.get('/api/monitoreo/inventario', protegetRuta, adminController.inventarioMonitoreo);
+
 //rutas de usuarios (nom10001)
 router.get('/usuarios', protegetRuta, adminController.usuarios);
 router.get('/api/usuarios', protegetRuta, adminController.obtenerUsuarios);
