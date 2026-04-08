@@ -54,7 +54,6 @@ async function cargarTabla() {
 }
 
 function renderTabla(lista) {
-
     const tbody = document.getElementById('tabla-requisiciones')
     // Ajustar encabezado de la tabla si es nivel alto
     const thead = document.querySelector('#tabla-requisiciones').closest('table')?.querySelector('thead tr')
@@ -68,7 +67,6 @@ function renderTabla(lista) {
         }
     }
     let html = ''
-
     lista.forEach(req => {
 
         const fecha = new Date(req.horaRegistro).toLocaleDateString('es-MX')
@@ -363,12 +361,54 @@ function crearModalRequisicion(req) {
 }
 
 function generarTablaConceptos(descripcion) {
-
     if (!descripcion) return ''
-
-    const partes = descripcion.split('|')
     let html = ''
+    let datos = null
+    
+    try {
+        datos = JSON.parse(descripcion)
+    } catch (error) {
+        
+    }
+    console.log(descripcion)
+    if(Array.isArray(datos)){ {
+        html = datos.map((concepto) => {
+            const precioM = new Intl.NumberFormat('es-MX', {style: 'currency',currency: 'MXN'}).format(concepto.precio)
+            const subtotalM = new Intl.NumberFormat('es-MX', {style: 'currency',currency: 'MXN'}).format(concepto.unidad * concepto.precio)
+            if (esMobile()) {
+            return `
+            <div class="concepto-card">
+                <div class="concepto-title">${concepto.desc}</div>
+                <div class="concepto-row">
+                    <span>Cantidad:</span>
+                    <strong>${concepto.unidad}</strong>
+                </div>
+                <div class="concepto-row">
+                    <span>P. Unitario:</span>
+                    <strong>${precioM}</strong>
+                </div>
+                <div class="concepto-row total">
+                    <span>Subtotal:</span>
+                    <strong>${subtotalM}</strong>
+                </div>
+            </div>
+            `
+        } else {
+            return `
+            <tr>
+                <td>${concepto.desc}</td>
+                <td>${concepto.unidad}</td>
+                <td>${precioM}</td>
+                <td class="subtotal">${subtotalM}</td>
+            </tr>
+            `
+        }
 
+        }).join('')
+        return html;
+    }}
+    const partes = descripcion.split('|')
+    
     for (let i = 0; i < partes.length; i += 4) {
 
         const concepto = partes[i] || ''
@@ -415,7 +455,6 @@ function generarTablaConceptos(descripcion) {
             `
         }
     }
-
     return html
 }
 

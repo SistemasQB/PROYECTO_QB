@@ -10,7 +10,6 @@ import Informaciondepartamento from "../models/informaciondepartamento.js";
 import { QueryTypes } from "sequelize";
 import { type } from "os";
 
-
 const infraestructuraController = {}
 //controlador de inicio
 infraestructuraController.inicio = (req, res) => {
@@ -1025,6 +1024,7 @@ infraestructuraController.misRequisicionesGastos = async (req, res) => {
 
 infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
     try {
+        req.usuario.permisos = JSON.parse(req.usuario.permisos)
         //obtener datos de usuario loggeado
         let usuario = req.usuario.codigoempleado
         let clase = new sequelizeClase({
@@ -1033,7 +1033,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
         let datosUsuario = await clase.obtener1Registro({
             criterio: { codigoempleado: usuario }
         })
-
+        
         // obtener puesto
         let clasePuesto = new sequelizeClase({
             modelo: informacionpuesto
