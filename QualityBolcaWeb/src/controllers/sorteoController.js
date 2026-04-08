@@ -427,4 +427,12 @@ controller.dashBoardOutput = async(req, res) => {
     
 }
 
+controller.dashboard = (req, res) => {
+    try {
+        return res.status(200).render('admin/sorteo/dashboard.ejs', {token: req.csrfToken()});
+    } catch (error) {
+        
+    }
+}
+
 export default controller;

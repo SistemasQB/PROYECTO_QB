@@ -42,6 +42,11 @@ const Usuario = db.define('usuario', {
                 exclude: ['password','token','confirmado']
             }
         },
+        eliminarPasswordConfirmado: {
+            attributes: {
+                exclude: ['password','confirmado']
+            }
+        }
         
     }
 })

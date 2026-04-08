@@ -12,6 +12,8 @@ import sistemasRouters from "./sistemasRoutes.js";
 import sorteoRouters from "./sorteoRoutes.js";
 import userRouters from "./userRoutes.js";
 import routerGenerales from "./routerGenerales.js";
+import capturacionRouters from "./capturacionRouter.js";    
+import botRouter from "./botRouters.js";
 
 
 const routers = {
@@ -28,7 +30,9 @@ const routers = {
     sistemasRouters,
     calidadRouters,
     userRouters,
-    routerGenerales
+    routerGenerales,
+    capturacionRouters,
+    botRouter
 }
 
 export default routers;

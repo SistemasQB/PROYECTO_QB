@@ -1,13 +1,5 @@
 import express from "express";
 import cron from "node-cron";
-// import Listas from "../models/listas.js"
-// import Requisicion from "../models/requisicion.js"
-// import Curso from "../models/cursos.js"
-// import PedirCurso from "../models/pedirCurso.js"
-// import RegistroMa from "../models/registroma.js";
-// import RegistroCursos from "../models/registroCursos.js"
-// import Comunicacion from "../models/comunicacion.js"
-// import { informaciongch , informacionpuesto} from "../models/index.js"
 
 import {
     Asistencia,
@@ -47,12 +39,8 @@ import {
 // import Gch_alta from "../models/gch_alta.js"
 import Sequelize, { DATE, where } from 'sequelize'
 import db from "../config/db.js";
-
-import on from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
 import { emailRequisicion, registroCursos, emailMantenimientoA, emailSolicitud, emailMejora } from "../helpers/emails.js";
-import { pipeline } from '@xenova/transformers';
-import wavefile from 'wavefile';
 import fs from 'fs';
 import path, { format } from 'path';
 import { fileURLToPath } from 'url';

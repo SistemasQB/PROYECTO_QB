@@ -53,6 +53,7 @@ router.get('/gestionOutput',protegerRuta, validarAcceso({roles:['sorteo', 'calid
 //rutas de produccion con tensor flex
 // router.get('/contador-produccion', protegerRuta,sorteoController.contador)
 // router.post('/evaluacion-produccion',modelos.archivoUnico('imagen'),sorteoController.evaluacionProduccion)
+router.get('/dashboard', protegerRuta,sorteoController.dashboard)
 
 
 

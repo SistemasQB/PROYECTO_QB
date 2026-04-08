@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Módulo de Capturación</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/styles/capturacion/estilos_listado.css">
+
+</head>
+<body>
+
+<!-- ══════════ PAGE: LIST ══════════ -->
+<div id="listPage" class="page active">
+
+<header class="header">
+  <div class="header-brand">
+    <div class="brand-icon">📋</div>
+    <div>
+      <div class="brand-title">Módulo de Capturación</div>
+      <div class="brand-sub">Sistema de reportes de calidad</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="records-badge" id="recordsBadge">0 registros</span>
+    <button class="btn btn-primary" onclick="openAddModal()">➕ Nuevo Reporte</button>
+  </div>
+</header>
+
+<main class="main">
+  <!-- STATS -->
+  <div class="stats-strip">
+    <div class="stat-chip"><div class="stat-chip-label">Inspeccionadas</div><div class="stat-chip-value" id="st-insp" style="color:var(--text)">0</div></div>
+    <div class="stat-chip"><div class="stat-chip-label">Piezas OK</div><div class="stat-chip-value" id="st-ok" style="color:var(--green)">0</div></div>
+    <div class="stat-chip"><div class="stat-chip-label">Piezas NG</div><div class="stat-chip-value" id="st-ng" style="color:var(--red)">0</div></div>
+    <div class="stat-chip"><div class="stat-chip-label">Recuperadas</div><div class="stat-chip-value" id="st-rec" style="color:var(--yellow)">0</div></div>
+    <div class="stat-chip"><div class="stat-chip-label">Scrap</div><div class="stat-chip-value" id="st-scrap" style="color:var(--red)">0</div></div>
+    <div class="stat-chip"><div class="stat-chip-label">Horas Totales</div><div class="stat-chip-value" id="st-hrs" style="color:var(--accent)">0</div></div>
+  </div>
+
+  <!-- DATE RANGE -->
+  <div class="card">
+    <div class="card-header" onclick="togglePanel('datePanel','dateCaret')">
+      <div class="card-header-left"><span class="card-dot"></span><span class="card-title">Consulta por Rango de Fechas</span></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="dateRangeLabel" style="font-size:11px;color:var(--text3)"></span>
+        <span class="card-chevron open" id="dateCaret">▼</span>
+      </div>
+    </div>
+    <div class="collapsible-body" id="datePanel" style="max-height:200px">
+      <div class="card-body">
+        <div class="date-range-row">
+          <div class="field-group"><label class="field-label">Fecha Inicio</label><input type="date" id="dateFrom" style="width:170px" onchange="onDateRangeChange()"/></div>
+          <div class="field-group"><label class="field-label">Fecha Fin</label><input type="date" id="dateTo" style="width:170px" onchange="onDateRangeChange()"/></div>
+          <button class="btn btn-primary" onclick="simulateApiQuery()" id="apiBtn">🔍 Consultar API</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearDateRange()">✕ Limpiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="card">
+    <div class="card-header" onclick="togglePanel('filterPanel','filterCaret')">
+      <div class="card-header-left">
+        <span class="card-dot"></span><span class="card-title">Filtros</span>
+        <span id="filterCount" class="badge badge-blue" style="display:none">0</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="card-chevron open" id="filterCaret">▼</span>
+      </div>
+    </div>
+    <div class="collapsible-body" id="filterPanel" style="max-height:600px">
+      <div class="card-body">
+        <div class="filters-grid" id="filtersGrid">
+          <div class="filter-empty" id="filterEmpty">Sin filtros activos — haz clic en "+ Agregar filtro" para comenzar.</div>
+        </div>
+        <div class="filters-actions" style="margin-top:10px">
+          <button class="btn btn-ghost btn-sm" id="addFilterBtn" onclick="addFilter()">+ Agregar filtro (0/5)</button>
+          <button class="btn btn-danger btn-sm" onclick="clearAllFilters()" style="display:none" id="clearAllFiltersBtn">✕ Limpiar todo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card">
+    <div class="card-header no-collapse">
+      <div class="card-header-left"><span class="card-dot"></span><span class="card-title">Reportes de Calidad</span></div>
+      <div class="page-size-wrap">
+        <span class="page-size-label">Filas:</span>
+        <select id="pageSizeSelect" onchange="onPageSizeChange()">
+          <option value="15" selected>15</option><option value="25">25</option>
+          <option value="50">50</option><option value="100">100</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-container">
+      <table id="mainTable"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table>
+    </div>
+    <div class="pagination-bar">
+      <div class="pagination-info" id="paginationInfo">–</div>
+      <div class="page-controls" id="pageControls"></div>
+    </div>
+  </div>
+</main>
+</div><!-- /listPage -->
+
+<!-- ══════════ PAGE: DETAIL ══════════ -->
+<div id="detailPage" class="page">
+  <header class="header">
+    <div class="header-brand">
+      <div class="brand-icon">📋</div>
+      <div><div class="brand-title">Detalle de Reporte</div><div class="brand-sub">Vista completa del registro</div></div>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-ghost btn-sm" onclick="goList()">← Regresar a lista</button>
+      <button class="btn btn-primary btn-sm" id="detailEditBtn" onclick="editFromDetail()">✏️ Editar</button>
+    </div>
+  </header>
+  <main class="main" id="detailContent"></main>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal" style="display:none" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">➕ Nuevo Reporte</span>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body" id="addModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeAddModal()">Cancelar</button>
+      <button class="btn btn-success" onclick="submitReport()" id="submitBtn">📤 Guardar y Enviar</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal" style="display:none" onclick="if(event.target===this)askCloseEdit()">
+  <div class="modal modal-lg" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title" id="editModalTitle">✏️ Editar Reporte</span>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="askCloseEdit()">✕</button>
+    </div>
+    <div class="modal-body" id="editModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="askCloseEdit()">Cancelar</button>
+      <button class="btn btn-warning" onclick="submitEdit()" id="editSubmitBtn">💾 Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ITEMS SUB-MODAL -->
+<div class="modal-overlay" id="itemsModal" style="display:none" onclick="if(event.target===this)closeItemsModal()">
+  <div class="modal modal-sm" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title" id="itemsModalTitle">Items</span>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="closeItemsModal()">✕</button>
+    </div>
+    <div class="modal-body" id="itemsModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeItemsModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveItemsModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal" style="display:none">
+  <div class="modal modal-confirm" onclick="event.stopPropagation()">
+    <div class="modal-body" style="text-align:center;padding:28px 24px" id="confirmBody"></div>
+    <div class="modal-footer" id="confirmFooter" style="justify-content:center"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/scripts/capturacion/scripts_listado.js"></script>
+</body>
+</html>

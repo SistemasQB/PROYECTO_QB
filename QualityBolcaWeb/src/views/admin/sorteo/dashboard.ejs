@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – Quality Bolca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ============================================================
+           VARIABLES Y BASE
+        ============================================================ */
+        :root {
+            --primary:      #1a73e8;
+            --primary-dark: #1557b0;
+            --bg-page:      #f0f2f5;
+            --card-bg:      #ffffff;
+            --panel-w:      380px;
+            --topbar-h:     58px;
+            --border:       #e0e0e0;
+            --text-muted:   #888;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        body { background: var(--bg-page); font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; }
+
+        /* ============================================================
+           TOPBAR
+        ============================================================ */
+        .db-topbar {
+            height: var(--topbar-h);
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .db-topbar-brand { font-weight: 700; font-size: 1.05rem; color: #111; }
+        .db-topbar-brand span { font-weight: 400; color: var(--text-muted); font-size: .85rem; }
+
+        /* ============================================================
+           DASHBOARD CONTENT
+        ============================================================ */
+        .db-content {
+            padding: 24px;
+            min-height: calc(100vh - var(--topbar-h));
+            transition: margin-right .3s ease;
+        }
+        .db-content.panel-open { margin-right: var(--panel-w); }
+
+        /* ============================================================
+           WIDGET CARD  (el contenedor reutilizable)
+        ============================================================ */
+        .widget-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.07);
+            padding: 18px 18px 14px;
+            height: 100%;
+            position: relative;
+            cursor: pointer;
+            transition: box-shadow .2s, outline .15s;
+            outline: 2px solid transparent;
+        }
+        .widget-card:hover   { box-shadow: 0 4px 18px rgba(0,0,0,.11); }
+        .widget-card.selected{ outline-color: var(--primary); box-shadow: 0 4px 20px rgba(26,115,232,.18); }
+
+        .widget-title {
+            font-size: .78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #555;
+            margin-bottom: 10px;
+            padding-right: 56px; /* space for action buttons */
+        }
+
+        /* Botones flotantes sobre el widget */
+        .widget-actions {
+            position: absolute;
+            top: 10px; right: 10px;
+            display: none;
+            gap: 5px;
+        }
+        .widget-card:hover .widget-actions,
+        .widget-card.selected .widget-actions { display: flex; }
+
+        .wbtn {
+            background: #f5f5f5;
+            border: none;
+            border-radius: 7px;
+            width: 26px; height: 26px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: .7rem;
+            color: #555;
+            transition: background .15s;
+        }
+        .wbtn:hover { background: #ddd; }
+
+        /* Contenedor del canvas */
+        .chart-container { position: relative; width: 100%; }
+        .chart-container.h-sm  { height: 160px; }
+        .chart-container.h-md  { height: 220px; }
+        .chart-container.h-lg  { height: 300px; }
+
+        /* ============================================================
+           ADD WIDGET PLACEHOLDER
+        ============================================================ */
+        .add-widget-placeholder {
+            border: 2px dashed #ccc;
+            border-radius: 14px;
+            min-height: 220px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            cursor: pointer; color: #bbb;
+            transition: all .2s; background: transparent;
+        }
+        .add-widget-placeholder:hover {
+            border-color: var(--primary); color: var(--primary); background: #f0f4ff;
+        }
+
+        /* ============================================================
+           CONFIG PANEL (panel lateral deslizable)
+        ============================================================ */
+        .config-panel {
+            position: fixed;
+            top: 0; right: -420px;
+            width: var(--panel-w);
+            height: 100vh;
+            background: var(--card-bg);
+            box-shadow: -4px 0 24px rgba(0,0,0,.1);
+            z-index: 300;
+            display: flex; flex-direction: column;
+            transition: right .3s ease;
+        }
+        .config-panel.open { right: 0; }
+
+        .panel-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            background: var(--card-bg);
+            position: sticky; top: 0; z-index: 1;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .panel-header-info { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+
+        .panel-body {
+            padding: 18px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Secciones del panel */
+        .cfg-section { margin-bottom: 18px; }
+        .cfg-label {
+            font-size: .7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        /* Selector de tipo de gráfico */
+        .chart-type-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .ct-btn {
+            background: #f5f5f5;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 7px 3px 5px;
+            text-align: center;
+            cursor: pointer;
+            font-size: .65rem;
+            line-height: 1.3;
+            color: #444;
+            transition: all .15s;
+        }
+        .ct-btn i { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+        .ct-btn:hover  { background: #e8eaf6; }
+        .ct-btn.active { background: #e8f0fe; border-color: var(--primary); color: var(--primary); }
+
+        /* Paletas de color */
+        .swatch-row { display: flex; flex-wrap: wrap; gap: 7px; }
+        .swatch {
+            width: 30px; height: 30px;
+            border-radius: 7px;
+            border: 2.5px solid transparent;
+            cursor: pointer;
+            transition: transform .15s, border-color .15s;
+        }
+        .swatch:hover  { transform: scale(1.12); }
+        .swatch.active { border-color: #222; }
+
+        /* ============================================================
+           BARRA DE COMANDOS
+        ============================================================ */
+        .command-bar {
+            padding: 14px 16px;
+            border-top: 1px solid var(--border);
+            background: #fafafa;
+            flex-shrink: 0;
+        }
+        .cmd-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--text-muted); margin-bottom: 6px; }
+        .cmd-wrapper {
+            display: flex; align-items: center; gap: 7px;
+            background: #fff; border: 1.5px solid #ddd; border-radius: 10px; padding: 7px 10px;
+            transition: border-color .2s;
+        }
+        .cmd-wrapper:focus-within { border-color: var(--primary); }
+        .cmd-input { border: none; outline: none; flex: 1; font-size: .85rem; background: transparent; min-width: 0; }
+        .cmd-btn {
+            background: var(--primary); color: #fff; border: none;
+            border-radius: 7px; padding: 4px 13px; font-size: .8rem; cursor: pointer;
+            flex-shrink: 0;
+        }
+        .cmd-btn:hover { background: var(--primary-dark); }
+        .cmd-hint { font-size: .67rem; color: #aaa; margin-top: 5px; line-height: 1.5; }
+
+        /* ============================================================
+           TOAST
+        ============================================================ */
+        .toast-bar {
+            position: fixed; bottom: 22px; left: 50%;
+            transform: translateX(-50%) translateY(70px);
+            background: #323232; color: #fff;
+            padding: 9px 20px; border-radius: 9px;
+            font-size: .82rem; z-index: 9999;
+            transition: transform .28s ease;
+            pointer-events: none; white-space: nowrap;
+        }
+        .toast-bar.show { transform: translateX(-50%) translateY(0); }
+        .toast-bar.warn  { background: #bf360c; }
+
+        /* ============================================================
+           BARRA DE FILTROS BI
+        ============================================================ */
+        .filter-bar {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: var(--topbar-h);
+            z-index: 90;
+        }
+        .filter-bar-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 9px 24px; cursor: pointer; user-select: none;
+        }
+        .filter-bar-title {
+            font-size: .78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .6px;
+            color: #555; display: flex; align-items: center; gap: 8px;
+        }
+        .filter-count-badge {
+            background: var(--primary); color: #fff;
+            font-size: .65rem; padding: 1px 7px;
+            border-radius: 12px; font-weight: 700; display: none;
+        }
+        .filter-count-badge.visible { display: inline-block; }
+
+        /* Tags de filtros activos en la cabecera (cuando está colapsado) */
+        .filter-tag {
+            background: #e8f0fe; color: var(--primary);
+            border: 1px solid #c5d9fb; border-radius: 20px;
+            font-size: .72rem; font-weight: 600;
+            padding: 2px 9px 2px 8px;
+            display: inline-flex; align-items: center; gap: 4px;
+            cursor: pointer; transition: background .15s;
+        }
+        .filter-tag:hover { background: #d2e3fc; }
+        .filter-tag .tag-x { font-size: .8rem; line-height: 1; }
+
+        /* Cuerpo expandible */
+        .filter-body {
+            padding: 8px 24px 14px;
+            border-top: 1px solid #f0f0f0;
+            display: none;
+        }
+        .filter-body.open { display: block; }
+
+        /* Fila de chips por categoría */
+        .filter-row {
+            display: flex; align-items: center;
+            gap: 7px; margin-bottom: 8px; flex-wrap: wrap;
+        }
+        .filter-row:last-child { margin-bottom: 0; }
+        .filter-row-label {
+            font-size: .67rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .5px;
+            color: #aaa; min-width: 76px; flex-shrink: 0;
+        }
+        .filter-chip {
+            background: #f5f5f5; border: 1.5px solid transparent;
+            border-radius: 20px; font-size: .75rem;
+            padding: 4px 13px; cursor: pointer;
+            transition: all .15s; color: #444; user-select: none;
+        }
+        .filter-chip:hover { background: #eee; border-color: #ccc; }
+        .filter-chip.active {
+            background: #e8f0fe; border-color: var(--primary);
+            color: var(--primary); font-weight: 600;
+        }
+
+        /* Indicador de datos filtrados sobre widget */
+        .widget-card.filtered::after {
+            content: '● filtrado';
+            position: absolute; bottom: 8px; right: 10px;
+            font-size: .62rem; color: var(--primary); font-weight: 600;
+            letter-spacing: .3px; opacity: .7;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     TOPBAR
+============================================================ -->
+<header class="db-topbar">
+    <div class="d-flex align-items-center gap-2">
+        <span class="db-topbar-brand">Quality Bolca <span>/ Dashboard</span></span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <select class="form-select form-select-sm" id="globalPeriod" style="width:auto; font-size:.82rem;">
+            <option value="daily">Diario (7 días)</option>
+            <option value="weekly">Semanal (8 semanas)</option>
+            <option value="monthly" selected>Mensual (12 meses)</option>
+            <option value="quarterly">Trimestral (4 trimestres)</option>
+            <option value="yearly">Anual (5 años)</option>
+        </select>
+        <button class="btn btn-sm btn-outline-secondary" id="btnTogglePanel" style="font-size:.82rem;">
+            <i class="bi bi-sliders"></i> Personalizar
+        </button>
+        <button class="btn btn-sm btn-primary" id="btnAddWidget" style="font-size:.82rem;">
+            <i class="bi bi-plus-lg"></i> Widget
+        </button>
+    </div>
+</header>
+
+<!-- ============================================================
+     BARRA DE FILTROS BI
+============================================================ -->
+<div class="filter-bar" id="filterBar">
+
+    <!-- Cabecera (siempre visible) — clic para expandir/colapsar -->
+    <div class="filter-bar-header" id="filterBarHeader">
+        <div class="filter-bar-title">
+            <i class="bi bi-funnel-fill" style="color:var(--primary); font-size:.85rem;"></i>
+            Filtros
+            <span class="filter-count-badge" id="filterCountBadge">0</span>
+        </div>
+        <div class="d-flex align-items-center gap-2" style="flex-wrap:wrap;">
+            <!-- Tags de filtros activos (se muestran cuando el panel está colapsado) -->
+            <div id="filterTagsInline" class="d-flex flex-wrap gap-1 align-items-center"></div>
+            <button class="btn btn-sm btn-link text-danger p-0" id="btnClearFilters"
+                style="font-size:.74rem; text-decoration:none; display:none;">
+                <i class="bi bi-x-circle"></i> Limpiar todo
+            </button>
+            <i class="bi bi-chevron-down" id="filterChevron"
+                style="font-size:.72rem; color:#bbb; transition:transform .2s; margin-left:4px;"></i>
+        </div>
+    </div>
+
+    <!-- Cuerpo con chips de filtros (expandible) -->
+    <div class="filter-body" id="filterBody">
+
+        <div class="filter-row">
+            <span class="filter-row-label">Área</span>
+            <div class="filter-chip" data-group="area" data-val="Producción">Producción</div>
+            <div class="filter-chip" data-group="area" data-val="Calidad">Calidad</div>
+            <div class="filter-chip" data-group="area" data-val="Logística">Logística</div>
+            <div class="filter-chip" data-group="area" data-val="RRHH">RRHH</div>
+            <div class="filter-chip" data-group="area" data-val="TI">TI</div>
+            <div class="filter-chip" data-group="area" data-val="Mantenimiento">Mantenimiento</div>
+        </div>
+
+        <div class="filter-row">
+            <span class="filter-row-label">Turno</span>
+            <div class="filter-chip" data-group="turno" data-val="Turno A">Turno A</div>
+            <div class="filter-chip" data-group="turno" data-val="Turno B">Turno B</div>
+            <div class="filter-chip" data-group="turno" data-val="Turno C">Turno C</div>
+        </div>
+
+        <div class="filter-row">
+            <span class="filter-row-label">Línea</span>
+            <div class="filter-chip" data-group="linea" data-val="Línea 1">Línea 1</div>
+            <div class="filter-chip" data-group="linea" data-val="Línea 2">Línea 2</div>
+            <div class="filter-chip" data-group="linea" data-val="Línea 3">Línea 3</div>
+            <div class="filter-chip" data-group="linea" data-val="Línea 4">Línea 4</div>
+        </div>
+
+        <div class="filter-row">
+            <span class="filter-row-label">Estado</span>
+            <div class="filter-chip" data-group="estado" data-val="Activo">Activo</div>
+            <div class="filter-chip" data-group="estado" data-val="En proceso">En proceso</div>
+            <div class="filter-chip" data-group="estado" data-val="Completado">Completado</div>
+            <div class="filter-chip" data-group="estado" data-val="Cancelado">Cancelado</div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================================
+     CONTENIDO DEL DASHBOARD
+============================================================ -->
+<main class="db-content" id="dbContent">
+    <div class="row g-3" id="widgetGrid">
+        <!-- Los widgets se inyectan aquí por JavaScript -->
+    </div>
+</main>
+
+<!-- ============================================================
+     PANEL DE CONFIGURACIÓN (lateral deslizable)
+============================================================ -->
+<aside class="config-panel" id="configPanel">
+
+    <div class="panel-header">
+        <div>
+            <div style="font-weight:600; font-size:.93rem;">Configurar Widget</div>
+            <div class="panel-header-info" id="panelSubtitle">Selecciona un widget del dashboard</div>
+        </div>
+        <button class="btn-close" id="btnClosePanel" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="panel-body" id="panelBody">
+
+        <!-- Mensaje vacío -->
+        <div class="text-center text-muted py-5" id="emptyMsg">
+            <i class="bi bi-cursor-fill" style="font-size:2.2rem; opacity:.35;"></i>
+            <div style="margin-top:10px; font-size:.83rem;">Haz clic en cualquier gráfico del dashboard para editar sus propiedades aquí.</div>
+        </div>
+
+        <!-- Formulario de configuración (se muestra al seleccionar un widget) -->
+        <div id="cfgForm" style="display:none;">
+
+            <!-- Título -->
+            <div class="cfg-section">
+                <div class="cfg-label">Título</div>
+                <input type="text" class="form-control form-control-sm" id="cfgTitle" placeholder="Ej: Ventas Mensuales">
+            </div>
+
+            <!-- Tipo de gráfico -->
+            <div class="cfg-section">
+                <div class="cfg-label">Tipo de Gráfico</div>
+                <div class="chart-type-grid" id="chartTypeGrid">
+                    <div class="ct-btn active" data-type="bar">       <i class="bi bi-bar-chart-fill"></i>Barras</div>
+                    <div class="ct-btn" data-type="line">             <i class="bi bi-graph-up"></i>Líneas</div>
+                    <div class="ct-btn" data-type="area">             <i class="bi bi-graph-up-arrow"></i>Área</div>
+                    <div class="ct-btn" data-type="pie">              <i class="bi bi-pie-chart-fill"></i>Pastel</div>
+                    <div class="ct-btn" data-type="doughnut">         <i class="bi bi-circle"></i>Dona</div>
+                    <div class="ct-btn" data-type="radar">            <i class="bi bi-star-fill"></i>Radar</div>
+                    <div class="ct-btn" data-type="polarArea">        <i class="bi bi-asterisk"></i>Polar</div>
+                    <div class="ct-btn" data-type="horizontalBar">    <i class="bi bi-bar-chart-steps"></i>H.Bar</div>
+                </div>
+            </div>
+
+            <!-- Periodo -->
+            <div class="cfg-section">
+                <div class="cfg-label">Periodo de Datos</div>
+                <select class="form-select form-select-sm" id="cfgPeriod">
+                    <option value="daily">Diario — últimos 7 días</option>
+                    <option value="weekly">Semanal — últimas 8 semanas</option>
+                    <option value="monthly">Mensual — últimos 12 meses</option>
+                    <option value="quarterly">Trimestral — últimos 4 trimestres</option>
+                    <option value="yearly">Anual — últimos 5 años</option>
+                </select>
+            </div>
+
+            <!-- Esquema de color -->
+            <div class="cfg-section">
+                <div class="cfg-label">Esquema de Color</div>
+                <div class="swatch-row" id="swatchRow">
+                    <div class="swatch active" data-scheme="blue"      style="background:#1a73e8" title="Azul"></div>
+                    <div class="swatch"        data-scheme="green"     style="background:#34a853" title="Verde"></div>
+                    <div class="swatch"        data-scheme="red"       style="background:#ea4335" title="Rojo"></div>
+                    <div class="swatch"        data-scheme="purple"    style="background:#9334e6" title="Morado"></div>
+                    <div class="swatch"        data-scheme="orange"    style="background:#fa7b17" title="Naranja"></div>
+                    <div class="swatch"        data-scheme="teal"      style="background:#007b5e" title="Teal"></div>
+                    <div class="swatch"        data-scheme="multi"     style="background:linear-gradient(135deg,#1a73e8,#34a853,#fa7b17)" title="Multicolor"></div>
+                    <div class="swatch"        data-scheme="corporate" style="background:linear-gradient(135deg,#2c3e50,#3498db)" title="Corporativo"></div>
+                </div>
+                <!-- Color exacto -->
+                <div class="d-flex align-items-center gap-2 mt-2">
+                    <input type="color" class="form-control form-control-color form-control-sm" id="cfgHex" value="#1a73e8" style="width:40px; height:30px; padding:2px;">
+                    <button class="btn btn-sm btn-outline-secondary" id="btnApplyHex" style="font-size:.75rem;">Aplicar hex</button>
+                </div>
+            </div>
+
+            <!-- Tamaño -->
+            <div class="cfg-section">
+                <div class="cfg-label">Tamaño del Widget</div>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="cfgSize" id="szSm"   value="small"  autocomplete="off">
+                    <label class="btn btn-sm btn-outline-secondary" for="szSm"  style="font-size:.75rem;">Pequeño</label>
+                    <input type="radio" class="btn-check" name="cfgSize" id="szMd"   value="medium" autocomplete="off" checked>
+                    <label class="btn btn-sm btn-outline-secondary" for="szMd"  style="font-size:.75rem;">Mediano</label>
+                    <input type="radio" class="btn-check" name="cfgSize" id="szLg"   value="large"  autocomplete="off">
+                    <label class="btn btn-sm btn-outline-secondary" for="szLg"  style="font-size:.75rem;">Grande</label>
+                    <input type="radio" class="btn-check" name="cfgSize" id="szFull" value="full"   autocomplete="off">
+                    <label class="btn btn-sm btn-outline-secondary" for="szFull" style="font-size:.75rem;">Completo</label>
+                </div>
+            </div>
+
+            <!-- Opciones adicionales -->
+            <div class="cfg-section">
+                <div class="cfg-label">Opciones</div>
+                <div class="d-flex flex-column gap-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="cfgLegend" checked>
+                        <label class="form-check-label" for="cfgLegend" style="font-size:.83rem;">Mostrar leyenda</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="cfgGrid" checked>
+                        <label class="form-check-label" for="cfgGrid" style="font-size:.83rem;">Cuadrícula</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="cfgAnim" checked>
+                        <label class="form-check-label" for="cfgAnim" style="font-size:.83rem;">Animación</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="cfgFill">
+                        <label class="form-check-label" for="cfgFill" style="font-size:.83rem;">Relleno bajo la línea</label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary w-100 mb-2" id="btnApplyCfg" style="font-size:.85rem;">
+                <i class="bi bi-check-lg"></i> Aplicar Cambios
+            </button>
+            <button class="btn btn-outline-danger w-100" id="btnDeleteWidget" style="font-size:.78rem;">
+                <i class="bi bi-trash3"></i> Eliminar Widget
+            </button>
+
+        </div><!-- /cfgForm -->
+    </div><!-- /panelBody -->
+
+    <!-- ---- BARRA DE COMANDOS EN TEXTO ---- -->
+    <div class="command-bar">
+        <div class="cmd-label">Comando rápido</div>
+        <div class="cmd-wrapper">
+            <i class="bi bi-terminal" style="color:#bbb; font-size:.9rem; flex-shrink:0;"></i>
+            <input type="text" class="cmd-input" id="cmdInput"
+                placeholder='ej: tipo línea, color verde, periodo mensual'>
+            <button class="cmd-btn" id="btnRunCmd"><i class="bi bi-send-fill"></i></button>
+        </div>
+        <div class="cmd-hint">
+            <strong>tipo</strong>: barra·línea·área·pastel·dona·radar·polar·horizontal &nbsp;|&nbsp;
+            <strong>color</strong>: azul·verde·rojo·morado·naranja·teal·multi &nbsp;|&nbsp;
+            <strong>periodo</strong>: diario·semanal·mensual·trimestral·anual &nbsp;|&nbsp;
+            <strong>título</strong>: [texto] &nbsp;|&nbsp;
+            <strong>tamaño</strong>: pequeño·mediano·grande·completo
+        </div>
+    </div>
+
+</aside>
+
+<!-- TOAST -->
+<div class="toast-bar" id="toastBar"></div>
+
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+/* ============================================================
+   PALETAS DE COLORES
+============================================================ */
+const PALETTES = {
+    blue:      ['#1a73e8','#4285f4','#669df6','#8ab4f8','#c5d9fb','#e8f0fe'],
+    green:     ['#34a853','#5bb974','#7dcf8e','#a8e6b8','#c8f0d0','#e6f9ec'],
+    red:       ['#ea4335','#f06b62','#f28b82','#fcb9b4','#fde0dc','#fff5f5'],
+    purple:    ['#9334e6','#a852f4','#bd7af6','#d4a8fb','#ead5fd','#f7eeff'],
+    orange:    ['#fa7b17','#fb8c3c','#fba75a','#fcc585','#fde2b8','#fff5e6'],
+    teal:      ['#007b5e','#00a07b','#00c49a','#33d4b1','#66e2c8','#99f0e0'],
+    multi:     ['#1a73e8','#34a853','#fa7b17','#ea4335','#9334e6','#007b5e'],
+    corporate: ['#2c3e50','#3498db','#2ecc71','#e74c3c','#f39c12','#9b59b6'],
+};
+
+/* ============================================================
+   GENERADORES DE ETIQUETAS POR PERIODO
+============================================================ */
+const PERIODS = {
+    daily() {
+        const out = [], now = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(now); d.setDate(d.getDate() - i);
+            out.push(d.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric' }));
+        }
+        return out;
+    },
+    weekly() {
+        const out = [], now = new Date();
+        for (let i = 7; i >= 0; i--) {
+            const d = new Date(now); d.setDate(d.getDate() - i * 7);
+            out.push('S ' + d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }));
+        }
+        return out;
+    },
+    monthly() {
+        const names = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        const m = new Date().getMonth();
+        const arr = [];
+        for (let i = 11; i >= 0; i--) arr.push(names[(m - i + 12) % 12]);
+        return arr;
+    },
+    quarterly() { return ['Q1','Q2','Q3','Q4']; },
+    yearly() {
+        const y = new Date().getFullYear();
+        return [y-4, y-3, y-2, y-1, y].map(String);
+    },
+};
+
+/* Generador pseudo-aleatorio con semilla (LCG) — reproduce los mismos
+   valores para la misma combinación de filtros activos */
+function seededRng(seed) {
+    let s = 0;
+    for (let i = 0; i < seed.length; i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
+    return function() {
+        s = (s * 1664525 + 1013904223) >>> 0;
+        return s / 0xFFFFFFFF;
+    };
+}
+
+function randArr(n, min = 10, max = 100, seed = '') {
+    if (!seed) return Array.from({ length: n }, () => Math.floor(Math.random() * (max - min) + min));
+    const rng = seededRng(seed);
+    return Array.from({ length: n }, () => Math.floor(rng() * (max - min) + min));
+}
+
+/* ============================================================
+   MAPA COLUMNAS POR TAMAÑO
+============================================================ */
+const SIZE_COL = {
+    small:  'col-12 col-sm-6 col-md-4 col-lg-3',
+    medium: 'col-12 col-sm-6 col-md-6 col-lg-4',
+    large:  'col-12 col-md-8 col-lg-6',
+    full:   'col-12',
+};
+
+/* ============================================================
+   CONFIGURACIONES INICIALES DE WIDGETS
+   (aquí puedes parametrizar tus propios widgets)
+============================================================ */
+const INITIAL_WIDGETS = [
+    {
+        id: 'w1', title: 'Ventas Mensuales',
+        type: 'bar', period: 'monthly', colorScheme: 'blue', size: 'medium',
+        opts: { legend: true, grid: true, anim: true, fill: false },
+        datasetLabel: 'Ventas ($)',
+    },
+    {
+        id: 'w2', title: 'Producción Semanal',
+        type: 'line', period: 'weekly', colorScheme: 'green', size: 'medium',
+        opts: { legend: true, grid: true, anim: true, fill: true },
+        datasetLabel: 'Unidades',
+    },
+    {
+        id: 'w3', title: 'Distribución por Área',
+        type: 'doughnut', period: 'monthly', colorScheme: 'multi', size: 'small',
+        opts: { legend: true, grid: false, anim: true, fill: false },
+        datasetLabel: '%',
+        fixedLabels: ['Calidad','Producción','Logística','RRHH','TI'],
+    },
+    {
+        id: 'w4', title: 'Indicadores de Calidad',
+        type: 'radar', period: 'monthly', colorScheme: 'purple', size: 'medium',
+        opts: { legend: true, grid: true, anim: true, fill: true },
+        datasetLabel: 'Índice',
+        fixedLabels: ['Entrega','Calidad','Costo','Tiempo','Satisfacción','Seguridad'],
+    },
+    {
+        id: 'w5', title: 'Ingresos Anuales',
+        type: 'bar', period: 'yearly', colorScheme: 'corporate', size: 'large',
+        opts: { legend: false, grid: true, anim: true, fill: false },
+        datasetLabel: 'Ingresos ($M)',
+    },
+    {
+        id: 'w6', title: 'Tickets por Categoría',
+        type: 'pie', period: 'monthly', colorScheme: 'orange', size: 'small',
+        opts: { legend: true, grid: false, anim: true, fill: false },
+        datasetLabel: 'Tickets',
+        fixedLabels: ['Urgente','Normal','Bajo','Cerrado'],
+    },
+];
+
+/* ============================================================
+   CLASE ChartWidget  — contenedor reutilizable y parametrizable
+============================================================ */
+class ChartWidget {
+    constructor(cfg) {
+        this.cfg = { ...cfg };
+    }
+
+    /* Genera data según periodo, paleta y filtros activos globales */
+    buildData() {
+        const { period, colorScheme, type, fixedLabels, datasetLabel } = this.cfg;
+        const labels  = fixedLabels || PERIODS[period]?.() || PERIODS.monthly();
+        const palette = PALETTES[colorScheme] || PALETTES.blue;
+
+        // Construye la semilla combinando el id del widget + filtros activos
+        const filterSeed = getFilterSeed();
+        const seed = filterSeed ? (this.cfg.id + '|' + filterSeed) : '';
+
+        // Si hay filtros activos los rangos se ajustan para simular el subconjunto
+        const activeCount = getActiveFilterCount();
+        const maxVal = activeCount > 0 ? Math.max(30, 98 - activeCount * 8) : 98;
+        const data = randArr(labels.length, 8, maxVal, seed);
+
+        const isCircular = ['pie','doughnut','polarArea'].includes(type);
+        const isArea     = type === 'area';
+        const isRadar    = type === 'radar';
+
+        return {
+            labels,
+            datasets: [{
+                label: datasetLabel || 'Datos',
+                data,
+                backgroundColor: (isCircular || isRadar)
+                    ? palette.slice(0, labels.length).map(c => c + 'bb')
+                    : isArea ? palette[0] + '33' : palette[0] + 'cc',
+                borderColor: isCircular ? palette.slice(0, labels.length) : palette[0],
+                borderWidth: 2,
+                fill: isArea || this.cfg.opts.fill,
+                tension: 0.4,
+                pointRadius: (type === 'line' || isArea) ? 4 : 0,
+            }],
+        };
+    }
+
+    /* Ensambla la config de Chart.js */
+    buildChartConfig() {
+        const { type, opts } = this.cfg;
+        const isHBar      = type === 'horizontalBar';
+        const chartType   = isHBar ? 'bar' : (type === 'area' ? 'line' : type);
+        const noScales    = ['pie','doughnut','polarArea','radar'].includes(type);
+
+        return {
+            type: chartType,
+            data: this.buildData(),
+            options: {
+                indexAxis: isHBar ? 'y' : 'x',
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: opts.anim ? undefined : false,
+                plugins: {
+                    legend: { display: opts.legend },
+                    tooltip: { mode: 'index', intersect: false },
+                },
+                scales: noScales ? {} : {
+                    x: { grid: { display: opts.grid, color: '#ececec' } },
+                    y: { grid: { display: opts.grid, color: '#ececec' }, beginAtZero: true },
+                },
+            },
+        };
+    }
+
+    /* Crea el elemento DOM del widget */
+    buildElement() {
+        const { id, title, size } = this.cfg;
+        const col = document.createElement('div');
+        col.className = SIZE_COL[size] || SIZE_COL.medium;
+        col.id = `col-${id}`;
+        col.dataset.wid = id;
+
+        const isCircular = ['pie','doughnut','polarArea'].includes(this.cfg.type);
+        const h = isCircular ? 'h-sm' : (size === 'large' || size === 'full' ? 'h-lg' : 'h-md');
+
+        col.innerHTML = `
+            <div class="widget-card" id="card-${id}">
+                <div class="widget-title">${title}</div>
+                <div class="widget-actions">
+                    <button class="wbtn" title="Editar" onclick="selectWidget('${id}')">
+                        <i class="bi bi-pencil-fill" style="font-size:.65rem;"></i>
+                    </button>
+                    <button class="wbtn" title="Actualizar datos" onclick="refreshWidget('${id}')">
+                        <i class="bi bi-arrow-clockwise" style="font-size:.7rem;"></i>
+                    </button>
+                </div>
+                <div class="chart-container ${h}">
+                    <canvas id="cv-${id}"></canvas>
+                </div>
+            </div>`;
+
+        col.querySelector(`#card-${id}`).addEventListener('click', e => {
+            if (!e.target.closest('.wbtn')) selectWidget(id);
+        });
+        return col;
+    }
+
+    /* Monta el widget en un contenedor */
+    mount(container, beforeEl = null) {
+        const el = this.buildElement();
+        if (beforeEl) container.insertBefore(el, beforeEl);
+        else container.appendChild(el);
+        this.initChart();
+        return el;
+    }
+
+    /* (Re)inicia la instancia de Chart.js */
+    initChart() {
+        const { id } = this.cfg;
+        if (chartInst[id]) { chartInst[id].destroy(); }
+        const canvas = document.getElementById(`cv-${id}`);
+        if (!canvas) return;
+        chartInst[id] = new Chart(canvas.getContext('2d'), this.buildChartConfig());
+    }
+
+    /* Actualiza configuración y refresca */
+    update(patch) {
+        // Fusiona opts si vienen parcialmente
+        if (patch.opts) patch.opts = { ...this.cfg.opts, ...patch.opts };
+        Object.assign(this.cfg, patch);
+        registry[this.cfg.id] = this.cfg;
+
+        // Actualiza título visible
+        const titleEl = document.querySelector(`#card-${this.cfg.id} .widget-title`);
+        if (titleEl) titleEl.textContent = this.cfg.title;
+
+        // Actualiza clase de columna (tamaño)
+        const colEl = document.getElementById(`col-${this.cfg.id}`);
+        if (colEl) colEl.className = SIZE_COL[this.cfg.size] || SIZE_COL.medium;
+
+        this.initChart();
+    }
+}
+
+/* ============================================================
+   SISTEMA DE FILTROS BI
+   activeFilters = { group: Set<val>, ... }
+   Dentro de un grupo → lógica OR
+   Entre grupos      → lógica AND
+============================================================ */
+const activeFilters = {};   // { 'area': Set{'Calidad','TI'}, 'turno': Set{'Turno A'} ... }
+
+function getActiveFilterCount() {
+    return Object.values(activeFilters).reduce((s, set) => s + set.size, 0);
+}
+
+/* Devuelve un string que identifica unívocamente la combinación de filtros */
+function getFilterSeed() {
+    const parts = Object.keys(activeFilters).sort().map(g => {
+        const vals = [...activeFilters[g]].sort().join(',');
+        return `${g}:${vals}`;
+    }).filter(p => !p.endsWith(':'));
+    return parts.join('|');
+}
+
+/* Alterna un chip y dispara la actualización de todos los widgets */
+function toggleFilter(group, val, chipEl) {
+    if (!activeFilters[group]) activeFilters[group] = new Set();
+    const set = activeFilters[group];
+    if (set.has(val)) {
+        set.delete(val);
+        chipEl.classList.remove('active');
+    } else {
+        set.add(val);
+        chipEl.classList.add('active');
+    }
+    if (set.size === 0) delete activeFilters[group];
+    renderFilterState();
+    applyFiltersToAll();
+}
+
+/* Limpia todos los filtros activos */
+function clearAllFilters() {
+    Object.keys(activeFilters).forEach(k => delete activeFilters[k]);
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    renderFilterState();
+    applyFiltersToAll();
+    toast('Filtros eliminados — mostrando todos los datos');
+}
+
+/* Elimina un filtro individual desde el tag de la cabecera */
+function removeFilterTag(group, val) {
+    if (activeFilters[group]) {
+        activeFilters[group].delete(val);
+        if (activeFilters[group].size === 0) delete activeFilters[group];
+    }
+    const chip = document.querySelector(`.filter-chip[data-group="${group}"][data-val="${val}"]`);
+    if (chip) chip.classList.remove('active');
+    renderFilterState();
+    applyFiltersToAll();
+}
+
+/* Actualiza el badge de conteo, los tags inline y el botón "Limpiar todo" */
+function renderFilterState() {
+    const total = getActiveFilterCount();
+    const badge = document.getElementById('filterCountBadge');
+    const btnClear = document.getElementById('btnClearFilters');
+    const tagsEl = document.getElementById('filterTagsInline');
+
+    badge.textContent = total;
+    badge.classList.toggle('visible', total > 0);
+    btnClear.style.display = total > 0 ? '' : 'none';
+
+    // Reconstruye tags inline
+    tagsEl.innerHTML = '';
+    Object.entries(activeFilters).forEach(([group, set]) => {
+        set.forEach(val => {
+            const tag = document.createElement('span');
+            tag.className = 'filter-tag';
+            tag.innerHTML = `${val} <span class="tag-x">×</span>`;
+            tag.addEventListener('click', e => { e.stopPropagation(); removeFilterTag(group, val); });
+            tagsEl.appendChild(tag);
+        });
+    });
+
+    // Marca los widgets con el indicador "filtrado"
+    document.querySelectorAll('.widget-card').forEach(c => c.classList.toggle('filtered', total > 0));
+}
+
+/* Re-renderiza todos los widgets con los filtros activos */
+function applyFiltersToAll() {
+    Object.values(instances).forEach(w => w.initChart());
+}
+
+/* Inicializa el panel de filtros: eventos de chips, toggle y colapso */
+function initFilters() {
+    // Toggle expandir/colapsar
+    document.getElementById('filterBarHeader').addEventListener('click', () => {
+        const body    = document.getElementById('filterBody');
+        const chevron = document.getElementById('filterChevron');
+        const open    = body.classList.toggle('open');
+        chevron.style.transform = open ? 'rotate(180deg)' : '';
+    });
+
+    // Chips de filtros
+    document.getElementById('filterBody').addEventListener('click', e => {
+        const chip = e.target.closest('.filter-chip');
+        if (!chip) return;
+        toggleFilter(chip.dataset.group, chip.dataset.val, chip);
+    });
+
+    // Botón limpiar
+    document.getElementById('btnClearFilters').addEventListener('click', e => {
+        e.stopPropagation();
+        clearAllFilters();
+    });
+}
+
+/* ============================================================
+   ESTADO GLOBAL
+============================================================ */
+const registry   = {};   // id → cfg
+const instances  = {};   // id → ChartWidget
+const chartInst  = {};   // id → Chart.js instance
+let   activeId   = null; // widget seleccionado
+
+/* ============================================================
+   INICIALIZACIÓN DEL DASHBOARD
+============================================================ */
+function initDashboard() {
+    initFilters();
+
+    const grid   = document.getElementById('widgetGrid');
+    const addBtn = buildAddBtn();
+    grid.appendChild(addBtn);
+
+    INITIAL_WIDGETS.forEach(cfg => {
+        registry[cfg.id]  = { ...cfg };
+        const w = new ChartWidget(cfg);
+        instances[cfg.id] = w;
+        w.mount(grid, addBtn);
+    });
+}
+
+function buildAddBtn() {
+    const col = document.createElement('div');
+    col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+    col.id = 'addWidgetCol';
+    col.innerHTML = `
+        <div class="add-widget-placeholder" onclick="addWidget()">
+            <i class="bi bi-plus-circle" style="font-size:2rem;"></i>
+            <div style="margin-top:8px; font-size:.82rem;">Agregar widget</div>
+        </div>`;
+    return col;
+}
+
+/* ============================================================
+   AGREGAR NUEVO WIDGET
+============================================================ */
+let wCounter = 20;
+function addWidget(baseConfig = {}) {
+    const id  = `w${++wCounter}`;
+    const types   = ['bar','line','area','doughnut','pie','radar'];
+    const schemes = Object.keys(PALETTES);
+    const periods = Object.keys(PERIODS);
+
+    const cfg = {
+        id,
+        title: `Widget ${wCounter}`,
+        type:        types[Math.floor(Math.random() * types.length)],
+        period:      periods[Math.floor(Math.random() * periods.length)],
+        colorScheme: schemes[Math.floor(Math.random() * schemes.length)],
+        size:        'medium',
+        opts: { legend: true, grid: true, anim: true, fill: false },
+        datasetLabel: 'Datos',
+        ...baseConfig,
+    };
+
+    registry[id]  = cfg;
+    const w = new ChartWidget(cfg);
+    instances[id] = w;
+
+    const addBtn = document.getElementById('addWidgetCol');
+    w.mount(document.getElementById('widgetGrid'), addBtn);
+
+    selectWidget(id);
+    toast(`Widget "${cfg.title}" creado — personalízalo en el panel`);
+}
+
+/* ============================================================
+   SELECCIONAR WIDGET → ABRIR PANEL
+============================================================ */
+function selectWidget(id) {
+    activeId = id;
+    const cfg = registry[id];
+    if (!cfg) return;
+
+    // Resaltar
+    document.querySelectorAll('.widget-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(`card-${id}`)?.classList.add('selected');
+
+    // Llenar formulario
+    document.getElementById('cfgTitle').value  = cfg.title;
+    document.getElementById('cfgPeriod').value = cfg.period;
+
+    document.querySelectorAll('.ct-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.type === cfg.type));
+
+    document.querySelectorAll('.swatch').forEach(s =>
+        s.classList.toggle('active', s.dataset.scheme === cfg.colorScheme));
+
+    const sizeEl = document.querySelector(`input[name="cfgSize"][value="${cfg.size}"]`);
+    if (sizeEl) sizeEl.checked = true;
+
+    document.getElementById('cfgLegend').checked = cfg.opts.legend;
+    document.getElementById('cfgGrid').checked   = cfg.opts.grid;
+    document.getElementById('cfgAnim').checked   = cfg.opts.anim;
+    document.getElementById('cfgFill').checked   = cfg.opts.fill;
+
+    // Actualizar cabecera del panel
+    document.getElementById('panelSubtitle').textContent = cfg.title;
+    document.getElementById('emptyMsg').style.display    = 'none';
+    document.getElementById('cfgForm').style.display     = 'block';
+
+    // Abrir panel
+    openPanel();
+}
+
+function openPanel() {
+    document.getElementById('configPanel').classList.add('open');
+    document.getElementById('dbContent').classList.add('panel-open');
+}
+
+function closePanel() {
+    document.getElementById('configPanel').classList.remove('open');
+    document.getElementById('dbContent').classList.remove('panel-open');
+    document.querySelectorAll('.widget-card').forEach(c => c.classList.remove('selected'));
+    activeId = null;
+}
+
+/* ============================================================
+   APLICAR CONFIGURACIÓN DESDE EL FORMULARIO
+============================================================ */
+function applyFormConfig() {
+    if (!activeId) return;
+
+    const type   = document.querySelector('.ct-btn.active')?.dataset.type   || 'bar';
+    const scheme = document.querySelector('.swatch.active')?.dataset.scheme || 'blue';
+    const size   = document.querySelector('input[name="cfgSize"]:checked')?.value || 'medium';
+
+    instances[activeId].update({
+        title:       document.getElementById('cfgTitle').value  || 'Widget',
+        period:      document.getElementById('cfgPeriod').value,
+        type, colorScheme: scheme, size,
+        opts: {
+            legend: document.getElementById('cfgLegend').checked,
+            grid:   document.getElementById('cfgGrid').checked,
+            anim:   document.getElementById('cfgAnim').checked,
+            fill:   document.getElementById('cfgFill').checked,
+        },
+    });
+
+    document.getElementById('panelSubtitle').textContent = registry[activeId].title;
+    toast('Cambios aplicados');
+}
+
+/* ============================================================
+   ELIMINAR WIDGET
+============================================================ */
+function deleteWidget() {
+    if (!activeId) return;
+    if (!confirm(`¿Eliminar "${registry[activeId]?.title}"?`)) return;
+
+    const id = activeId;
+    if (chartInst[id]) chartInst[id].destroy();
+    document.getElementById(`col-${id}`)?.remove();
+    delete registry[id]; delete instances[id]; delete chartInst[id];
+    closePanel();
+    toast('Widget eliminado');
+}
+
+/* ============================================================
+   REFRESCAR DATOS DE UN WIDGET
+============================================================ */
+function refreshWidget(id) {
+    instances[id]?.initChart();
+    toast('Datos actualizados');
+}
+
+/* ============================================================
+   CAMBIO DE PERIODO GLOBAL
+============================================================ */
+document.getElementById('globalPeriod').addEventListener('change', function () {
+    const p = this.value;
+    Object.values(instances).forEach(w => {
+        if (!w.cfg.fixedLabels) w.update({ period: p });
+    });
+    toast(`Periodo global: ${this.options[this.selectedIndex].text}`);
+});
+
+/* ============================================================
+   PARSEADOR DE COMANDOS EN TEXTO
+   Formato: "tipo línea, color verde, periodo mensual, título Ventas, tamaño grande"
+============================================================ */
+const CMD = {
+    tipo: {
+        barra:'bar', barras:'bar', bar:'bar',
+        'línea':'line', linea:'line', 'líneas':'line', lineas:'line', line:'line',
+        'área':'area', area:'area',
+        pastel:'pie', pie:'pie', circular:'pie',
+        dona:'doughnut', doughnut:'doughnut', anillo:'doughnut',
+        radar:'radar',
+        polar:'polarArea', polararea:'polarArea',
+        horizontal:'horizontalBar', 'h.bar':'horizontalBar',
+    },
+    color: {
+        azul:'blue', blue:'blue',
+        verde:'green', green:'green',
+        rojo:'red', red:'red',
+        morado:'purple', purple:'purple', violeta:'purple',
+        naranja:'orange', orange:'orange',
+        teal:'teal', turquesa:'teal', agua:'teal',
+        multi:'multi', multicolor:'multi', colores:'multi',
+        corporativo:'corporate', corporate:'corporate',
+    },
+    periodo: {
+        diario:'daily', daily:'daily', 'día':'daily', dia:'daily',
+        semanal:'weekly', weekly:'weekly', semana:'weekly',
+        mensual:'monthly', monthly:'monthly', mes:'monthly',
+        trimestral:'quarterly', quarterly:'quarterly', trimestre:'quarterly',
+        anual:'yearly', yearly:'yearly', 'año':'yearly', ano:'yearly',
+    },
+    tamaño: {
+        'pequeño':'small', pequeño:'small', small:'small', chico:'small',
+        mediano:'medium', medium:'medium',
+        grande:'large', large:'large',
+        completo:'full', full:'full',
+    },
+};
+
+function norm(str) {
+    return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function parseAndApplyCommand(raw) {
+    if (!activeId) {
+        toast('Selecciona primero un widget del dashboard', 'warn');
+        return;
+    }
+
+    const txt     = norm(raw);
+    const changes = {};
+    let msg = [];
+
+    // tipo: <val>
+    const tm = txt.match(/tipo[:\s]+([a-z.]+)/);
+    if (tm) { const v = CMD.tipo[tm[1]]; if (v) { changes.type = v; msg.push(`tipo → ${v}`); } }
+
+    // color: <val>  o  color: #hex
+    const cm = raw.match(/color[:\s]+([#a-zA-ZÁÉÍÓÚáéíóú]+)/i);
+    if (cm) {
+        const key = norm(cm[1]);
+        if (CMD.color[key]) {
+            changes.colorScheme = CMD.color[key];
+            msg.push(`color → ${changes.colorScheme}`);
+        } else if (/^#[0-9a-f]{3,6}$/i.test(cm[1])) {
+            PALETTES['_hex'] = [cm[1], cm[1]+'cc', cm[1]+'99', cm[1]+'66', cm[1]+'44', cm[1]+'22'];
+            changes.colorScheme = '_hex';
+            msg.push(`color → ${cm[1]}`);
+        }
+    }
+
+    // periodo: <val>
+    const pm = txt.match(/periodo[:\s]+([a-z]+)/);
+    if (pm) { const v = CMD.periodo[pm[1]]; if (v) { changes.period = v; msg.push(`periodo → ${v}`); } }
+
+    // título: <texto>
+    const titleM = raw.match(/t[íi]tulo[:\s]+(.+?)(?:,|$)/i);
+    if (titleM) { changes.title = titleM[1].trim(); msg.push(`título → "${changes.title}"`); }
+
+    // tamaño: <val>
+    const sm = txt.match(/tama[nñ]o[:\s]+([a-z]+)/);
+    if (sm) { const v = CMD.tamaño[sm[1]]; if (v) { changes.size = v; msg.push(`tamaño → ${v}`); } }
+
+    if (!msg.length) {
+        toast('Comando no reconocido. Prueba: tipo barra, color azul, periodo mensual', 'warn');
+        return;
+    }
+
+    instances[activeId].update(changes);
+    syncFormToActive();
+    toast('Aplicado: ' + msg.join('  |  '));
+}
+
+function syncFormToActive() {
+    if (!activeId) return;
+    const cfg = registry[activeId];
+    document.getElementById('cfgTitle').value  = cfg.title;
+    document.getElementById('cfgPeriod').value = cfg.period;
+    document.querySelectorAll('.ct-btn').forEach(b => b.classList.toggle('active', b.dataset.type === cfg.type));
+    document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.scheme === cfg.colorScheme));
+    const sr = document.querySelector(`input[name="cfgSize"][value="${cfg.size}"]`);
+    if (sr) sr.checked = true;
+    document.getElementById('panelSubtitle').textContent = cfg.title;
+}
+
+/* ============================================================
+   TOAST
+============================================================ */
+let toastTmr;
+function toast(msg, type = '') {
+    const el = document.getElementById('toastBar');
+    el.textContent = msg;
+    el.className   = 'toast-bar show' + (type === 'warn' ? ' warn' : '');
+    clearTimeout(toastTmr);
+    toastTmr = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ============================================================
+   EVENT LISTENERS
+============================================================ */
+// Panel
+document.getElementById('btnTogglePanel').addEventListener('click', () => {
+    document.getElementById('configPanel').classList.contains('open') ? closePanel() : openPanel();
+});
+document.getElementById('btnClosePanel').addEventListener('click', closePanel);
+document.getElementById('btnApplyCfg').addEventListener('click', applyFormConfig);
+document.getElementById('btnDeleteWidget').addEventListener('click', deleteWidget);
+document.getElementById('btnAddWidget').addEventListener('click', () => addWidget());
+
+// Chart type buttons (selección única)
+document.getElementById('chartTypeGrid').addEventListener('click', e => {
+    const b = e.target.closest('.ct-btn');
+    if (!b) return;
+    document.querySelectorAll('.ct-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+});
+
+// Swatches de color (selección única)
+document.getElementById('swatchRow').addEventListener('click', e => {
+    const s = e.target.closest('.swatch');
+    if (!s) return;
+    document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+    s.classList.add('active');
+});
+
+// Color personalizado (hex picker)
+document.getElementById('btnApplyHex').addEventListener('click', () => {
+    if (!activeId) { toast('Selecciona un widget primero', 'warn'); return; }
+    const hex = document.getElementById('cfgHex').value;
+    PALETTES['_hex'] = [hex, hex+'cc', hex+'99', hex+'66', hex+'44', hex+'22'];
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    instances[activeId].update({ colorScheme: '_hex' });
+    toast(`Color hex ${hex} aplicado`);
+});
+
+// Comando de texto
+function runCommand() {
+    const inp = document.getElementById('cmdInput');
+    parseAndApplyCommand(inp.value);
+    inp.value = '';
+}
+document.getElementById('btnRunCmd').addEventListener('click', runCommand);
+document.getElementById('cmdInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') runCommand();
+});
+
+/* ============================================================
+   ARRANQUE
+============================================================ */
+document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>

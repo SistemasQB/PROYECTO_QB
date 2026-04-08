@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Regiones — Administración de Permisos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/capturacion/estilos_permisosCaptura.css">
+
+</head>
+</head>
+<body>
+<div class="app">
+ 
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🌍</div>
+    <div>
+      <div class="logo-text">RegionControl</div>
+      <div class="logo-sub">Administración de permisos</div>
+    </div>
+  </div>
+  <div class="header-actions" style="display: none;">
+    <span class="badge-count" id="totalBadge">0 miembros</span>
+    <button class="btn btn-primary" onclick="openModal('add')">
+      <span>＋</span> Asignar miembro
+    </button>
+  </div>
+</header>
+ 
+<!-- MAIN -->
+<main>
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Total miembros</div>
+      <div class="stat-value blue" id="statTotal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tipo Aptiv</div>
+      <div class="stat-value green" id="statAptiv">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tipo Varios</div>
+      <div class="stat-value amber" id="statVarios">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Regiones activas</div>
+      <div class="stat-value indigo" id="statRegions">0</div>
+    </div>
+  </div>
+ 
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="Buscar por nombre o región…" oninput="renderTable()">
+    </div>
+    <select class="filter" id="filterRegion" onchange="renderTable()">
+      <option value="">Todas las regiones</option>
+    </select>
+    <select class="filter" id="filterTipo" onchange="renderTable()">
+      <option value="">Todos los tipos</option>
+      <option value="aptiv">Aptiv</option>
+      <option value="varios">Varios</option>
+    </select>
+    <button class="btn btn-ghost btn-icon" title="Actualizar" onclick="renderTable()">↻</button>
+  </div>
+ 
+  <!-- Table -->
+  <div class="table-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">Nombre <span class="sort-icon">↕</span></th>
+          <th onclick="sortBy('region')" class="hide-sm">Región <span class="sort-icon">↕</span></th>
+          <th onclick="sortBy('tipo')">Tipo <span class="sort-icon">↕</span></th>
+          <th style="text-align:right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="emptyState" class="empty-state" style="display:none">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">Sin resultados</div>
+      <div>Prueba con otros filtros o agrega un nuevo miembro.</div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</main>
+ 
+<!-- MODAL AGREGAR / EDITAR -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Asignar miembro</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Info del empleado (solo edición) -->
+      <div id="editEmpleadoInfo" style="display:none"></div>
+ 
+      <!-- Selector de persona (solo al agregar) -->
+      <div class="form-group" id="personRow">
+        <label class="form-label">Persona</label>
+        <select class="form-select" id="fieldPerson">
+          <option value="">— Selecciona una persona —</option>
+        </select>
+      </div>
+ 
+      <!-- Permisos actuales -->
+      <div class="form-group">
+        <label class="form-label">Permisos asignados</label>
+        <div id="permisosEditor"></div>
+      </div>
+ 
+      <!-- Agregar nuevo permiso -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Agregar permiso</div>
+        <div class="form-group" style="margin:0">
+          <select class="form-select" id="fieldRegion">
+            <option value="">— Selecciona una región —</option>
+          </select>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="checkbox" id="checkAptiv" value="aptiv">
+            <span>🟢 <strong>Aptiv</strong></span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="checkVarios" value="varios">
+            <span>🟡 <strong>Varios</strong></span>
+          </label>
+        </div>
+        <button class="btn btn-success" style="align-self:flex-start" onclick="addPermiso()">＋ Agregar permiso</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveMember()">Guardar</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- MODAL CONFIRMAR ELIMINAR -->
+<div class="modal-overlay" id="confirmOverlay" onclick="closeConfirm(event)">
+  <div class="modal confirm-modal" onclick="event.stopPropagation()">
+    <div class="modal-body" style="gap:10px; padding-top:24px;">
+      <div class="confirm-icon">🗑️</div>
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">Eliminar permiso</div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.6;" id="confirmMsg">¿Estás seguro? Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- TOAST -->
+<div id="toast">
+  <div class="toast-dot" id="toastDot"></div>
+  <div class="toast-text" id="toastText"></div>
+</div>
+
+<script src="/scripts/capturacion/scripts_permisosCaptura.js"></script>
+<script src="/clases/clase_fetch.js"></script>
+<script>
+    const capts = <%-JSON.stringify(capturistas)%>
+    let tok = <%-JSON.stringify(token)%>
+</script>
+</body>
+</html>
