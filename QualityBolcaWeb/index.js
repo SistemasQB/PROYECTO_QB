@@ -44,7 +44,7 @@ app.use(helmet({ contentSecurityPolicy: false}));
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 //Habilitar cookie parser
-app.use( cookieParser() )
+app.use( cookieParser(process.env.JWT_SECRET) )
 
 //conexion a la base de datos
 try {
@@ -100,7 +100,7 @@ app.use('/servicioCliente',csrfProtection,routers.servicioClienteRouters);
 app.use('/rentabilidad',csrfProtection, routers.rentabilidadRouters);
 app.use('/procedimientos', routers.routerGenerales);
 app.use('/capturacion', routers.capturacionRouters);
-app.use('/bots', routers.botRouter);
+app.use('/', csrfProtection, routers.botRouter);
 app.use((_, res) => {
   return res.render('admin/default/paginaNoEncontrada.ejs');
 });
