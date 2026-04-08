@@ -5,6 +5,7 @@ import protegerRuta from '../middleware/protegetRuta.js';
 import validarAcceso from '../middleware/validacion-permisos/calidad/permisos.js';
 
 const multer = new miMulter('src/public/evidencias/check_List_Vehicular')
+const multerReportes = new miMulter('src/public/formularioReportes');
 const infraestructuraRouter = express.Router();
 //ruta de inicio
 infraestructuraRouter.get('/inicio', protegerRuta, validarAcceso({
@@ -30,5 +31,10 @@ infraestructuraRouter.get('/check-list-vehicular/:id', protegerRuta,validarAcces
 infraestructuraController.vistaCheckListVehicular);
 infraestructuraRouter.get('/historico_check_list_vehicular', protegerRuta, validarAcceso({roles: ['logistica vehicular'], permisos: ['analista logistica vehicular',"auxiliar logistica vehicular"], jerarquia: 5
 }),infraestructuraController.historicoCheckListVehicular);
+
+
+//ruta de fromulario de reportes
+infraestructuraRouter.get('/formularioReportes', protegerRuta, infraestructuraController.formularioReportes);
+infraestructuraRouter.post('/crudFormularioReportes', protegerRuta, multerReportes.multiplesArchivos('fotos', 3), infraestructuraController.crudFormularioReportes);
 
 export default infraestructuraRouter;

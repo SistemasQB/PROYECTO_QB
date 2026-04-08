@@ -306,4 +306,80 @@ infraestructuraController.historicoCheckListVehicular = async(req, res)=>{
         manejadorErrores(res,ex)   
     }
 }
+
+//controlador de formulario de reportes
+/* infraestructuraController.formularioReportes = (req, res)=>{
+    try{
+        return res.render('admin/infraestructura/formulario_de_reportes.ejs')
+    }
+    catch(ex){
+        manejadorErrores(res,ex)
+    }   
+} */
+
+infraestructuraController.formularioReportes = async (req, res) => {
+    try {
+        let tok = req.csrfToken();
+
+        // Clase para el formulario de reportes
+        const clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_formulario_de_reportes });
+
+        // Formatear el folio
+        let ultimoReporte = await clase.modelo.max('id');
+        
+        if (!ultimoReporte || isNaN(ultimoReporte)) {
+            ultimoReporte = 0;
+        }    
+        let nuevoFolio = 'REP-' + (ultimoReporte + 1).toString().padStart(4, '0');
+
+        res.render('admin/infraestructura/formulario_de_reportes.ejs', { 
+            reporte: { folio: nuevoFolio }, 
+            tok: tok,
+            req: req 
+        });
+
+    } catch (ex) {
+        manejadorErrores(res, ex);
+    }
+};
+
+infraestructuraController.crudFormularioReportes = async (req, res) => {
+    try {
+        const clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_formulario_de_reportes });
+        /* await clase.modelo.sync({ force: true }); */
+
+        const { departamento, piso, area, falla, observaciones } = req.body;
+
+        let nombresFotos = [];
+        if (req.files && req.files.length > 0) {
+            nombresFotos = req.files.map(file => file.filename);
+        }
+
+        const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+        const nuevoRegistro = {
+            fechas: fechaActual,
+            nombreSolicitante: req.usuario && req.usuario.nombre ? req.usuario.nombre : 'Usuario en sesión',
+            departamentoSolicitante: departamento,
+            region: req.usuario && req.usuario.region ? req.usuario.region : 'Región Central',
+            piso: piso,
+            areasPorPiso: area,
+            descripcionFalla: falla,
+            fotografias: nombresFotos,
+            observacion: observaciones || 'Sin observaciones',
+            estatus: 'INGRESADO'
+        };
+
+        const reporteGuardado = await clase.modelo.create(nuevoRegistro);
+
+        const folioReal = 'REP-' + reporteGuardado.id.toString().padStart(4, '0');
+         /* await clase.modelo.sync({ force: true }); */
+        res.status(200).json({ success: true, folio: folioReal });
+
+    } catch (ex) {
+        console.error("Error al guardar el reporte:", ex);
+        res.status(500).json({ success: false, message: 'Error interno al procesar el formulario' });
+    }
+};
+
 export default infraestructuraController;
