@@ -85,11 +85,11 @@ informacionpuesto.hasOne(informaciongch, { foreignKey: 'idpuesto', sourceKey: 'i
 
 (async () => {
   try {
-    await sequelize.sync({ force: true });
-    await qb.sync({force: true});
-    await compras.sync({force: true});
-    await calidad.sync({force: true});
-    await sistemas.sync({force: true});
+    await sequelize.sync({ force: false });
+    await qb.sync({force: false});
+    await compras.sync({force: false});
+    await calidad.sync({force: false});
+    await sistemas.sync({force: false});
     console.log('Base de datos sincronizada');
     
   } catch (error) {

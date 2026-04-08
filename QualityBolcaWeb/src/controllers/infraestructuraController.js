@@ -10,7 +10,6 @@ import Informaciondepartamento from "../models/informaciondepartamento.js";
 import { QueryTypes } from "sequelize";
 import { type } from "os";
 
-
 const infraestructuraController = {}
 //controlador de inicio
 infraestructuraController.inicio = (req, res) => {

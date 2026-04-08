@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asistente Virtual</title>
+  <link rel="stylesheet" href="/styles/bots/estilos_botPrueba.css" />
+  
+</head>
+<body>
+
+<div class="chat-wrapper">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="bot-avatar">🤖</div>
+    <div class="header-info">
+      <div class="name">Asistente virtual</div>
+      <div class="greeting" id="greeting-text"></div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" id="chat-messages">
+    <div class="empty-state" id="empty-state">
+      <div class="icon" id="empty-icon"></div>
+      <p id="empty-text"></p>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-area">
+    <div class="voice-indicator" id="voice-indicator">
+      <span class="voice-dot"></span>
+      Escuchando… habla ahora
+    </div>
+    <div class="input-box">
+      <textarea id="user-input" rows="1" placeholder="Escribe tu mensaje…"></textarea>
+      <button class="icon-btn" id="mic-btn" title="Hablar" style="display:none">🎙️</button>
+      <button class="icon-btn" id="send-btn" disabled>↑</button>
+    </div>
+    <p class="input-hint">Enter para enviar · Shift+Enter para nueva línea</p>
+  </div>
+
+</div>
+<script src="/bots/scripts_botPrueba.js"></script>
+</body>
+</html>
