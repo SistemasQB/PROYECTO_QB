@@ -34,9 +34,19 @@
       <span class="voice-dot"></span>
       Escuchando… habla ahora
     </div>
+    <!-- PDF attachment preview (oculto por defecto) -->
+    <div class="pdf-indicator" id="pdf-indicator">
+      <span class="pdf-icon">📄</span>
+      <span class="pdf-filename" id="pdf-filename">archivo.pdf</span>
+      <button class="pdf-remove-btn" id="pdf-remove-btn" title="Quitar archivo">✕</button>
+    </div>
     <div class="input-box">
       <textarea id="user-input" rows="1" placeholder="Escribe tu mensaje…"></textarea>
-      <button class="icon-btn" id="mic-btn" title="Hablar" style="display:none">🎙️</button>
+      <!-- Input file oculto - solo PDF -->
+      <input type="file" id="pdf-input" accept=".pdf" style="display:none">
+      <!-- Botón para abrir el selector de PDF -->
+      <button class="icon-btn" id="pdf-btn" title="Adjuntar PDF">📎</button>
+      <button class="icon-btn" id="mic-btn" title="Hablar">🎙️</button>
       <button class="icon-btn" id="send-btn" disabled>↑</button>
     </div>
     <p class="input-hint">Enter para enviar · Shift+Enter para nueva línea</p>
