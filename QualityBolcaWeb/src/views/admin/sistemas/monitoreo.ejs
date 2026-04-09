@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte TI — Centro de Operaciones</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/styles/sistemas/monitoreo.css">
+
+</head>
+
+<body>
+
+    <!-- ── HEADER ── -->
+    <header>
+        <div class="header-brand">
+            <div class="brand-dot">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="10" cy="10" r="7" />
+                    <path d="M10 6v4l3 3" />
+                </svg>
+            </div>
+            <div>
+                <div class="brand-name">Soporte TI QualityBolca</div>
+                <div class="brand-sub">Centro de Operaciones</div>
+            </div>
+        </div>
+
+        <div class="header-center">
+            <button class="plant-pill active" data-planta="todas" onclick="selectPlant(this)">Todas</button>
+            <button class="plant-pill" data-planta="Administrativo" onclick="selectPlant(this)">Administrativo</button>
+            <button class="plant-pill" data-planta="Honda" onclick="selectPlant(this)">Honda</button>
+            <button class="plant-pill" data-planta="Silao" onclick="selectPlant(this)">Silao</button>
+            <button class="plant-pill" data-planta="Aguascalientes" onclick="selectPlant(this)">Aguascalientes</button>
+            <button class="plant-pill" data-planta="Celaya" onclick="selectPlant(this)">Celaya</button>
+            <button class="plant-pill" data-planta="TOLUCA" onclick="selectPlant(this)">Toluca</button>
+            <button class="plant-pill" data-planta="San Luis Potosi" onclick="selectPlant(this)">San Luis
+                Potosí</button>
+            <button class="plant-pill" data-planta="REYNOSA" onclick="selectPlant(this)">Reynosa</button>
+            <button class="plant-pill" data-planta="MONTERREY" onclick="selectPlant(this)">Monterrey</button>
+            <button class="plant-pill" data-planta="Queretaro" onclick="selectPlant(this)">Querétaro</button>
+        </div>
+
+        <div class="header-right">
+            <div class="live-pill">
+                <div class="live-dot"></div>En vivo
+            </div>
+            <div class="clock-block">
+                <div class="clock-time" id="clock">--:--:--</div>
+                <div class="clock-date" id="clockDate">---</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── ALERT BANNER ── -->
+    <div class="alert-banner">
+        <div class="alert-banner-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L1 21h22L12 2zm0 3.5L20.5 19h-17L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z" />
+            </svg>
+            Alertas
+        </div>
+        <div class="alert-scroll-track">
+            <div class="alert-scroll-inner">
+                <span class="alert-chip">TKT-0047 vencido — Planta Honda</span>
+                <span class="alert-chip">Laptop-003 sin respuesta 2h — Toyota</span>
+                <span class="alert-chip">SLA crítico — Compra tinta pendiente 48h</span>
+                <span class="alert-chip">Celular-08 fuera de inventario</span>
+                <span class="alert-chip">Servidor correo sin acceso — Honda</span>
+                <!-- duplicado para loop suave -->
+                <span class="alert-chip">TKT-0047 vencido — Planta Honda</span>
+                <span class="alert-chip">Laptop-003 sin respuesta 2h — Toyota</span>
+                <span class="alert-chip">SLA crítico — Compra tinta pendiente 48h</span>
+                <span class="alert-chip">Celular-08 fuera de inventario</span>
+                <span class="alert-chip">Servidor correo sin acceso — Honda</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── LAYOUT ── -->
+    <div class="layout">
+
+        <!-- ══ LEFT ══ -->
+        <div class="col-left">
+
+            <!-- LAPTOPS -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Laptops</div>
+                    <div class="card-badge" id="laptops-badge">—</div>
+                </div>
+                <div class="device-list" id="laptops-container">
+                    <div class="tkt-vacio">Cargando...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Ensamblados</div>
+                    <div class="card-badge" id="ensamblados-badge">—</div>
+                </div>
+                <div class="device-list" id="ensamblados-container">
+                    <div class="tkt-vacio">Cargando...</div>
+                </div>
+            </div>
+
+            <!-- IMPRESORAS -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Impresoras</div>
+                    <div class="card-badge" id="impresoras-badge">—</div>
+                </div>
+                <div class="device-list" id="impresoras-container">
+                    <div class="tkt-vacio">Cargando...</div>
+                </div>
+            </div>
+
+            <!-- CELULARES -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Celulares</div>
+                    <div class="card-badge" id="celulares-badge">—</div>
+                </div>
+                <div class="cel-grid" id="celulares-container">
+                    <div class="tkt-vacio">Cargando...</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══ CENTER ══ -->
+        <div class="col-center">
+
+            <!-- TICKETS -->
+            <div class="card">
+                <div class="card-header" style="padding-bottom:4px">
+                    <div class="card-title">Tickets — Semana 13</div>
+                    <span class="card-badge">15 activos</span>
+                </div>
+                <div class="ticket-columns">
+
+                    <!-- ABIERTOS -->
+                    <div class="ticket-col">
+                        <div class="ticket-col-head">
+                            <div>
+                                <div class="tcol-label amber">Abiertos</div>
+                            </div>
+                            <div class="tcol-count amber">7</div>
+                        </div>
+                        <div class="ticket-items">
+                            <div class="tkt amber-tkt"
+                                onclick="openTicket('TKT-0051','Configurar VPN usuario','Luis Ramírez','2h','Abierto','Baja')">
+                                <div class="tkt-id"><span>TKT-0051</span></div>
+                                <div class="tkt-desc">Configurar VPN usuario nuevo</div>
+                                <div class="tkt-meta"><span class="tkt-agent">L. Ramírez</span><span
+                                        class="tkt-time">2h</span></div>
+                                <span class="priority-tag pt-low">Baja</span>
+                            </div>
+                            <div class="tkt amber-tkt"
+                                onclick="openTicket('TKT-0052','Instalar software CAD','María Torres','5h','Abierto','Media')">
+                                <div class="tkt-id"><span>TKT-0052</span></div>
+                                <div class="tkt-desc">Instalar software CAD</div>
+                                <div class="tkt-meta"><span class="tkt-agent">M. Torres</span><span
+                                        class="tkt-time">5h</span></div>
+                                <span class="priority-tag pt-med">Media</span>
+                            </div>
+                            <div class="tkt urgent-tkt amber-tkt"
+                                onclick="openTicket('TKT-0053','Servidor correo sin acceso','Sin asignar','28h','Crítico','Alta')">
+                                <div class="tkt-id"><span>TKT-0053</span></div>
+                                <div class="tkt-desc">Servidor correo sin acceso</div>
+                                <div class="tkt-meta"><span class="tkt-agent" style="color:var(--red)">⚠ Sin
+                                        asignar</span><span class="tkt-time overdue">28h</span></div>
+                                <span class="priority-tag pt-high">Crítica</span>
+                            </div>
+                            <div class="tkt amber-tkt"
+                                onclick="openTicket('TKT-0054','Cambio contraseña AD','Carlos Vega','1h','Abierto','Baja')">
+                                <div class="tkt-id"><span>TKT-0054</span></div>
+                                <div class="tkt-desc">Cambio contraseña AD</div>
+                                <div class="tkt-meta"><span class="tkt-agent">C. Vega</span><span
+                                        class="tkt-time">1h</span></div>
+                                <span class="priority-tag pt-low">Baja</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VENCIDOS -->
+                    <div class="ticket-col">
+                        <div class="ticket-col-head">
+                            <div>
+                                <div class="tcol-label red">Vencidos</div>
+                            </div>
+                            <div class="tcol-count red">3</div>
+                        </div>
+                        <div class="ticket-items">
+                            <div class="tkt red-tkt urgent-tkt"
+                                onclick="openTicket('TKT-0047','Compra tinta impresora','Luis Ramírez','72h','Vencido','Alta')">
+                                <div class="tkt-id"><span>TKT-0047</span></div>
+                                <div class="tkt-desc">Compra tinta impresora</div>
+                                <div class="tkt-meta"><span class="tkt-agent">L. Ramírez</span><span
+                                        class="tkt-time overdue">72h ⚠</span></div>
+                                <span class="priority-tag pt-high">Vencido</span>
+                            </div>
+                            <div class="tkt red-tkt urgent-tkt"
+                                onclick="openTicket('TKT-0044','Actualización antivirus','María Torres','48h','Vencido','Alta')">
+                                <div class="tkt-id"><span>TKT-0044</span></div>
+                                <div class="tkt-desc">Actualización antivirus batch</div>
+                                <div class="tkt-meta"><span class="tkt-agent">M. Torres</span><span
+                                        class="tkt-time overdue">48h ⚠</span></div>
+                                <span class="priority-tag pt-high">Vencido</span>
+                            </div>
+                            <div class="tkt red-tkt urgent-tkt"
+                                onclick="openTicket('TKT-0040','Backup BD producción','Carlos Vega','36h','Vencido','Alta')">
+                                <div class="tkt-id"><span>TKT-0040</span></div>
+                                <div class="tkt-desc">Backup base datos producción</div>
+                                <div class="tkt-meta"><span class="tkt-agent">C. Vega</span><span
+                                        class="tkt-time overdue">36h ⚠</span></div>
+                                <span class="priority-tag pt-high">Vencido</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EN CURSO -->
+                    <div class="ticket-col">
+                        <div class="ticket-col-head">
+                            <div>
+                                <div class="tcol-label blue">Pendiente</div>
+                            </div>
+                            <div class="tcol-count blue"></div>
+                        </div>
+                        <div class="ticket-items">
+                            <div class="tkt blue-tkt"
+                                onclick="openTicket('TKT-0048','Laptop nueva configuración','Luis Ramírez','4h','En Curso','Media')">
+                                <div class="tkt-id"><span>TKT-0048</span></div>
+                                <div class="tkt-desc">Laptop nueva — configuración</div>
+                                <div class="tkt-meta"><span class="tkt-agent">L. Ramírez</span><span class="tkt-time">4h
+                                        rest.</span></div>
+                                <span class="priority-tag pt-med">Media</span>
+                            </div>
+                            <div class="tkt blue-tkt"
+                                onclick="openTicket('TKT-0049','Migración carpetas servidor','María Torres','6h','En Curso','Media')">
+                                <div class="tkt-id"><span>TKT-0049</span></div>
+                                <div class="tkt-desc">Migración carpetas servidor</div>
+                                <div class="tkt-meta"><span class="tkt-agent">M. Torres</span><span class="tkt-time">6h
+                                        rest.</span></div>
+                                <span class="priority-tag pt-med">Media</span>
+                            </div>
+                            <div class="tkt blue-tkt"
+                                onclick="openTicket('TKT-0050','Impresora atasco papel','Carlos Vega','1h','En Curso','Baja')">
+                                <div class="tkt-id"><span>TKT-0050</span></div>
+                                <div class="tkt-desc">Impresora — atasco papel</div>
+                                <div class="tkt-meta"><span class="tkt-agent">C. Vega</span><span class="tkt-time">1h
+                                        rest.</span></div>
+                                <span class="priority-tag pt-low">Baja</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOLICITUDES -->
+            <div class="card">
+                <div class="card-header" style="padding-bottom:4px">
+                    <div class="card-title">Solicitudes</div>
+                    <span class="card-badge" id="sol-badge-total">— total</span>
+                </div>
+                <div class="sol-columns">
+                    <div class="sol-col" id="sol-col-abiertas">
+                        <div class="sol-col-head">
+                            <div class="tcol-label amber">Abiertas</div>
+                            <div class="tcol-count amber" id="sol-count-abiertas">—</div>
+                        </div>
+                        <div class="ticket-items" style="padding:8px" id="sol-items-abiertas">
+                            <div class="tkt-vacio">Cargando...</div>
+                        </div>
+                    </div>
+                    <div class="sol-col" id="sol-col-encurso">
+                        <div class="sol-col-head">
+                            <div class="tcol-label blue">En Curso</div>
+                            <div class="tcol-count blue" id="sol-count-encurso">—</div>
+                        </div>
+                        <div class="ticket-items" style="padding:8px" id="sol-items-encurso">
+                            <div class="tkt-vacio">Cargando...</div>
+                        </div>
+                    </div>
+                    <div class="sol-col" id="sol-col-cerradas">
+                        <div class="sol-col-head">
+                            <div class="tcol-label" style="color:var(--green)">Cerradas</div>
+                            <div class="tcol-count" style="color:var(--green)" id="sol-count-cerradas">—</div>
+                        </div>
+                        <div class="ticket-items" style="padding:8px" id="sol-items-cerradas">
+                            <div class="tkt-vacio">Cargando...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHART -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Tickets por día</div>
+                    <span class="card-badge">Semana 13</span>
+                </div>
+                <div class="chart-wrap" style="height:160px">
+                    <canvas id="ticketChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ RIGHT ══ -->
+        <div class="col-right">
+
+            <!-- KPIs -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Resumen semanal</div>
+                    <span class="card-badge">W13</span>
+                </div>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-num green">40</div>
+                        <div class="kpi-label-text">Atendidos</div>
+                        <div class="kpi-delta up">▲ +8 vs anterior</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-num red">30</div>
+                        <div class="kpi-label-text">No atendidos</div>
+                        <div class="kpi-delta down">▼ −3 vs anterior</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-num blue">57%</div>
+                        <div class="kpi-label-text">Efectividad</div>
+                        <div class="kpi-delta up">▲ +4%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-num amber">7.4</div>
+                        <div class="kpi-label-text">Satisfacción</div>
+                        <div class="kpi-delta up">▲ +0.3</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLA -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">SLA · Plan 10 GB</div>
+                </div>
+                <div class="sla-list">
+                    <div class="sla-item">
+                        <div class="sla-head">
+                            <div class="sla-name">Primera respuesta</div>
+                            <div class="sla-pct green">92%</div>
+                        </div>
+                        <div class="sla-track">
+                            <div class="sla-fill green" style="width:92%"></div>
+                        </div>
+                    </div>
+                    <div class="sla-item">
+                        <div class="sla-head">
+                            <div class="sla-name">Resolución 4h</div>
+                            <div class="sla-pct amber">68%</div>
+                        </div>
+                        <div class="sla-track">
+                            <div class="sla-fill amber" style="width:68%"></div>
+                        </div>
+                    </div>
+                    <div class="sla-item">
+                        <div class="sla-head">
+                            <div class="sla-name">Críticos 2h</div>
+                            <div class="sla-pct red">41%</div>
+                        </div>
+                        <div class="sla-track">
+                            <div class="sla-fill red" style="width:41%"></div>
+                        </div>
+                    </div>
+                    <div class="sla-item">
+                        <div class="sla-head">
+                            <div class="sla-name">Disponibilidad red</div>
+                            <div class="sla-pct green">99.2%</div>
+                        </div>
+                        <div class="sla-track">
+                            <div class="sla-fill green" style="width:99.2%"></div>
+                        </div>
+                    </div>
+                    <div class="sla-item">
+                        <div class="sla-head">
+                            <div class="sla-name">Uso bandwidth</div>
+                            <div class="sla-pct amber">74%</div>
+                        </div>
+                        <div class="sla-track">
+                            <div class="sla-fill amber" style="width:74%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSAT CHART -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Satisfacción CSAT</div>
+                    <span class="card-badge">Últimas 6 semanas</span>
+                </div>
+                <div class="csat-inline" style="height:120px">
+                    <canvas id="csatChart"></canvas>
+                </div>
+            </div>
+
+            <!-- AGENTS -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Equipo</div>
+                    <span class="card-badge">2 agentes</span>
+                </div>
+                <div class="agent-list">
+                    <div class="agent-row"
+                        onclick="openAgent('Luis Ramírez','Soporte L1','12','Activo','luis.ramirez@corp.mx')">
+                        <div class="avatar av-blue">OV</div>
+                        <div class="agent-info">
+                            <div class="agent-name">Omar Vazquez</div>
+                            <div class="agent-role">Analista TI</div>
+                        </div>
+                        <div class="agent-right">
+                            <div class="agent-count">12</div>
+                            <span class="status-badge sb-ok">Activo</span>
+                        </div>
+                    </div>
+                    <div class="agent-row"
+                        onclick="openAgent('María Torres','Soporte L2 · Redes','9','Activo','maria.torres@corp.mx')">
+                        <div class="avatar av-purple">MT</div>
+                        <div class="agent-info">
+                            <div class="agent-name">María Torres</div>
+                            <div class="agent-role">Soporte L2 · Redes</div>
+                        </div>
+                        <div class="agent-right">
+                            <div class="agent-count">9</div>
+                            <span class="status-badge sb-ok">Activo</span>
+                        </div>
+                    </div>
+                    <div class="agent-row"
+                        onclick="openAgent('Carlos Vega','Hardware · L1','7','Ocupado','carlos.vega@corp.mx')">
+                        <div class="avatar av-orange">CV</div>
+                        <div class="agent-info">
+                            <div class="agent-name">Carlos Vega</div>
+                            <div class="agent-role">Hardware · L1</div>
+                        </div>
+                        <div class="agent-right">
+                            <div class="agent-count">7</div>
+                            <span class="status-badge sb-warn">Ocupado</span>
+                        </div>
+                    </div>
+                    <div class="agent-row"
+                        onclick="openAgent('Ana Pérez','Coordinadora TI','—','Activo','ana.perez@corp.mx')">
+                        <div class="avatar av-green">AP</div>
+                        <div class="agent-info">
+                            <div class="agent-name">Ana Pérez</div>
+                            <div class="agent-role">Coordinadora TI</div>
+                        </div>
+                        <div class="agent-right">
+                            <div class="agent-count" style="color:var(--label-4)">—</div>
+                            <span class="status-badge sb-ok">Activo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-stat">
+            <div class="footer-dot"></div> Sistema operativo
+        </div>
+        <span>Última sincronización: <span id="lastSync">--:--:--</span></span>
+        <span>Internet 10 GB · Latencia <span style="color:var(--green)">8 ms</span> · v2.4.1</span>
+    </footer>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal-box">
+            <div class="modal-head">
+                <div>
+                    <div class="modal-title-text" id="modalTitle">Detalle</div>
+                    <div class="modal-subtitle" id="modalSub"></div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-fields" id="modalFields"></div>
+            <div class="modal-actions" id="modalActions"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/scripts/sistemas/monitoreo.js"></script>
+</body>
+
+</html>

@@ -29,7 +29,15 @@ const modeloVistaEmpleados = db.define('empleados', {
     departamento: {
         type: DataTypes.STRING,
         allowNull: true
-    }
+    },
+    departamentoLocal: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    correo: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
 }, {
     timestamps: false,
     freezeTableName: true,

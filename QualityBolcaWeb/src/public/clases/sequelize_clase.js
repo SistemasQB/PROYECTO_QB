@@ -82,6 +82,7 @@ class sequelizeClase{
         return respuesta
     }
      async ejecutarQuery({ query, replacements = null, mapToModel = false }) {
+        console.log(query, replacements, mapToModel);
         try {
             const [results] = await this.modelo.sequelize.query(query, {
                 model: mapToModel ? this.modelo : undefined,

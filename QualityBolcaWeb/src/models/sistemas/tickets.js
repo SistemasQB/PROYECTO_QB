@@ -19,6 +19,19 @@ const modeloTickets = dbSistemas.define('tickets',{
         allowNull: false,
         defaultValue: 'N/A'
     }, 
+    semana: {
+      type: DataTypes.VIRTUAL,
+    get() {
+        const createdAt = this.getDataValue('createdAt');
+        if (!createdAt) return null;
+        // Usamos la función WEEK de JS (semana ISO)
+        const fecha = new Date(createdAt);
+        const oneJan = new Date(fecha.getFullYear(), 0, 1);
+        const numeroSemana = Math.ceil((((fecha - oneJan) / 86400000) + oneJan.getDay() + 1) / 7);
+        return numeroSemana;
+    }
+}
+
 
 },{
     tablename: 'tickets',

@@ -17,7 +17,7 @@ router.get('/administracionEvidencias' ,protegerRuta, validarAcceso({roles: ['ca
 router.post('/evidencias',protegerRuta,calidadController.evidencias2); 
 
 // rutas de mejora continua
-router.get('/administracionmejoras', protegerRuta,validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar'], jerarquia: 5}), calidadController.administracionmejoras); //vista de comite de mejoras (comite)
+router.get('/administracionMejoras', protegerRuta,validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar'], jerarquia: 5}), calidadController.administracionmejoras); //vista de comite de mejoras (comite)
 router.get('/mejoracontinua',protegerRuta, calidadController.mejoracontinua); // vista de ingreso de mejoras nuevas (personal)
 router.post('/crudMejoras', protegerRuta, multerAnalisis.archivoUnico('tituloAnalisis', 1),calidadController.crudMejoras); //modificacion de mejoras (abstracta)
 

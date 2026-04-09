@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/styles/infraestructura/estilos_requisicionGastos_form.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <title>Crear Requisición de Compra</title>
+  
+</head>
+<body>
+
+<!-- ================================================
+     MODAL RENTABILIDADES
+     ================================================ -->
+<div class="modal-overlay" id="modalRentabilidades">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <span class="material-symbols-outlined modal-icon">bar_chart</span>
+        <h2 class="modal-title">Visualizar Rentabilidades</h2>
+      </div>
+      <button class="modal-close" id="btnCerrarModal">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Gastos Directos -->
+      <div class="rent-group">
+        <div class="rent-group-header rent-header--directo">
+          <span class="material-symbols-outlined">home_work</span>
+          Gastos Directos
+        </div>
+        <ul class="rent-list">
+          <li><span class="material-symbols-outlined">chevron_right</span> Casas, Bodegas</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Cobro a cliente</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Materiales de producción directa</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Mano de obra directa</li>
+        </ul>
+      </div>
+      <!-- Gastos Indirectos OP -->
+      <div class="rent-group">
+        <div class="rent-group-header rent-header--indirecto-op">
+          <span class="material-symbols-outlined">precision_manufacturing</span>
+          Gastos Indirectos Operativos (OP)
+        </div>
+        <ul class="rent-list">
+          <li><span class="material-symbols-outlined">chevron_right</span> Casas, Bodegas</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Gastos de operación</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Mantenimiento de equipos</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Servicios generales operativos</li>
+        </ul>
+      </div>
+      <!-- Gastos Indirectos Admin -->
+      <div class="rent-group">
+        <div class="rent-group-header rent-header--indirecto-admin">
+          <span class="material-symbols-outlined">business_center</span>
+          Gastos Indirectos Administrativos
+        </div>
+        <ul class="rent-list">
+          <li><span class="material-symbols-outlined">chevron_right</span> Autos administrativos</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Nóminas, Captura</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Gastos de oficina general</li>
+          <li><span class="material-symbols-outlined">chevron_right</span> Servicios contables y legales</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--ghost" id="btnCerrarModalFooter">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     TOAST
+     ================================================ -->
+<div class="toast" id="toast">
+  <span class="material-symbols-outlined" id="toastIcon">check_circle</span>
+  <span id="toastMsg">Mensaje</span>
+</div>
+
+<!-- ================================================
+     LAYOUT
+     ================================================ -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <span class="material-symbols-outlined">shopping_cart</span>
+      </div>
+      <div>
+        <p class="brand-title">Gestión de Compras</p>
+        <p class="brand-sub">Admin Panel</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item nav-item--active">
+        <span class="material-symbols-outlined">description</span>
+        <span>Requisiciones</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <span>Inventario</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="material-symbols-outlined">group</span>
+        <span>Proveedores</span>
+      </a>
+      <div class="nav-section-label">Configuración</div>
+      <a href="#" class="nav-item">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Ajustes</span>
+      </a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar">
+        <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=137fec&color=fff&size=64" alt="Juan Pérez"/>
+      </div>
+      <div class="user-info">
+        <p class="user-name"><%-datosUsuario.nombrelargo%></p>
+        <!-- <p class="user-role"><%=datosUsuario%></p> -->
+      </div>
+      <span class="material-symbols-outlined user-logout">logout</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="content-wrapper">
+
+      <!-- PAGE HEADER -->
+      <header class="page-header">
+        <div>
+          <h2 class="page-title">Crear Requisición de Compra</h2>
+          <p class="page-sub">Complete los campos para iniciar el proceso de aprobación.</p>
+        </div>
+        <button class="btn btn--primary" id="btnEnviarTop">
+          <span class="material-symbols-outlined">send</span>
+          Enviar Requisición
+        </button>
+      </header>
+
+      <div class="form-sections">
+
+        <!-- ── SECCIÓN 1: INFORMACIÓN GENERAL ── -->
+        <section class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined">info</span>
+            <h3 class="card-title">Información General</h3>
+          </div>
+          <div class="grid-4">
+
+            <div class="field">
+              <label class="field-label">Usuario Autorizador <span class="req">*</span></label>
+              <select class="input" id="usuarioAutorizador">
+                <option value="">Seleccionar usuario</option>
+                
+                <% listaAutorizacion.forEach((i) => { %>
+                    <option value="<%= i %>"><%= i %></option>
+                <% }) %>
+
+              </select>
+              <span class="field-error" id="err-usuarioAutorizador"></span>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Proceso que perteneces <span class="req">*</span></label>
+              <select class="input" id="proceso">
+                <option value="">Seleccionar proceso</option>
+                <option value="ADMINISTRACION Y FINANZAS">ADMINISTRACION Y FINANZAS</option>
+                <option value="COMERCIALIZACION Y VENTA">COMERCIALIZACION Y VENTA</option>
+                <option value="CONTROL Y MEJORA DEL SERVICIO">CONTROL Y MEJORA DEL SERVICIO</option>
+                <option value="EJECUCION DEL SERVICIO">EJECUCION DEL SERVICIO</option>
+                <option value="GESTION DE CAPITAL HUMANO">GESTION DE CAPITAL HUMANO</option>
+                <option value="GESTION DE INFRAESTRUCTURA">GESTION DE INFRAESTRUCTURA</option>
+                <option value="PLANEACION DEL SERVICIO">PLANEACION DEL SERVICIO</option>
+                <option value="PLANEACION Y DIRECCION ESTRATEGICA">PLANEACION Y DIRECCION ESTRATEGICA</option>
+                <option value="SISTEMA DE GESTION DE LA CALIDAD">SISTEMA DE GESTION DE LA CALIDAD</option>
+              </select>
+              <span class="field-error" id="err-proceso"></span>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Departamento <span class="req">*</span></label>
+              <select class="input" id="departamento">
+                <option value="">Seleccionar departamento</option>
+              </select>
+              <span class="field-error" id="err-departamento"></span>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Asunto <span class="req">*</span></label>
+              <input class="input" id="asunto" type="text" placeholder="Ej: Renovación de equipo"/>
+              <span class="field-error" id="err-asunto"></span>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Planta <span class="req">*</span></label>
+              <select class="input" id="planta">
+                <option value="">Seleccionar planta</option>
+                <% plantas.forEach(p => { %>
+                    <option value="<%=p.planta%>"><%=p.planta%></option>
+                 <% })%>
+                %>
+              </select>
+              <span class="field-error" id="err-planta"></span>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Región <span class="req">*</span></label>
+              <select class="input" id="region">
+                <option value="">Seleccionar región</option>
+                <%regiones.forEach((r)=> {%>
+                  <option value="<%=r.region%>"><%=r.region%></option>
+                <%})%>
+              </select>
+              <span class="field-error" id="err-region"></span>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Fecha Entrega Requerida <span class="req">*</span></label>
+              <input class="input" id="fechaEntrega" type="date"/>
+              <span class="field-error" id="err-fechaEntrega"></span>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Tarjeta o Cuenta <span class="req">*</span></label>
+              <input class="input" id="tarjeta" type="text" placeholder="**** **** **** 1234" maxlength="18"  oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
+              <span class="field-error" id="err-tarjeta"></span>
+            </div>
+            <div class="field">
+              <label class="field-label">Orden<span class="req">*</span></label>
+              <input class="input" id="orden" type="text" placeholder="OV-00000-CO-00000" maxlength="17"/>
+              <span class="field-error" id="err-orden"></span>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: TIPO DE GASTO ── -->
+        <section class="card">
+          <div class="tipo-gasto-card">
+            <div class="tipo-gasto-left">
+              <span class="tipo-gasto-label-title">Tipo de Gasto: <span style="color:var(--red)">*</span></span>
+              <div class="tipo-gasto-options">
+                <label class="tipo-gasto-option">
+                  <input type="checkbox" class="gasto-check" value="directo" id="gastoDirecto" name="GASTO DIRECTO"/>
+                  <span>Gasto Directo</span>
+                </label>
+                <label class="tipo-gasto-option">
+                  <input type="checkbox" class="gasto-check" value="indirecto-admin" id="gastoIndAdmin" name="GASTO INDIRECTO ADMINISTRATIVO"/>
+                  <span>Gasto Indirecto Admin.</span>
+                </label>
+                <label class="tipo-gasto-option">
+                  <input type="checkbox" class="gasto-check" value="indirecto-oper" id="gastoIndOper" name="GASTO INDIRECTO OPERATIVO"/>
+                  <span>Gasto Indirecto Oper.</span>
+                </label>
+              </div>
+            </div>
+            <div class="tipo-gasto-right">
+              <label class="tipo-gasto-option">
+                <input type="checkbox" id="chkRentabilidades"/>
+                <span>Visualizar Rentabilidades</span>
+              </label>
+              <span class="material-symbols-outlined" style="font-size:17px;color:var(--slate-400);cursor:help" title="Muestra información detallada de rentabilidad por tipo de gasto">help_outline</span>
+            </div>
+          </div>
+          <span class="tipo-gasto-error" id="err-tipoGasto">Debes seleccionar un tipo de gasto.</span>
+        </section>
+
+        <!-- ── SECCIÓN 3: AGREGAR CONCEPTOS ── -->
+        <section class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined">add_shopping_cart</span>
+            <h3 class="card-title">Agregar Conceptos</h3>
+          </div>
+
+          <div class="concepto-form">
+            <div class="field concepto-form-desc">
+              <label class="field-label">Descripción Detallada <span class="req">*</span></label>
+              <input class="input" id="itemDesc" type="text" placeholder="Ej: Laptop Dell Latitude 5420 - 16GB RAM"/>
+              <span class="field-error" id="err-itemDesc"></span>
+            </div>
+            <div class="field concepto-form-unidad">
+              <label class="field-label">Unidad <span class="req">*</span></label>
+              <input class="input" id="itemUnidad" type="number" min="1" placeholder="0"/>
+              <span class="field-error" id="err-itemUnidad"></span>
+            </div>
+            <div class="field concepto-form-precio">
+              <label class="field-label">Precio Unitario (con IVA) <span class="req">*</span></label>
+              <div class="input-prefix-wrap">
+                <span class="input-prefix">$</span>
+                <input class="input" id="itemPrecio" type="number" min="0" step="0.01" placeholder="0.00"/>
+              </div>
+              <span class="field-error" id="err-itemPrecio"></span>
+            </div>
+            <button class="btn btn--dark" id="btnAgregar" style="margin-bottom:18px">Agregar</button>
+          </div>
+
+          <!-- TABLA -->
+          <div class="table-wrap">
+            <table id="tablaConceptos">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Descripción</th>
+                  <th>Unidad</th>
+                  <th>Precio Unitario</th>
+                  <th>Subtotal</th>
+                  <th style="text-align:center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyConceptos">
+                <tr id="rowEmpty">
+                  <td colspan="6" class="table-empty">
+                    <span class="material-symbols-outlined">inbox</span>
+                    Aún no hay conceptos agregados.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- TOTAL -->
+          <div class="total-wrap">
+            <div class="total-box">
+              <span class="total-label">Total de la Requisición</span>
+              <span class="total-value" id="totalRequisicion">$0.00</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 4: CONTEXTO ── -->
+        <div class="bottom-grid">
+
+          <div class="bottom-card">
+            <div class="bottom-card-header">
+              <span class="material-symbols-outlined">history</span>
+              <h4 class="bottom-card-title">Detallar Situación Actual <span style="color:var(--red)">*</span></h4>
+            </div>
+            <textarea class="input" id="situacionActual" placeholder="¿Por qué se requiere esta compra hoy?..."></textarea>
+            <span class="field-error" id="err-situacionActual"></span>
+          </div>
+
+          <div class="bottom-card">
+            <div class="bottom-card-header">
+              <span class="material-symbols-outlined">trending_up</span>
+              <h4 class="bottom-card-title">Detallar Expectativa <span style="color:var(--red)">*</span></h4>
+            </div>
+            <textarea class="input" id="expectativa" placeholder="¿Cuál es el beneficio esperado?..."></textarea>
+            <span class="field-error" id="err-expectativa"></span>
+          </div>
+
+          <div class="bottom-card">
+            <div class="bottom-card-header">
+              <span class="material-symbols-outlined">chat_bubble</span>
+              <h4 class="bottom-card-title">Comentarios Adicionales</h4>
+            </div>
+            <textarea class="input" id="comentarios" placeholder="Información relevante para aprobación..."></textarea>
+          </div>
+
+          <div class="bottom-card" style="display:flex;flex-direction:column">
+            <div class="bottom-card-header">
+              <span class="material-symbols-outlined">image</span>
+              <h4 class="bottom-card-title">Cargar Imagen (Opcional)</h4>
+            </div>
+            <div class="upload-area" id="uploadArea" style="flex:1">
+              <span class="material-symbols-outlined">cloud_upload</span>
+              <p class="upload-text"><strong>Haz clic para subir</strong> o arrastra y suelta</p>
+              <p class="upload-hint">PNG, JPG o PDF (máx. 5MB)</p>
+              <input type="file" id="fileInput" style="display:none" accept=".png,.jpg,.jpeg,.pdf"/>
+            </div>
+            <p id="uploadFilename" style="font-size:11px;color:var(--slate-500);margin-top:6px;display:none"></p>
+          </div>
+
+        </div>
+
+      </div><!-- /form-sections -->
+
+      <!-- FOOTER -->
+      <footer class="page-footer">
+        <button class="btn btn--ghost" id="btnBorrador">
+          <span class="material-symbols-outlined">save</span>
+          Guardar Borrador
+        </button>
+        <button class="btn btn--primary" id="btnEnviarBottom">
+          <span class="material-symbols-outlined">send</span>
+          Enviar Requisición
+        </button>
+      </footer>
+
+    </div><!-- /content-wrapper -->
+  </main>
+</div><!-- /layout -->
+
+<script src="/scripts/infraestructura/scripts_requisicionGastos_form.js"></script>
+<script src="/clases/clase_fetch.js"></script>
+<script>
+    const tok = <%-JSON.stringify(tokin)%>
+</script>
+</body>
+</html>

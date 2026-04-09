@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios QB</title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles/sistemas/usuarios.css">
+
+</head>
+
+<body>
+    <div class="container">
+        <header class="page-header">
+            <div class="title-block">
+                <h1>Usuarios</h1>
+                <p>Gestiona la información de los usuarios.</p>
+            </div>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search by name or email...">
+                </div>
+                <button class="btn-primary" id="btnAgregarUsuario">
+                    <i class="fa-solid fa-user-plus"></i> Agregar usuario
+                </button>
+            </div>
+        </header>
+
+        <div class="filters-bar">
+            <div class="role-filters">
+                <button class="filter-pill active">All</button>
+                <button class="filter-pill">Administrativo</button>
+                <button class="filter-pill">Celaya</button>
+                <button class="filter-pill">Honda</button>
+                <button class="filter-pill">Silao</button>
+                <button class="filter-pill">Reynosa</button>
+                <button class="filter-pill">SLP</button>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Departamento</th>
+                        <th>Puesto</th>
+                        <th>Correo electrónico</th>
+                        <th>Status</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUsuarios">
+                        <!--Se renderiza desde js-->
+                </tbody>
+            </table>
+
+            <div class="pagination-container">
+                <span class="showing-text" id="paginationInfo"></span>
+
+                <div class="pagination-controls">
+
+                    <button class="page-btn" id="prevPage">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <div id="paginationNumbers" style="display:flex;gap:6px;"></div>
+
+                    <button class="page-btn" id="nextPage">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/scripts/sistemas/usuarios.js"></script>
+
+</body>
+
+</html>

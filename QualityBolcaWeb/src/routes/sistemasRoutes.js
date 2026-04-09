@@ -7,11 +7,29 @@ import validarAcceso from "../middleware/validacion-permisos/calidad/permisos.js
 const router = express.Router();
 //ruta de inicio
 router.get('/inicio', adminController.inicio);
+router.get('/dashboard', protegetRuta,adminController.dashboardTI);
 
-//rutas gestion de usuarios
+//rutas de dashboard monitoreo
+router.get('/monitoreo', protegetRuta, adminController.dashboardMonitoreo);
+router.get('/api/monitoreo/tickets', protegetRuta, adminController.ticketsMonitoreo);
+router.get('/api/monitoreo/requisiciones', protegetRuta, adminController.requisicionesMonitoreo);
+router.get('/api/monitoreo/inventario', protegetRuta, adminController.inventarioMonitoreo);
+
+//rutas de usuarios (nom10001)
+router.get('/usuarios', protegetRuta, adminController.usuarios);
+router.get('/api/usuarios', protegetRuta, adminController.obtenerUsuarios);
+router.put('/usuarios/:codigoempleado/actualizar', protegetRuta, adminController.actualizarUsuario);
+router.post("/usuarios", adminController.crearUsuario);
+router.get("/usuarios/datos-nuevo", adminController.obtenerDatosNuevoUsuario);
+router.delete("/usuarios/:codigoempleado", protegetRuta, adminController.eliminarUsuario);
+
+//rutas gestion de permisos usuarios
 router.get('/admin-usuarios', adminController.adminUsuarios); 
 router.put('/admin-usuarios/:codigoempleado/permisos', protegetRuta,adminController.actualizarPermisosUsuario);
 router.put('/admin-usuarios/:codigoempleado/estado', protegetRuta, adminController.actualizarEstadoUsuario);
+router.get('/nuevoUsuario', protegetRuta, adminController.nuevoUsuario);
+router.post('/nuevoUsuario', protegetRuta,adminController.crearUsuario);
+
 
 //rutas de tickets
 router.get('/tickets', protegetRuta,adminController.levantamientoTicket);
@@ -27,7 +45,11 @@ router.post('/tickets/:id/cerrar', protegetRuta,adminController.cerrarTicket);
 router.post('/tickets/:id/observacion', protegetRuta, adminController.agregarObservacionTicket);
 router.get('/tickets/:id/observaciones', protegetRuta, adminController.obtenerObservacionesTicket);
 
+//ruta de dashboard
+router.get('/dashboardTickets', protegetRuta,adminController.dashboardTickets);
+
 //rutas de inventario
+
 router.get('/inventario', protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.inventario)
 
@@ -62,12 +84,14 @@ router.get('/programamantenimiento',protegetRuta,adminController.programamanteni
 router.get('/listadosolicitudes',protegetRuta,adminController.listadosolicitudes); //listado de solicitudes, (hay que revisar)
 router.get('/mantenimientoautonomo',protegetRuta,adminController.mantenimientoautonomo); //vista de los mantenimientos que se han hecho
 
-//api de documentos
-router.get('/api/:query2',adminController.api);
+//apis
+router.get('/api/:query2',adminController.api); //api de documentos
+router.post('/apiDashboard', protegetRuta, adminController.apiDashboard); //api de dashboard
+
 
 //rutas de requisicion de equipos
-router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos)
-router.get('/adminRequisicionEquipos',protegetRuta,protegetRuta,validarAcceso({
+router.get('/requisicionEquipos',protegetRuta,adminController.requisicionEquipos) //formulario de requisicion
+router.get('/adminRequisicionEquipos',protegetRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.administracionRequisicionEquipos)
 router.post('/crudRequisicionEquipos',protegetRuta,adminController.CrudRequisicionEquipos)
 

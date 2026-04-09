@@ -1,45 +1,45 @@
 import nd from 'nodemailer'
 
 
-class miNodemailer{
-     
-    constructor({datosSmtp}){
-        if(!datosSmtp) throw new Error('se requieren los datos del smtp')
-        const {host, port} = datosSmtp
-        const {user, pass} = datosSmtp.auth
-        
-        this.smtp = {
-            host: host,
-            port: port,
-            auth: {
-                user: user,
-                pass: pass,
-            }
-        }
+class miNodemailer {
+
+  constructor({ datosSmtp }) {
+    if (!datosSmtp) throw new Error('se requieren los datos del smtp')
+    const { host, port } = datosSmtp
+    const { user, pass } = datosSmtp.auth
+
+    this.smtp = {
+      host: host,
+      port: port,
+      auth: {
+        user: user,
+        pass: pass,
+      }
     }
-async enviarCorreo({Datoscorreo}){
-    if(!Datoscorreo) return 'se necesitan los datos del correo'
-    try{
-        const transporter = nd.createTransport(this.smtp)
-        return await transporter.sendMail({
+  }
+  async enviarCorreo({ Datoscorreo }) {
+    if (!Datoscorreo) return 'se necesitan los datos del correo'
+    try {
+      const transporter = nd.createTransport(this.smtp)
+      return await transporter.sendMail({
         from: this.smtp.auth.user,
         to: Datoscorreo.destinatario,
-        subject:  Datoscorreo.asunto,
-        text:  Datoscorreo.texto,
-        html:  Datoscorreo.html,
+        subject: Datoscorreo.asunto,
+        text: Datoscorreo.texto,
+        html: Datoscorreo.html,
         cc: Datoscorreo.cc ? Datoscorreo.cc : null
-    })
-    }catch(e){
-        throw new Error(`${e}`)
+      })
+    } catch (e) {
+      throw new Error(`${e}`)
     }
-    
-}
-async enviarCorreosMasivos({listaCorreos}){
+
+  }
+  async enviarCorreosMasivos({ listaCorreos }) {
     for (const co of listaCorreos) {
-        await this.enviarCorreo({Correo: co})
+      await this.enviarCorreo({ Correo: co })
     }
-}
-htmlPedidoInsumos(){
+  }
+  htmlPedidoInsumos() {
     return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -119,13 +119,13 @@ htmlPedidoInsumos(){
   </table>
 </body>
 </html>`
-}
+  }
 
-htmlOrdenesCompra({datos}){
-        let partidas = datos.servicios.partidas
-        let f = new Date(datos.fecha)
-        const ano = f.getFullYear()
-        let html = `
+  htmlOrdenesCompra({ datos }) {
+    let partidas = datos.servicios.partidas
+    let f = new Date(datos.fecha)
+    const ano = f.getFullYear()
+    let html = `
             <!DOCTYPE html>
             <html lang="es">
             <head>
@@ -199,18 +199,18 @@ htmlOrdenesCompra({datos}){
                                         // </tr>
                                         `
 
-                                            for (let i = 0; i < datos.servicios.partidas.length; i++) {
-                                                let parti = partidas[i]
-                                                html +=`<tr style="border-bottom: 1px solid #e1e8ed; background-color: #ffffff;">
+    for (let i = 0; i < datos.servicios.partidas.length; i++) {
+      let parti = partidas[i]
+      html += `<tr style="border-bottom: 1px solid #e1e8ed; background-color: #ffffff;">
                                                 <td style="padding: 15px 12px; text-align: center; color: #2c3e50; font-size: 14px;">${parti.item}</td>
                                                 <td style="padding: 15px 12px; text-align: left; color: #2c3e50; font-size: 14px;">${parti.producto}</td>
                                                 <td style="padding: 15px 12px; text-align: center; color: #2c3e50; font-size: 14px;">${parti.cantidad}</td>
                                                 <td style="padding: 15px 12px; text-align: right; color: #2c3e50; font-size: 14px;">${this.formatearPesos(parti.precioUnitario)}</td>
                                                 <td style="padding: 15px 12px; text-align: right; color: #2c3e50; font-size: 14px; font-weight: 600;">${this.formatearPesos(parti.precioTotal)}</td>
-                                            </tr>`     
-                                            }
+                                            </tr>`
+    }
 
-                    html+=`
+    html += `
                                         
                                     </table>
                                 </td>
@@ -313,13 +313,13 @@ htmlOrdenesCompra({datos}){
             </table>
         </body>
         </html>
-            `        
-        return html
-        
-    }
-    htmlConfirmacionSurtimiento(datosSolicitante){
-      let f = new Date(Date.now()).toLocaleDateString('es-MX');
-        return `
+            `
+    return html
+
+  }
+  htmlConfirmacionSurtimiento(datosSolicitante) {
+    let f = new Date(Date.now()).toLocaleDateString('es-MX');
+    return `
         <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -439,6 +439,7 @@ htmlOrdenesCompra({datos}){
   
 </body>
 </html>`
+
 }
 htmlNotificacionNuevaReqEquipo(datosNotificacion){
   console.log('lo que se le paso a la funcion:', datosNotificacion)
@@ -676,12 +677,126 @@ htmlNotificacionNuevaReqEquipo(datosNotificacion){
   `
 
 }
-    formatearPesos(monto){
-    return new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN',
-        }).format(monto);
+    
+
+htmlRequisicionAprobada({ datos, autorizador }) {
+
+    let cuerpo = `
+    Buen día, <b>Equipo de Gestión de Gastos/ Compras y Suministros:</b><br><br>
+
+    Tienes una requisicion de <b>${datos.solicitante}</b>, revisada y autorizada por <b>${autorizador}</b>.<br><br>
+
+    Sin mas por el momento, que tenga un buen día.<br><br>
+
+    EXPENSE SUPPORT SYSTEM <br><br>
+
+    <b>No responda a este mensaje, es un envío automático.</b>
+    `
+
+    let filas = ''
+    const partes = (datos.descripcion || '').split('|')
+
+    for (let i = 0; i < partes.length; i += 4) {
+
+        const concepto = partes[i] || ''
+        const cantidad = partes[i + 1] || ''
+        const precio = Number(partes[i + 2] || 0)
+        const subtotal = Number(partes[i + 3] || 0)
+
+        filas += `
+        <tr>
+            <td align='center' style='border:1px solid #ccc; padding:8px;'>${i/4 + 1}</td>
+            <td style='border:1px solid #ccc; padding:8px;'>${concepto}</td>
+            <td align='center' style='border:1px solid #ccc; padding:8px;'>${cantidad}</td>
+            <td align='right' style='border:1px solid #ccc; padding:8px;'>${this.formatearPesos(precio)}</td>
+            <td align='right' style='border:1px solid #ccc; padding:8px; font-weight:bold;'>${this.formatearPesos(subtotal)}</td>
+        </tr>
+        `
     }
+
+    return `
+    ${cuerpo}
+
+    <table width='100%' cellpadding='0' cellspacing='0' style='background:#f4f4f4; padding:20px;'>
+        <tr>
+            <td align='center'>
+                <table width='800' style='background:#fff; border:1px solid #ccc;'>
+
+                    <!-- HEADER -->
+                    <tr>
+                        <td style='padding:20px; background:#003366; color:#fff;'>
+                            <h2>Requisición de compra</h2>
+                        </td>
+                    </tr>
+
+                    <!-- INFO -->
+                    <tr>
+                        <td style='padding:20px;'>
+                            <b>Solicitante:</b> ${datos.solicitante} <br>
+                            <b>Departamento:</b> ${datos.departamento} <br>
+                            <b>Fecha:</b> ${new Date(datos.horaRegistro).toLocaleDateString('es-MX')}
+                        </td>
+                    </tr>
+
+                    <!-- TABLA -->
+                    <tr>
+                        <td style='padding:20px;'>
+                            <table width='100%' style='border-collapse:collapse;'>
+
+                                <tr style='background:#003366; color:white;'>
+                                    <th>#</th>
+                                    <th>Descripción</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
+                                    <th>Total</th>
+                                </tr>
+
+                                ${filas}
+
+                                <tr>
+                                    <td colspan='4' align='right'><b>Total:</b></td>
+                                    <td><b>${this.formatearPesos(datos.total)}</b></td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- JUSTIFICACIÓN -->
+                    <tr>
+                        <td style='padding:20px;'>
+                            <b>Situación actual:</b><br>
+                            ${datos.situacionActual || 'N/A'}<br><br>
+
+                            <b>Expectativa:</b><br>
+                            ${datos.detallesEspectativa || 'N/A'}
+                        </td>
+                    </tr>
+
+                    <!-- FIRMAS -->
+                    <tr>
+                        <td style='padding:20px; text-align:center;'>
+                            <b>${datos.solicitante}</b><br>
+                            Firma del solicitante
+                            <br><br>
+                            <b>${autorizador}</b><br>
+                            Firma del jefe inmediato
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+    `
+}
+
+  formatearPesos(monto) {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+    }).format(monto);
+  }
 }
 
 export default miNodemailer;

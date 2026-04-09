@@ -5,14 +5,21 @@ import upload3 from "../middleware/cargararchivo.js";
 import csurf from "csurf";
 import protegerRuta from '../middleware/protegetRuta.js';
 import rutasPublicas from "../middleware/rutasPublicas.js";
+import rateLimit from 'express-rate-limit';
 // import { csrfProtection } from '../../index.js';
-
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,  // ventana de 15 minutos
+    max: 10,                    // máximo 10 intentos por IP
+    message: { ok: false, msg: 'Demasiados intentos. Espera 15 minutos.' }
+});
 
 const router = express.Router();
 //rutas de login
 router.get('/',rutasPublicas,customerController.formularioLogin);
 router.get('/login', customerController.formularioLogin);
-router.post('/login', customerController.autenticar);
+router.post('/login', loginLimiter, customerController.autenticar);
+//ruta logout
+router.post('/logout', protegerRuta,customerController.logout);
 //rutas de registro
 router.get('/registro', customerController.formularioRegistro);
 router.post('/registro', customerController.registrar);
@@ -27,7 +34,7 @@ router.post('/olvide-password/:token', customerController.nuevoPassword)
 router.get('/requisicion', customerController.requisicion);
 router.post('/requisicion', customerController.requisicion2);
 
-router.get('/inicio', customerController.inicio)
+router.get('/inicio', protegerRuta,customerController.inicio)
 router.get('/asistencia', customerController.asistencia)
 router.get('/asistencia/:plantaA', customerController.asistencia2)
 router.post('/asistencia', customerController.asistencia3)

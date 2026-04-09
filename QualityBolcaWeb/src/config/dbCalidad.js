@@ -5,7 +5,7 @@ dotenv.config({path: '.env'})
 const dbCalidad = new Sequelize(process.env.BD_CALIDAD, process.env.BD_USER, process.env.BD_PASS,{
     host: process.env.BD_HOST,
     port: 3306,
-    dialect: 'mysql',
+    dialect: process.env.BD_DIALECT,
     define: {
         timpestamps: true
     },

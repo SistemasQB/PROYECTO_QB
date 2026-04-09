@@ -12,7 +12,7 @@
         <header class="header">
             <div class="header-content">
                 <div>
-                    <h1 class="header-title">Gestión de Pedidos de Insumos </h1>
+                    <h1 class="header-title">Gestión de Pedidos de Insumos</h1>
                     <p class="header-subtitle">Bienvenid@ (<%= usuario%>)</p>
                 </div>
             </div>
@@ -20,88 +20,146 @@
 
         <!-- Main Content -->
         <main class="main-content">
+
             <!-- Totals Summary -->
             <div class="totals-grid">
                 <div class="total-card">
                     <p class="total-label">Total Solicitado</p>
                     <p class="total-amount" id="totalRequested">$0.00</p>
                 </div>
-                <!-- <div class="total-card accent">
-                    <p class="total-label">Total Surtido</p>
-                    <p class="total-amount" id="totalSupplied">$0.00</p>
-                </div> -->
             </div>
 
-            <!-- Orders Table -->
-            <div class="table-wrapper">
-                <table class="orders-table" id="ordersTable">
-                    <thead>
-                        <tr class="table-header">
-                            <th>Pedido</th>
-                            <th>Fecha</th>
-                            <th>Planta</th>
-                            <th>Artículos</th>
-                            <th class="text-right">Total Solicitado</th>
-                            <th class="text-right">Solicitante</th>
-                            <th class="text-center">Estado</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersTableBody">
-                        <!-- Populated by JavaScript -->
-                    </tbody>
-                </table>
-                <div id="emptyState" class="empty-state" style="display: none;">
-                    <p>No hay pedidos para mostrar</p>
+            <!-- ===== SECCIÓN FILTRO POR FECHAS ===== -->
+            <div class="date-filter-card">
+                <div class="date-filter-header">
+                    <span class="date-filter-icon">📅</span>
+                    <h2 class="date-filter-title">Consulta Pedidos Completados</h2>
+                </div>
+                <div class="date-filter-body">
+                    <div class="date-filter-inputs">
+                        <div class="date-input-group">
+                            <label for="fechaInicio">Fecha inicio</label>
+                            <input type="date" id="fechaInicio" class="form-input date-input">
+                        </div>
+                        <div class="date-filter-sep">—</div>
+                        <div class="date-input-group">
+                            <label for="fechaFin">Fecha fin</label>
+                            <input type="date" id="fechaFin" class="form-input date-input">
+                        </div>
+                        <button class="btn btn-primary btn-buscar" onclick="buscarPorFecha()">🔍 Buscar</button>
+                        <button class="btn btn-outline btn-buscar" onclick="limpiarBusqueda()">✕ Limpiar</button>
+                    </div>
                 </div>
             </div>
+
+            <!-- ===== TABLA 1: TODOS LOS PEDIDOS (colapsable) ===== -->
+            <div class="section-card">
+                <div class="section-card-header" onclick="toggleSection('bodyTabla1','chevron1')">
+                    <div class="section-card-title">
+                        <span>📋</span>
+                        <h2>Pedidos Pendientes Por Surtir</h2>
+                    </div>
+                    <span class="chevron" id="chevron1">▲</span>
+                </div>
+
+                <div id="bodyTabla1">
+                    <div class="table-wrapper">
+                        <table class="orders-table" id="ordersTable">
+                            <thead>
+                                <tr class="table-header">
+                                    <th>Pedido</th>
+                                    <th>Fecha</th>
+                                    <th>Planta</th>
+                                    <th>Artículos</th>
+                                    <th class="text-right">Total Solicitado</th>
+                                    <th class="text-right">Solicitante</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody"></tbody>
+                        </table>
+                        <div id="emptyState" class="empty-state" style="display:none;">
+                            <p>No hay pedidos para mostrar</p>
+                        </div>
+                    </div>
+                    <!-- Paginado tabla 1 -->
+                    <div class="pagination-bar" id="paginacionTabla1"></div>
+                </div>
+            </div>
+
+            <!-- ===== TABLA 2: RESULTADOS POR FECHA (colapsable, oculta al inicio) ===== -->
+            <div class="section-card" id="seccionTabla2" >
+                <div class="section-card-header" onclick="toggleSection('bodyTabla2','chevron2')">
+                    <div class="section-card-title">
+                        <span>🔎</span>
+                        <h2>Resultados Pedidos Completados</h2>
+                        <span class="badge-resultados" id="badgeResultados">0 resultados</span>
+                    </div>
+                    <span class="chevron" id="chevron2">▲</span>
+                </div>
+
+                <div id="bodyTabla2">
+                    <div class="table-wrapper">
+                        <table class="orders-table" id="ordersTableFecha">
+                            <thead>
+                                <tr class="table-header">
+                                    <th>Pedido</th>
+                                    <th>Fecha</th>
+                                    <th>Planta</th>
+                                    <th>Artículos</th>
+                                    <th class="text-right">Total Solicitado</th>
+                                    <th class="text-right">Solicitante</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBodyFecha"></tbody>
+                        </table>
+                        <div id="emptyStateFecha" class="empty-state" style="display:none;">
+                            <p>No se encontraron pedidos en ese rango de fechas</p>
+                        </div>
+                    </div>
+                    <!-- Paginado tabla 2 -->
+                    <div class="pagination-bar" id="paginacionTabla2"></div>
+                </div>
+            </div>
+
         </main>
     </div>
 
     <!-- Edit Order Modal -->
-    <!-- <div class="modal" id="editOrderModal"> -->
-        <form class="miform modal" id="editOrderModal">
-            <div class="modal-overlay" onclick="closeModal('editOrderModal')"></div>
-            <div class="modal-content edit-modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="editModalTitle">Editar Pedido</h2>
-                    <button class="modal-close" onclick="closeModal('editOrderModal')">×</button>
+    <form class="miform modal" id="editOrderModal">
+        <div class="modal-overlay" onclick="closeModal('editOrderModal')"></div>
+        <div class="modal-content edit-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="editModalTitle">Editar Pedido</h2>
+                <button class="modal-close" onclick="closeModal('editOrderModal')" type="button">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Planta</label>
+                    <input type="text" id="editPlant" class="form-input" placeholder="Nombre de la planta" disabled>
+                    <p class="error-message" id="editPlantError"></p>
                 </div>
-
-                <div class="modal-body">
-                    <!-- Plant Field -->
-                    <div class="form-group">
-                        <label class="form-label">Planta</label>
-                        <input type="text" id="editPlant" class="form-input" placeholder="Nombre de la planta" disabled>
-                        <p class="error-message" id="editPlantError"></p>
+                <div class="items-section">
+                    <div class="items-header">
+                        <h3 class="form-label">Registros / Partidas</h3>
+                        <button class="btn btn-outline btn-small" id="btnAgregarInsumo" type="button">+ Agregar Partida</button>
                     </div>
-
-                    <!-- Items Section -->
-                    <div class="items-section">
-                        <div class="items-header">
-                            <h3 class="form-label">Registros / Partidas</h3>
-                            <button class="btn btn-outline btn-small" id="btnAgregarInsumo">+ Agregar Partida</button>
-                        </div>
-
-                        <div id="editItemsContainer" class="items-container">
-                            <!-- Items populated by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Total -->
-                    <div class="total-box">
-                        <p class="total-label-small">Total Solicitado</p>
-                        <p class="total-amount-small" id="editOrderTotal">$0.00</p>
-                    </div>
+                    <div id="editItemsContainer" class="items-container"></div>
                 </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-outline" onclick="closeModal('editOrderModal')" type="button">Cancelar</button>
-                    <button class="btn btn-primary" type="button" onclick="actualizarPedido()">Confirmar Cambios</button>
+                <div class="total-box">
+                    <p class="total-label-small">Total Solicitado</p>
+                    <p class="total-amount-small" id="editOrderTotal">$0.00</p>
                 </div>
             </div>
-        </form>
-    <!-- </div> -->
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('editOrderModal')" type="button">Cancelar</button>
+                <button class="btn btn-primary" type="button" onclick="actualizarPedido()">Confirmar Cambios</button>
+            </div>
+        </div>
+    </form>
 
     <!-- Reject Order Modal -->
     <div class="modal" id="rejectOrderModal">
@@ -111,12 +169,10 @@
                 <h2 class="modal-title">Rechazar Pedido</h2>
                 <button class="modal-close" onclick="closeModal('rejectOrderModal')" type="button">×</button>
             </div>
-
             <div class="modal-body">
                 <div class="warning-box">
                     <p>Está a punto de rechazar el pedido <strong id="rejectPedidoId">#1001</strong></p>
                 </div>
-
                 <div class="form-group">
                     <label class="form-label">Motivo del Rechazo</label>
                     <textarea id="rejectReason" class="form-textarea" placeholder="Especifique el motivo por el cual se rechaza este pedido..." rows="6"></textarea>
@@ -124,7 +180,6 @@
                     <p class="form-hint">Mínimo 10 caracteres requeridos</p>
                 </div>
             </div>
-
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal('rejectOrderModal')" type="button">Cancelar</button>
                 <button class="btn btn-destructive" onclick="submitRejectOrder()" type="button">Enviar Rechazo</button>
@@ -133,57 +188,60 @@
     </div>
 
     <!-- Supply Order Modal -->
-    <!-- <div class="modal" id="supplyOrderModal"> -->
-        <form class="modal" id="supplyOrderModal">
+    <form class="modal" id="supplyOrderModal">
         <div class="modal-overlay" onclick="closeModal('supplyOrderModal')"></div>
         <div class="modal-content supply-modal-content">
             <div class="modal-header">
                 <h2 class="modal-title" id="supplyModalTitle">Surtir Pedido</h2>
                 <button class="modal-close" onclick="closeModal('supplyOrderModal')" type="button">×</button>
             </div>
-
             <div class="modal-body">
-                <!-- Items Section -->
                 <div class="items-section">
-                    <h3 class="form-label" >Partidas Solicitadas</h3>
-                    <!-- <button type="button" class="btn" id="btnAgregarInsumo">agregar insumo</button> -->
-                    <div id="supplyItemsContainer" class="items-container">
-                        <!-- Items populated by JavaScript -->
-                    </div>
-                    
+                    <h3 class="form-label">Partidas Solicitadas</h3>
+                    <div id="supplyItemsContainer" class="items-container"></div>
                 </div>
-
-                <!-- Totals -->
                 <div class="totals-grid-modal">
                     <div class="total-card">
                         <p class="total-label-small">Total Solicitado</p>
                         <p class="total-amount-small" id="supplyTotalRequested">$0.00</p>
-                        <p class="total-label-small">Articulos Solicitados</p>
-                        <p class="total-amount-small" id="totalArticulosSolicitados">0.0</p>
+                        <p class="total-label-small">Artículos Solicitados</p>
+                        <p class="total-amount-small" id="totalArticulosSolicitados">0</p>
                     </div>
                     <div class="total-card accent">
                         <p class="total-label-small">Total Surtido</p>
                         <p class="total-amount-small" id="supplyTotalSupplied">$0.00</p>
-                        <p class="total-label-small">Articulos surtidos</p>
-                        <p class="total-amount-small" id="totalArticulosSurtidos">0.0</p>
+                        <p class="total-label-small">Artículos Surtidos</p>
+                        <p class="total-amount-small" id="totalArticulosSurtidos">0</p>
                     </div>
                 </div>
-                    <div class="items-container">
-                        <label for="observaciones">Observaciones</label>
-                        <textarea name="observaciones" id="observaciones" placeholder="coloca observaciones acerca de este pedido" class="mi-textarea"></textarea>
-                    </div>
-                <div>
-
+                <div class="items-container">
+                    <label for="observaciones" class="form-label">Observaciones</label>
+                    <textarea name="observaciones" id="observaciones" placeholder="Coloca observaciones acerca de este pedido" class="mi-textarea"></textarea>
                 </div>
             </div>
-
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal('supplyOrderModal')" type="button">Cancelar</button>
                 <button class="btn btn-accent" onclick="submitSupplyOrder()" type="button">Confirmar Surtimiento</button>
             </div>
         </div>
-        </form>
-    <!-- </div> -->
+    </form>
+
+    <!-- View Order Modal -->
+    <div class="modal" id="viewOrderModal">
+        <div class="modal-overlay" onclick="closeModal('viewOrderModal')"></div>
+        <div class="modal-content view-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="viewModalTitle">👁 Visualizar Pedido</h2>
+                <button class="modal-close" onclick="closeModal('viewOrderModal')" type="button">×</button>
+            </div>
+            <div class="modal-body" id="viewModalBody">
+                <!-- Populated by JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('viewOrderModal')" type="button">Cerrar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="/scripts/infraestructura/scriptsGestionPedidosInsumos.js"></script>
     <script>
@@ -191,9 +249,10 @@
         let productos = <%- JSON.stringify(productos)%>
         let usuario = <%- JSON.stringify(usuario)%>
         let tok = <%- JSON.stringify(tok)%>
-        
+        const completados = <%- JSON.stringify(completos)%>
     </script>
     <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
+    <script src="/clases/clase_fetch.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
