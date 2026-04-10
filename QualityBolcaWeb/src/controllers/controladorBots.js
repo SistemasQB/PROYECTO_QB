@@ -4,7 +4,7 @@ const controlador = {}
 
 controlador.botReportes = (req, res) => {
     try {
-        res.render('admin/botReportes.ejs')    
+        res.render('bots/botPrueba.ejs')    
     } catch (error) {
         manejadorErrores(res, error)
     }

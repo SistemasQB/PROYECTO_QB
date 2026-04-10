@@ -12,19 +12,22 @@ const router = express.Router();
 // Configurar Multer (para almacenar imagen en memoria)
 const storage = multer.memoryStorage();
 const uploadmantenimiento = multer({ storage: storage });
-
+ //ruta de inicio de la aplicacion
 router.get('/inicio', protegetRuta, adminController.inicio);
-//rutas de permisos
-router.get('/permisosusuarios', protegetRuta, adminController.permisosusuarios);
-router.post('/permisosusuarios', protegetRuta, adminController.permisosusuarios2);
 
-router.get('/enviarfoto', adminController.enviar);
+//rutas de permisos
+// router.get('/permisosusuarios', protegetRuta, adminController.permisosusuarios);
+// router.post('/permisosusuarios', protegetRuta, adminController.permisosusuarios2);
+
+// router.get('/enviarfoto', adminController.enviar);
 router.get('/requisicion', adminController.requisicion);
 router.post('/requisicion', adminController.requisicion2);
 router.post('/requisicionImg', upload.single('imagen'));
 // router.post('/requisicionImg', adminController.requisicion3);
 router.get('/requisicionA', adminController.requisicionA);
+//ruta del directorio
 router.get('/directorio',protegetRuta ,adminController.directorio);
+
 router.post('/requisicionA', adminController.requisicionA2);
 router.get('/cursos', adminController.cursos);
 router.post('/cursos', adminController.cursos2);
@@ -43,7 +46,7 @@ router.post('/registroma', protegetRuta, adminController.registroma2);
 router.get('/mapa', adminController.mapa);
 router.get('/valeSalida', adminController.valeSalida);
 router.get('/voz', adminController.voz);
-router.get('/crear', adminController.crear);
+// router.get('/crear', adminController.crear);
 
 // router.get('/mejoracontinua',protegetRuta, adminController.mejoracontinua);
 

@@ -10,33 +10,20 @@ import cron from "node-cron";
 // import { informaciongch , informacionpuesto} from "../models/index.js"
 
 import {
-    Asistencia,
-    Cps,
-    ControlDispositivos,
-    DocumentosControlados,
-    EncuestaS,
-    juegos,
+    
     Mejora,
     pedirCurso,
-    precios,
-    puestos,
-    registroCurso,
     registroma,
-    requisicion,
-    verificacion5s,
-    CheckListVehiculos,
     Listas,
     Requisicion,
     Curso,
     RegistroCursos,
-    Comunicacion,
     Usuario,
     // Gch_Alta,
     informaciongch,
     informacionpuesto,
     Glosario,
     Vales,
-    Inventario,
     BuzonQuejas,
     Vacaciones,
     Solicitudservicio,
@@ -47,12 +34,8 @@ import {
 // import Gch_alta from "../models/gch_alta.js"
 import Sequelize, { DATE, where } from 'sequelize'
 import db from "../config/db.js";
-
-import on from 'sequelize'
 import { Op, QueryTypes } from 'sequelize'
 import { emailRequisicion, registroCursos, emailMantenimientoA, emailSolicitud, emailMejora } from "../helpers/emails.js";
-import { pipeline } from '@xenova/transformers';
-import wavefile from 'wavefile';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -68,14 +51,11 @@ import { addDay, addMonth, isBefore, isAfter, format } from "@formkit/tempo"
 // Comunicacion.belongsTo(Gch_alta, { foreignKey: 'id', targetKey: 'curp'  });
 // Gch_alta.hasOne(Comunicacion, { foreignKey: 'curp', targetKey: 'id'  })
 
-
-
-
 const app = express();
 
 const controller = {};
 
-controller.inicio = (req, res) => {
+controller.inicio = (req, res) => { //controlador de inicio del proyecto
     if (req.originalUrl) {
         res.redirect(req.originalUrl);
     } else {
@@ -83,33 +63,9 @@ controller.inicio = (req, res) => {
     }
 }
 
-controller.permisosusuarios = async (req, res) => {
-
-    const { codigoempleado } = req.usuario
-
-    const obtenerPermisos = await Usuario.findOne({ attributes: ['permisos'], where: { codigoempleado: codigoempleado } });
-
-    res.render('admin/permisosusuarios', {
-        obtenerPermisos
-    })
-}
-
-controller.permisosusuarios2 = (req, res) => {
-    res.render('admin/permisosusuarios')
-}
-
-controller.enviar = (req, res) => {
-    res.render('todos/requisicion')
-}
-
-controller.crear = (req, res) => {
-    res.render('admin/crear')
-}
 
 controller.directorio = async (req, res) => {
     let Rcomunicacion2;
-
-
     const Rcomunicacion = await db.query(
         `SELECT c.correo, c.telefono, e.*, u.fotografia
          FROM comunicacions c

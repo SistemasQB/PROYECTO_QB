@@ -26,7 +26,7 @@ contabilidadController.consultarFactura = async(req, res) => {
         let {id} = req.params
         let clase = new claseSequelize({modelo: modelosFacturacion.xmls_facturacion});
         let factura = await  clase.obtener1Registro({criterio: {id: id}})
-        if(!factura)()=> res.json({msg: false, error: 'no se encontro la factura'})
+        if(!factura) return res.json({msg: false, error: 'no se encontro la factura'})
         return res.render('admin/contabilidad/consultarFactura.ejs', {factura: factura, tok: req.csrfToken()});    
     } catch (error) {
         manejadorErrores(res, error)

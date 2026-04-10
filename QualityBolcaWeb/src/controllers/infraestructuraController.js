@@ -8,7 +8,7 @@ import nodemailerClase from "../public/clases/nodemailer.js";
 import { informacionpuesto } from "../models/index.js";
 import Informaciondepartamento from "../models/informaciondepartamento.js";
 import { QueryTypes } from "sequelize";
-import { type } from "os";
+
 
 const infraestructuraController = {}
 //controlador de inicio

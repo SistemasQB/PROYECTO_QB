@@ -1,35 +1,16 @@
-import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 import barrilmodelosgenerales from '../models/generales/barrilModelosGenerales.js'
 
 import {
-    Cps,
     ControlDispositivos,
-    DocumentosControlados,
     EncuestaS,
-    juegos,
-    Mejora,
-    pedirCurso,
-    precios,
-    puestos,
-    registroCurso,
-    registroma,
-    requisicion,
-    verificacion5s,
     CheckListVehiculos,
     Listas,
-    Requisicion,
-    Curso,
-    RegistroCursos,
-    Comunicacion,
     Usuario,
     Solicitud,
-    // Gch_Alta,
     informaciongch,
-    informacionpuesto,
-    Glosario
 } from "../models/index.js";
 
 import multer from "multer";
@@ -37,10 +18,8 @@ import { check, validationResult } from "express-validator";
 import { generarJWT, generarId } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword, emailContacto } from "../helpers/emails.js";
 
-
 const upload = multer({ dest: 'files/' })
 
-const app = express();
 // const upload = multer({ dest: 'images/' })
 const controller = {};
 
@@ -53,7 +32,7 @@ controller.formularioLogin = (req, res) => {
 }
 
 controller.autenticar = async (req, res) => {
-        const { codigoempleado, password } = req.body
+    const { codigoempleado, password } = req.body
     if (codigoempleado == '' || password == '') {
         res.status(400).send({ msg: 'Completa los campos', ok: false });
         return
@@ -70,36 +49,33 @@ controller.autenticar = async (req, res) => {
         res.status(400).send({ msg: 'tu cuenta no ha sido confirmada', ok: false });
         return
     }
-
     // Revisar la contrseña
-
     if (!usuario.verificarPasssword(password)) {
         res.status(400).send({ msg: 'La contrseña no es correcta', ok: false });
         return
     }
-
     //Autenticar al usuario
-
     const token = generarJWT(usuario.codigoempleado)
 
     //Almacenar en una cookie
+    let redireccion = req.session.returnTo || '/inicio';
+    delete req.session.returnTo
+    if (typeof redireccion !== 'string' || !redireccion.startsWith('/')) {
+        redireccion = '/inicio';
+    }
 
-    res.cookie('_token', token, {
-        httpOnly: true,
-        secure: false,
-    })
-    let redireccionar = ''
-        redireccionar =  req.session.redirectTo || '/inicio';
-        delete req.session.redirectTo;
+    if(process.env.NODE_ENV === 'production'){
+        res.cookie('_token', token, {httpOnly: true, secure: true,})    
+        return res.status(200).send({ ok: true, redirect: redireccion });
+    }
 
+        res.cookie('_token', token, {httpOnly: true, secure: false,})    
+        return res.status(200).send({ ok: true, redirect: redireccion });
 
-    res.status(200).send({ ok: true, redirect: redireccionar});
-    return
 }
 
 controller.logout = async (req, res) => {
     res.clearCookie('_token');
-
     return res.json({
         ok: true,
         redirect: '/login'
@@ -122,24 +98,10 @@ controller.formularioOlvidePassword = (req, res) => {
 }
 
 controller.resetPassword = async (req, res) => {
-    // await check('email').isEmail().withMessage('Esto no parece un email').run(req);
-
-    // let resultado = validationResult(req);
-    //Verificar que el resultado este vacio
-    // if (!resultado.isEmpty()) {
-    //     return res.render('auth/olvide-password', {
-    //         csrfToken: req.csrfToken(),
-    //         errores: resultado.array()
-    //     })
-    // }
-
     //Buscar el usuario
     const { codigoempleado } = req.body
     // res.status(400).send({ msg: req.body, ok: false });
     const usuario = await Usuario.findOne({ where: { codigoempleado: codigoempleado } })
-    console.log(codigoempleado);
-    
-
     if (!usuario) {
         res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
         return
@@ -148,7 +110,6 @@ controller.resetPassword = async (req, res) => {
     //Generar un token y enviar email
     usuario.token = generarId();
     await usuario.save();
-
     //Enviar un email
     emailOlvidePassword({
         email: usuario2.CorreoElectronico,
@@ -246,7 +207,6 @@ controller.registrar = async (req, res) => {
         return res.status(400).send({ ok: false, msg: 'El usuario ya esta registrado' });
     }
     //validar el gchusuario para saber porque no esta dando el correo y porque esta fallando el envio de correo
-    console.log(gchUsuario)
     //Almacenar usuario
     const usuario = await Usuario.create({
         codigoempleado: codigoempleado,
@@ -329,7 +289,6 @@ controller.encuestaSatisfaccion = (req, res) => {
 }
 
 controller.encuestaSatisfaccion2 = async (req, res) => {
-
     const { nombreC, nombreU, puesto, telefon, correo, question1, question1c, question2, question2c, question3, question3c, question4, question4c, question5, question5c, question6, question6c, question7, question7c, question8, question8c, question9c } = req.body
     const encuesta = await EncuestaS.create({ nombreC, nombreU, puesto, telefon, correo, question1, question1c, question2, question2c, question3, question3c, question4, question4c, question5, question5c, question6, question6c, question7, question7c, question8, question8c, question9c })
     res.render('todos/encuestaSatisfaccion', {
@@ -338,28 +297,14 @@ controller.encuestaSatisfaccion2 = async (req, res) => {
     })
 }
 
-controller.requisicion = (req, res) => {
-    res.render('auth/requisicion')
-}
-
-controller.requisicion2 = async (req, res) => {
-    const Requisicion = await Requisicion.create(req.body);
-}
 
 controller.paginaSolicitud = async (req, res) => {
-
-    // const { cp } = req.params
-
-    // const cps = await Cps.findAll({ attributes: ['colonia', 'estado'], where: { cp: cp } })
-
     res.render('auth/solicitud', {
         csrfToken: req.csrfToken()
     })
 }
 
 controller.paginaSolicitud2 = async (req, res) => {
-
-
     const archivo = req.file
     if(!archivo) return res.json({ok: false, msg: 'no se movieron los archivos'})
 
@@ -397,25 +342,14 @@ controller.paginaSolicitud2 = async (req, res) => {
         // res.status(200).send({ solId: resSolcitudM.id});
         return
     } catch (error) {
-        console.log('error al enviar informaicon' + error);
+        console.error('error al enviar informaicon' + error);
 
         res.status(400).send({ ok: false, message: error });
         return
     }
 }
 
-controller.paginaSolicitud3 = async (req, res) => {
 
-    const { cp } = req.params
-
-    const cps = await Cps.findAll({ attributes: ['colonia', 'estado'], where: { cp: cp } })
-
-    console.log(cps);
-
-    res.json({ ok: true, id: resSolcitudM.id });
-    // res.status(200).send({ solId: resSolcitudM.id});
-    return
-}
 
 controller.subirSolicitud = async (req, res) => {
 
@@ -445,59 +379,25 @@ controller.subirSolicitud = async (req, res) => {
 
 controller.subirSolicitud2 = async (req, res, next) => {
     const { id } = req.params
-
     const solicitud = await Solicitud.findByPk(id)
-
-
-    // solicitud.cv = req.file.filename
-
-    // await solicitud.save()
-
     try {
-        // console.log('nombre de la imagen', req.file.filename);
-
-        //almacenar el pdf
         solicitud.cv = req.file.filename
         await solicitud.save()
         next()
-
     } catch (error) {
-        console.log(error);
+        console.error(error);
 
     }
 }
 
 controller.asistencia = async (req, res) => {
-
     const planta = await Listas.findAll();
     const resultadoPlanta = JSON.parse(JSON.stringify(planta, null, 2));
-    // console.log(planta);
-    // console.log('All users:', JSON.stringify(planta, null, 2));
     res.render('todos/asistencia', {
         resultadoGch: '',
         resultadoPlanta,
         region: ''
     })
-}
-
-controller.asistencia2 = async (req, res) => {
-    // const { plantaA } = req.params
-    // const planta = await Listas.findAll();
-    // const resultadoPlanta = JSON.parse(JSON.stringify(planta, null, 2));
-    // const gch_alta = await Gch_Alta.findAll({
-    //     // atributes: ['id', 'apellidoPaterno', 'apellidoMaterno', 'nombre', 'planta'],
-    //     where: {
-    //         planta: plantaA,
-    //     },
-    // });
-    // const resultadoGch = JSON.parse(JSON.stringify(gch_alta, null, 2));
-
-    // res.render('todos/asistencia', {
-    //     resultadoGch,
-    //     resultadoPlanta
-    // })
-
-    res.send('sin terminar asistencia')
 }
 
 controller.asistencia3 = (req, res) => {
@@ -644,60 +544,6 @@ controller.agregarImagen = async (req, res) => {
     })
 }
 
-controller.agregarImagen2 = (req, res) => {
-    upload.single('file')
-    // console.log(req.body);
-    // console.log(req.file);
-
-
-    // res.render('auth/agregar-imagen', {
-    //     csrfToken: req.csrfToken(),
-    //     mensaje: true
-    // })
-}
-
-
-controller.uploads = (req, res) => {
-    const datos = req.body;
-
-    if (!datos.nombre) {
-        datos.nombre = 'Nombre'
-    }
-    if (!datos.apellidoP) {
-        datos.apellidoP = 'Apellido'
-    }
-    if (!datos.apellidoM) {
-        datos.apellidoM = 'Apellido'
-    }
-
-    // const storage = multer.diskStorage({
-    //     destination: 'uploads/',
-    //     filename: function(req, file, cb){
-    //         cb("",datos.nombre + datos.apellidoP + datos.apellidoM + '.' + mimeTypes.extension(file.mimetype));
-    //     }
-    // })
-
-    // const upload = multer({
-    //     storage: storage
-    // })
-
-    // upload.single('avatar');
-    // console.log('storage ' + storage.filename);
-
-}
-
-controller.paginaDirectorio = async (req, res) => {
-    // const directorio = await Gch_Alta.findAll({
-    //     attributes: ['NOMBRE', 'PUESTO', 'REGION']
-    // });
-    // const resultadoGch = JSON.parse(JSON.stringify(directorio, null, 2));
-    // res.render('auth/directorio', {
-    //     resultadoGch
-    // })
-
-    res.send('sin terminar directorio')
-}
-
 controller.paginaMantenimiento = (req, res) => {
     req.getConnection((err, conn) => {
         conn.query(`SELECT id_equipo, DATE_FORMAT(fechaMan1, '%Y-%m-%d') as dia1, DATE_FORMAT(fechaMan1, '%Y-%m-%d') as dia2, realizado FROM express.mantenimientoCPU;`, (err, customers) => {
@@ -816,7 +662,6 @@ controller.enviarCorreo = (req, res) => {
                     text: 'hola',
                     html: cuerpo
                 });
-                // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.semail>
             }
             main().catch(console.error);
         });
@@ -855,8 +700,6 @@ controller.contacto = (req, res) => {
 }
 
 
-
-
 controller.calidadD = (req, res) =>{
     const { documento } = req.params
     // const documento = 'QB-PR-A-12 Tecnologías de la información.pdf'
@@ -865,19 +708,6 @@ controller.calidadD = (req, res) =>{
     })
 }
 
-
-controller.contacto = (req, res) => {
-    res.render('auth/contacto', {})
-}
-
-
-controller.formularioAlta = (req, res) => {
-    try {
-        res.render('auth/registroBase.ejs')
-    } catch (error) {
-        
-    }
-}
 
 
 export default controller;

@@ -6,6 +6,7 @@ import session from "express-session";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import helmet from "helmet";
+import directivas from "./src/config/directivas.js";
 // import { PORT, SECRET_JWT_KEY } from "./src/config.js";
 import dbs from "./src/config/barril_dbs.js";
 import cors from "cors";
@@ -34,13 +35,25 @@ const limiterApiPublica = rateLimit({
 
 const app = express();
 app.use(cors({
-  credentials: true   
+  credentials: true,
+  origin: ['https://www.qualitybolca.net']   
 }));
 
 app.use(limiterGlobal); // ← aplica a TODO el servidor
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(helmet({ contentSecurityPolicy: false}));
+// Configuración de Helmet según entorno
+if (process.env.NODE_ENV === "production") {
+  app.use(helmet({ directives: directivas} )); // seguridad completa
+} else {
+  app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginOpenerPolicy: false,
+    originAgentCluster: false
+  }));
+}
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 //Habilitar cookie parser
@@ -100,7 +113,7 @@ app.use('/servicioCliente',csrfProtection,routers.servicioClienteRouters);
 app.use('/rentabilidad',csrfProtection, routers.rentabilidadRouters);
 app.use('/procedimientos', routers.routerGenerales);
 app.use('/capturacion', routers.capturacionRouters);
-app.use('/bots', routers.botRouter);
+app.use('/bots', csrfProtection, routers.botRouter);
 app.use((_, res) => {
   return res.render('admin/default/paginaNoEncontrada.ejs');
 });

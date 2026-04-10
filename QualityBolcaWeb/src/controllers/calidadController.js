@@ -1,9 +1,7 @@
 import express from "express";
-import Sequelize, { where } from 'sequelize'
 import claseSeq from "../public/clases/sequelize_clase.js";
 import { emailMejoraRespuesta } from "../helpers/emails.js";
 import { Op } from 'sequelize'
-import { date, format } from "@formkit/tempo"
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import barrilcalidad from '../models/calidad/barrilCalidad.js'
 import barrilmodelosgenerales from '../models/generales/barrilModelosGenerales.js'
@@ -16,15 +14,10 @@ import {
 } from "../models/index.js";
 
 
-const app = express();
-
 const controller = {};
 //controlador de 5´sd
 controller.verificacion5s = (req, res) => {
     res.render('admin/calidad/verificacion5s');
-}
-
-controller.verificacion5s2 = (req, res) => {
 }
 
 controller.evidencias = async (req, res) => {
@@ -37,16 +30,12 @@ controller.evidencias = async (req, res) => {
 }
 
 controller.evidencias2 = async (req, res) => {
-
     const { mejoraid } = req.body
-
     const obtenerEvidencia = await Mejora.findByPk({ where: mejoraid });
-
-    obtenerEvidencia.
 
     res.render('admin/calidad/evidencias', {
         csrfToken: req.csrfToken(),
-        obtenerValores
+        obtenerEvidencia
     });
 }
 
@@ -62,7 +51,7 @@ controller.administracionmejoras = async (req, res) => {
             }
         )
     } catch (ex) {
-        return manejadorErrores(req, ex)
+        return manejadorErrores(res, ex)
     };
 }
 controller.rechazarMejora = async (req, res) => {
@@ -224,7 +213,7 @@ controller.bitacoraActividades = async (req, res)=>{
 controller.agregarActividad = async (req, res)=>{
         try{
         let {nombreActividad, responsable, area, prioridad, estatus, avance, fechaCompromiso, evaluacion, numeroEmpleado} = req.body
-            bitacoraActividades.create({
+            await bitacoraActividades.create({
                 nombreActividad: nombreActividad,
                 responsable: responsable,
                 area:area,
@@ -293,7 +282,7 @@ controller.misActividades = async (req, res)=>{
     res.render("admin/calidad/mis_actividades", { actividades: actividades, token: token })
 }
 controller.asignarAvance = async (req, res)=>{
-    
+    let archivos = req.files
     if (!archivos) return res.json({ok: false, msg:'no se recibieron los archivos multimedia'})
     const nombresArchivos = archivos.map(file => file.filename);
     let {id, avance, comentarios, estatus} = req.body
@@ -320,11 +309,6 @@ controller.asignarAvance = async (req, res)=>{
 controller.refreshToken = (req, res)=>{
     let archivos = req.files
     res.json({_csrf: req.csrfToken()})
-}
-
-controller.recordatorio = async (req,res)=>{
-    fun()
-    res.send("todo bien");
 }
 
 //rutas de directorio

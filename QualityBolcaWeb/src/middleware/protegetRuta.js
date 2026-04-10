@@ -5,7 +5,7 @@ const protegerRuta = async(req, res, next) =>{
     const { _token } = req.cookies
     
     if(!_token){
-        req.session.redirectTo = req.originalUrl;
+        req.session.returnTo = req.originalUrl;
         return res.redirect('/')
     }
     //Comprobar el token
@@ -19,7 +19,7 @@ const protegerRuta = async(req, res, next) =>{
                 // Si ya está logueado y pide login, lo mandas a inicio
                 return res.redirect('/inicio');
             }
-        } else {    
+        } else {
             return res.redirect('/')
         }
         return next();
@@ -27,7 +27,6 @@ const protegerRuta = async(req, res, next) =>{
     } catch (error) {
         return res.clearCookie('_token').redirect('/')
     }
-    next();
 }
 
 export default protegerRuta
