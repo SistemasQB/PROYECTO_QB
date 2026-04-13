@@ -565,12 +565,12 @@ function renderInventario(data) {
 
     laptopContainer.innerHTML = inv.laptops.map(l => `
         <div class="device-row"
-            onclick="openDevice('${l.serie}','${l.marca} ${l.modelo}','${l.estado || 'Activo'}','${l.region || 'Sin región'}','—','—','ok')">
+            onclick="openDevice('${l.serie}','${l.marca}','${l.estado || 'Activo'}','${l.region || 'Sin región'}','—','—','ok')">
 
             <div class="device-icon-wrap blue">💻</div>
 
             <div class="device-info">
-                <div class="device-name">${l.marca} ${l.modelo}</div>
+                <div class="device-name">${l.marca}</div>
                 <div class="device-model">${l.serie} · ${l.region || 'Sin región'}</div>
             </div>
 
@@ -588,7 +588,7 @@ function renderInventario(data) {
         <div class="device-row">
             <div class="device-icon-wrap blue">🖥️</div>
             <div class="device-info">
-                <div class="device-name">${e.marca} ${e.modelo}</div>
+                <div class="device-name">${e.marca}</div>
                 <div class="device-model">${e.serie} · ${e.region || 'Sin región'}</div>
             </div>
             <span class="status-badge sb-ok">OK</span>
@@ -606,7 +606,7 @@ function renderInventario(data) {
         <div class="device-row">
             <div class="device-icon-wrap green">🖨️</div>
             <div class="device-info">
-                <div class="device-name">${i.marca} ${i.modelo}</div>
+                <div class="device-name">${i.marca}</div>
                 <div class="device-model">${i.serie} · ${i.region || 'Sin región'}</div>
             </div>
             <span class="status-badge sb-ok">OK</span>
