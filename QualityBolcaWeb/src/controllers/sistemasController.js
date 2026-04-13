@@ -2090,6 +2090,176 @@ controller.ticketsMonitoreo = async (req, res) => {
     }
 }
 
+// ── SLA ───────────────────────────────────────────────────────────────────────
+controller.slaMonitoreo = async (req, res) => {
+    try {
+        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
+            ? req.query.planta.trim()
+            : null;
+
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll();
+        const ahora = Date.now();
+
+        const tickets = ticketsDB.map(t => {
+            const datos = parseDatosTicket(t);
+            const slaHoras = datos.slaHoras || 72;
+
+            let tiempoConsumidoSeg = datos.slaConsumido || 0;
+            if (datos.slaActivo && datos.slaInicio) {
+                tiempoConsumidoSeg += Math.floor(
+                    (ahora - new Date(datos.slaInicio).getTime()) / 1000
+                );
+            }
+
+            return {
+                estatus: datos.estatus || 'open',
+                prioridad: datos.prioridad || 'low',
+                slaHoras,
+                tiempoConsumidoSeg,
+                cumplioSla: tiempoConsumidoSeg <= slaHoras * 3600,
+                departamento: datos.departamento || '',
+                estaVencido: tiempoConsumidoSeg >= slaHoras * 3600
+                    && !['resolved', 'closed'].includes(datos.estatus || 'open')
+            };
+        });
+
+        const filtrados = plantaFiltro
+            ? tickets.filter(t => t.departamento.toLowerCase() === plantaFiltro.toLowerCase())
+            : tickets;
+
+        const cerrados = filtrados.filter(t => ['closed', 'resolved'].includes(t.estatus));
+        const cerradosCriticos = cerrados.filter(t => ['high', 'critical'].includes(t.prioridad));
+
+        const pctCumplidoGeneral = cerrados.length > 0
+            ? Math.round(cerrados.filter(t => t.cumplioSla).length / cerrados.length * 100)
+            : null;
+
+        const pctCumplidoCriticos = cerradosCriticos.length > 0
+            ? Math.round(cerradosCriticos.filter(t => t.cumplioSla).length / cerradosCriticos.length * 100)
+            : null;
+
+        const promedioResolucionHoras = cerrados.length > 0
+            ? Math.round(
+                cerrados.reduce((acc, t) => acc + t.tiempoConsumidoSeg, 0)
+                / cerrados.length / 3600 * 10
+              ) / 10
+            : null;
+
+        const ticketsVencidosActivos = filtrados.filter(t => t.estaVencido).length;
+
+        return res.json({
+            ok: true,
+            pctCumplidoGeneral,
+            pctCumplidoCriticos,
+            promedioResolucionHoras,
+            ticketsVencidosActivos
+        });
+
+    } catch (error) {
+        console.error('Error en slaMonitoreo:', error);
+        return res.status(500).json({ ok: false, msg: 'Error interno del servidor' });
+    }
+};
+
+// ── RESOLUCIÓN SEMANAL ────────────────────────────────────────────────────────
+controller.resolucionSemanal = async (req, res) => {
+    try {
+        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
+            ? req.query.planta.trim()
+            : null;
+
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll({
+            attributes: ['semana', 'datosTicket'],
+            where: { semana: { [Op.ne]: null } }
+        });
+
+        const tickets = ticketsDB
+            .map(t => {
+                const datos = parseDatosTicket(t);
+                return {
+                    semana: t.semana,
+                    estatus: datos.estatus || 'open',
+                    departamento: datos.departamento || ''
+                };
+            })
+            .filter(t => !plantaFiltro
+                || t.departamento.toLowerCase() === plantaFiltro.toLowerCase()
+            );
+
+        const semanasUnicas = [...new Set(tickets.map(t => t.semana))]
+            .filter(s => s != null)
+            .sort((a, b) => a - b)
+            .slice(-6);
+
+        const labels = semanasUnicas.map(s => `S${s}`);
+        const tasas = semanasUnicas.map(semana => {
+            const delaSemana = tickets.filter(t => t.semana === semana);
+            if (delaSemana.length === 0) return null;
+            const cerrados = delaSemana.filter(t =>
+                ['closed', 'resolved'].includes(t.estatus)
+            ).length;
+            return Math.round(cerrados / delaSemana.length * 100);
+        });
+
+        return res.json({ ok: true, labels, tasas });
+
+    } catch (error) {
+        console.error('Error en resolucionSemanal:', error);
+        return res.status(500).json({ ok: false, msg: 'Error interno del servidor' });
+    }
+};
+
+// ── AGENTES / EQUIPO ─────────────────────────────────────────────────────────
+// Lista fija de técnicos del equipo TI.
+// - nombre: debe coincidir EXACTAMENTE con el valor guardado en datosTicket.asignadoA
+//           (formato "Nombre Apellido" tal como lo guarda el select de asignación).
+// - display: nombre que se mostrará en la UI (puede diferir del nombre de BD).
+const TECNICOS_TI = [
+    { nombre: 'Omar Vazquez',       display: 'Omar Vazquez',       iniciales: 'OV', rol: 'Analista TI',  avatarClass: 'av-blue'   },
+    { nombre: 'Fernando de la Cruz',display: 'Fernando de la Cruz',iniciales: 'FC', rol: 'Soporte Jr',   avatarClass: 'av-purple' },
+    { nombre: 'Alejandro Robledo',  display: 'Alejandro Robledo',  iniciales: 'AR', rol: 'Desarrollador',avatarClass: 'av-orange' },
+    { nombre: 'Guillermo Reyes',    display: 'Memo Reyes',         iniciales: 'GR', rol: 'Desarrollador',avatarClass: 'av-green'  },
+];
+
+controller.agentesMonitoreo = async (req, res) => {
+    try {
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll();
+
+        // Contar tickets activos (no cerrados) por técnico.
+        // La comparación es case-insensitive para tolerar diferencias de capitalización.
+        const conteo = {};
+        TECNICOS_TI.forEach(t => { conteo[t.nombre.toLowerCase()] = 0; });
+
+        ticketsDB.forEach(registro => {
+            const datos = parseDatosTicket(registro);
+            const asignado = (datos.asignadoA || '').trim().toLowerCase();
+            const estatus  = datos.estatus || 'open';
+
+            // Solo cuenta tickets que NO están terminados
+            if (['resolved', 'closed'].includes(estatus)) return;
+
+            if (conteo.hasOwnProperty(asignado)) {
+                conteo[asignado]++;
+            }
+        });
+
+        const agentes = TECNICOS_TI.map(t => ({
+            nombre:         t.display,          // nombre visible en la UI
+            iniciales:      t.iniciales,
+            rol:            t.rol,
+            avatarClass:    t.avatarClass,
+            ticketsActivos: conteo[t.nombre.toLowerCase()],
+            estado:         conteo[t.nombre.toLowerCase()] > 0 ? 'Ocupado' : 'Activo',
+        }));
+
+        return res.json({ ok: true, agentes });
+
+    } catch (error) {
+        console.error('Error en agentesMonitoreo:', error);
+        return res.status(500).json({ ok: false, msg: 'Error interno del servidor' });
+    }
+};
+
 controller.requisicionesMonitoreo = async (req, res) => {
     try {
         // Filtro opcional por planta/departamento. Vacío o 'todas' = sin filtro.
@@ -2232,5 +2402,75 @@ function parseDatosTicket(ticket) {
         ? JSON.parse(ticket.datosTicket)
         : ticket.datosTicket;
 }
+
+controller.crearDepartamento = async (req, res) => {
+    try {
+        const { descripcion } = req.body;
+
+        if (!descripcion?.trim()) {
+            return res.status(400).json({ ok: false, msg: 'El nombre del departamento es requerido.' });
+        }
+
+        // iddepartamento y numerodepartamento no son auto-increment
+        const [[{ maxId, maxNum }]] = await db.query(
+            `SELECT IFNULL(MAX(iddepartamento), 0) AS maxId, IFNULL(MAX(numerodepartamento), 0) AS maxNum FROM nom10003`
+        );
+
+        const nuevoId  = maxId  + 1;
+        const nuevoNum = maxNum + 1;
+
+        await db.query(
+            `INSERT INTO nom10003 (iddepartamento, numerodepartamento, descripcion) VALUES (:id, :num, :descripcion)`,
+            {
+                replacements: { id: nuevoId, num: nuevoNum, descripcion: descripcion.trim() },
+                type: QueryTypes.INSERT
+            }
+        );
+
+        return res.status(201).json({
+            ok: true,
+            departamento: { iddepartamento: nuevoId, descripcion: descripcion.trim() }
+        });
+
+    } catch (error) {
+        console.error('Error creando departamento:', error);
+        manejadrorErrores(res, error);
+    }
+};
+
+controller.crearPuesto = async (req, res) => {
+    try {
+        const { descripcion } = req.body;
+
+        if (!descripcion?.trim()) {
+            return res.status(400).json({ ok: false, msg: 'El nombre del puesto es requerido.' });
+        }
+
+        // idpuesto y numeropuesto no son auto-increment
+        const [[{ maxId, maxNum }]] = await db.query(
+            `SELECT IFNULL(MAX(idpuesto), 0) AS maxId, IFNULL(MAX(numeropuesto), 0) AS maxNum FROM nom10006`
+        );
+
+        const nuevoId  = maxId  + 1;
+        const nuevoNum = maxNum + 1;
+
+        await db.query(
+            `INSERT INTO nom10006 (idpuesto, numeropuesto, descripcion, timestamp) VALUES (:id, :num, :descripcion, NOW())`,
+            {
+                replacements: { id: nuevoId, num: nuevoNum, descripcion: descripcion.trim() },
+                type: QueryTypes.INSERT
+            }
+        );
+
+        return res.status(201).json({
+            ok: true,
+            puesto: { idpuesto: nuevoId, descripcion: descripcion.trim() }
+        });
+
+    } catch (error) {
+        console.error('Error creando puesto:', error);
+        manejadrorErrores(res, error);
+    }
+};
 export default controller;
 

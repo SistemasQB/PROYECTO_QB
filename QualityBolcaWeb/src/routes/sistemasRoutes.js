@@ -14,11 +14,16 @@ router.get('/monitoreo', protegetRuta, adminController.dashboardMonitoreo);
 router.get('/api/monitoreo/tickets', protegetRuta, adminController.ticketsMonitoreo);
 router.get('/api/monitoreo/requisiciones', protegetRuta, adminController.requisicionesMonitoreo);
 router.get('/api/monitoreo/inventario', protegetRuta, adminController.inventarioMonitoreo);
+router.get('/api/monitoreo/agentes', protegetRuta, adminController.agentesMonitoreo);
+router.get('/api/monitoreo/sla', protegetRuta, adminController.slaMonitoreo);
+router.get('/api/monitoreo/resolucion-semanal', protegetRuta, adminController.resolucionSemanal);
 
 //rutas de usuarios (nom10001)
 router.get('/usuarios', protegetRuta, adminController.usuarios);
 router.get('/api/usuarios', protegetRuta, adminController.obtenerUsuarios);
 router.put('/usuarios/:codigoempleado/actualizar', protegetRuta, adminController.actualizarUsuario);
+router.post('/usuarios/departamentos', protegetRuta, adminController.crearDepartamento);
+router.post('/usuarios/puestos', protegetRuta, adminController.crearPuesto);
 router.post("/usuarios", adminController.crearUsuario);
 router.get("/usuarios/datos-nuevo", adminController.obtenerDatosNuevoUsuario);
 router.delete("/usuarios/:codigoempleado", protegetRuta, adminController.eliminarUsuario);

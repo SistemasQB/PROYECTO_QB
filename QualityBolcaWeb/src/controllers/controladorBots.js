@@ -1,6 +1,17 @@
 import axios from 'axios';
 import multer from 'multer';
+import { Op } from 'sequelize';
 import manejadorErrores from '../middleware/manejadorErrores.js';
+import { Reporte, Cotizacion, ReporteBody } from '../models/capturacion/barril_modelo_capturacion.js';
+import Empleados from '../models/empleado.js';
+import { where } from 'sequelize';
+import sequelizeClase from "../public/clases/sequelize_clase.js";
+import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
+import { informacionpuesto } from "../models/index.js";
+import Informaciondepartamento from "../models/informaciondepartamento.js";
+import { QueryTypes } from 'sequelize';
+import db from "../config/db.js";
+import dbReportes from "../config/dbReportes.js";
 
 const storage = multer.memoryStorage();
 export const uploadPdf = multer({
@@ -194,5 +205,188 @@ Si el usuario pide una gráfica pero no proporciona datos reales, genera datos d
         manejadorErrores(res, error);
     }
 };
+
+controlador.reportesDiarios = async (req, res) => {
+    try {
+        res.render('bots/reportesDiarios.ejs', { csrfToken: req.csrfToken() })
+    } catch (error) {
+        manejadorErrores(res, error);
+    }
+}
+
+controlador.reportesFiltrados = async (req, res) => {
+    try {
+        console.log('Reportes filtrados por supervisor iniciando...');
+
+        // 1. Validar que exista el usuario en la request (usamos ? por seguridad)
+        let usuarioCodigo = req.usuario?.codigoempleado;
+
+        if (!usuarioCodigo) {
+            return res.status(401).json({
+                ok: false,
+                error: 'No se detectó la sesión del usuario.'
+            });
+        }
+
+        // --- INICIO DE TU LÓGICA DE USUARIO ---
+        let clase = new sequelizeClase({
+            modelo: modelosGenerales.modelonom10001
+        })
+        let datosUsuario = await clase.obtener1Registro({
+            criterio: { codigoempleado: usuarioCodigo }
+        })
+
+        // obtener puesto
+        let clasePuesto = new sequelizeClase({
+            modelo: informacionpuesto
+        })
+        let puesto = await clasePuesto.obtener1Registro({
+            criterio: { idpuesto: datosUsuario.idpuesto }
+        })
+
+        // obtener departamento
+        let claseDepartamento = new sequelizeClase({
+            modelo: Informaciondepartamento
+        })
+        let departamento = await claseDepartamento.obtener1Registro({
+            criterio: { iddepartamento: datosUsuario.iddepartamento }
+        })
+
+        datosUsuario.puesto = puesto ? puesto.descripcion : ''
+        datosUsuario.departamento = departamento ? departamento.descripcion : ''
+
+        // ESTA ES LA VARIABLE CLAVE: El nombre real del supervisor
+        const nombreUsuario = datosUsuario.nombrelargo;
+
+        console.log('Usuario:', nombreUsuario, 'Puesto:', datosUsuario.puesto, 'Departamento:', datosUsuario.departamento);
+        // --- FIN DE TU LÓGICA DE USUARIO ---
+
+
+        // --- INICIO DE LÓGICA DE REPORTES ---
+        // Limpiamos el nombre por seguridad
+        const nombreFiltro = nombreUsuario.trim();
+
+        console.log(`Ejecutando Raw SQL para el supervisor: ${nombreFiltro}`);
+
+        const querySQL = `
+            SELECT 
+                r.id AS reporte_id,
+                r.nombre_inspector,
+                r.turno,
+                r.created_at,
+                c.id AS cotizacion_id,
+                c.planta,
+                c.cliente,
+                c.numero_parte,
+                c.nombre_supervisor
+            FROM reportes r
+            INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
+            WHERE c.nombre_supervisor LIKE :supervisorFiltro
+            ORDER BY r.created_at DESC;
+        `;
+
+        const reportesDelSupervisor = await dbReportes.query(querySQL, {
+            // El % antes y después hace la función de comodín para ignorar espacios extra
+            replacements: { supervisorFiltro: `%${nombreFiltro}%` },
+            type: QueryTypes.SELECT
+        });
+
+        // --- RESPUESTA ---
+        return res.json({
+            ok: true,
+            usuarioInfo: {
+                nombre: nombreUsuario,
+                puesto: datosUsuario.puesto,
+                departamento: datosUsuario.departamento
+            },
+            totalReportes: reportesDelSupervisor.length,
+            reportes: reportesDelSupervisor
+        });
+
+    } catch (error) {
+        console.error('[reportesFiltrados] Error:', error);
+        manejadorErrores(res, error);
+    }
+}
+
+
+controlador.reportesFiltradosPorParametros = async (req, res) => {
+    try {
+        // Validar sesión del usuario
+        let usuarioCodigo = req.usuario?.codigoempleado;
+        if (!usuarioCodigo) {
+            return res.status(401).json({ ok: false, error: 'No se detectó la sesión del usuario.' });
+        }
+
+        // Leer y validar query params opcionales
+        const { fecha, numeroParte } = req.query;
+
+        if (fecha !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+            return res.status(400).json({ ok: false, error: 'Formato de fecha inválido. Use YYYY-MM-DD.' });
+        }
+
+        // Obtener datos del usuario logueado
+        let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 });
+        let datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: usuarioCodigo } });
+
+        let clasePuesto = new sequelizeClase({ modelo: informacionpuesto });
+        let puesto = await clasePuesto.obtener1Registro({ criterio: { idpuesto: datosUsuario.idpuesto } });
+
+        let claseDepartamento = new sequelizeClase({ modelo: Informaciondepartamento });
+        let departamento = await claseDepartamento.obtener1Registro({ criterio: { iddepartamento: datosUsuario.iddepartamento } });
+
+        datosUsuario.puesto = puesto ? puesto.descripcion : '';
+        datosUsuario.departamento = departamento ? departamento.descripcion : '';
+
+        const nombreUsuario = datosUsuario.nombrelargo;
+        const nombreFiltro = nombreUsuario.trim();
+
+        // Construir query dinámica
+        let whereClause = 'WHERE c.nombre_supervisor LIKE :supervisorFiltro';
+        const replacements = { supervisorFiltro: `%${nombreFiltro}%` };
+
+        if (fecha) {
+            whereClause += ' AND DATE(r.created_at) = :fecha';
+            replacements.fecha = fecha;
+        }
+
+        if (numeroParte) {
+            whereClause += ' AND c.numero_parte = :numeroParte';
+            replacements.numeroParte = numeroParte;
+        }
+
+        const querySQL = 'SELECT r.id AS reporte_id, r.nombre_inspector, r.turno, r.created_at, ' +
+            'c.id AS cotizacion_id, c.planta, c.cliente, c.numero_parte, c.nombre_supervisor ' +
+            'FROM reportes r ' +
+            'INNER JOIN cotizaciones c ON r.cotizacion_id = c.id ' +
+            whereClause + ' ' +
+            'ORDER BY r.created_at DESC';
+
+        const reportes = await dbReportes.query(querySQL, {
+            replacements,
+            type: QueryTypes.SELECT
+        });
+
+        return res.json({
+            ok: true,
+            usuarioInfo: {
+                nombre: nombreUsuario,
+                puesto: datosUsuario.puesto,
+                departamento: datosUsuario.departamento
+            },
+            filtrosAplicados: {
+                fecha: fecha || null,
+                numeroParte: numeroParte || null
+            },
+            totalReportes: reportes.length,
+            reportes
+        });
+
+    } catch (error) {
+        console.error('[reportesFiltradosPorParametros] Error:', error);
+        manejadorErrores(res, error);
+    }
+}
+
 
 export default controlador
