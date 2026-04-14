@@ -18,7 +18,7 @@ class sequelizeClase{
         if (!inserccion) return false;
         return true;}
         catch(ex){
-            console.log(`sucedio un error en la clase sequelize,error: ${ex}`)
+            console.error(`sucedio un error en la clase sequelize,error: ${ex}`)
             return false;
         }
     }
@@ -31,7 +31,7 @@ class sequelizeClase{
             return true
         }
         catch(ex){
-            console.log(ex.toString())
+            console.error(ex.toString())
             return false;
         }
     }
@@ -46,7 +46,7 @@ class sequelizeClase{
         if (actualizacion <= 0 ) return false;
         return true;}
         catch(ex){
-            console.log(ex.toString())
+            console.error(ex.toString())
             return false;
         }
     }

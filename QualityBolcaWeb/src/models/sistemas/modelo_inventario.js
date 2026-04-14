@@ -1,16 +1,11 @@
-import { DataTypes, Sequelize } from "sequelize";
-// const sequelize = new Sequelize('sqlite::memory:');
-import db from "../config/db.js";
+import { DataTypes} from "sequelize";
+import db from "../../config/db.js";
 
-const Mantenimiento = db.define('mantenimiento', {
+const Inventario = db.define('inventario', {
     idInventario:{
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
-    },
-    componentes:{
-        type: DataTypes.STRING,
-        allowNull: false
     },
     tipo:{
         type: DataTypes.STRING,
@@ -53,18 +48,18 @@ const Mantenimiento = db.define('mantenimiento', {
         allowNull: true
     },
     codigoResguardo:{
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER(5).ZEROFILL,
         allowNull: true
     },
     ultimoMantenimiento:{
-        type: DataTypes.DATEONLY,
-        allowNull: true
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
     }
 },{
-    tableName: 'mantenimiento',
-    // sequelize,
+    tableName: 'inventario',
     freezeTableName: true, // Desactiva la pluralización automática
     timestamps: false
 })
 
-export default Mantenimiento;
+export default Inventario;

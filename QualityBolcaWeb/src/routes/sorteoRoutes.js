@@ -8,22 +8,17 @@ const multer = new miMulter('src/public/evidencias_sorteo');
 const modelos = new miMulter('src/public/evidencias/modelos');
 const router = express.Router();
 
-router.get('/kiosk',sorteoController.kiosk);
-router.get('/cc1/vistachecklist',sorteoController.vistachecklist);
-
 //rutas de inicio
 router.get('/inicio',protegerRuta,sorteoController.inicio);
 
 // rutas de entrega Material almacen
 router.get("/form-envio",protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.prueba)
 
-
 //rutas de entrega de material cliente y visualizacion
 router.get("/form-entrega", protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.entregaMaterial) //formulario de entrega de material
 router.post("/envioMaterial", protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),multer.multiplesArchivos('imagenes', 3), sorteoController.envioMaterial) //ruta de envio
 router.get("/admin-entrega-material", protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.adminEntregaMaterial) //gestion de los envios
   
-
 //rutas de inventario de almacen
 router.get("/admin-almacen",protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 4}),sorteoController.adminAlmacen) //gestion de almacen
 router.get("/ingreso/:id",protegerRuta, sorteoController.puntoEntrada) 

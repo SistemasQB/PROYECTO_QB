@@ -3,79 +3,14 @@ import modelosgenerales from "../models/generales/barrilModelosGenerales.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import customFunctions from "../js/funcionesBackend.js";
 import env from "dotenv";
-env.config({ path: ".env" });
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 // import modelosSorteo from "../models/sorteo/barrilModelosSorteo.js";
-import {
-    Checklistcc1,
-    Empleados,
-    informaciongch,
-    Usuario,
-    CotizacionesCC1,
-    Controlpiezas,
-    PersonalCC1,
-    LoteCC1,
-    modelosSorteo
-} from "../models/index.js";
-const { modeloEntregaMaterial,
-    modeloNuevoMaterial,
-    modeloEdgewell } = modelosSorteo
-import Sequelize from 'sequelize'
-import { Op, QueryTypes } from 'sequelize'
-
-
-
-
+import modelosSorteo from "../models/sorteo/barrilModelosSorteo.js";
+const { modeloEdgewell } = modelosSorteo
+import { Op } from 'sequelize'
 const controller = {};
-
-controller.kiosk = async (req, res) => {
-    let vCrup;
-
-    const bGch_alta = await informaciongch.findAll({
-        attributes: ['nombre', 'nombrelargo', 'codigoempleado'],
-        where: {
-            [Op.or]:
-                [
-                    {
-                        fechaalta: { [Op.gt]: Sequelize.col('fechabaja') }
-                    },
-                    {
-                        fechareingreso: { [Op.gt]: Sequelize.col('fechabaja') }
-                    },
-                ],
-            [Op.and]:
-                [
-                    {
-                        idpuesto: { [Op.ne]: 45 },
-                    }
-                ]
-        },
-        order: [[Sequelize.literal('nombre'), 'ASC']],
-    }
-    )
-        .then(resultado => {
-            vCrup = resultado
-        });
-    res.render('admin/sorteo/kiosk', {
-        vCrup
-    });
-}
-
-controller.vistachecklist = async (req, res) => {
-
-    let rChecks
-    const rconsulta = await Checklistcc1.findAll()
-    .then((result) => {
-        rChecks = result
-    });
-
-    
-
-    res.render('admin/sorteo/cc1/vistachecklist',{
-        rChecks
-    });
-}
+env.config({ path: ".env" });
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -96,9 +31,8 @@ controller.adminEntregaMaterial = async (req, res)=>{
     let tok = req.csrfToken();
     let fecha =  new Date(Date.now());
     let mes = fecha.getMonth();
-    let dia, mesi, ano 
+    let dia,  ano 
     dia = fecha.getDay()
-    mesi = fecha.getMonth()
     ano = fecha.getFullYear()
     let fi = new Date(`${ano}-${mes-1}-${dia}`)
     fecha = `${ano}-${mes}-${dia + 1}`
@@ -128,7 +62,6 @@ controller.envioMaterial = async (req, res)=>{
         }
     });
     datos.firmas = firmas
-    // datos.partidas.cantidadPiezas = parseFloat(datos.cantidad);
     datos.partidas = JSON.parse(datos.partidas)
     datos.resumen = JSON.parse(datos.resumen)
     const seq = new sequelizeClase({modelo: modeloEdgewell})

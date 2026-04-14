@@ -1,5 +1,4 @@
 import adminRouters from "./adminRoutes.js";
-import routerAll from "./allRoutes.js";
 import atraccionRouters from "./atraccionRoutes.js";
 import calidadRouters from "./calidadRoutes.js";
 import capitalHumanoRouters from "./capitalHumanoRoutes.js";
@@ -18,7 +17,6 @@ import botRouter from "./botRouters.js";
 
 const routers = {
     adminRouters,
-    routerAll,
     atraccionRouters,
     capitalHumanoRouters,
     contabilidadRouters,

@@ -1,4 +1,3 @@
-import express from "express";
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
@@ -6,20 +5,9 @@ import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
 import Empleados from "../models/empleado.js";
 import manejadrorErrores from "../middleware/manejadorErrores.js";
 import miNodemailer from "../public/clases/nodemailer.js";
-
-import {
-    registroma,
-    Inventario,
-    Solicitudservicio,
-    Vales,
-    Usuario
-} from "../models/index.js";
-
-import { Op, QueryTypes, where } from 'sequelize'
-import Informaciongch from "../models/informaciongch.js";
-import Informaciondepartamento from "../models/informaciondepartamento.js";
+import { Op, QueryTypes } from 'sequelize'
 import dbSistemas from "../config/dbSistemas.js";
-const app = express();
+
 
 const controller = {};
 
@@ -398,7 +386,7 @@ controller.obtenerColaboradoresSinVale = async (req, res) => {
 
         const empleadosConVale = vales.map(v => v.numeroEmpleado);
 
-        const colaboradores = await Informaciongch.findAll({
+        const colaboradores = await modelosGenerales.modelonom10001.findAll({
             where: {
                 codigoempleado: {
                     [Op.notIn]: empleadosConVale.length > 0 ? empleadosConVale : ['']
@@ -500,7 +488,7 @@ controller.darBajaVale = async (req, res) => {
         return res.json({ ok: true, message: "Todos los objetos del inventario fueron dados de baja correctamente" });
 
     } catch (error) {
-        console.log('Error al dar de baja el vale', error);
+        console.error('Error al dar de baja el vale', error);
         return res.status(500).json({ ok: false, message: error.message })
     }
 }
@@ -617,11 +605,11 @@ controller.removerEquipos = async (req, res) => {
 controller.levantamientoTicket = async (req, res) => {
     try {
         const { codigoempleado } = req.usuario;
-        const usuario = await Usuario.findOne({
+        const usuario = await modelosGenerales.usuarios.findOne({
             where: { codigoempleado }
         });
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelosGenerales.modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -663,11 +651,11 @@ controller.levantamientoTicket = async (req, res) => {
 controller.formularioTicket = async (req, res) => {
     try {
         const { codigoempleado } = req.usuario;
-        const usuario = await Usuario.findOne({
+        const usuario = await modelosGenerales.usuarios.findOne({
             where: { codigoempleado }
         });
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelosGenerales.modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -742,7 +730,7 @@ controller.crudTickets = async (req, res) => {
 
                 const { codigoempleado } = req.usuario;
 
-                const empleado = await Informaciongch.findOne({
+                const empleado = await modelosGenerales.modelonom10001.findOne({
                     where: { codigoempleado }
                 });
 
@@ -943,7 +931,6 @@ controller.asignarTicket = async (req, res) => {
 
 controller.pausarTicket = async (req, res) => {   //pausar ticket
     try {
-        console.log('pausar ticket');
         const { id } = req.params;
 
         const ticket = await modelosSistemas.modeloTickets.findOne({
@@ -1240,10 +1227,8 @@ controller.obtenerDatosNuevoUsuario = async (req, res) => {
         );
 
         const ultimoCodigoInt = parseInt(ultimoCodigo) + 1;
-        //console.log(ultimoCodigoInt);
         const ultimoCodigostr = ultimoCodigoInt.toString();
-        console.log(ultimoCodigo)
-
+        
         const departamentos = await db.query(
             `SELECT iddepartamento, descripcion 
              FROM nom10003
@@ -1468,9 +1453,6 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         const { codigoempleado } = req.params;
         const { permisos } = req.body;
 
-        console.log('PARAMS:', req.params);
-        console.log('BODY:', req.body);
-
         if (!codigoempleado || !permisos) {
             return res.status(400).json({
                 ok: false,
@@ -1492,7 +1474,7 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         }
 
         // Buscar usuario
-        const usuario = await Usuario.findOne({
+        const usuario = await modelosGenerales.usuarios.findOne({
             where: { codigoempleado }
         });
 
@@ -1539,7 +1521,7 @@ controller.actualizarEstadoUsuario = async (req, res) => {
             });
         }
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelosGenerales.modelonom10001.findOne({
             where: { codigoempleado }
         });
 

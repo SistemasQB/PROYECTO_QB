@@ -6,12 +6,7 @@ import sequelizeClase from "../public/clases/sequelize_clase.js";
 import barrilcalidad from '../models/calidad/barrilCalidad.js'
 import barrilmodelosgenerales from '../models/generales/barrilModelosGenerales.js'
 import manejadorErrores from "../middleware/manejadorErrores.js";
-import {
-    Mejora,
-    bitacoraActividades,
-    Empleados,
-    modeloDirectorioCalidad
-} from "../models/index.js";
+
 
 
 const controller = {};
@@ -57,19 +52,15 @@ controller.administracionmejoras = async (req, res) => {
 controller.rechazarMejora = async (req, res) => {
     let { id, motivo } = req.body;
     if (!id || id.trim() == '') {
-        return res.statusCode(401).json({ msg: 'no se pudo', isValid: false })
+        return res.status(401).json({ msg: 'no se pudo', isValid: false })
     }
-
     const obtenerValores = await Mejora.findByPk(id);
-
     obtenerValores.estatus = 4
     obtenerValores.motivo = motivo
     // let resultados = await Mejora.update(campos, {where: {id: id}})
     await obtenerValores.save();
-
     // await emailMejoraRespuesta({ generador_idea: obtenerValores.generador_idea, nombre_mejora: obtenerValores.nombre_mejora, email: obtenerValores.email, resultado: 'Rechazada' });
     await emailMejoraRespuesta(obtenerValores);
-
     res.send({ ok: true, msg: 'mejora rechazada.' })
 }
 
@@ -89,35 +80,18 @@ controller.ActualizarMejoras = async (req, res) => {
         datos[clave] = misDatos[clave]
     }
 
-    
-
     const obtenerValores = await Mejora.findByPk(misDatos.id);
     obtenerValores.fecha_respuesta_comite = misDatos.fecha_respuesta_comite
     obtenerValores.motivo = misDatos.motivo
     obtenerValores.estatus = misDatos.estatus
-
-    // switch (misDatos.estatus) {
-        // case 2:
-            // await emailMejoraRespuesta({ generador_idea: obtenerValores.generador_idea, nombre_mejora: obtenerValores.nombre_mejora, email: obtenerValores.email, resultado: 'En espera de modificacion', fecha_respuesta_comite: datos.fecha_respuesta_comite });
-            await emailMejoraRespuesta(obtenerValores);
-            // break;
-        // case 3:
-            // await emailMejoraRespuesta({ generador_idea: obtenerValores.generador_idea, nombre_mejora: obtenerValores.nombre_mejora, email: obtenerValores.email, resultado: 'Aceptada', fecha_respuesta_comite: datos.fecha_respuesta_comite });
-            // await emailMejoraRespuesta(obtenerValores);
-            // break;
-    //     default:
-    //         break;
-    // }
-    let id = datos.id
-    delete datos.id;
-    if (!misDatos) return res.statusCode(401).json({ ok: false, msg: 'no se encontraron los parametros' })
+    await emailMejoraRespuesta(obtenerValores);
+    
+    if (!misDatos) return res.status(401).json({ ok: false, msg: 'no se encontraron los parametros' })
     try {
-        // await Mejora.update(datos, { where: { id } })
-        obtenerValores.save();
+        await obtenerValores.save();
         return res.json({ ok: true, msg: 'Mejora Actualizada Exitosamente' })
     }
     catch (ex) {
-
         return res.json({ ok: false, msg: "no se pudo realizar la solicitud" })
     }
 }

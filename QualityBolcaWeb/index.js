@@ -44,7 +44,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Configuración de Helmet según entorno
 if (process.env.NODE_ENV === "production") {
-  app.use(helmet({ directives: directivas} )); // seguridad completa
+  app.use(helmet({   contentSecurityPolicy: {
+        directives: directivas
+    }} )); // seguridad completa
 } else {
   app.use(helmet({
     contentSecurityPolicy: false,
@@ -100,7 +102,6 @@ const csrfProtection = csurf({ cookie: true });
   //declaracion de rutas
 app.use('/', csrfProtection,routers.userRouters);
 app.use('/admin',csrfProtection, routers.adminRouters);
-app.use('/all',csrfProtection, routers.routerAll);
 app.use('/sistemas',csrfProtection, routers.sistemasRouters);
 app.use('/calidad',csrfProtection, routers.calidadRouters);
 app.use('/atraccion',csrfProtection, routers.atraccionRouters);

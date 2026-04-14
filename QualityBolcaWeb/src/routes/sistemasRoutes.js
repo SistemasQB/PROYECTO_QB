@@ -53,7 +53,7 @@ router.get('/addinventario', protegerRuta,validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.addinventario); //para abrir la pagina de asignacion o de generar vale
 router.post('/addinventario',protegerRuta,adminController.addinventario2);
 router.get('/tablainventario',protegerRuta,validarAcceso({
-    roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),protegerRuta,adminController.tablainventario); 
+    roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}),adminController.tablainventario); 
 
 router.get('/listadopersonal',protegerRuta, validarAcceso({
     roles: ['tecnologias de la informacion'], permisos: ['auxiliar de tecnologias de la informacion', 'analista de tecnologias de la informacion'], jerarquia: 5}) ,adminController.listadopersonal); //visualizar los vales del personal

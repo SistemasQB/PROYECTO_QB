@@ -7,6 +7,7 @@ import modelo_plantas_gastos from "./modelo_Plantas.js";
 import modelo_pedido_insumos from "./modelo_pedido_insumos.js";
 import modelo_requisiciones from "./modelo_requisiciones.js";
 import modelo_regionesGastos from "./modelo_regionesGastos.js";
+import modelo_inventarios from "../sistemas/modelo_inventario.js";
     const modelosInfraestructura = {
         modeloOrdenCompra,
         modeloProveedoresOrdenesCompra,
@@ -16,6 +17,7 @@ import modelo_regionesGastos from "./modelo_regionesGastos.js";
         modelo_plantas_gastos,
         modelo_pedido_insumos,
         modelo_requisiciones,
-        modelo_regionesGastos
+        modelo_regionesGastos,
+        modelo_inventarios
     }
     export default modelosInfraestructura;

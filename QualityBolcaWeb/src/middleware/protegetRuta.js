@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
-import { Usuario } from '../models/index.js';
+import tablaUsuarios from "../models/generales/modelo_usuarios.js"
 const protegerRuta = async(req, res, next) =>{
+    
     //Verificar si hay un tok<en
     const { _token } = req.cookies
     
@@ -11,7 +12,7 @@ const protegerRuta = async(req, res, next) =>{
     //Comprobar el token
     try {
         const decoded = jwt.verify(_token, process.env.JWT_SECRET)
-        const usuario = await Usuario.scope('eliminarPassword').findByPk(decoded.codigoempleado)
+        const usuario = await tablaUsuarios.scope('eliminarPassword').findByPk(decoded.codigoempleado)
         //Almacenar el usuario al Req
         if (usuario) {
             req.usuario = usuario
@@ -25,6 +26,7 @@ const protegerRuta = async(req, res, next) =>{
         return next();
 
     } catch (error) {
+        console.error(error)
         return res.clearCookie('_token').redirect('/')
     }
 }
