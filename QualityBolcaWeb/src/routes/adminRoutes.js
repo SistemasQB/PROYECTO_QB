@@ -11,7 +11,7 @@ import upload4 from "../middleware/agregarevidencia.js";
 const router = express.Router();
 
  //ruta de inicio de la aplicacion
-router.get('/inicio', protegetRuta, adminController.inicio);
+// router.get('/inicio', protegetRuta, adminController.inicio);
 
 //ruta del directorio
 router.get('/directorio',protegetRuta ,adminController.directorio);

@@ -12,13 +12,13 @@ import {format } from "@formkit/tempo"
 
 const controller = {};
 
-controller.inicio = (req, res) => { //controlador de inicio del proyecto
-    if (req.originalUrl) {
-        res.redirect(req.originalUrl);
-    } else {
-        res.render('admin/inicio')
-    }
-}
+// controller.inicio = (req, res) => { //controlador de inicio del proyecto
+//     if (req.originalUrl) {
+//         res.redirect(req.originalUrl);
+//     } else {
+//         res.render('admin/inicio')
+//     }
+// }
 
 controller.directorio = async (req, res) => {
     const Rcomunicacion2 = await db.query(

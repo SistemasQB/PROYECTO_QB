@@ -39,7 +39,7 @@ controller.administracionmejoras = async (req, res) => {
         let clase = new sequelizeClase({ modelo: barrilcalidad.modeloFormularioMejora})
         const resultados = await clase.obtenerDatosPorCriterio({criterio: {estatus: 'POR REVISAR'}})
         let token = req.csrfToken()
-        res.render('admin/calidad/administracionmejoras',
+        res.render('admin/calidad/administracionMejoras',
             {
                 resultados,
                 csrfToken: token

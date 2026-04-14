@@ -13,6 +13,8 @@ import userRouters from "./userRoutes.js";
 import routerGenerales from "./routerGenerales.js";
 import capturacionRouters from "./capturacionRouter.js";    
 import botRouter from "./botRouters.js";
+import routerApis from "./routers_Apis.js";
+
 
 
 const routers = {
@@ -30,7 +32,8 @@ const routers = {
     userRouters,
     routerGenerales,
     capturacionRouters,
-    botRouter
+    botRouter,
+    routerApis
 }
 
 export default routers;

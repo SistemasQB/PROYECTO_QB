@@ -2,7 +2,6 @@ import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
-import Empleados from "../models/empleado.js";
 import manejadrorErrores from "../middleware/manejadorErrores.js";
 import miNodemailer from "../public/clases/nodemailer.js";
 import { Op, QueryTypes } from 'sequelize'
@@ -44,7 +43,7 @@ controller.addinventario2 = async (req, res) => {
         ultimoMantenimiento
     } = req.body
 
-    const InventarioR = await Inventario.create({
+    const InventarioR = await modelosSistemas.inventario.create({
         idInventario,
         tipo,
         marca,
@@ -60,7 +59,10 @@ controller.addinventario2 = async (req, res) => {
         codigoResguardo,
         ultimoMantenimiento
     })
-
+    if(!InventarioR){
+        res.status(400).send({ ok: false });
+        return
+    }
     res.status(200).send({ ok: true });
     return
 }
@@ -86,7 +88,7 @@ controller.addvales2 = async (req, res) => {
         fechaFolio
     } = req.body
 
-    const valesR = await Vales.create({
+    const valesR = await modelosSistemas.vales.create({
         idFolio,
         numeroEmpleado,
         fechaFolio
@@ -380,7 +382,7 @@ controller.dashboardTI = async (req, res) => {
 controller.obtenerColaboradoresSinVale = async (req, res) => {
     try {
         // Obtener todos los números de empleado que ya tienen vale
-        const vales = await Vales.findAll({
+        const vales = await modelosSistemas.vales.findAll({
             attributes: ['numeroEmpleado']
         });
 
@@ -420,7 +422,7 @@ controller.crearVale = async (req, res) => {
         }
 
         // 1. Obtener el siguiente idFolio
-        const ultimoVale = await Vales.findOne({
+        const ultimoVale = await modelosSistemas.vales.findOne({
             order: [['idFolio', 'DESC']]
         });
 
@@ -430,7 +432,7 @@ controller.crearVale = async (req, res) => {
         const hoy = new Date().toISOString().split("T")[0];
 
         // 3. Crear el vale
-        const nuevoVale = await Vales.create({
+        const nuevoVale = await modelosSistemas.vales.create({
             idFolio: siguienteFolio,
             numeroEmpleado: numeroEmpleado,
             fechaFolio: hoy,
@@ -439,7 +441,7 @@ controller.crearVale = async (req, res) => {
         });
 
         //Asignar el folio a los equipos
-        await Inventario.update(
+        await modelosSistemas.inventario.update(
             { folio: siguienteFolio },
             {
                 where: {
@@ -465,7 +467,7 @@ controller.darBajaVale = async (req, res) => {
 
     try {
         //buscar el inventario que coincide con el folio
-        const inventarios = await Inventario.findAll({
+        const inventarios = await modelosSistemas.inventario.findAll({
             where: { folio: folio }
         });
 
@@ -474,13 +476,13 @@ controller.darBajaVale = async (req, res) => {
         }
 
         //Actualizar cambio de firma en null para la tabla de vales
-        await Vales.update(
+        await modelosSistemas.inventario.update(
             { Firma: null },
             { where: { idFolio: folio } }
         )
 
         //Actualizar el inventario en 0 todos los registros encontrados
-        await Inventario.update(
+        await modelosSistemas.inventario.update(
             { folio: 0 },
             { where: { folio: folio } }
         );
@@ -495,7 +497,7 @@ controller.darBajaVale = async (req, res) => {
 
 controller.inventarioDisponible = async (req, res) => {
     try {
-        const equipos = await Inventario.findAll({
+        const equipos = await modelosSistemas.inventario.findAll({
             where: {
                 folio: 0
             }
@@ -524,7 +526,7 @@ controller.agregarEquipos = async (req, res) => {
 
     try {
         // 1. Validar que el vale existe
-        const vale = await Vales.findOne({ where: { idFolio: folio } });
+        const vale = await modelosSistemas.vales.findOne({ where: { idFolio: folio } });
 
         if (!vale) {
             return res.status(404).json({
@@ -534,7 +536,7 @@ controller.agregarEquipos = async (req, res) => {
         }
 
         // 2. Asignar los equipos al vale
-        await Inventario.update(
+        await modelosSistemas.inventario.update(
             { folio: folio },               // se asigna el folio
             { where: { idInventario: equipos } } // se asignan todos los seleccionados
         );
@@ -557,7 +559,7 @@ controller.equiposAsignados = async (req, res) => {   //obtener equipos asignado
     const { folio } = req.params;
 
     try {
-        const equipos = await Inventario.findAll({
+        const equipos = await modelosSistemas.inventario.findAll({
             where: {
                 folio: folio
             }
@@ -580,7 +582,7 @@ controller.removerEquipos = async (req, res) => {
     }
 
     try {
-        await Inventario.update(
+        await modelosSistemas.inventario.update(
             { folio: 0 },
             {
                 where: {
@@ -1748,7 +1750,7 @@ controller.eliminarUsuario = async (req, res) => {
 controller.requisicionEquipos = async (req, res) => {
     try {
         let { codigoempleado } = req.usuario
-        let empleado = await Empleados.findOne({ where: { codigoempleado: codigoempleado } })
+        let empleado = await modelosGenerales.vistaempleados.findOne({ where: { codigoempleado: codigoempleado } })
         let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
         let criterios = { codigoempleado: codigoempleado }
         let datosEmpleado = await clase.obtener1Registro({ criterio: criterios })

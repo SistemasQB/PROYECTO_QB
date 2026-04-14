@@ -3,16 +3,13 @@ import rateLimit from "express-rate-limit";
 import csurf from "csurf";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import helmet from "helmet";
 import directivas from "./src/config/directivas.js";
-// import { PORT, SECRET_JWT_KEY } from "./src/config.js";
 import dbs from "./src/config/barril_dbs.js";
 import cors from "cors";
 import routers from "./src/routes/barrilRouters.js";
 import dotenv from "dotenv";
-import miCron from "./src/public/clases/clase_cron.js";
+// import miCron from "./src/public/clases/clase_cron.js";
 import path from "path";
 //configuracion del .env
 dotenv.config({path: '.env'})
@@ -20,7 +17,7 @@ dotenv.config({path: '.env'})
 //limites en caso de que se agregue una API publica o un endpoint publico para preservar caidas del server
 const limiterGlobal = rateLimit({
     windowMs: 1 * 60 * 1000,   // ventana de 1 minuto
-    max: 200,                   // máximo 200 requests por IP por minuto
+    max: 100,                   // máximo 100 requests por IP por minuto
     standardHeaders: true,      // incluye info del límite en headers de respuesta
     legacyHeaders: false,
     message: { ok: false, msg: 'Demasiadas peticiones, intenta más tarde.' }
@@ -56,8 +53,9 @@ if (process.env.NODE_ENV === "production") {
 }
 
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+
 //Habilitar cookie parser
 app.use( cookieParser() )
 
@@ -112,15 +110,15 @@ app.use('/infraestructura', csrfProtection,routers.infraestructuraRouters);
 app.use('/contabilidad',  csrfProtection,routers.contabilidadRouters);
 app.use('/servicioCliente',csrfProtection,routers.servicioClienteRouters);
 app.use('/rentabilidad',csrfProtection, routers.rentabilidadRouters);
-app.use('/procedimientos', routers.routerGenerales);
-app.use('/capturacion', routers.capturacionRouters);
+app.use('/procedimientos', csrfProtection, routers.routerGenerales);
+app.use('/capturacion', csrfProtection,routers.capturacionRouters);
 app.use('/bots', csrfProtection, routers.botRouter);
+app.use('/apis', routers.routerApis);
 app.use((_, res) => {
   return res.render('admin/default/paginaNoEncontrada.ejs');
 });
 
 app.use(express.json());
-
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 })

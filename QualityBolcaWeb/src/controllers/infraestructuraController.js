@@ -1,12 +1,10 @@
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import modelosInfraestructura from "../models/infraestructura/barril_modelo_compras.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
-import { Op } from "sequelize";
 import db from "../config/db.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import nodemailerClase from "../public/clases/nodemailer.js";
-import Informaciondepartamento from "../models/informaciondepartamento.js";
-import { QueryTypes } from "sequelize";
+import { QueryTypes, Op } from "sequelize";
 
 
 const infraestructuraController = {}
@@ -354,7 +352,7 @@ infraestructuraController.requisicionGastos = async (req, res) => {
 
         // obtener departamento
         let claseDepartamento = new sequelizeClase({
-            modelo: Informaciondepartamento
+            modelo: modelosGenerales.modelonom10003
         })
 
         let departamento = await claseDepartamento.obtener1Registro({
@@ -958,7 +956,7 @@ infraestructuraController.misRequisicionesGastos = async (req, res) => {
 
         // obtener departamento
         let claseDepartamento = new sequelizeClase({
-            modelo: Informaciondepartamento
+            modelo: modelosGenerales.modelonom10003
         })
 
         let departamentoUsuario = await claseDepartamento.obtener1Registro({
@@ -1043,7 +1041,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
 
         // obtener departamento
         let claseDepartamento = new sequelizeClase({
-            modelo: Informaciondepartamento
+            modelo: modelosGenerales.modelonom10003
         })
 
         let departamentoUsuario = await claseDepartamento.obtener1Registro({
