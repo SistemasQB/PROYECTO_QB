@@ -2,58 +2,318 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Asistente Virtual</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Captura de Reportes | Quality Bolca</title>
   <link rel="stylesheet" href="/styles/bots/estilos_botPrueba.css" />
   <meta name="csrf-token" content="<%= csrfToken %>">
 </head>
 <body>
 
-<div class="chat-wrapper">
+<!-- ========================================================
+     PANTALLA 1: BIENVENIDA
+     ======================================================== -->
+<div class="screen" id="screen-welcome">
 
-  <!-- Header -->
-  <div class="chat-header">
-    <div class="bot-avatar">🤖</div>
-    <div class="header-info">
-      <div class="name">Asistente virtual</div>
-      <div class="greeting" id="greeting-text"></div>
+  <header class="app-header">
+    <div class="header-brand">
+      <img class="header-logo"
+           src="https://qualitybolca.com/assets/images/logo.png"
+           alt="Quality Bolca"
+           onerror="this.style.display='none'">
     </div>
+    <button class="theme-btn" id="theme-btn" aria-label="Cambiar tema"></button>
+  </header>
+
+  <main class="welcome-main">
+    <div class="welcome-brand">
+      <img class="welcome-logo"
+           src="https://qualitybolca.com/assets/images/logo.png"
+           alt="Quality Bolca"
+           onerror="this.style.display='none'">
+      <h1 class="welcome-title">Asistente de Reportes</h1>
+      <p class="welcome-sub">Toque el botón para comenzar a capturar un reporte por voz</p>
+    </div>
+
+    <button class="capture-btn" id="capture-btn" aria-label="Iniciar captura de reporte">
+      <svg class="capture-icon" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+        <line x1="8"  y1="22" x2="16" y2="22"/>
+      </svg>
+      Iniciar Captura
+    </button>
+  </main>
+
+</div><!-- /screen-welcome -->
+
+
+<!-- ========================================================
+     PANTALLA 2: CAPTURA
+     ======================================================== -->
+<div class="screen hidden" id="screen-capture">
+
+  <header class="app-header">
+    <button class="cancel-capture-btn" id="cancel-btn" aria-label="Cancelar captura">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+           width="18" height="18">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6"  y1="6" x2="18" y2="18"/>
+      </svg>
+      Cancelar
+    </button>
+    <div class="header-brand">
+      <img class="header-logo"
+           src="https://qualitybolca.com/assets/images/logo.png"
+           alt="Quality Bolca"
+           onerror="this.style.display='none'">
+    </div>
+    <button class="theme-btn" id="theme-btn-cap" aria-label="Cambiar tema"></button>
+  </header>
+
+  <div class="capture-layout">
+
+    <!-- ---- Área principal: micrófono + pregunta + confirmación ---- -->
+    <section class="capture-main">
+
+      <!-- Nombre del campo actual -->
+      <div class="field-header">
+        <span class="field-label" id="field-label">Nombre del Inspector a cargo</span>
+        <span class="field-hint"  id="field-hint"></span>
+      </div>
+
+      <!-- Ícono de micrófono animado -->
+      <div class="mic-area">
+        <div class="mic-ring" id="mic-ring">
+          <svg class="mic-icon" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="8"  y1="22" x2="16" y2="22"/>
+          </svg>
+        </div>
+        <p class="listening-label" id="listening-label">Escuchando…</p>
+      </div>
+
+      <!-- Valor capturado (aparece tras reconocer) -->
+      <div class="captured-display hidden" id="captured-display">
+        <p class="captured-value" id="captured-value"></p>
+        <span class="captured-badge">Capturado por voz — Solo lectura</span>
+      </div>
+
+      <!-- Zona de dictado de lotes (aparece en paso 3) -->
+      <div class="items-dictation hidden" id="items-dictation">
+        <div class="items-raw-box" id="items-text-box">
+          <span class="items-placeholder">Toca el micrófono para comenzar…</span>
+        </div>
+        <button class="items-mic-btn" id="items-mic-btn" aria-label="Iniciar o detener dictado">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+               width="28" height="28">
+            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="8"  y1="22" x2="16" y2="22"/>
+          </svg>
+          <span id="items-mic-lbl">Iniciar dictado</span>
+        </button>
+      </div>
+
+      <!-- Botones de confirmación -->
+      <div class="confirm-row hidden" id="confirm-row">
+        <button class="btn-repeat" id="btn-repeat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+               width="22" height="22">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+          </svg>
+          <span id="lbl-repeat">Repetir</span>
+        </button>
+        <button class="btn-continue" id="btn-continue">
+          <span id="lbl-continue">Continuar</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+               width="22" height="22">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+    </section><!-- /capture-main -->
+
+    <!-- ---- Panel de resumen ---- -->
+    <aside class="summary-panel">
+      <h2 class="summary-title">Resumen</h2>
+      <div class="summary-list" id="summary-list">
+        <p class="summary-empty">Los datos capturados aparecerán aquí.</p>
+      </div>
+    </aside>
+
+  </div><!-- /capture-layout -->
+
+</div><!-- /screen-capture -->
+
+
+<!-- ========================================================
+     PANTALLA 3: CAPTURA FINALIZADA
+     ======================================================== -->
+<div class="screen hidden" id="screen-done">
+
+  <header class="app-header">
+    <div class="header-brand">
+      <img class="header-logo"
+           src="https://qualitybolca.com/assets/images/logo.png"
+           alt="Quality Bolca"
+           onerror="this.style.display='none'">
+    </div>
+    <button class="theme-btn" id="theme-btn-done" aria-label="Cambiar tema"></button>
+  </header>
+
+  <main class="done-main">
+    <div class="done-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+           width="40" height="40">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h2 class="done-title">Captura completada</h2>
+    <p  class="done-sub">Revise el resumen antes de enviar el reporte.</p>
+
+    <div class="done-summary" id="done-summary"></div>
+
+    <div class="done-actions">
+      <button class="btn-new"    id="btn-new">Nuevo reporte</button>
+      <button class="btn-submit" id="btn-submit">Enviar reporte</button>
+    </div>
+  </main>
+
+</div><!-- /screen-done -->
+
+
+<!-- ========================================================
+     OVERLAY DE ERROR DE MICRÓFONO
+     ======================================================== -->
+<div class="error-overlay hidden" id="error-overlay"
+     role="alertdialog" aria-modal="true" aria-labelledby="err-title">
+
+  <div class="error-card">
+    <div class="error-icon" aria-hidden="true">🎙️</div>
+    <h3 class="error-title" id="err-title">Sin acceso al micrófono</h3>
+    <p  class="error-body"  id="error-body">
+      Para usar el asistente de voz necesitamos permiso para usar el micrófono de este dispositivo.
+    </p>
+    <div class="error-steps">
+      <strong>¿Cómo habilitarlo?</strong><br>
+      Toque el ícono del candado o la letra <em>i</em> en la barra del navegador → busque
+      <em>Micrófono</em> → seleccione <em>Permitir</em>. Luego recargue la página.
+    </div>
+    <button class="error-dismiss" id="error-dismiss">Entendido</button>
   </div>
 
-  <!-- Messages -->
-  <div class="chat-messages" id="chat-messages">
-    <div class="empty-state" id="empty-state">
-      <div class="icon" id="empty-icon"></div>
-      <p id="empty-text"></p>
+</div><!-- /error-overlay -->
+
+
+<!-- ========================================================
+     MODAL DE SOLICITUD DE PERMISO DE MICRÓFONO
+     ======================================================== -->
+<div class="perm-overlay hidden" id="perm-overlay"
+     role="dialog" aria-modal="true" aria-labelledby="perm-title">
+
+  <div class="perm-card">
+    <div class="perm-icon" aria-hidden="true">🎙️</div>
+    <h3 class="perm-title" id="perm-title">Se necesita el micrófono</h3>
+    <p class="perm-body">
+      Para capturar los reportes por voz, necesitamos acceso al micrófono de este dispositivo.
+    </p>
+    <div class="perm-hint">
+      Al tocar <strong>Activar micrófono</strong>, el dispositivo le pedirá confirmación.
+      Seleccione <strong>Permitir</strong> y no se le volverá a preguntar en esta sesión.
     </div>
+    <button class="perm-grant" id="perm-grant">Activar micrófono</button>
+    <button class="perm-cancel" id="perm-cancel">Cancelar</button>
   </div>
 
-  <!-- Input -->
-  <div class="chat-input-area">
-    <div class="voice-indicator" id="voice-indicator">
-      <span class="voice-dot"></span>
-      Escuchando… habla ahora
-    </div>
-    <!-- PDF attachment preview (oculto por defecto) -->
-    <div class="pdf-indicator" id="pdf-indicator">
-      <span class="pdf-icon">📄</span>
-      <span class="pdf-filename" id="pdf-filename">archivo.pdf</span>
-      <button class="pdf-remove-btn" id="pdf-remove-btn" title="Quitar archivo">✕</button>
-    </div>
-    <div class="input-box">
-      <textarea id="user-input" rows="1" placeholder="Escribe tu mensaje…"></textarea>
-      <!-- Input file oculto - solo PDF -->
-      <input type="file" id="pdf-input" accept=".pdf" style="display:none">
-      <!-- Botón para abrir el selector de PDF -->
-      <button class="icon-btn" id="pdf-btn" title="Adjuntar PDF">📎</button>
-      <button class="icon-btn" id="mic-btn" title="Hablar">🎙️</button>
-      <button class="icon-btn" id="send-btn" disabled>↑</button>
-    </div>
-    <p class="input-hint">Enter para enviar · Shift+Enter para nueva línea</p>
-  </div>
+</div><!-- /perm-overlay -->
 
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+
+<!-- ========================================================
+     MODAL: RETOMAR CAPTURA GUARDADA
+     ======================================================== -->
+<div class="perm-overlay hidden" id="resume-overlay"
+     role="dialog" aria-modal="true" aria-labelledby="resume-title">
+  <div class="perm-card">
+    <div class="perm-icon" aria-hidden="true">📋</div>
+    <h3 class="perm-title" id="resume-title">Captura en progreso</h3>
+    <p class="perm-body">Tiene datos guardados de una captura anterior.</p>
+    <div class="perm-hint" id="resume-preview"></div>
+    <button class="perm-grant"  id="resume-continue">Continuar captura</button>
+    <button class="perm-cancel" id="resume-new">Empezar de nuevo</button>
+  </div>
+</div><!-- /resume-overlay -->
+
+
+<!-- ========================================================
+     MODAL: CONFIRMAR CANCELACIÓN
+     ======================================================== -->
+<div class="perm-overlay hidden" id="cancel-overlay"
+     role="alertdialog" aria-modal="true" aria-labelledby="cancel-title">
+  <div class="perm-card">
+    <div class="perm-icon" aria-hidden="true">⚠️</div>
+    <h3 class="perm-title" id="cancel-title">¿Cancelar el reporte?</h3>
+    <p class="perm-body">
+      Los datos capturados hasta ahora se guardarán.<br>
+      Podrá retomar la captura cuando regrese.
+    </p>
+    <button class="perm-grant"  id="cancel-confirm-yes">Sí, cancelar</button>
+    <button class="perm-cancel" id="cancel-confirm-no">No, continuar</button>
+  </div>
+</div><!-- /cancel-overlay -->
+
+
+<!-- ========================================================
+     BOTÓN DE AYUDA FLOTANTE
+     ======================================================== -->
+<button class="help-btn" id="help-btn" aria-label="Ayuda">?</button>
+
+
+<!-- ========================================================
+     MODAL DE AYUDA
+     ======================================================== -->
+<div class="help-overlay hidden" id="help-overlay"
+     role="dialog" aria-modal="true" aria-labelledby="help-title">
+  <div class="help-card">
+    <div class="help-header">
+      <h3 class="help-title" id="help-title">Ayuda</h3>
+      <button class="help-close" id="help-close" aria-label="Cerrar">✕</button>
+    </div>
+    <p class="help-body">¿Cómo desea recibir la ayuda?</p>
+    <button class="help-option" id="help-audio">
+      <span class="help-option-icon">🎧</span>
+      <span class="help-option-text">Tutorial de voz</span>
+    </button>
+    <button class="help-option help-option-dev" id="help-video">
+      <span class="help-option-icon">🎬</span>
+      <span class="help-option-text">
+        Ver video tutorial
+        <span class="dev-badge">En desarrollo</span>
+      </span>
+    </button>
+  </div>
+</div><!-- /help-overlay -->
+
+
 <script src="/bots/scripts_botPrueba.js"></script>
 </body>
 </html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial Publicados | Quality Bolca</title>
+  <link rel="stylesheet" href="/styles/supervisor/estilos_supervisor.css" />
+  <meta name="csrf-token" content="<%= csrfToken %>">
+</head>
+<body>
+
+  <!-- P-07: HISTORIAL DE REPORTES PUBLICADOS -->
+
+  <!-- Header -->
+  <header class="sv-header">
+    <div class="sv-header__brand">
+      <img
+        class="sv-header__logo"
+        src="https://qualitybolca.com/assets/images/logo.png"
+        alt="Quality Bolca"
+        onerror="this.style.display='none'"
+      />
+      <span class="sv-header__app">Quality Bolca</span>
+    </div>
+    <div class="sv-header__user">
+      <span class="sv-header__username"><%= supervisor.nombre %></span>
+    </div>
+  </header>
+
+  <div class="sv-layout">
+
+    <!-- Sidebar -->
+    <nav class="sv-sidebar" aria-label="Navegación principal">
+      <ul class="sv-sidebar__list">
+        <li>
+          <a
+            href="/supervisor/bandeja"
+            class="sv-sidebar__item"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Bandeja
+          </a>
+        </li>
+        <li>
+          <a
+            href="/supervisor/historial"
+            class="sv-sidebar__item sv-sidebar__item--active"
+            aria-current="page"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Historial publicados
+          </a>
+        </li>
+        <li>
+          <button class="sv-sidebar__item">
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Mi perfil
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="sv-main">
+      <div class="sv-page-header">
+        <h1 class="sv-page-title">Historial de Reportes Publicados</h1>
+      </div>
+
+      <!-- Barra de filtros -->
+      <div class="sv-filters" role="search" aria-label="Filtros de búsqueda">
+        <div class="sv-filters__group">
+          <label for="filtro-parte" class="sv-label">Número de parte</label>
+          <select id="filtro-parte" class="sv-select" aria-label="Filtrar por número de parte">
+            <option value="">Todos</option>
+            <option value="48-6123-A">48-6123-A</option>
+            <option value="32-9001-C">32-9001-C</option>
+            <option value="17-4452-B">17-4452-B</option>
+            <option value="55-8801-D">55-8801-D</option>
+          </select>
+        </div>
+        <div class="sv-filters__group">
+          <label for="filtro-desde" class="sv-label">Desde</label>
+          <input type="date" id="filtro-desde" class="sv-input" aria-label="Fecha desde" />
+        </div>
+        <div class="sv-filters__group">
+          <label for="filtro-hasta" class="sv-label">Hasta</label>
+          <input type="date" id="filtro-hasta" class="sv-input" aria-label="Fecha hasta" />
+        </div>
+        <div class="sv-filters__actions">
+          <button class="sv-btn sv-btn--primary" onclick="buscarHistorial()" aria-label="Buscar reportes">
+            Buscar
+          </button>
+          <button class="sv-btn sv-btn--secondary" onclick="limpiarFiltros()" aria-label="Limpiar filtros">
+            Limpiar
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="sv-kpi-row" aria-label="Indicadores clave">
+        <article class="sv-kpi-card">
+          <span class="sv-kpi-card__number"><%= kpis.totalReportes %></span>
+          <span class="sv-kpi-card__label">Total reportes publicados</span>
+        </article>
+        <article class="sv-kpi-card">
+          <span class="sv-kpi-card__number"><%= kpis.totalLotes %></span>
+          <span class="sv-kpi-card__label">Total lotes inspeccionados</span>
+        </article>
+      </div>
+
+      <!-- Tabla de historial -->
+      <div class="sv-table-wrapper" id="historial-tabla-wrapper">
+        <table class="sv-table" id="historial-tabla" aria-label="Historial de reportes publicados">
+          <thead>
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Inspector</th>
+              <th scope="col">Turno</th>
+              <th scope="col">N&ordm; Parte</th>
+              <th scope="col">Lotes</th>
+              <th scope="col">Piezas Tot.</th>
+              <th scope="col">Firmado por</th>
+              <th scope="col">Publicado</th>
+              <th scope="col">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="historial-tbody">
+            <% if (reportes.length === 0) { %>
+              <tr>
+                <td colspan="8" style="text-align:center; padding:2rem; color:#6b7280;">
+                  No hay reportes publicados para mostrar.
+                </td>
+              </tr>
+            <% } else { %>
+              <% reportes.forEach(function(reporte) { %>
+                <% const fechaFormateada = new Date(reporte.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
+                <tr data-parte="<%= reporte.numero_parte %>">
+                  <td><%= fechaFormateada %></td>
+                  <td><%= reporte.nombre_inspector %></td>
+                  <td><%= reporte.turno %></td>
+                  <td><span class="sv-part-number"><%= reporte.numero_parte %></span></td>
+                  <td><%= reporte.numero_items || 0 %></td>
+                  <td><%= reporte.nombre_supervisor %></td>
+                  <td>
+                    <a
+                      href="/supervisor/publicado/<%= reporte.body_id %>"
+                      class="sv-btn sv-btn--outline sv-btn--sm"
+                      aria-label="Ver reporte <%= reporte.numero_parte %> del <%= fechaFormateada %>"
+                    >
+                      VER
+                    </a>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <nav class="sv-pagination" aria-label="Paginación del historial">
+        <button class="sv-pagination__btn" aria-label="Página anterior" disabled>Anterior</button>
+        <button class="sv-pagination__btn sv-pagination__btn--active" aria-current="page" aria-label="Página 1">1</button>
+        <button class="sv-pagination__btn" aria-label="Página 2">2</button>
+        <button class="sv-pagination__btn" aria-label="Página 3">3</button>
+        <button class="sv-pagination__btn" aria-label="Página siguiente">Siguiente</button>
+      </nav>
+
+    </main>
+  </div><!-- /sv-layout -->
+
+  <script src="/scripts/supervisor/scripts_historial_publicados.js"></script>
+</body>
+</html>

@@ -19,6 +19,11 @@ const Reporte = dbReportes.define('reporte', {
         type: DataTypes.STRING(50),
         allowNull: false
     },
+    status: {
+        type: DataTypes.ENUM('pending', 'signed', 'published'),
+        defaultValue: 'pending',
+        allowNull: false
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW

@@ -15,17 +15,8 @@ const ReporteBody = dbReportes.define('reporteBody', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    lotes: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    series: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    otro: {
-        type: DataTypes.JSON,
-        allowNull: true
+    items: {
+        type: DataTypes.JSON
     }
 }, {
     tableName: 'reporte_body',

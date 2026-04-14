@@ -80,7 +80,7 @@ class sequelizeClase{
         let respuesta = await this.modelo.findOne(opciones)
         if (!respuesta) return ''
         return respuesta
-}
+    }
      async ejecutarQuery({ query, replacements = null, mapToModel = false }) {
         console.log(query, replacements, mapToModel);
         try {
