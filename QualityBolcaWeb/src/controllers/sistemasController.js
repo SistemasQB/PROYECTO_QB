@@ -1,12 +1,27 @@
+import express from "express";
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
+import Empleados from "../models/empleado.js";
 import manejadrorErrores from "../middleware/manejadorErrores.js";
 import miNodemailer from "../public/clases/nodemailer.js";
-import { Op, QueryTypes } from 'sequelize'
-import dbSistemas from "../config/dbSistemas.js";
 
+import {
+    registroma,
+    Inventario,
+    Solicitudservicio,
+    Vales,
+    Usuario
+} from "../models/index.js";
+
+import { Op, QueryTypes, where } from 'sequelize'
+import Informaciongch from "../models/informaciongch.js";
+import Informaciondepartamento from "../models/informaciondepartamento.js";
+import e from "express";
+import dbSistemas from "../config/dbSistemas.js";
+import modeloRequisicionEquipo from "../models/sistemas/requisicionEquipo.js";
+const app = express();
 
 const controller = {};
 
@@ -43,7 +58,7 @@ controller.addinventario2 = async (req, res) => {
         ultimoMantenimiento
     } = req.body
 
-    const InventarioR = await modelosSistemas.inventario.create({
+    const InventarioR = await Inventario.create({
         idInventario,
         tipo,
         marca,
@@ -59,10 +74,7 @@ controller.addinventario2 = async (req, res) => {
         codigoResguardo,
         ultimoMantenimiento
     })
-    if(!InventarioR){
-        res.status(400).send({ ok: false });
-        return
-    }
+
     res.status(200).send({ ok: true });
     return
 }
@@ -73,6 +85,40 @@ controller.tablainventario = async (req, res) => {
     res.render('admin/sistemas/tablainventario');
 }
 
+controller.api = async (req, res) => {
+    const { query2 } = req.params
+    let valeasignacion
+    // const resultado = await db.query(
+    //     `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
+    //      FROM inventario i
+    //      INNER JOIN vales v ON i.folio = v.idfolio
+    //      INNER JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
+    //      INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+    //      WHERE i.folio = :nfolio;`,
+    //     {
+    //       replacements: { nfolio: '40' }, // Sustituir parámetros
+    //       type: QueryTypes.SELECT // Tipo de consulta: SELECT
+    //     }
+    //   )
+    const resultado = await db.query(
+        query2,
+        {
+            //   replacements: { nfolio: '40' }, // Sustituir parámetros
+            type: QueryTypes.SELECT // Tipo de consulta: SELECT
+        }
+    )
+        .then((resultados) => {
+            valeasignacion = resultados;
+        });
+
+
+
+    // res.render('admin/valeresguardo',{
+    //     csrfToken: req.csrfToken(),
+    //     valeasignacion
+    // })
+    res.send(valeasignacion)
+}
 
 controller.addvales = async (req, res) => {
     res.render('admin/sistemas/addvales', {
@@ -88,7 +134,7 @@ controller.addvales2 = async (req, res) => {
         fechaFolio
     } = req.body
 
-    const valesR = await modelosSistemas.vales.create({
+    const valesR = await Vales.create({
         idFolio,
         numeroEmpleado,
         fechaFolio
@@ -382,13 +428,13 @@ controller.dashboardTI = async (req, res) => {
 controller.obtenerColaboradoresSinVale = async (req, res) => {
     try {
         // Obtener todos los números de empleado que ya tienen vale
-        const vales = await modelosSistemas.vales.findAll({
+        const vales = await Vales.findAll({
             attributes: ['numeroEmpleado']
         });
 
         const empleadosConVale = vales.map(v => v.numeroEmpleado);
 
-        const colaboradores = await modelosGenerales.modelonom10001.findAll({
+        const colaboradores = await Informaciongch.findAll({
             where: {
                 codigoempleado: {
                     [Op.notIn]: empleadosConVale.length > 0 ? empleadosConVale : ['']
@@ -422,7 +468,7 @@ controller.crearVale = async (req, res) => {
         }
 
         // 1. Obtener el siguiente idFolio
-        const ultimoVale = await modelosSistemas.vales.findOne({
+        const ultimoVale = await Vales.findOne({
             order: [['idFolio', 'DESC']]
         });
 
@@ -432,7 +478,7 @@ controller.crearVale = async (req, res) => {
         const hoy = new Date().toISOString().split("T")[0];
 
         // 3. Crear el vale
-        const nuevoVale = await modelosSistemas.vales.create({
+        const nuevoVale = await Vales.create({
             idFolio: siguienteFolio,
             numeroEmpleado: numeroEmpleado,
             fechaFolio: hoy,
@@ -441,7 +487,7 @@ controller.crearVale = async (req, res) => {
         });
 
         //Asignar el folio a los equipos
-        await modelosSistemas.inventario.update(
+        await Inventario.update(
             { folio: siguienteFolio },
             {
                 where: {
@@ -467,7 +513,7 @@ controller.darBajaVale = async (req, res) => {
 
     try {
         //buscar el inventario que coincide con el folio
-        const inventarios = await modelosSistemas.inventario.findAll({
+        const inventarios = await Inventario.findAll({
             where: { folio: folio }
         });
 
@@ -476,13 +522,13 @@ controller.darBajaVale = async (req, res) => {
         }
 
         //Actualizar cambio de firma en null para la tabla de vales
-        await modelosSistemas.inventario.update(
+        await Vales.update(
             { Firma: null },
             { where: { idFolio: folio } }
         )
 
         //Actualizar el inventario en 0 todos los registros encontrados
-        await modelosSistemas.inventario.update(
+        await Inventario.update(
             { folio: 0 },
             { where: { folio: folio } }
         );
@@ -490,14 +536,14 @@ controller.darBajaVale = async (req, res) => {
         return res.json({ ok: true, message: "Todos los objetos del inventario fueron dados de baja correctamente" });
 
     } catch (error) {
-        console.error('Error al dar de baja el vale', error);
+        console.log('Error al dar de baja el vale', error);
         return res.status(500).json({ ok: false, message: error.message })
     }
 }
 
 controller.inventarioDisponible = async (req, res) => {
     try {
-        const equipos = await modelosSistemas.inventario.findAll({
+        const equipos = await Inventario.findAll({
             where: {
                 folio: 0
             }
@@ -526,7 +572,7 @@ controller.agregarEquipos = async (req, res) => {
 
     try {
         // 1. Validar que el vale existe
-        const vale = await modelosSistemas.vales.findOne({ where: { idFolio: folio } });
+        const vale = await Vales.findOne({ where: { idFolio: folio } });
 
         if (!vale) {
             return res.status(404).json({
@@ -536,7 +582,7 @@ controller.agregarEquipos = async (req, res) => {
         }
 
         // 2. Asignar los equipos al vale
-        await modelosSistemas.inventario.update(
+        await Inventario.update(
             { folio: folio },               // se asigna el folio
             { where: { idInventario: equipos } } // se asignan todos los seleccionados
         );
@@ -559,7 +605,7 @@ controller.equiposAsignados = async (req, res) => {   //obtener equipos asignado
     const { folio } = req.params;
 
     try {
-        const equipos = await modelosSistemas.inventario.findAll({
+        const equipos = await Inventario.findAll({
             where: {
                 folio: folio
             }
@@ -582,7 +628,7 @@ controller.removerEquipos = async (req, res) => {
     }
 
     try {
-        await modelosSistemas.inventario.update(
+        await Inventario.update(
             { folio: 0 },
             {
                 where: {
@@ -607,11 +653,11 @@ controller.removerEquipos = async (req, res) => {
 controller.levantamientoTicket = async (req, res) => {
     try {
         const { codigoempleado } = req.usuario;
-        const usuario = await modelosGenerales.usuarios.findOne({
+        const usuario = await Usuario.findOne({
             where: { codigoempleado }
         });
 
-        const empleado = await modelosGenerales.modelonom10001.findOne({
+        const empleado = await Informaciongch.findOne({
             where: { codigoempleado }
         });
 
@@ -653,11 +699,11 @@ controller.levantamientoTicket = async (req, res) => {
 controller.formularioTicket = async (req, res) => {
     try {
         const { codigoempleado } = req.usuario;
-        const usuario = await modelosGenerales.usuarios.findOne({
+        const usuario = await Usuario.findOne({
             where: { codigoempleado }
         });
 
-        const empleado = await modelosGenerales.modelonom10001.findOne({
+        const empleado = await Informaciongch.findOne({
             where: { codigoempleado }
         });
 
@@ -732,7 +778,7 @@ controller.crudTickets = async (req, res) => {
 
                 const { codigoempleado } = req.usuario;
 
-                const empleado = await modelosGenerales.modelonom10001.findOne({
+                const empleado = await Informaciongch.findOne({
                     where: { codigoempleado }
                 });
 
@@ -933,6 +979,7 @@ controller.asignarTicket = async (req, res) => {
 
 controller.pausarTicket = async (req, res) => {   //pausar ticket
     try {
+        console.log('pausar ticket');
         const { id } = req.params;
 
         const ticket = await modelosSistemas.modeloTickets.findOne({
@@ -1229,8 +1276,10 @@ controller.obtenerDatosNuevoUsuario = async (req, res) => {
         );
 
         const ultimoCodigoInt = parseInt(ultimoCodigo) + 1;
+        //console.log(ultimoCodigoInt);
         const ultimoCodigostr = ultimoCodigoInt.toString();
-        
+        console.log(ultimoCodigo)
+
         const departamentos = await db.query(
             `SELECT iddepartamento, descripcion 
              FROM nom10003
@@ -1455,6 +1504,9 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         const { codigoempleado } = req.params;
         const { permisos } = req.body;
 
+        console.log('PARAMS:', req.params);
+        console.log('BODY:', req.body);
+
         if (!codigoempleado || !permisos) {
             return res.status(400).json({
                 ok: false,
@@ -1476,7 +1528,7 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         }
 
         // Buscar usuario
-        const usuario = await modelosGenerales.usuarios.findOne({
+        const usuario = await Usuario.findOne({
             where: { codigoempleado }
         });
 
@@ -1523,7 +1575,7 @@ controller.actualizarEstadoUsuario = async (req, res) => {
             });
         }
 
-        const empleado = await modelosGenerales.modelonom10001.findOne({
+        const empleado = await Informaciongch.findOne({
             where: { codigoempleado }
         });
 
@@ -1750,7 +1802,7 @@ controller.eliminarUsuario = async (req, res) => {
 controller.requisicionEquipos = async (req, res) => {
     try {
         let { codigoempleado } = req.usuario
-        let empleado = await modelosGenerales.vistaempleados.findOne({ where: { codigoempleado: codigoempleado } })
+        let empleado = await Empleados.findOne({ where: { codigoempleado: codigoempleado } })
         let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
         let criterios = { codigoempleado: codigoempleado }
         let datosEmpleado = await clase.obtener1Registro({ criterio: criterios })
@@ -2038,149 +2090,27 @@ controller.ticketsMonitoreo = async (req, res) => {
     }
 }
 
-// ── SLA ───────────────────────────────────────────────────────────────────────
-controller.slaMonitoreo = async (req, res) => {
-    try {
-        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
-            ? req.query.planta.trim()
-            : null;
-
-        const ticketsDB = await modelosSistemas.modeloTickets.findAll();
-        const ahora = Date.now();
-
-        const tickets = ticketsDB.map(t => {
-            const datos = parseDatosTicket(t);
-            const slaHoras = datos.slaHoras || 72;
-
-            let tiempoConsumidoSeg = datos.slaConsumido || 0;
-            if (datos.slaActivo && datos.slaInicio) {
-                tiempoConsumidoSeg += Math.floor(
-                    (ahora - new Date(datos.slaInicio).getTime()) / 1000
-                );
-            }
-
-            return {
-                estatus: datos.estatus || 'open',
-                prioridad: datos.prioridad || 'low',
-                slaHoras,
-                tiempoConsumidoSeg,
-                cumplioSla: tiempoConsumidoSeg <= slaHoras * 3600,
-                departamento: datos.departamento || '',
-                estaVencido: tiempoConsumidoSeg >= slaHoras * 3600
-                    && !['resolved', 'closed'].includes(datos.estatus || 'open')
-            };
-        });
-
-        const filtrados = plantaFiltro
-            ? tickets.filter(t => t.departamento.toLowerCase() === plantaFiltro.toLowerCase())
-            : tickets;
-
-        const cerrados = filtrados.filter(t => ['closed', 'resolved'].includes(t.estatus));
-        const cerradosCriticos = cerrados.filter(t => ['high', 'critical'].includes(t.prioridad));
-
-        const pctCumplidoGeneral = cerrados.length > 0
-            ? Math.round(cerrados.filter(t => t.cumplioSla).length / cerrados.length * 100)
-            : null;
-
-        const pctCumplidoCriticos = cerradosCriticos.length > 0
-            ? Math.round(cerradosCriticos.filter(t => t.cumplioSla).length / cerradosCriticos.length * 100)
-            : null;
-
-        const promedioResolucionHoras = cerrados.length > 0
-            ? Math.round(
-                cerrados.reduce((acc, t) => acc + t.tiempoConsumidoSeg, 0)
-                / cerrados.length / 3600 * 10
-              ) / 10
-            : null;
-
-        const ticketsVencidosActivos = filtrados.filter(t => t.estaVencido).length;
-
-        return res.json({
-            ok: true,
-            pctCumplidoGeneral,
-            pctCumplidoCriticos,
-            promedioResolucionHoras,
-            ticketsVencidosActivos
-        });
-
-    } catch (error) {
-        console.error('Error en slaMonitoreo:', error);
-        return res.status(500).json({ ok: false, msg: 'Error interno del servidor' });
-    }
-};
-
-// ── RESOLUCIÓN SEMANAL ────────────────────────────────────────────────────────
-controller.resolucionSemanal = async (req, res) => {
-    try {
-        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
-            ? req.query.planta.trim()
-            : null;
-
-        const ticketsDB = await modelosSistemas.modeloTickets.findAll({
-            attributes: ['semana', 'datosTicket'],
-            where: { semana: { [Op.ne]: null } }
-        });
-
-        const tickets = ticketsDB
-            .map(t => {
-                const datos = parseDatosTicket(t);
-                return {
-                    semana: t.semana,
-                    estatus: datos.estatus || 'open',
-                    departamento: datos.departamento || ''
-                };
-            })
-            .filter(t => !plantaFiltro
-                || t.departamento.toLowerCase() === plantaFiltro.toLowerCase()
-            );
-
-        const semanasUnicas = [...new Set(tickets.map(t => t.semana))]
-            .filter(s => s != null)
-            .sort((a, b) => a - b)
-            .slice(-6);
-
-        const labels = semanasUnicas.map(s => `S${s}`);
-        const tasas = semanasUnicas.map(semana => {
-            const delaSemana = tickets.filter(t => t.semana === semana);
-            if (delaSemana.length === 0) return null;
-            const cerrados = delaSemana.filter(t =>
-                ['closed', 'resolved'].includes(t.estatus)
-            ).length;
-            return Math.round(cerrados / delaSemana.length * 100);
-        });
-
-        return res.json({ ok: true, labels, tasas });
-
-    } catch (error) {
-        console.error('Error en resolucionSemanal:', error);
-        return res.status(500).json({ ok: false, msg: 'Error interno del servidor' });
-    }
-};
-
 // ── AGENTES / EQUIPO ─────────────────────────────────────────────────────────
-// Lista fija de técnicos del equipo TI.
-// - nombre: debe coincidir EXACTAMENTE con el valor guardado en datosTicket.asignadoA
-//           (formato "Nombre Apellido" tal como lo guarda el select de asignación).
-// - display: nombre que se mostrará en la UI (puede diferir del nombre de BD).
+// Lista fija de técnicos del equipo TI. El nombre debe coincidir exactamente
+// con el valor que llega en datosTicket.asignadoA para que el match funcione.
 const TECNICOS_TI = [
-    { nombre: 'Omar Vazquez',       display: 'Omar Vazquez',       iniciales: 'OV', rol: 'Analista TI',  avatarClass: 'av-blue'   },
-    { nombre: 'Fernando de la Cruz',display: 'Fernando de la Cruz',iniciales: 'FC', rol: 'Soporte Jr',   avatarClass: 'av-purple' },
-    { nombre: 'Alejandro Robledo',  display: 'Alejandro Robledo',  iniciales: 'AR', rol: 'Desarrollador',avatarClass: 'av-orange' },
-    { nombre: 'Guillermo Reyes',    display: 'Memo Reyes',         iniciales: 'GR', rol: 'Desarrollador',avatarClass: 'av-green'  },
+    { nombre: 'VAZQUEZ CASTILLO OMAR',         iniciales: 'OV', rol: 'Analista TI',    avatarClass: 'av-blue'   },
+    { nombre: 'DE LA CRUZ HERNANDEZ FERNANDO', iniciales: 'FC', rol: 'Soporte Jr',      avatarClass: 'av-purple' },
+    { nombre: 'ROBLEDO RANGEL ALEJANDRO',    iniciales: 'AR', rol: 'Desarrollador',   avatarClass: 'av-orange' },
+    { nombre: 'REYES GOMEZ GUILLERMO',         iniciales: 'GR', rol: 'Desarrollador',   avatarClass: 'av-green'  },
 ];
 
 controller.agentesMonitoreo = async (req, res) => {
     try {
         const ticketsDB = await modelosSistemas.modeloTickets.findAll();
 
-        // Contar tickets activos (no cerrados) por técnico.
-        // La comparación es case-insensitive para tolerar diferencias de capitalización.
+        // Contar tickets activos (no cerrados) por técnico usando el nombre en asignadoA
         const conteo = {};
-        TECNICOS_TI.forEach(t => { conteo[t.nombre.toLowerCase()] = 0; });
+        TECNICOS_TI.forEach(t => { conteo[t.nombre] = 0; });
 
         ticketsDB.forEach(registro => {
             const datos = parseDatosTicket(registro);
-            const asignado = (datos.asignadoA || '').trim().toLowerCase();
+            const asignado = (datos.asignadoA || '').trim().toUpperCase();
             const estatus  = datos.estatus || 'open';
 
             // Solo cuenta tickets que NO están terminados
@@ -2192,12 +2122,15 @@ controller.agentesMonitoreo = async (req, res) => {
         });
 
         const agentes = TECNICOS_TI.map(t => ({
-            nombre:         t.display,          // nombre visible en la UI
-            iniciales:      t.iniciales,
-            rol:            t.rol,
-            avatarClass:    t.avatarClass,
-            ticketsActivos: conteo[t.nombre.toLowerCase()],
-            estado:         conteo[t.nombre.toLowerCase()] > 0 ? 'Ocupado' : 'Activo',
+            nombre:       t.nombre
+                            .split(' ')
+                            .map(p => p.charAt(0) + p.slice(1).toLowerCase())
+                            .join(' '),   // "ROBLEDO CASTILLO ALEJANDRO" → "Robledo Castillo Alejandro"
+            iniciales:    t.iniciales,
+            rol:          t.rol,
+            avatarClass:  t.avatarClass,
+            ticketsActivos: conteo[t.nombre],
+            estado:       conteo[t.nombre] > 0 ? 'Ocupado' : 'Activo',
         }));
 
         return res.json({ ok: true, agentes });
