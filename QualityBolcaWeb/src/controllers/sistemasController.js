@@ -1,27 +1,12 @@
-import express from "express";
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
-import Empleados from "../models/empleado.js";
 import manejadrorErrores from "../middleware/manejadorErrores.js";
 import miNodemailer from "../public/clases/nodemailer.js";
-
-import {
-    registroma,
-    Inventario,
-    Solicitudservicio,
-    Vales,
-    Usuario
-} from "../models/index.js";
-
-import { Op, QueryTypes, where } from 'sequelize'
-import Informaciongch from "../models/informaciongch.js";
-import Informaciondepartamento from "../models/informaciondepartamento.js";
-import e from "express";
+import { Op, QueryTypes } from 'sequelize'
 import dbSistemas from "../config/dbSistemas.js";
-import modeloRequisicionEquipo from "../models/sistemas/requisicionEquipo.js";
-const app = express();
+
 
 const controller = {};
 
@@ -58,7 +43,7 @@ controller.addinventario2 = async (req, res) => {
         ultimoMantenimiento
     } = req.body
 
-    const InventarioR = await Inventario.create({
+    const InventarioR = await modelosSistemas.inventario.create({
         idInventario,
         tipo,
         marca,
@@ -74,7 +59,10 @@ controller.addinventario2 = async (req, res) => {
         codigoResguardo,
         ultimoMantenimiento
     })
-
+    if(!InventarioR){
+        res.status(400).send({ ok: false });
+        return
+    }
     res.status(200).send({ ok: true });
     return
 }
@@ -85,40 +73,6 @@ controller.tablainventario = async (req, res) => {
     res.render('admin/sistemas/tablainventario');
 }
 
-controller.api = async (req, res) => {
-    const { query2 } = req.params
-    let valeasignacion
-    // const resultado = await db.query(
-    //     `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
-    //      FROM inventario i
-    //      INNER JOIN vales v ON i.folio = v.idfolio
-    //      INNER JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
-    //      INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
-    //      WHERE i.folio = :nfolio;`,
-    //     {
-    //       replacements: { nfolio: '40' }, // Sustituir parámetros
-    //       type: QueryTypes.SELECT // Tipo de consulta: SELECT
-    //     }
-    //   )
-    const resultado = await db.query(
-        query2,
-        {
-            //   replacements: { nfolio: '40' }, // Sustituir parámetros
-            type: QueryTypes.SELECT // Tipo de consulta: SELECT
-        }
-    )
-        .then((resultados) => {
-            valeasignacion = resultados;
-        });
-
-
-
-    // res.render('admin/valeresguardo',{
-    //     csrfToken: req.csrfToken(),
-    //     valeasignacion
-    // })
-    res.send(valeasignacion)
-}
 
 controller.addvales = async (req, res) => {
     res.render('admin/sistemas/addvales', {
@@ -134,7 +88,7 @@ controller.addvales2 = async (req, res) => {
         fechaFolio
     } = req.body
 
-    const valesR = await Vales.create({
+    const valesR = await modelosSistemas.vales.create({
         idFolio,
         numeroEmpleado,
         fechaFolio
@@ -428,13 +382,13 @@ controller.dashboardTI = async (req, res) => {
 controller.obtenerColaboradoresSinVale = async (req, res) => {
     try {
         // Obtener todos los números de empleado que ya tienen vale
-        const vales = await Vales.findAll({
+        const vales = await modelosSistemas.vales.findAll({
             attributes: ['numeroEmpleado']
         });
 
         const empleadosConVale = vales.map(v => v.numeroEmpleado);
 
-        const colaboradores = await Informaciongch.findAll({
+        const colaboradores = await modelosGenerales.modelonom10001.findAll({
             where: {
                 codigoempleado: {
                     [Op.notIn]: empleadosConVale.length > 0 ? empleadosConVale : ['']
@@ -468,7 +422,7 @@ controller.crearVale = async (req, res) => {
         }
 
         // 1. Obtener el siguiente idFolio
-        const ultimoVale = await Vales.findOne({
+        const ultimoVale = await modelosSistemas.vales.findOne({
             order: [['idFolio', 'DESC']]
         });
 
@@ -478,7 +432,7 @@ controller.crearVale = async (req, res) => {
         const hoy = new Date().toISOString().split("T")[0];
 
         // 3. Crear el vale
-        const nuevoVale = await Vales.create({
+        const nuevoVale = await modelosSistemas.vales.create({
             idFolio: siguienteFolio,
             numeroEmpleado: numeroEmpleado,
             fechaFolio: hoy,
@@ -487,7 +441,7 @@ controller.crearVale = async (req, res) => {
         });
 
         //Asignar el folio a los equipos
-        await Inventario.update(
+        await modelosSistemas.inventario.update(
             { folio: siguienteFolio },
             {
                 where: {
@@ -513,7 +467,7 @@ controller.darBajaVale = async (req, res) => {
 
     try {
         //buscar el inventario que coincide con el folio
-        const inventarios = await Inventario.findAll({
+        const inventarios = await modelosSistemas.inventario.findAll({
             where: { folio: folio }
         });
 
@@ -522,13 +476,13 @@ controller.darBajaVale = async (req, res) => {
         }
 
         //Actualizar cambio de firma en null para la tabla de vales
-        await Vales.update(
+        await modelosSistemas.inventario.update(
             { Firma: null },
             { where: { idFolio: folio } }
         )
 
         //Actualizar el inventario en 0 todos los registros encontrados
-        await Inventario.update(
+        await modelosSistemas.inventario.update(
             { folio: 0 },
             { where: { folio: folio } }
         );
@@ -536,14 +490,14 @@ controller.darBajaVale = async (req, res) => {
         return res.json({ ok: true, message: "Todos los objetos del inventario fueron dados de baja correctamente" });
 
     } catch (error) {
-        console.log('Error al dar de baja el vale', error);
+        console.error('Error al dar de baja el vale', error);
         return res.status(500).json({ ok: false, message: error.message })
     }
 }
 
 controller.inventarioDisponible = async (req, res) => {
     try {
-        const equipos = await Inventario.findAll({
+        const equipos = await modelosSistemas.inventario.findAll({
             where: {
                 folio: 0
             }
@@ -572,7 +526,7 @@ controller.agregarEquipos = async (req, res) => {
 
     try {
         // 1. Validar que el vale existe
-        const vale = await Vales.findOne({ where: { idFolio: folio } });
+        const vale = await modelosSistemas.vales.findOne({ where: { idFolio: folio } });
 
         if (!vale) {
             return res.status(404).json({
@@ -582,7 +536,7 @@ controller.agregarEquipos = async (req, res) => {
         }
 
         // 2. Asignar los equipos al vale
-        await Inventario.update(
+        await modelosSistemas.inventario.update(
             { folio: folio },               // se asigna el folio
             { where: { idInventario: equipos } } // se asignan todos los seleccionados
         );
@@ -605,7 +559,7 @@ controller.equiposAsignados = async (req, res) => {   //obtener equipos asignado
     const { folio } = req.params;
 
     try {
-        const equipos = await Inventario.findAll({
+        const equipos = await modelosSistemas.inventario.findAll({
             where: {
                 folio: folio
             }
@@ -628,7 +582,7 @@ controller.removerEquipos = async (req, res) => {
     }
 
     try {
-        await Inventario.update(
+        await modelosSistemas.inventario.update(
             { folio: 0 },
             {
                 where: {
@@ -653,11 +607,11 @@ controller.removerEquipos = async (req, res) => {
 controller.levantamientoTicket = async (req, res) => {
     try {
         const { codigoempleado } = req.usuario;
-        const usuario = await Usuario.findOne({
+        const usuario = await modelosGenerales.usuarios.findOne({
             where: { codigoempleado }
         });
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelosGenerales.modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -699,11 +653,11 @@ controller.levantamientoTicket = async (req, res) => {
 controller.formularioTicket = async (req, res) => {
     try {
         const { codigoempleado } = req.usuario;
-        const usuario = await Usuario.findOne({
+        const usuario = await modelosGenerales.usuarios.findOne({
             where: { codigoempleado }
         });
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelosGenerales.modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -778,7 +732,7 @@ controller.crudTickets = async (req, res) => {
 
                 const { codigoempleado } = req.usuario;
 
-                const empleado = await Informaciongch.findOne({
+                const empleado = await modelosGenerales.modelonom10001.findOne({
                     where: { codigoempleado }
                 });
 
@@ -979,7 +933,6 @@ controller.asignarTicket = async (req, res) => {
 
 controller.pausarTicket = async (req, res) => {   //pausar ticket
     try {
-        console.log('pausar ticket');
         const { id } = req.params;
 
         const ticket = await modelosSistemas.modeloTickets.findOne({
@@ -1276,10 +1229,8 @@ controller.obtenerDatosNuevoUsuario = async (req, res) => {
         );
 
         const ultimoCodigoInt = parseInt(ultimoCodigo) + 1;
-        //console.log(ultimoCodigoInt);
         const ultimoCodigostr = ultimoCodigoInt.toString();
-        console.log(ultimoCodigo)
-
+        
         const departamentos = await db.query(
             `SELECT iddepartamento, descripcion 
              FROM nom10003
@@ -1504,9 +1455,6 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         const { codigoempleado } = req.params;
         const { permisos } = req.body;
 
-        console.log('PARAMS:', req.params);
-        console.log('BODY:', req.body);
-
         if (!codigoempleado || !permisos) {
             return res.status(400).json({
                 ok: false,
@@ -1528,7 +1476,7 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         }
 
         // Buscar usuario
-        const usuario = await Usuario.findOne({
+        const usuario = await modelosGenerales.usuarios.findOne({
             where: { codigoempleado }
         });
 
@@ -1575,7 +1523,7 @@ controller.actualizarEstadoUsuario = async (req, res) => {
             });
         }
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelosGenerales.modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -1802,7 +1750,7 @@ controller.eliminarUsuario = async (req, res) => {
 controller.requisicionEquipos = async (req, res) => {
     try {
         let { codigoempleado } = req.usuario
-        let empleado = await Empleados.findOne({ where: { codigoempleado: codigoempleado } })
+        let empleado = await modelosGenerales.vistaempleados.findOne({ where: { codigoempleado: codigoempleado } })
         let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
         let criterios = { codigoempleado: codigoempleado }
         let datosEmpleado = await clase.obtener1Registro({ criterio: criterios })

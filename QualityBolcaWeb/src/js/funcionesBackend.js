@@ -42,6 +42,26 @@ class custonFunctions{
         return {inicio, fin}
     }
 
+    static getSafeRedirect(req) {
+        let redirectUrl = req.session.returnTo || '/inicio';
+        delete req.session.returnTo;
+
+        // Validar que sea una ruta interna
+        if (typeof redirectUrl !== 'string' || !redirectUrl.startsWith('/')) {
+            return redirectUrl = '/inicio';
+        }
+
+        // Opcional: lista blanca de rutas permitidas
+        // const allowedPaths = ['/inicio', '/reportes', '/perfil'];
+        // if (!allowedPaths.includes(redirectUrl)) {
+        //     redirectUrl = '/inicio';
+        // }
+
+        // return redirectUrl;
+}
+
+
+
 }
 
 export default custonFunctions;

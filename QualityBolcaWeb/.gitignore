@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.production
+.claude
 
 # Ignorar carpetas generadas por la aplicación
 src/public/2025

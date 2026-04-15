@@ -2,11 +2,12 @@ import 'dotenv/config'
 import express from "express";
 import {default as customerController} from './../controllers/customerController.js';
 import upload3 from "../middleware/cargararchivo.js";
-import csurf from "csurf";
 import protegerRuta from '../middleware/protegetRuta.js';
 import rutasPublicas from "../middleware/rutasPublicas.js";
 import rateLimit from 'express-rate-limit';
 // import { csrfProtection } from '../../index.js';
+
+
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,  // ventana de 15 minutos
     max: 10,                    // máximo 10 intentos por IP
@@ -15,7 +16,7 @@ const loginLimiter = rateLimit({
 
 const router = express.Router();
 //rutas de login
-router.get('/',rutasPublicas,customerController.formularioLogin);
+router.get('/',rutasPublicas, customerController.formularioLogin);
 router.get('/login', customerController.formularioLogin);
 router.post('/login', loginLimiter, customerController.autenticar);
 //ruta logout
@@ -23,46 +24,14 @@ router.post('/logout', protegerRuta,customerController.logout);
 //rutas de registro
 router.get('/registro', customerController.formularioRegistro);
 router.post('/registro', customerController.registrar);
+//confirmacion de token
 router.get('/confirmar/:token', customerController.confirmar)
-router.get('/formularioAlta',customerController.formularioAlta);
 
 router.get('/olvide-password', customerController.formularioOlvidePassword);
 router.post('/olvide-password', customerController.resetPassword)
 router.get('/olvide-password/:token', customerController.comprobarToken)
 router.post('/olvide-password/:token', customerController.nuevoPassword)
 
-router.get('/requisicion', customerController.requisicion);
-router.post('/requisicion', customerController.requisicion2);
-
 router.get('/inicio', protegerRuta,customerController.inicio)
-router.get('/asistencia', customerController.asistencia)
-router.get('/asistencia/:plantaA', customerController.asistencia2)
-router.post('/asistencia', customerController.asistencia3)
-router.get('/checklist', customerController.cheklist1)
-router.post('/checklist', customerController.cheklist2)
-router.get('/agregar-imagen', customerController.agregarImagen)
-router.post('/agregar-imagen', customerController.agregarImagen2)
-router.get('/controlDispositivos', customerController.controlDispositivos)
-router.post('/controlDispositivos', customerController.controlDispositivos2)
-router.get('/encuestaSatisfaccion', customerController.encuestaSatisfaccion)
-router.post('/encuestaSatisfaccion', customerController.encuestaSatisfaccion2)
-router.get('/directorio', customerController.paginaDirectorio);
-router.get('/mantenimiento', customerController.paginaMantenimiento);
-router.get('/solicitud', customerController.paginaSolicitud);
-router.post('/solicitud', upload3.single('cv'), customerController.paginaSolicitud2);
-// router.post('/solicitud/:cp', customerController.paginaSolicitud3);
-router.get('/subirsolicitud/:id',customerController.subirSolicitud);
-router.post('/subirsolicitud/:id', upload3.single('pdfFile'),customerController.subirSolicitud2);
-router.post('/enviar', customerController.paginaSolicitud2);
-router.post('/uploader', customerController.uploads);
-router.post('/enviarCorreo', customerController.enviarCorreo);
-router.get('/juegos', customerController.juegos);
-router.post('/juegos', customerController.juegos2);
-// router.get('/documentosControlados', customerController.documentosControlados);
-router.post('/contacto', customerController.contacto);
-// router.get('/calidad/:documento', customerController.calidadD)
-
-// router.get('/api/:variable', customerController.api);
-
 
 export default router;
