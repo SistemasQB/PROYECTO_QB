@@ -76,6 +76,13 @@
 
   <div class="capture-layout">
 
+    <!-- ---- Panel de resumen (Cabecera) ---- -->
+    <aside class="summary-panel" id="summary-panel">
+      <div class="summary-list" id="summary-list">
+        <p class="summary-empty">Los datos del encabezado aparecerán aquí.</p>
+      </div>
+    </aside>
+
     <!-- ---- Área principal: micrófono + pregunta + confirmación ---- -->
     <section class="capture-main">
 
@@ -86,7 +93,7 @@
       </div>
 
       <!-- Ícono de micrófono animado -->
-      <div class="mic-area">
+      <div class="mic-area" id="mic-area">
         <div class="mic-ring" id="mic-ring">
           <svg class="mic-icon" viewBox="0 0 24 24" fill="none"
                stroke="currentColor" stroke-width="1.7"
@@ -151,14 +158,6 @@
       </div>
 
     </section><!-- /capture-main -->
-
-    <!-- ---- Panel de resumen ---- -->
-    <aside class="summary-panel">
-      <h2 class="summary-title">Resumen</h2>
-      <div class="summary-list" id="summary-list">
-        <p class="summary-empty">Los datos capturados aparecerán aquí.</p>
-      </div>
-    </aside>
 
   </div><!-- /capture-layout -->
 
@@ -314,6 +313,23 @@
 </div><!-- /help-overlay -->
 
 
-<script src="/bots/scripts_botPrueba.js"></script>
+<!-- ========================================================
+     OVERLAY: REPORTE PENDIENTE DE ENVÍO
+     ======================================================== -->
+<div class="perm-overlay hidden" id="unsent-overlay"
+     role="alertdialog" aria-modal="true" aria-labelledby="unsent-title">
+  <div class="perm-card">
+    <div class="perm-icon" aria-hidden="true">⚠️</div>
+    <h3 class="perm-title" id="unsent-title">Reporte sin enviar</h3>
+    <p class="perm-body">
+      Tienes un reporte pendiente de envío.<br>
+      Debes enviarlo antes de crear uno nuevo.
+    </p>
+    <button class="perm-grant" id="unsent-send-btn">Enviar reporte</button>
+    <button class="perm-cancel" id="unsent-cancel-btn">Volver al reporte</button>
+  </div>
+</div>
+
+<script src="/scripts/bots/scripts_botPrueba.js"></script>
 </body>
 </html>
