@@ -19,6 +19,7 @@ router.post('/publicarReporte', protegetRuta, controladorBots.publicarReporte); 
 
 // Módulo supervisor
 router.get('/supervisor/bandeja', protegetRuta, controladorBots.bandejaSupervisor);
+router.get('/supervisor/bandeja/data', protegetRuta, controladorBots.bandejaSupervisorData);
 router.get('/supervisor/detalle/:id', protegetRuta, controladorBots.detalleReporte);
 router.get('/supervisor/historial', protegetRuta, controladorBots.historialPublicados);
 router.get('/supervisor/publicado/:id', protegetRuta, controladorBots.detallePublicado);

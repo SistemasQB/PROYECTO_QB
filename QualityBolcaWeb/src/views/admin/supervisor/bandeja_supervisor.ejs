@@ -11,6 +11,21 @@
 <body>
 
   <header class="sv-header">
+    <!-- Botón hamburguesa: visible solo en móvil/tablet (≤768px) -->
+    <button
+      class="sv-hamburger"
+      id="sv-hamburger-btn"
+      aria-label="Abrir menú de navegación"
+      aria-expanded="false"
+      aria-controls="sv-sidebar-nav"
+    >
+      <svg class="sv-hamburger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6"  x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
     <div class="sv-header__brand">
       <img
         class="sv-header__logo"
@@ -25,12 +40,18 @@
     </div>
   </header>
 
+  <!-- Overlay oscuro: cubre el contenido al abrir el drawer en móvil -->
+  <div class="sv-sidebar-overlay" id="sv-sidebar-overlay" aria-hidden="true"></div>
+
   <div class="sv-layout">
 
-    <nav class="sv-sidebar" aria-label="Navegación principal">
+    <nav class="sv-sidebar" id="sv-sidebar-nav" aria-label="Navegación principal">
+      <div class="sv-sidebar__brand">
+        <img src="https://qualitybolca.com/assets/images/logo.png" alt="Quality Bolca" onerror="this.style.display='none'" />
+      </div>
       <ul class="sv-sidebar__list">
         <li>
-          <a href="/supervisor/bandeja" class="sv-sidebar__item sv-sidebar__item--active" aria-current="page">
+          <a href="bandeja" class="sv-sidebar__item sv-sidebar__item--active" aria-current="page">
             <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
             </svg>
@@ -38,7 +59,7 @@
           </a>
         </li>
         <li>
-          <a href="/supervisor/historial" class="sv-sidebar__item">
+          <a href="historial" class="sv-sidebar__item">
             <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
@@ -57,20 +78,27 @@
     </nav>
 
     <main class="sv-main">
-      <div class="sv-page-header">
-        <h1 class="sv-page-title">Bandeja de Entrada</h1>
-        <p class="sv-page-subtitle">Reportes pendientes de revisión</p>
+      <div class="sv-page-header sv-page-header--row">
+        <div>
+          <h1 class="sv-page-title">Bandeja de Entrada</h1>
+          <p class="sv-page-subtitle">Reportes pendientes de revisión</p>
+        </div>
+        <div class="sv-poll-status" id="sv-poll-status" aria-live="polite" aria-atomic="true">
+          <span class="sv-poll-status__dot" id="sv-poll-dot"></span>
+          <span class="sv-poll-status__text" id="sv-poll-text">Actualizando...</span>
+        </div>
       </div>
 
+      <div id="sv-bandeja-content">
       <% if (totalPendientes === 0) { %>
         <div style="text-align: center; padding: 3rem; color: #6b7280;">
            <p>¡Todo al día! No tienes reportes pendientes por revisar.</p>
         </div>
       <% } else { %>
-        
+
         <% Object.keys(reportesPorInspector).forEach(function(inspectorNombre) { %>
           <% const reportes = reportesPorInspector[inspectorNombre]; %>
-          
+
           <% const iniciales = inspectorNombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(); %>
           <% const idSeguro = inspectorNombre.replace(/\s+/g, '-').toLowerCase(); %>
 
@@ -90,6 +118,7 @@
                 <thead>
                   <tr>
                     <th scope="col">Fecha</th>
+                    <th scope="col">ID reporte</th>
                     <th scope="col">Nombre de parte</th>
                     <th scope="col">Turno</th>
                     <th scope="col">Número de parte</th>
@@ -101,25 +130,26 @@
                 <tbody>
                   <% reportes.forEach(function(reporte) { %>
                     <% const fechaFormateada = new Date(reporte.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
-                    
+
                     <tr>
                       <td><%= fechaFormateada %></td>
+                      <td>REP-<%= reporte.body_id || 'N/A' %></td>
                       <td><%= reporte.nombre_parte || 'N/A' %></td>
                       <td><%= reporte.turno %></td>
                       <td><span class="sv-part-number"><%= reporte.numero_parte %></span></td>
                       <td><%= reporte.numero_items || 0 %> lotes</td>
                       <td>
-                        <% if (reporte.status === 'pending') { %>
+                        <% if (reporte.body_status === 'pending') { %>
                           <span class="sv-badge sv-badge--warning">PENDIENTE</span>
-                        <% } else if (reporte.status === 'signed') { %>
-                          <span class="sv-badge sv-badge--warning" style="background-color: #dbeafe; color: #1e40af;">FIRMADO</span>
+                        <% } else if (reporte.body_status === 'signed') { %>
+                          <span class="sv-badge sv-badge--success">FIRMADO</span>
                         <% } %>
                       </td>
                       <td>
                         <a
-                          href="/supervisor/detalle/<%= reporte.body_id %>"
+                          href="detalle/<%= reporte.body_id %>"
                           class="sv-btn sv-btn--primary sv-btn--sm"
-                          aria-label="Revisar reporte ID <%= reporte.body_id %>"
+                          aria-label="Revisar reporte ID <%= reporte.reporte_id %>"
                         >
                           REVISAR
                         </a>
@@ -130,7 +160,10 @@
               </table>
             </div>
           </section>
-        <% }); %> <% } %> </main>
+        <% }); %>
+      <% } %>
+      </div>
+    </main>
   </div><script src="/scripts/supervisor/scripts_bandeja.js"></script>
 </body>
 </html>

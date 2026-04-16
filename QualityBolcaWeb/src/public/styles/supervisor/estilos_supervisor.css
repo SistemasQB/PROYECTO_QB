@@ -360,6 +360,26 @@ html, body {
 .sv-table-wrapper {
   overflow-x: auto;
   border-radius: var(--radius);
+  /* Scrollbar visible y coherente con la paleta */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) var(--color-surface-alt);
+}
+
+.sv-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.sv-table-wrapper::-webkit-scrollbar-track {
+  background: var(--color-surface-alt);
+}
+
+.sv-table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 3px;
+}
+
+.sv-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
 }
 
 /* Tabla dentro de grupo de inspector sin radio superior */
@@ -368,6 +388,8 @@ html, body {
 }
 
 .sv-table {
+  /* min-width garantiza que las columnas no colapsen en viewports estrechos */
+  min-width: 680px;
   width: 100%;
   border-collapse: collapse;
   font-size: var(--font-size-sm);
@@ -637,15 +659,14 @@ html, body {
   overflow: hidden;
 }
 
-/* Panel izquierdo: detalle */
+/* Panel izquierdo: detalle — ocupa todo el ancho (chat es fixed) */
 .sv-detail-panel {
-  flex: 0 0 66%;
+  flex: 1;
   overflow-y: auto;
   padding: var(--space-6) var(--space-8);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-  border-right: 1px solid var(--color-border);
   min-width: 0;
 }
 
@@ -674,14 +695,25 @@ html, body {
   padding-top: var(--space-2);
 }
 
-/* Panel derecho: chat */
+/* Panel derecho: chat — drawer flotante (oculto por defecto) */
 .sv-chat-panel {
-  flex: 0 0 34%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 380px;
   display: flex;
   flex-direction: column;
   background: var(--color-surface);
-  min-width: 280px;
   overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 450;
+  box-shadow: var(--shadow-lg);
+}
+
+.sv-chat-panel.is-open {
+  transform: translateX(0);
 }
 
 .sv-chat-header {
@@ -1035,6 +1067,118 @@ html, body {
 }
 
 /* ----------------------------------------------------------
+   BOTÓN HAMBURGUESA (visible solo en móvil/tablet)
+   ---------------------------------------------------------- */
+.sv-hamburger {
+  /* Oculto en desktop; se muestra vía media query */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-invert);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  /* Posicionado a la izquierda del brand dentro del header */
+  order: -1;
+}
+
+.sv-hamburger:hover {
+  background: rgba(255,255,255,0.20);
+}
+
+.sv-hamburger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.sv-hamburger__icon {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------
+   OVERLAY (fondo oscuro al abrir el drawer)
+   ---------------------------------------------------------- */
+.sv-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 299;
+  /* Fade in al activarse */
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.sv-sidebar-overlay.is-visible {
+  display: block;
+  opacity: 1;
+}
+
+/* ----------------------------------------------------------
+   DRAWER MÓVIL — sidebar transformado
+   ---------------------------------------------------------- */
+@media (max-width: 768px) {
+
+  /* Mostrar el botón hamburguesa */
+  .sv-hamburger {
+    display: flex;
+  }
+
+  /* El sidebar se convierte en drawer: fijo, fuera de pantalla por defecto */
+  .sv-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 260px;
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Mantener la anchura completa (override del valor condensado del media query existente) */
+    --sidebar-width: 260px;
+    box-shadow: var(--shadow-lg);
+    /* Padding superior para compensar el sticky header */
+    padding-top: var(--header-height);
+  }
+
+  /* Estado abierto del drawer */
+  .sv-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  /* Textos del sidebar vuelven a ser visibles dentro del drawer */
+  .sv-sidebar__item {
+    justify-content: flex-start;
+    padding: var(--space-3) var(--space-5);
+  }
+
+  /* Override: mostrar texto de los items (el media query existente los oculta con 60px) */
+  .sv-sidebar__item span:not(.sv-sidebar__icon),
+  .sv-sidebar__item > svg ~ * {
+    display: inline;
+  }
+
+  /* El layout no reserva espacio para el sidebar en móvil */
+  .sv-layout {
+    display: block;
+  }
+
+  /* sv-main ocupa el ancho completo */
+  .sv-main {
+    width: 100%;
+    padding: var(--space-4);
+  }
+}
+
+/* ----------------------------------------------------------
    ANIMACIONES (respeta prefers-reduced-motion)
    ---------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
@@ -1050,57 +1194,71 @@ html, body {
    RESPONSIVE — ajustes para pantallas medianas
    ---------------------------------------------------------- */
 @media (max-width: 1100px) {
-  .sv-main--split {
-    flex-direction: column;
-    overflow-y: auto;
-  }
-
-  .sv-detail-panel {
-    flex: none;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-    overflow-y: visible;
-  }
-
-  .sv-chat-panel {
-    flex: none;
-    min-width: 0;
-    height: 480px;
-  }
-
   .sv-data-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Nota: el breakpoint ≤768px principal está en el bloque
+   "DRAWER MÓVIL" de arriba. Las reglas que siguen son
+   complementarias y no entran en conflicto con el drawer. */
 @media (max-width: 768px) {
-  :root {
-    --sidebar-width: 60px;
-  }
-
-  .sv-sidebar__item span:not(.sv-sidebar__icon) {
-    display: none;
-  }
-
-  .sv-sidebar__item {
-    justify-content: center;
-    padding: var(--space-3);
-  }
-
+  /* Ocultar el nombre de la app en el header para ganar espacio */
   .sv-header__app {
     display: none;
   }
 
+  /* Datos generales en columna única */
   .sv-data-grid {
     grid-template-columns: 1fr;
   }
 
+  /* KPI cards apiladas */
   .sv-kpi-row {
     flex-direction: column;
   }
 
-  .sv-main {
+  /* Filtros en columna: cada grupo ocupa su propia línea */
+  .sv-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sv-filters__group {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .sv-filters__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* Split view (detalle_reporte): paneles apilados verticalmente */
+  .sv-main--split {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .sv-detail-panel {
     padding: var(--space-4);
+    width: 100%;
+  }
+
+  /* Acciones del reporte en columna */
+  .sv-detail-actions {
+    flex-direction: column;
+  }
+
+  .sv-detail-actions .sv-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Franja de auditoría en columna */
+  .sv-audit-strip {
+    flex-direction: column;
+    gap: var(--space-3);
   }
 }
 
@@ -1109,4 +1267,270 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* ----------------------------------------------------------
+   P-05: INDICADOR DE POLLING / AUTO-REFRESH
+   ---------------------------------------------------------- */
+.sv-poll-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+/* Dot base */
+.sv-poll-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--color-border-strong);
+  transition: background 0.3s;
+}
+
+/* Estado OK — verde parpadeante */
+.sv-poll-dot--ok {
+  background: var(--color-success);
+  animation: sv-pulse-ok 2.5s ease-in-out infinite;
+}
+
+/* Estado cargando — azul parpadeante */
+.sv-poll-dot--loading {
+  background: var(--color-primary);
+  animation: sv-pulse-loading 0.9s ease-in-out infinite;
+}
+
+/* Estado error — rojo fijo */
+.sv-poll-dot--error {
+  background: var(--color-error);
+  animation: none;
+}
+
+.sv-poll-status__text {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+@keyframes sv-pulse-ok {
+  0%, 100% { opacity: 1;    transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(0.85); }
+}
+
+@keyframes sv-pulse-loading {
+  0%, 100% { opacity: 1;    }
+  50%       { opacity: 0.3; }
+}
+
+/* En móvil ocultar el texto, dejar solo el dot para no saturar el header */
+@media (max-width: 480px) {
+  .sv-poll-status__text {
+    display: none;
+  }
+  .sv-poll-status {
+    padding: var(--space-1) var(--space-2);
+  }
+}
+
+/* ----------------------------------------------------------
+   P-06: CHAT DRAWER — FAB, overlay y botón de cierre
+   ---------------------------------------------------------- */
+
+/* Botón flotante para abrir el chat (Floating Action Button) */
+.sv-chat-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 400;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-text-invert);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.40), var(--shadow-md);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.15s,
+              box-shadow 0.2s;
+  font-family: var(--font-family);
+}
+
+.sv-chat-fab:hover {
+  transform: scale(1.08);
+  background: var(--color-primary-hover);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.50), var(--shadow-lg);
+}
+
+.sv-chat-fab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.sv-chat-fab:active {
+  transform: scale(0.96);
+}
+
+/* Estado abierto: cambia color para indicar que el chat está activo */
+.sv-chat-fab.is-active {
+  background: var(--color-dark);
+  box-shadow: 0 4px 16px rgba(30, 58, 95, 0.40), var(--shadow-md);
+}
+
+.sv-chat-fab.is-active:hover {
+  background: var(--color-dark-hover);
+  box-shadow: 0 6px 20px rgba(30, 58, 95, 0.50), var(--shadow-lg);
+}
+
+/* Icono de chat (visible cuando el drawer está cerrado) */
+.sv-chat-fab__icon-open {
+  display: flex;
+}
+
+.sv-chat-fab__icon-close {
+  display: none;
+}
+
+.sv-chat-fab.is-active .sv-chat-fab__icon-open {
+  display: none;
+}
+
+.sv-chat-fab.is-active .sv-chat-fab__icon-close {
+  display: flex;
+}
+
+/* Overlay oscuro detrás del drawer */
+.sv-chat-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 440;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sv-chat-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Botón de cierre (X) dentro del header del chat */
+.sv-chat-close {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-invert);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sv-chat-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.sv-chat-close:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.70);
+  outline-offset: 2px;
+}
+
+/* Móvil: el drawer ocupa toda la pantalla */
+@media (max-width: 640px) {
+  .sv-chat-panel {
+    width: 100%;
+  }
+
+  /* En móvil el FAB sube un poco para no solaparse con la barra del sistema */
+  .sv-chat-fab {
+    bottom: 1.25rem;
+    right: 1rem;
+  }
+}
+
+/* ----------------------------------------------------------
+   LOGO EN EL DRAWER MÓVIL (cabecera del sidebar)
+   ---------------------------------------------------------- */
+.sv-sidebar__brand {
+  display: none; /* oculto en desktop */
+  padding: 1.25rem 1rem 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+}
+
+.sv-sidebar__brand img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+@media (max-width: 768px) {
+  .sv-sidebar__brand {
+    display: block;
+  }
+}
+
+/* ----------------------------------------------------------
+   RESPONSIVE — móvil pequeño (≤480px)
+   ---------------------------------------------------------- */
+@media (max-width: 480px) {
+  /* Título de página más compacto */
+  .sv-page-title {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Botones con área de toque suficiente (mínimo 44px de alto) */
+  .sv-btn {
+    padding: 12px 16px;
+    min-height: 44px;
+  }
+
+  .sv-btn--sm {
+    padding: 10px 12px;
+    min-height: 40px;
+  }
+
+  /* Celdas de tabla más compactas para mostrar más columnas antes del scroll */
+  .sv-table thead th,
+  .sv-table tbody td,
+  .sv-table tbody th[scope="row"] {
+    padding: var(--space-2) var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+
+  /* Header: padding lateral mínimo */
+  .sv-header {
+    padding: 0 var(--space-3);
+  }
+
+  /* Acciones del header en móvil pequeño: ocultar el botón "Volver" si no cabe */
+  .sv-header__actions .sv-btn--ghost {
+    font-size: var(--font-size-xs);
+    padding: 6px 10px;
+  }
+
+  /* KPI número más pequeño */
+  .sv-kpi-card__number {
+    font-size: 24px;
+  }
 }

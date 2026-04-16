@@ -13,6 +13,21 @@
 
   <!-- Header -->
   <header class="sv-header">
+    <!-- Botón hamburguesa: visible solo en móvil/tablet (≤768px) -->
+    <button
+      class="sv-hamburger"
+      id="sv-hamburger-btn"
+      aria-label="Abrir menú de navegación"
+      aria-expanded="false"
+      aria-controls="sv-sidebar-nav"
+    >
+      <svg class="sv-hamburger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6"  x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
     <div class="sv-header__brand">
       <img
         class="sv-header__logo"
@@ -23,9 +38,9 @@
       <span class="sv-header__app">Quality Bolca</span>
     </div>
     <div class="sv-header__actions">
-      <span class="sv-header__username">María González</span>
+      <span class="sv-header__username"><%= supervisor ? supervisor.nombre : 'N/A' %></span>
       <a
-        href="/supervisor/historial"
+        href="/bots/supervisor/historial"
         class="sv-btn sv-btn--ghost"
         aria-label="Volver al historial"
       >
@@ -34,14 +49,20 @@
     </div>
   </header>
 
+  <!-- Overlay oscuro: cubre el contenido al abrir el drawer en móvil -->
+  <div class="sv-sidebar-overlay" id="sv-sidebar-overlay" aria-hidden="true"></div>
+
   <div class="sv-layout">
 
     <!-- Sidebar -->
-    <nav class="sv-sidebar" aria-label="Navegación principal">
+    <nav class="sv-sidebar" id="sv-sidebar-nav" aria-label="Navegación principal">
+      <div class="sv-sidebar__brand">
+        <img src="https://qualitybolca.com/assets/images/logo.png" alt="Quality Bolca" onerror="this.style.display='none'" />
+      </div>
       <ul class="sv-sidebar__list">
         <li>
           <a
-            href="/supervisor/bandeja"
+            href="/bots/supervisor/bandeja"
             class="sv-sidebar__item"
           >
             <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -52,7 +73,7 @@
         </li>
         <li>
           <a
-            href="/supervisor/historial"
+            href="/bots/supervisor/historial"
             class="sv-sidebar__item sv-sidebar__item--active"
             aria-current="page"
           >
@@ -78,7 +99,11 @@
       <div class="sv-page-header sv-page-header--row">
         <div>
           <h1 class="sv-page-title">Reporte de Inspección</h1>
-          <p class="sv-page-subtitle">Juan Pérez &middot; 48-6123-A &middot; 08/04/2026 Matutino</p>
+          <p class="sv-page-subtitle">
+            <%= reporte.nombre_inspector || 'N/A' %> &middot;
+            <%= cotizacion.numero_parte || 'N/A' %> &middot;
+            <%= new Date(reporte.created_at).toLocaleDateString('es-MX') %> <%= reporte.turno || '' %>
+          </p>
         </div>
         <span class="sv-badge sv-badge--success sv-badge--lg">PUBLICADO</span>
       </div>
@@ -89,19 +114,19 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">
             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          <span><strong>Firmado por:</strong> María González</span>
+          <span><strong>Firmado por:</strong> <%= bodyFirma || 'N/A' %></span>
         </div>
         <div class="sv-audit-strip__item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
-          <span><strong>Fecha de firma:</strong> 08/04/2026 13:47</span>
+          <span><strong>Fecha de firma:</strong> <%= bodyFechaFirma ? new Date(bodyFechaFirma).toLocaleString('es-MX') : 'N/A' %></span>
         </div>
         <div class="sv-audit-strip__item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
           </svg>
-          <span><strong>Publicado en:</strong> 08/04/2026 14:32</span>
+          <span><strong>Publicado en:</strong> <%= reporte.updated_at ? new Date(reporte.updated_at).toLocaleString('es-MX') : 'N/A' %></span>
         </div>
       </div>
 
@@ -110,35 +135,31 @@
       <div class="sv-data-grid">
         <div class="sv-data-grid__item">
           <span class="sv-data-grid__label">Planta</span>
-          <span class="sv-data-grid__value">Planta Norte — Línea 3</span>
+          <span class="sv-data-grid__value"><%= cotizacion.planta || 'N/A' %></span>
         </div>
         <div class="sv-data-grid__item">
           <span class="sv-data-grid__label">Cliente</span>
-          <span class="sv-data-grid__value">Ford Motor Company</span>
+          <span class="sv-data-grid__value"><%= cotizacion.cliente || 'N/A' %></span>
         </div>
         <div class="sv-data-grid__item">
           <span class="sv-data-grid__label">Número de parte</span>
-          <span class="sv-data-grid__value sv-part-number">48-6123-A</span>
+          <span class="sv-data-grid__value sv-part-number"><%= cotizacion.numero_parte || 'N/A' %></span>
         </div>
         <div class="sv-data-grid__item">
           <span class="sv-data-grid__label">Nombre de parte</span>
-          <span class="sv-data-grid__value">Bracket Soporte Trasero</span>
+          <span class="sv-data-grid__value"><%= cotizacion.nombre_parte || 'N/A' %></span>
         </div>
         <div class="sv-data-grid__item">
           <span class="sv-data-grid__label">Turno</span>
-          <span class="sv-data-grid__value">Matutino</span>
+          <span class="sv-data-grid__value"><%= reporte.turno || 'N/A' %></span>
         </div>
         <div class="sv-data-grid__item">
           <span class="sv-data-grid__label">Tipo de servicio</span>
-          <span class="sv-data-grid__value">Selección 100%</span>
-        </div>
-        <div class="sv-data-grid__item">
-          <span class="sv-data-grid__label">Tipo de lote</span>
-          <span class="sv-data-grid__value">Producción</span>
+          <span class="sv-data-grid__value"><%= cotizacion.tipo_servicio || 'N/A' %></span>
         </div>
         <div class="sv-data-grid__item">
           <span class="sv-data-grid__label">Inspector</span>
-          <span class="sv-data-grid__value">Juan Pérez</span>
+          <span class="sv-data-grid__value"><%= reporte.nombre_inspector || 'N/A' %></span>
         </div>
         <div class="sv-data-grid__item">
           <span class="sv-data-grid__label">Estado</span>
@@ -158,51 +179,40 @@
           <thead>
             <tr>
               <th scope="col">Lote</th>
+              <th scope="col">Series</th>
+              <th scope="col">Otro</th>
               <th scope="col">Total</th>
               <th scope="col">Buenas</th>
               <th scope="col">NG</th>
-              <th scope="col">Scrap</th>
               <th scope="col">Defectos</th>
-              <th scope="col">Liber&oacute;</th>
+              <th scope="col">Validación</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>L-001</td>
-              <td>1,200</td>
-              <td>1,185</td>
-              <td>10</td>
-              <td>5</td>
-              <td>Rayadura, Golpe</td>
-              <td>Juan Pérez</td>
-            </tr>
-            <tr>
-              <td>L-002</td>
-              <td>980</td>
-              <td>974</td>
-              <td>4</td>
-              <td>2</td>
-              <td>Rayadura</td>
-              <td>Juan Pérez</td>
-            </tr>
-            <tr>
-              <td>L-003</td>
-              <td>1,450</td>
-              <td>1,436</td>
-              <td>9</td>
-              <td>5</td>
-              <td>Doblez, Faltante</td>
-              <td>Juan Pérez</td>
-            </tr>
-            <tr>
-              <td>L-004</td>
-              <td>1,190</td>
-              <td>1,178</td>
-              <td>8</td>
-              <td>4</td>
-              <td>Faltante</td>
-              <td>Juan Pérez</td>
-            </tr>
+            <% items.forEach(function(item) { %>
+              <tr>
+                <td><%= item.lotes || '—' %></td>
+                <td><%= item.series || '—' %></td>
+                <td><%= item.otro || '—' %></td>
+                <td><%= item.total %></td>
+                <td><%= item.OK %></td>
+                <td><%= item.NG %></td>
+                <td>
+                  <% if (item.incidencias && item.incidencias.length > 0) { %>
+                    <%= item.incidencias.map(function(i) { return i.nombre + ' (' + i.cantidad + ')'; }).join(', ') %>
+                  <% } else { %>
+                    Sin defectos
+                  <% } %>
+                </td>
+                <td>
+                  <% if ((item.OK + item.NG) === item.total) { %>
+                    <span class="sv-badge sv-badge--success">OK</span>
+                  <% } else { %>
+                    <span class="sv-badge sv-badge--danger">ERROR</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
           </tbody>
         </table>
       </div>
@@ -211,5 +221,33 @@
   </div><!-- /sv-layout -->
 
   <script src="/scripts/supervisor/scripts_detalle_publicado.js"></script>
+
+  <!-- Lógica del drawer hamburguesa (inline porque esta vista no carga scripts_bandeja.js) -->
+  <script>
+  (function () {
+    var btn     = document.getElementById('sv-hamburger-btn');
+    var sidebar = document.getElementById('sv-sidebar-nav');
+    var overlay = document.getElementById('sv-sidebar-overlay');
+    if (!btn) return;
+
+    function openDrawer() {
+      sidebar.classList.add('is-open');
+      overlay.classList.add('is-visible');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+    function closeDrawer() {
+      sidebar.classList.remove('is-open');
+      overlay.classList.remove('is-visible');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    btn.addEventListener('click', function () {
+      sidebar.classList.contains('is-open') ? closeDrawer() : openDrawer();
+    });
+    overlay.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeDrawer();
+    });
+  }());
+  </script>
 </body>
 </html>

@@ -17,6 +17,19 @@ const ReporteBody = dbReportes.define('reporteBody', {
     },
     items: {
         type: DataTypes.JSON
+    },
+    status: {
+        type:DataTypes.STRING,
+        defaultValue: 'pending',
+        allowNull: false
+    },
+    firma: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    fecha_firma: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     tableName: 'reporte_body',

@@ -4,12 +4,12 @@ import multer from 'multer';
 import { Op } from 'sequelize';
 import manejadorErrores from '../middleware/manejadorErrores.js';
 import { Reporte, Cotizacion, ReporteBody } from '../models/capturacion/barril_modelo_capturacion.js';
-import Empleados from '../models/empleado.js';
+import modeloVistaEmpleados from '../models/generales/vistaEmpleados.js';
 import { where } from 'sequelize';
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
-import { informacionpuesto } from "../models/index.js";
-import Informaciondepartamento from "../models/informaciondepartamento.js";
+import nom10006 from '../models/generales/nom10006.js';
+import Informaciondepartamento from '../models/generales/nom10003.js';
 import { QueryTypes } from 'sequelize';
 import db from "../config/db.js";
 import dbReportes from "../config/dbReportes.js";
@@ -380,7 +380,7 @@ controlador.reportesFiltrados = async (req, res) => {
 
         // obtener puesto
         let clasePuesto = new sequelizeClase({
-            modelo: informacionpuesto
+            modelo: nom10006
         })
         let puesto = await clasePuesto.obtener1Registro({
             criterio: { idpuesto: datosUsuario.idpuesto }
@@ -471,7 +471,7 @@ controlador.reportesFiltradosPorParametros = async (req, res) => {
         let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 });
         let datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: usuarioCodigo } });
 
-        let clasePuesto = new sequelizeClase({ modelo: informacionpuesto });
+        let clasePuesto = new sequelizeClase({ modelo: nom10006 });
         let puesto = await clasePuesto.obtener1Registro({ criterio: { idpuesto: datosUsuario.idpuesto } });
 
         let claseDepartamento = new sequelizeClase({ modelo: Informaciondepartamento });
@@ -624,41 +624,13 @@ controlador.firmarReporte = async (req, res) => { //realiza la firma de un repor
             });
         }
 
-        const bodiesDelReporte = await ReporteBody.findAll({
-            where: {
-                reporte_id: bodyDelReporte.reporte_id
-            }
-        });
+        // Actualizar las columnas reales del reporte_body (no el JSON items)
+        bodyDelReporte.status = 'signed';
+        bodyDelReporte.firma = nombreSupervisor.toUpperCase();
+        bodyDelReporte.fecha_firma = new Date();
+        await bodyDelReporte.save();
 
-        let totalBodiesFirmados = 0;
-
-        for (const body of bodiesDelReporte) {
-            let itemsActuales = body.items || [];
-
-            if (typeof itemsActuales === 'string') {
-                try {
-                    itemsActuales = JSON.parse(itemsActuales);
-                } catch {
-                    itemsActuales = [];
-                }
-            }
-
-            if (!Array.isArray(itemsActuales)) {
-                itemsActuales = [itemsActuales];
-            }
-
-            const itemsFirmados = itemsActuales.map(item => ({
-                ...item,
-                firma: nombreSupervisor,
-                fecha_firma: new Date().toISOString()
-            }));
-
-            body.items = itemsFirmados;
-            body.changed('items', true);
-            await body.save();
-
-            totalBodiesFirmados++;
-        }
+        const totalBodiesFirmados = 1;
 
         const reporteCabecera = await Reporte.findByPk(bodyDelReporte.reporte_id);
 
@@ -688,20 +660,38 @@ controlador.publicarReporte = async (req, res) => {
             return res.status(401).json({ ok: false, error: 'No se detectó la sesión del usuario.' });
         }
 
-        // 2. Obtener el ID del reporte
-        const { reporteId } = req.body;
-        if (!reporteId) {
-            return res.status(400).json({ ok: false, error: 'Se requiere el ID del reporte (reporteId).' });
+        // Obtener bodyId y reporteId del body del request
+        const { bodyId, reporteId } = req.body;
+        if (!bodyId) {
+            return res.status(400).json({ ok: false, error: 'Se requiere el ID del body del reporte (bodyId).' });
         }
 
-        // 3. Buscar la cabecera del reporte en la base de datos
-        const reporteCabecera = await Reporte.findByPk(reporteId);
+        // Cargar el ReporteBody para validar y actualizar columnas reales
+        const bodyDelReporte = await ReporteBody.findByPk(bodyId);
+        if (!bodyDelReporte) {
+            return res.status(404).json({ ok: false, error: 'No se encontró el contenido (body) del reporte.' });
+        }
+
+        // Validar que el body está firmado antes de publicar
+        if (bodyDelReporte.status !== 'signed') {
+            return res.status(400).json({
+                ok: false,
+                error: 'El reporte debe estar firmado antes de publicar.'
+            });
+        }
+
+        // Actualizar la columna real del reporte_body (no el JSON items)
+        bodyDelReporte.status = 'published';
+        await bodyDelReporte.save();
+
+        // Determinar el reporte_id: se prefiere el que viene en el body,
+        // si no se envió se toma el del registro del body
+        const idReporte = reporteId ?? bodyDelReporte.reporte_id;
+
+        // Buscar la cabecera del reporte en la base de datos
+        const reporteCabecera = await Reporte.findByPk(idReporte);
         if (!reporteCabecera) {
             return res.status(404).json({ ok: false, error: 'No se encontró el reporte.' });
-        }
-
-        if (reporteCabecera.status === 'pending') {
-            return res.status(400).json({ ok: false, error: 'El reporte aún esta en estado "pending". Debe ser firmado antes de publicarse.' })
         }
 
         if (reporteCabecera.status === 'published') {
@@ -744,7 +734,7 @@ async function obtenerDatosSupervisor(req, res) {
     const clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 });
     const datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: usuarioCodigo } });
 
-    const clasePuesto = new sequelizeClase({ modelo: informacionpuesto });
+    const clasePuesto = new sequelizeClase({ modelo: nom10006 });
     const puesto = await clasePuesto.obtener1Registro({ criterio: { idpuesto: datosUsuario.idpuesto } });
 
     const claseDepartamento = new sequelizeClase({ modelo: Informaciondepartamento });
@@ -759,42 +749,52 @@ async function obtenerDatosSupervisor(req, res) {
 
 // ─── P-05: Bandeja del supervisor ────────────────────────────────────────────
 
+/**
+ * Consulta central de bandeja: devuelve los reportes pendientes/firmados
+ * del supervisor autenticado. Reutilizada por la vista y el endpoint JSON.
+ */
+async function consultaBandeja(nombreFiltro) {
+    const querySQL = `
+        SELECT
+            r.id AS reporte_id,
+            rb.id AS body_id,
+            r.nombre_inspector,
+            r.turno,
+            r.status,
+            r.created_at,
+            c.id AS cotizacion_id,
+            c.planta,
+            c.cliente,
+            c.numero_parte,
+            c.nombre_parte,
+            c.nombre_supervisor,
+            rb.numero_items,
+            rb.status AS body_status,
+            rb.firma,
+            rb.fecha_firma
+        FROM reportes r
+        INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
+        LEFT JOIN reporte_body rb ON r.id = rb.reporte_id
+        WHERE c.nombre_supervisor LIKE :supervisorFiltro
+          AND rb.status IN ('pending', 'signed')
+        ORDER BY r.created_at DESC;
+    `;
+
+    return dbReportes.query(querySQL, {
+        replacements: { supervisorFiltro: `%${nombreFiltro}%` },
+        type: QueryTypes.SELECT
+    });
+}
+
 controlador.bandejaSupervisor = async (req, res) => {
     try {
         const datos = await obtenerDatosSupervisor(req, res);
         if (!datos) return;
         const { datosUsuario, nombreUsuario } = datos;
-        const nombreFiltro = nombreUsuario.trim();
 
-        const querySQL = `
-            SELECT
-                r.id AS reporte_id,
-                rb.id as body_id,
-                r.nombre_inspector,
-                r.turno,
-                r.status,
-                r.created_at,
-                c.id AS cotizacion_id,
-                c.planta,
-                c.cliente,
-                c.numero_parte,
-                c.nombre_parte,
-                c.nombre_supervisor,
-                rb.numero_items
-            FROM reportes r
-            INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
-            LEFT JOIN reporte_body rb ON r.id = rb.reporte_id -- UNIMOS CON EL BODY
-            WHERE c.nombre_supervisor LIKE :supervisorFiltro
-              AND r.status IN ('pending', 'signed')
-            ORDER BY r.created_at DESC;
-        `;
+        const reportes = await consultaBandeja(nombreUsuario.trim());
 
-        const reportes = await dbReportes.query(querySQL, {
-            replacements: { supervisorFiltro: `%${nombreFiltro}%` },
-            type: QueryTypes.SELECT
-        });
-
-        // Agrupar por nombre_inspector en JS usando reduce (¡Excelente lógica!)
+        // Agrupar por nombre_inspector en JS usando reduce
         const reportesPorInspector = reportes.reduce((acc, reporte) => {
             const inspector = reporte.nombre_inspector || 'Sin inspector';
             if (!acc[inspector]) acc[inspector] = [];
@@ -802,7 +802,7 @@ controlador.bandejaSupervisor = async (req, res) => {
             return acc;
         }, {});
 
-        res.render('admin/supervisor/bandeja_supervisor', {
+        res.render('admin/supervisor/bandeja_supervisor.ejs', {
             csrfToken: req.csrfToken(),
             supervisor: {
                 nombre: nombreUsuario,
@@ -818,6 +818,35 @@ controlador.bandejaSupervisor = async (req, res) => {
     }
 };
 
+// ─── P-05 JSON: datos de bandeja para polling ────────────────────────────────
+
+controlador.bandejaSupervisorData = async (req, res) => {
+    try {
+        const datos = await obtenerDatosSupervisor(req, res);
+        if (!datos) return;
+        const { nombreUsuario } = datos;
+
+        const reportes = await consultaBandeja(nombreUsuario.trim());
+
+        const reportesPorInspector = reportes.reduce((acc, reporte) => {
+            const inspector = reporte.nombre_inspector || 'Sin inspector';
+            if (!acc[inspector]) acc[inspector] = [];
+            acc[inspector].push(reporte);
+            return acc;
+        }, {});
+
+        return res.json({
+            ok: true,
+            totalPendientes: reportes.length,
+            reportesPorInspector
+        });
+
+    } catch (error) {
+        console.error('[bandejaSupervisorData] Error:', error);
+        return res.status(500).json({ ok: false, error: 'Error interno del servidor.' });
+    }
+};
+
 // ─── P-06: Detalle de un reporte (para firma / edición) ──────────────────────
 
 controlador.detalleReporte = async (req, res) => {
@@ -830,12 +859,12 @@ controlador.detalleReporte = async (req, res) => {
 
         const bodyReporte = await ReporteBody.findByPk(id);
         if (!bodyReporte) {
-            return res.redirect('/supervisor/bandeja');
+            return res.redirect('/bots/supervisor/bandeja');
         }
 
         const reporte = await Reporte.findOne({ where: { id: bodyReporte.reporte_id } });
         if (!reporte) {
-            return res.redirect('/supervisor/bandeja')
+            return res.redirect('/bots/supervisor/bandeja')
         }
         const cotizacion = await Cotizacion.findByPk(reporte.cotizacion_id);
 
@@ -854,7 +883,10 @@ controlador.detalleReporte = async (req, res) => {
             reporte,
             cotizacion,
             items,
-            bodyId: bodyReporte.id
+            bodyId: bodyReporte.id,
+            bodyStatus: bodyReporte.status || 'pending',
+            bodyFirma: bodyReporte.firma || null,
+            bodyFechaFirma: bodyReporte.fecha_firma || null
         });
 
     } catch (error) {
@@ -880,7 +912,7 @@ controlador.historialPublicados = async (req, res) => {
         }
 
         // Construir query dinámica para publicados
-        let whereClause = `WHERE c.nombre_supervisor LIKE :supervisorFiltro AND r.status = 'published'`;
+        let whereClause = `WHERE c.nombre_supervisor LIKE :supervisorFiltro AND rb.status = 'published'`;
         const replacements = { supervisorFiltro: `%${nombreFiltro}%` };
 
         if (fecha) {
@@ -905,7 +937,10 @@ controlador.historialPublicados = async (req, res) => {
                 c.cliente,
                 c.numero_parte,
                 c.nombre_supervisor,
-                rb.numero_items
+                rb.numero_items,
+                rb.items,
+                rb.firma AS firmado_por,
+                rb.fecha_firma AS fecha_firma_item
             FROM reportes r
             INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
             LEFT JOIN reporte_body rb ON r.id = rb.reporte_id
@@ -913,15 +948,44 @@ controlador.historialPublicados = async (req, res) => {
             ORDER BY r.created_at DESC;
         `;
 
-        const reportes = await dbReportes.query(querySQL, {
+        let reportes = await dbReportes.query(querySQL, {
             replacements,
             type: QueryTypes.SELECT
         });
+
+        // Calcular total_piezas sumando item.total de cada item en el JSON items
+        reportes = reportes.map(r => {
+            const items = typeof r.items === 'string'
+                ? (() => { try { return JSON.parse(r.items); } catch { return []; } })()
+                : (r.items || []);
+            const totalPiezas = Array.isArray(items)
+                ? items.reduce((sum, item) => sum + (item.totalPiezas || item.total || 0), 0)
+                : 0;
+            return { ...r, total_piezas: totalPiezas };
+        });
+
+        // Obtener números de parte únicos de los reportes publicados del supervisor
+        // para poblar el select dinámicamente (sin filtros de fecha/parte aplicados)
+        const partesSQL = `
+            SELECT DISTINCT c.numero_parte
+            FROM reportes r
+            INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
+            LEFT JOIN reporte_body rb ON r.id = rb.reporte_id
+            WHERE c.nombre_supervisor LIKE :supervisorFiltro
+              AND rb.status = 'published'
+            ORDER BY c.numero_parte ASC;
+        `;
+        const partesRows = await dbReportes.query(partesSQL, {
+            replacements: { supervisorFiltro: `%${nombreFiltro}%` },
+            type: QueryTypes.SELECT
+        });
+        const numerosParteUnicos = partesRows.map(p => p.numero_parte).filter(Boolean);
 
         res.render('admin/supervisor/historial_publicados', {
             csrfToken: req.csrfToken(),
             supervisor: { nombre: nombreUsuario },
             reportes,
+            numerosParteUnicos,
             kpis: {
                 totalReportes: reportes.length,
                 totalLotes: reportes.reduce((sum, r) => sum + (r.numero_items || 0), 0)
@@ -951,13 +1015,13 @@ controlador.detallePublicado = async (req, res) => {
         const bodyReporte = await ReporteBody.findByPk(id);
 
         if (!bodyReporte) {
-            return res.redirect('/supervisor/historial');
+            return res.redirect('/bots/supervisor/historial');
         }
 
         const reporte = await Reporte.findByPk(bodyReporte.reporte_id);
 
         if (!reporte || reporte.status !== 'published') {
-            return res.redirect('/supervisor/historial');
+            return res.redirect('/bots/supervisor/historial');
         }
 
         const cotizacion = await Cotizacion.findByPk(reporte.cotizacion_id);
@@ -981,7 +1045,9 @@ controlador.detallePublicado = async (req, res) => {
             supervisor: { nombre: nombreUsuario },
             reporte,
             cotizacion,
-            items
+            items,
+            bodyFirma: bodyReporte.firma || null,
+            bodyFechaFirma: bodyReporte.fecha_firma || null
         });
 
     } catch (error) {

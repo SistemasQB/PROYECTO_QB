@@ -8,81 +8,39 @@
 
   /* ============================================================
      P-07 — HISTORIAL: filtros de búsqueda
+     Implementación: GET con query params a /bots/supervisor/historial
+     El backend filtra y re-renderiza la tabla completa (Opción B).
      ============================================================ */
 
   /**
-   * Filtra las filas de la tabla de historial por número de parte.
-   * El filtro de fechas se puede extender conectando a un endpoint real.
+   * Lee los valores de los filtros y navega a la misma ruta
+   * con los query params correspondientes. El controlador filtra
+   * en la DB y devuelve la vista ya renderizada con los datos correctos.
    */
   function buscarHistorial() {
-    const filtroParte = $('filtro-parte')?.value ?? '';
-    const filas = document.querySelectorAll('#historial-tbody tr');
+    const parte = $('filtro-parte')?.value ?? '';
+    const fecha = $('filtro-desde')?.value ?? '';
 
-    let hayResultados = false;
+    const params = new URLSearchParams();
+    if (parte) params.set('numeroParte', parte);
+    if (fecha) params.set('fecha', fecha);
 
-    filas.forEach(fila => {
-      const parteFila = fila.getAttribute('data-parte') ?? '';
-      const coincide  = !filtroParte || parteFila === filtroParte;
+    const queryString = params.toString();
+    const url = '/bots/supervisor/historial' + (queryString ? '?' + queryString : '');
 
-      fila.style.display = coincide ? '' : 'none';
-      if (coincide) hayResultados = true;
-    });
-
-    // Muestra mensaje si no hay resultados
-    mostrarMensajeVacioHistorial(!hayResultados);
+    window.location.href = url;
   }
 
   window.buscarHistorial = buscarHistorial;
 
   /**
-   * Limpia todos los filtros y restaura la tabla completa.
+   * Limpia todos los filtros navegando a la ruta sin query params,
+   * lo que devuelve el historial completo.
    */
   function limpiarFiltros() {
-    const filtroParte = $('filtro-parte');
-    const filtroDesde = $('filtro-desde');
-    const filtroHasta = $('filtro-hasta');
-
-    if (filtroParte) filtroParte.value = '';
-    if (filtroDesde) filtroDesde.value = '';
-    if (filtroHasta) filtroHasta.value = '';
-
-    document.querySelectorAll('#historial-tbody tr').forEach(fila => {
-      fila.style.display = '';
-    });
-
-    mostrarMensajeVacioHistorial(false);
+    window.location.href = '/bots/supervisor/historial';
   }
 
   window.limpiarFiltros = limpiarFiltros;
-
-  /**
-   * Muestra u oculta un mensaje "sin resultados" debajo de la tabla.
-   * @param {boolean} mostrar
-   */
-  function mostrarMensajeVacioHistorial(mostrar) {
-    let msgEl = $('historial-sin-resultados');
-
-    if (mostrar && !msgEl) {
-      const wrapper = $('historial-tabla-wrapper');
-      if (!wrapper) return;
-
-      msgEl = document.createElement('p');
-      msgEl.id = 'historial-sin-resultados';
-      msgEl.style.cssText = [
-        'padding: 24px',
-        'text-align: center',
-        'color: #64748b',
-        'font-size: 14px',
-        'background: #ffffff',
-        'border: 1px solid #e2e8f0',
-        'border-top: none',
-        'border-radius: 0 0 8px 8px'
-      ].join(';');
-      msgEl.textContent = 'No se encontraron reportes con los filtros aplicados.';
-      wrapper.insertAdjacentElement('afterend', msgEl);
-    } else if (!mostrar && msgEl) {
-      msgEl.remove();
-    }
-  }
 
 })();

@@ -11,12 +11,12 @@ router.get('/dashboard', protegerRuta,adminController.dashboardTI);
 
 //rutas de dashboard monitoreo
 router.get('/monitoreo', protegerRuta, adminController.dashboardMonitoreo);
-router.get('/api/monitoreo/tickets', protegerRuta, adminController.ticketsMonitoreo);
-router.get('/api/monitoreo/requisiciones', protegerRuta, adminController.requisicionesMonitoreo);
-router.get('/api/monitoreo/inventario', protegerRuta, adminController.inventarioMonitoreo);
-router.get('/api/monitoreo/agentes', protegetRuta, adminController.agentesMonitoreo);
-router.get('/api/monitoreo/sla', protegetRuta, adminController.slaMonitoreo);
-router.get('/api/monitoreo/resolucion-semanal', protegetRuta, adminController.resolucionSemanal);
+router.get('/api/monitoreo/tickets',adminController.ticketsMonitoreo);
+router.get('/api/monitoreo/requisiciones', adminController.requisicionesMonitoreo);
+router.get('/api/monitoreo/inventario', adminController.inventarioMonitoreo);
+router.get('/api/monitoreo/agentes', adminController.agentesMonitoreo);
+//router.get('/api/monitoreo/sla',adminController.slaMonitoreo);
+//router.get('/api/monitoreo/resolucion-semanal', adminController.resolucionSemanal);
 
 //rutas de usuarios (nom10001)
 router.get('/usuarios', protegerRuta, adminController.usuarios);

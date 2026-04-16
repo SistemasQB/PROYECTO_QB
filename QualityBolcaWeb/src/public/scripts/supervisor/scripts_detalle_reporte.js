@@ -18,36 +18,76 @@
 
     if (!bodyId) return;
 
-    // Deshabilitar botón mientras se procesa
-    btnFirmar.disabled = true;
-    btnFirmar.textContent = 'Firmando...';
+    Swal.fire({
+      title: '¿Firmar este reporte?',
+      text: 'Esta acción marcará el reporte como firmado. Podrás publicarlo después.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, firmar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#6b7280',
+      reverseButtons: true
+    }).then(result => {
+      if (!result.isConfirmed) return;
 
-    fetch('/firmarReporte', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'csrf-token': csrfToken
-      },
-      body: JSON.stringify({ bodyId })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.ok) {
-        btnFirmar.textContent = 'Firmado \u2713';
-        btnFirmar.style.opacity = '0.6';
-        btnPublicar.disabled = false;
-        btnPublicar.removeAttribute('aria-disabled');
-        agregarMensajeChat('sistema', `Reporte firmado correctamente por ${data.firmaAplicada}.`);
-      } else {
+      // Deshabilitar botón mientras se procesa
+      btnFirmar.disabled = true;
+      btnFirmar.textContent = 'Firmando...';
+
+      fetch('/bots/firmarReporte', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'csrf-token': csrfToken
+        },
+        body: JSON.stringify({ bodyId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          btnFirmar.textContent = 'Firmado \u2713';
+          btnFirmar.style.opacity = '0.6';
+          btnPublicar.disabled = false;
+          btnPublicar.removeAttribute('aria-disabled');
+          agregarMensajeChat('sistema', `Reporte firmado correctamente por ${data.firmaAplicada}.`);
+
+          Swal.fire({
+            title: '¡Reporte firmado!',
+            text: 'El reporte ha sido firmado correctamente.',
+            icon: 'success',
+            confirmButtonColor: '#4f46e5',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = '/bots/supervisor/bandeja';
+          });
+        } else {
+          btnFirmar.disabled = false;
+          btnFirmar.textContent = 'Firmar Reporte';
+          agregarMensajeChat('sistema', `Error al firmar: ${data.error}`);
+
+          Swal.fire({
+            title: 'Error al firmar',
+            text: data.error || 'No se pudo firmar el reporte. Intenta de nuevo.',
+            icon: 'error',
+            confirmButtonColor: '#4f46e5'
+          });
+        }
+      })
+      .catch(() => {
         btnFirmar.disabled = false;
         btnFirmar.textContent = 'Firmar Reporte';
-        agregarMensajeChat('sistema', `Error al firmar: ${data.error}`);
-      }
-    })
-    .catch(err => {
-      btnFirmar.disabled = false;
-      btnFirmar.textContent = 'Firmar Reporte';
-      agregarMensajeChat('sistema', 'Error de red al intentar firmar el reporte. Intenta de nuevo.');
+        agregarMensajeChat('sistema', 'Error de red al intentar firmar el reporte. Intenta de nuevo.');
+
+        Swal.fire({
+          title: 'Error de red',
+          text: 'No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.',
+          icon: 'error',
+          confirmButtonColor: '#4f46e5'
+        });
+      });
     });
   }
 
@@ -56,40 +96,77 @@
   function publicarReporte() {
     const btnPublicar = $('btn-publicar');
     const csrfToken   = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-    const reporteId   = window.REPORTE_ID;
+    const bodyId      = window.BODY_ID;
 
-    if (!reporteId) return;
+    if (!bodyId) return;
 
-    btnPublicar.disabled = true;
-    btnPublicar.textContent = 'Publicando...';
+    Swal.fire({
+      title: '¿Publicar este reporte?',
+      text: 'Esta acción publicará el reporte y será visible para todos. Esta operación no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, publicar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#6b7280',
+      reverseButtons: true
+    }).then(result => {
+      if (!result.isConfirmed) return;
 
-    fetch('/publicarReporte', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'csrf-token': csrfToken
-      },
-      body: JSON.stringify({ reporteId })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.ok) {
-        btnPublicar.textContent = 'Publicado \u2713';
-        btnPublicar.style.opacity = '0.6';
-        agregarMensajeChat('sistema', 'Reporte publicado exitosamente. Redirigiendo al historial...');
-        setTimeout(() => {
-          window.location.href = '/supervisor/historial';
-        }, 2000);
-      } else {
+      btnPublicar.disabled = true;
+      btnPublicar.textContent = 'Publicando...';
+
+      fetch('/bots/publicarReporte', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'csrf-token': csrfToken
+        },
+        body: JSON.stringify({ bodyId: window.BODY_ID })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          btnPublicar.textContent = 'Publicado \u2713';
+          btnPublicar.style.opacity = '0.6';
+          agregarMensajeChat('sistema', 'Reporte publicado exitosamente. Redirigiendo al historial...');
+
+          Swal.fire({
+            title: '¡Reporte publicado!',
+            text: 'El reporte ha sido publicado exitosamente.',
+            icon: 'success',
+            confirmButtonColor: '#16a34a',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = '/bots/supervisor/historial';
+          });
+        } else {
+          btnPublicar.disabled = false;
+          btnPublicar.textContent = 'Publicar Reporte';
+          agregarMensajeChat('sistema', `Error al publicar: ${data.error}`);
+
+          Swal.fire({
+            title: 'Error al publicar',
+            text: data.error || 'No se pudo publicar el reporte. Intenta de nuevo.',
+            icon: 'error',
+            confirmButtonColor: '#16a34a'
+          });
+        }
+      })
+      .catch(() => {
         btnPublicar.disabled = false;
         btnPublicar.textContent = 'Publicar Reporte';
-        agregarMensajeChat('sistema', `Error al publicar: ${data.error}`);
-      }
-    })
-    .catch(err => {
-      btnPublicar.disabled = false;
-      btnPublicar.textContent = 'Publicar Reporte';
-      agregarMensajeChat('sistema', 'Error de red al intentar publicar el reporte. Intenta de nuevo.');
+        agregarMensajeChat('sistema', 'Error de red al intentar publicar el reporte. Intenta de nuevo.');
+
+        Swal.fire({
+          title: 'Error de red',
+          text: 'No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.',
+          icon: 'error',
+          confirmButtonColor: '#16a34a'
+        });
+      });
     });
   }
 
@@ -209,8 +286,57 @@
 
   window.enviarMensajeChat = enviarMensajeChat;
 
+  /* ============================================================
+     P-06 — CHAT DRAWER: abrir / cerrar con FAB
+     ============================================================ */
+
+  /**
+   * Abre el panel del chatbot:
+   * - Añade .is-open al panel y .is-visible al overlay
+   * - Actualiza aria-expanded en el FAB
+   * - Mueve el foco al botón de cierre para accesibilidad de teclado
+   */
+  function openChat() {
+    const panel   = $('sv-chat-panel');
+    const overlay = $('sv-chat-overlay');
+    const fab     = $('sv-chat-fab');
+    const close   = $('sv-chat-close');
+
+    if (!panel || !overlay || !fab) return;
+
+    panel.classList.add('is-open');
+    overlay.classList.add('is-visible');
+    fab.classList.add('is-active');
+    fab.setAttribute('aria-expanded', 'true');
+    overlay.removeAttribute('aria-hidden');
+
+    // Mover foco al botón X para que el teclado quede dentro del drawer
+    if (close) close.focus();
+  }
+
+  /**
+   * Cierra el panel del chatbot y devuelve el foco al FAB.
+   */
+  function closeChat() {
+    const panel   = $('sv-chat-panel');
+    const overlay = $('sv-chat-overlay');
+    const fab     = $('sv-chat-fab');
+
+    if (!panel || !overlay || !fab) return;
+
+    panel.classList.remove('is-open');
+    overlay.classList.remove('is-visible');
+    fab.classList.remove('is-active');
+    fab.setAttribute('aria-expanded', 'false');
+    overlay.setAttribute('aria-hidden', 'true');
+
+    // Devolver foco al FAB al cerrar
+    fab.focus();
+  }
+
   /* Permite enviar con Enter en el input del chat */
   document.addEventListener('DOMContentLoaded', () => {
+    // --- Enter en el input ---
     const chatInput = $('chat-input');
     if (chatInput) {
       chatInput.addEventListener('keydown', (e) => {
@@ -220,6 +346,34 @@
         }
       });
     }
+
+    // --- FAB: abrir el drawer ---
+    const fab = $('sv-chat-fab');
+    if (fab) {
+      fab.addEventListener('click', () => {
+        const isOpen = $('sv-chat-panel')?.classList.contains('is-open');
+        isOpen ? closeChat() : openChat();
+      });
+    }
+
+    // --- Botón X: cerrar el drawer ---
+    const closeBtn = $('sv-chat-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeChat);
+    }
+
+    // --- Overlay: cerrar al hacer clic fuera ---
+    const overlay = $('sv-chat-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', closeChat);
+    }
+
+    // --- Tecla Escape: cerrar el drawer ---
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $('sv-chat-panel')?.classList.contains('is-open')) {
+        closeChat();
+      }
+    });
   });
 
 })();

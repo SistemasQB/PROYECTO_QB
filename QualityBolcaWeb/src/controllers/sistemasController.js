@@ -3,21 +3,21 @@ import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
-import Empleados from "../models/empleado.js";
+import modeloVistaEmpleados from "../models/generales/vistaEmpleados.js";
 import manejadrorErrores from "../middleware/manejadorErrores.js";
 import miNodemailer from "../public/clases/nodemailer.js";
+import Inventario from "../models/sistemas/modelo_inventario.js";
+import Usuario from "../models/generales/modelo_usuarios.js";
+import Vales from "../models/sistemas/modelo_vales.js";
+import RegistroMa from "../models/registroma.js";
 
 import {
-    registroma,
-    Inventario,
-    Solicitudservicio,
-    Vales,
-    Usuario
+    //Solicitudservicio,
 } from "../models/index.js";
 
 import { Op, QueryTypes, where } from 'sequelize'
-import Informaciongch from "../models/informaciongch.js";
-import Informaciondepartamento from "../models/informaciondepartamento.js";
+import modelonom10001 from "../models/generales/nom10001.js";
+import Informaciondepartamento from "../models/generales/nom10003.js";
 import e from "express";
 import dbSistemas from "../config/dbSistemas.js";
 import modeloRequisicionEquipo from "../models/sistemas/requisicionEquipo.js";
@@ -240,12 +240,12 @@ controller.listadopersonal = async (req, res) => {
 controller.listadosolicitudes = async (req, res) => {
     let listadoSolicitudes
     let cuentaDatos
-
+    /*
     const personal = await Solicitudservicio.findAll(
     ).then((resultados) => {
         listadoSolicitudes = resultados;
     });
-
+    */
     res.render('admin/sistemas/solicitudes', {
         csrfToken: req.csrfToken(),
         listadoSolicitudes
@@ -434,7 +434,7 @@ controller.obtenerColaboradoresSinVale = async (req, res) => {
 
         const empleadosConVale = vales.map(v => v.numeroEmpleado);
 
-        const colaboradores = await Informaciongch.findAll({
+        const colaboradores = await modelonom10001.findAll({
             where: {
                 codigoempleado: {
                     [Op.notIn]: empleadosConVale.length > 0 ? empleadosConVale : ['']
@@ -657,7 +657,7 @@ controller.levantamientoTicket = async (req, res) => {
             where: { codigoempleado }
         });
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -703,7 +703,7 @@ controller.formularioTicket = async (req, res) => {
             where: { codigoempleado }
         });
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -778,7 +778,7 @@ controller.crudTickets = async (req, res) => {
 
                 const { codigoempleado } = req.usuario;
 
-                const empleado = await Informaciongch.findOne({
+                const empleado = await modelonom10001.findOne({
                     where: { codigoempleado }
                 });
 
@@ -1575,7 +1575,7 @@ controller.actualizarEstadoUsuario = async (req, res) => {
             });
         }
 
-        const empleado = await Informaciongch.findOne({
+        const empleado = await modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -1802,7 +1802,7 @@ controller.eliminarUsuario = async (req, res) => {
 controller.requisicionEquipos = async (req, res) => {
     try {
         let { codigoempleado } = req.usuario
-        let empleado = await Empleados.findOne({ where: { codigoempleado: codigoempleado } })
+        let empleado = await modeloVistaEmpleados.findOne({ where: { codigoempleado: codigoempleado } })
         let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
         let criterios = { codigoempleado: codigoempleado }
         let datosEmpleado = await clase.obtener1Registro({ criterio: criterios })
