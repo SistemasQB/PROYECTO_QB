@@ -1,0 +1,55 @@
+const cspDirectives = {
+  defaultSrc: ["'self'"],
+  scriptSrc: [
+    "'self'",
+    "'unsafe-inline'",
+    "'unsafe-eval'",
+    "cdn.jsdelivr.net",
+    "cdnjs.cloudflare.com",
+    "unpkg.com",
+    "code.jquery.com",
+    "stackpath.bootstrapcdn.com",
+    "cdn.sheetjs.com",
+    "cdn.tailwindcss.com",
+    "html2canvas.hertzen.com",
+  ],
+  styleSrc: [
+    "'self'",
+    "'unsafe-inline'",
+    "https://cdn.jsdelivr.net",
+    "https://cdnjs.cloudflare.com",
+    "https://unpkg.com",
+    "https://stackpath.bootstrapcdn.com",
+    "https://fonts.googleapis.com",
+  ],
+  fontSrc: [
+    "'self'",
+    "https://fonts.gstatic.com",
+    "https://fonts.googleapis.com",
+    "https://cdnjs.cloudflare.com",
+    "https://cdn.jsdelivr.net",
+    "https://unpkg.com",
+
+  ],
+  imgSrc: [
+    "'self'",
+    "data:",
+    "blob:",
+    "*.tile.openstreetmap.org",
+    "hebbkx1anhila5yf.public.blob.vercel-storage.com",
+    "ui-avatars.com",
+    "www.qualitybolca.net",
+  ],
+  connectSrc: [
+    "'self'",
+    "www.qualitybolca.net",
+    "*.tile.openstreetmap.org",
+    "api.esri.com",
+    "geocode.arcgis.com",
+  ],
+  workerSrc: ["'self'", "blob:", "cdn.jsdelivr.net"],
+  frameSrc: ["'none'"],
+  objectSrc: ["'none'"],
+};
+
+export default cspDirectives;

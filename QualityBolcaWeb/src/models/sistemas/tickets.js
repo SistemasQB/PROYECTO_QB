@@ -34,7 +34,7 @@ const modeloTickets = dbSistemas.define('tickets',{
 
 
 },{
-    tablename: 'tickets',
+    tableName: 'tickets',
     timestamps:true,
 }) 
 

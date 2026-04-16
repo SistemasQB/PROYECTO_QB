@@ -1,14 +1,10 @@
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import modelosInfraestructura from "../models/infraestructura/barril_modelo_compras.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
-import { Op } from "sequelize";
 import db from "../config/db.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import nodemailerClase from "../public/clases/nodemailer.js";
-import { informacionpuesto } from "../models/index.js";
-import Informaciondepartamento from "../models/informaciondepartamento.js";
-import { QueryTypes } from "sequelize";
-import { type } from "os";
+import { QueryTypes, Op } from "sequelize";
 
 const infraestructuraController = {}
 //controlador de inicio
@@ -119,7 +115,7 @@ infraestructuraController.crudOrdenesCompra = async (req, res) => {
                 return res.json({ ok: true, msg: 'OC enviada exitosamente' })
         }
     } catch (ex) {
-        console.log(ex)
+        console.error(ex)
         return res.json({ ok: false, msg: ex, error: ex.message })
 
     }
@@ -193,14 +189,13 @@ infraestructuraController.crudPedidoInsumos = async (req, res) => {
                 if (!datos) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
                 return res.render('admin/infraestructura/formatoPedidoInsumosDigital.ejs', { datos: datos, tok: req.csrfToken() })
             case 'consultaPorFecha':
-                console.log('entro a la consulta');
                 const { inicio, fin } = req.body;
                 const consulta = await clase.obtenerDatosPorCriterio({ criterio: { createdAt: { [Op.between]: [inicio, fin] } } })
                 if (!consulta) return res.json({ ok: false, msg: 'no se pudo consultar la informacion' })
                 return res.json({ ok: true, msg: 'exito', resultados: consulta })
         }
     } catch (error) {
-        console.log(error)
+        console.error(error)
         manejadorErrores(res, error)
     }
 
@@ -422,7 +417,7 @@ infraestructuraController.requisicionGastos = async (req, res) => {
 
         // obtener puesto
         let clasePuesto = new sequelizeClase({
-            modelo: informacionpuesto
+            modelo: modelosGenerales.nom10006
         })
 
         let puesto = await clasePuesto.obtener1Registro({
@@ -431,7 +426,7 @@ infraestructuraController.requisicionGastos = async (req, res) => {
 
         // obtener departamento
         let claseDepartamento = new sequelizeClase({
-            modelo: Informaciondepartamento
+            modelo: modelosGenerales.modelonom10003
         })
 
         let departamento = await claseDepartamento.obtener1Registro({
@@ -622,7 +617,7 @@ infraestructuraController.requisicionGastos = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error)
+        console.error(error)
         manejadorErrores(res, error)
     }
 }
@@ -865,7 +860,7 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 const correoSolicitante = usuarioSolicitante[0]?.correo || null
 
                 if (!correoSolicitante) {
-                    console.warn(`Usuario sin correo: ${reqDB.solicitante}`)
+                    console.error(`Usuario sin correo: ${reqDB.solicitante}`)
                 }
 
                 const usuarioReq = await db.query(`
@@ -989,7 +984,7 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
+        console.error(error)
         manejadorErrores(res, error)
     }
 }
@@ -1026,7 +1021,7 @@ infraestructuraController.misRequisicionesGastos = async (req, res) => {
 
         // obtener puesto
         let clasePuesto = new sequelizeClase({
-            modelo: informacionpuesto
+            modelo: modelosGenerales.nom10006
         })
 
         let puesto = await clasePuesto.obtener1Registro({
@@ -1035,7 +1030,7 @@ infraestructuraController.misRequisicionesGastos = async (req, res) => {
 
         // obtener departamento
         let claseDepartamento = new sequelizeClase({
-            modelo: Informaciondepartamento
+            modelo: modelosGenerales.modelonom10003
         })
 
         let departamentoUsuario = await claseDepartamento.obtener1Registro({
@@ -1120,7 +1115,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
 
         // obtener departamento
         let claseDepartamento = new sequelizeClase({
-            modelo: Informaciondepartamento
+            modelo: modelosGenerales.modelonom10003
         })
 
         let departamentoUsuario = await claseDepartamento.obtener1Registro({

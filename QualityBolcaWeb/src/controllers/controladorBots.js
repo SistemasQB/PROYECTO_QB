@@ -176,6 +176,7 @@ NOTAS CRÍTICAS:
 - muestra siempre 0, resultado siempre "", libero siempre "".
 - No solicites ni incluyas planta, cliente, turno, numeroParte, nombreParte, tipoServicio, elaboro — esos vienen de la cabecera.`;
 
+import sequelizeClase from '../public/clases/sequelize_clase.js';
 const controlador = {}
 
 controlador.botReportes = (req, res) => {
@@ -367,5 +368,6 @@ controlador.normalizarCampo = async (req, res) => {
         manejadorErrores(res, error);
     }
 };
+
 
 export default controlador

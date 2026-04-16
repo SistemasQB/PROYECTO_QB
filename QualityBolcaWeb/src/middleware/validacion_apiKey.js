@@ -4,7 +4,6 @@ import modelosGenerales from '../models/generales/barrilModelosGenerales.js'
 
 const validarApiKey =  (req, res, next) => {
     const apiKey = req.headers['x-api-key']
-    console.log(apiKey); 
     if (!apiKey) {
         return res.status(401).json({ok:false, msg: 'No se proporcionó una API key válida.'});
     }

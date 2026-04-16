@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Usuario } from '../models/index.js';
+import  usuario  from '../models/generales/vistaEmpleados.js';
 
 const rutasPublicas = async(req, res, next) =>{
     //Verificar si hay un token

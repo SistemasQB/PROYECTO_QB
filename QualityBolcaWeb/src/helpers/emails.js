@@ -11,7 +11,6 @@ import { format, isAfter } from "@formkit/tempo"
 
 
 const emailRegistro = async (datos) => {
-  console.log(datos)
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
@@ -78,8 +77,6 @@ const emailRequisicion = async (datos) => {
   });
 
   const { id, asunto, solicitante, autoriza } = datos
-  console.log(autoriza);
-
   const nombre = 'Oscar'
   //Enviar el email
   await transport.sendMail({
@@ -135,7 +132,7 @@ const emailCursos = async (datos) => {
   });
 
   const { id, asunto, solicitante, autoriza } = datos
-  console.log(autoriza);
+  
 
   const nombre = 'Oscar'
   //Enviar el email
@@ -422,11 +419,6 @@ const emailSolicitud = async (datos) => {
 }
 
 const emailMejora = async (datos) => {
-
-  // console.log('Enviado...', datos);
-
-
-
   const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
@@ -459,10 +451,6 @@ const emailMejora = async (datos) => {
 }
 
 const emailMejoraRespuesta = async (datos) => {
-
-  console.log('Enviado...', datos);
-  
-
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
@@ -471,20 +459,6 @@ const emailMejoraRespuesta = async (datos) => {
       pass: process.env.EMAILMC_PASS
     }
   });
-
-
-  // if (datos.id == 1) {
-  //   await transport.sendMail({
-  //     from: process.env.EMAILMC_USER,
-  //     to: 'propuestas.mejora@gmail.com',
-  //     subject: 'Nueva propuesta de MEJORA' + ' ' + datos.nombre_mejora,
-  //     text: 'Prueba de las mejoras',
-  //     html: `
-  //       <p>Buen dia equipos de calidad, tienen una nueva propuesta de mejora continua</p>
-  //       <p>pueden visualizarla entrando a la pagina web de: <a href="www.qualitybolca.net">www.qualitybolca.net</a></p>
-  //       `
-  //   })
-  // }
 
   let resultado
   switch (datos.estatus) {
@@ -524,7 +498,6 @@ function cuerpoRespusetaComite(params) {
         `
       break;
     case 3:
-      console.log(isAfter(params.fecha_respuesta_comite, format(new Date(), 'YYYY-MM-DD')))
       if(isAfter(params.fecha_respuesta_comite, format(new Date(), 'YYYY-MM-DD'))) {
         respuestaComite =
           `

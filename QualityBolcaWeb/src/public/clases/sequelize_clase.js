@@ -18,7 +18,7 @@ class sequelizeClase{
         if (!inserccion) return false;
         return true;}
         catch(ex){
-            console.log(`sucedio un error en la clase sequelize,error: ${ex}`)
+            console.error(`sucedio un error en la clase sequelize,error: ${ex}`)
             return false;
         }
     }
@@ -31,7 +31,7 @@ class sequelizeClase{
             return true
         }
         catch(ex){
-            console.log(ex.toString())
+            console.error(ex.toString())
             return false;
         }
     }
@@ -46,7 +46,7 @@ class sequelizeClase{
         if (actualizacion <= 0 ) return false;
         return true;}
         catch(ex){
-            console.log(ex.toString())
+            console.error(ex.toString())
             return false;
         }
     }
@@ -67,7 +67,7 @@ class sequelizeClase{
         }
         let respuesta = await this.modelo.findAll(opciones)
         
-        if (!respuesta) return ''
+        if (!respuesta) return []
         return respuesta
     }
     async obtener1Registro({criterio, atributos = null}){
@@ -82,7 +82,7 @@ class sequelizeClase{
         return respuesta
     }
      async ejecutarQuery({ query, replacements = null, mapToModel = false }) {
-        console.log(query, replacements, mapToModel);
+        
         try {
             const [results] = await this.modelo.sequelize.query(query, {
                 model: mapToModel ? this.modelo : undefined,
@@ -91,7 +91,7 @@ class sequelizeClase{
             });
             return results;
         } catch (ex) {
-            console.log(`Error en ejecutarQuery: ${ex}`);
+            console.error(`Error en ejecutarQuery: ${ex}`);
             return null;
         }
     }

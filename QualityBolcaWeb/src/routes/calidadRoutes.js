@@ -26,7 +26,6 @@ router.get('/bitacoraActividades', protegerRuta,permisos.permisosCalidad(
     {roles: ['calidad'], permisos: ['administrador','jefe calidad', 'permitido'], jerarquia: 3}),calidadController.bitacoraActividades);
 router.post('/agregarActividad', protegerRuta,calidadController.agregarActividad);
 router.post('/procesoActividades',protegerRuta ,calidadController.actividades)
-// router.get('/recordatorio',protegerRutaRuta ,calidadController.recordatorio);
 
 //rutas de actividades de usuario
 router.get('/misActividades', protegerRuta, calidadController.misActividades);
@@ -43,7 +42,7 @@ router.get('/api/:documento', calidadController.api);
 
 // rutas 5´s
 router.get('/formatoVerificacion', protegerRuta,validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar', 'becario'], jerarquia: 5}),calidadController.verificacion5s)
-router.post('/ingresarFormatoVerificacion', protegerRuta,protegerRuta,validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar', 'becario'], jerarquia: 5}), multer5S.multiplesArchivos('evidencia',10),calidadController.ingresarRegistro5s)
+router.post('/ingresarFormatoVerificacion', protegerRuta, validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar', 'becario'], jerarquia: 5}), multer5S.multiplesArchivos('evidencia',10),calidadController.ingresarRegistro5s)
 
 //rutas de auditorias
 router.get('/agregarAuditoria', protegerRuta, validarAcceso({roles: ['calidad'], permisos: ['analista', 'auxiliar'], jerarquia: 5}),calidadController.agregarAuditoria)

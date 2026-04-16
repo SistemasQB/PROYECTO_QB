@@ -31,9 +31,6 @@ const comprobarPuesto = async(req, res, next) =>{
     } catch (erro) {
         return res.clearCookie('_token').redirect('/')
     }
-
-
-    next();
 }
 
 export default comprobarPuesto
