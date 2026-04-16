@@ -13,21 +13,6 @@
 
   <!-- Header -->
   <header class="sv-header">
-    <!-- Botón hamburguesa: visible solo en móvil/tablet (≤768px) -->
-    <button
-      class="sv-hamburger"
-      id="sv-hamburger-btn"
-      aria-label="Abrir menú de navegación"
-      aria-expanded="false"
-      aria-controls="sv-sidebar-nav"
-    >
-      <svg class="sv-hamburger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <line x1="3" y1="6"  x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
-
     <div class="sv-header__brand">
       <img
         class="sv-header__logo"
@@ -42,16 +27,10 @@
     </div>
   </header>
 
-  <!-- Overlay oscuro: cubre el contenido al abrir el drawer en móvil -->
-  <div class="sv-sidebar-overlay" id="sv-sidebar-overlay" aria-hidden="true"></div>
-
   <div class="sv-layout">
 
     <!-- Sidebar -->
-    <nav class="sv-sidebar" id="sv-sidebar-nav" aria-label="Navegación principal">
-      <div class="sv-sidebar__brand">
-        <img src="https://qualitybolca.com/assets/images/logo.png" alt="Quality Bolca" onerror="this.style.display='none'" />
-      </div>
+    <nav class="sv-sidebar" aria-label="Navegación principal">
       <ul class="sv-sidebar__list">
         <li>
           <a
@@ -99,14 +78,19 @@
           <label for="filtro-parte" class="sv-label">Número de parte</label>
           <select id="filtro-parte" class="sv-select" aria-label="Filtrar por número de parte">
             <option value="">Todos</option>
-            <% numerosParteUnicos.forEach(function(parte) { %>
-              <option value="<%= parte %>" <%= filtros.numeroParte === parte ? 'selected' : '' %>><%= parte %></option>
-            <% }); %>
+            <option value="48-6123-A">48-6123-A</option>
+            <option value="32-9001-C">32-9001-C</option>
+            <option value="17-4452-B">17-4452-B</option>
+            <option value="55-8801-D">55-8801-D</option>
           </select>
         </div>
         <div class="sv-filters__group">
-          <label for="filtro-desde" class="sv-label">Fecha</label>
-          <input type="date" id="filtro-desde" class="sv-input" aria-label="Fecha" value="<%= filtros.fecha %>" />
+          <label for="filtro-desde" class="sv-label">Desde</label>
+          <input type="date" id="filtro-desde" class="sv-input" aria-label="Fecha desde" />
+        </div>
+        <div class="sv-filters__group">
+          <label for="filtro-hasta" class="sv-label">Hasta</label>
+          <input type="date" id="filtro-hasta" class="sv-input" aria-label="Fecha hasta" />
         </div>
         <div class="sv-filters__actions">
           <button class="sv-btn sv-btn--primary" onclick="buscarHistorial()" aria-label="Buscar reportes">
@@ -149,22 +133,44 @@
           <tbody id="historial-tbody">
             <% if (reportes.length === 0) { %>
               <tr>
-                <td colspan="9" style="text-align:center; padding:2rem; color:#6b7280;">
+                <td colspan="8" style="text-align:center; padding:2rem; color:#6b7280;">
                   No hay reportes publicados para mostrar.
                 </td>
               </tr>
             <% } else { %>
               <% reportes.forEach(function(reporte) { %>
                 <% const fechaFormateada = new Date(reporte.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
-                <tr data-parte="<%= reporte.numero_parte %>">
+                <tr data-parte="<%= reporte.numero_parte %>">Se restablece en 4 h 24 min
+                
+                14% usado
+                
+                Límites semanales
+                Más información sobre los límites de uso
+                
+                Todos los modelos
+                
+                Se restablece en 23 h 24 min
+                
+                24% usado
+                
+                Última actualización: hace 2 minutos
+                
+                
+                Funciones adicionales
+                Ejecuciones de rutinas diarias incluidas
+                
+                
+                Aún no has ejecutado ninguna rutina
+                
+                0 / 25
+                
+                Missing permissions: members:manage required.
                   <td><%= fechaFormateada %></td>
                   <td><%= reporte.nombre_inspector %></td>
                   <td><%= reporte.turno %></td>
                   <td><span class="sv-part-number"><%= reporte.numero_parte %></span></td>
                   <td><%= reporte.numero_items || 0 %></td>
-                  <td><%= reporte.total_piezas || 0 %></td>
-                  <td><%= reporte.firmado_por || reporte.nombre_supervisor || 'N/A' %></td>
-                  <td><%= reporte.updated_at ? new Date(reporte.updated_at).toLocaleDateString('es-MX') : 'N/A' %></td>
+                  <td><%= reporte.nombre_supervisor %></td>
                   <td>
                     <a
                       href="/bots/supervisor/publicado/<%= reporte.body_id %>"
@@ -194,33 +200,5 @@
   </div><!-- /sv-layout -->
 
   <script src="/scripts/supervisor/scripts_historial_publicados.js"></script>
-
-  <!-- Lógica del drawer hamburguesa (inline porque esta vista no carga scripts_bandeja.js) -->
-  <script>
-  (function () {
-    var btn     = document.getElementById('sv-hamburger-btn');
-    var sidebar = document.getElementById('sv-sidebar-nav');
-    var overlay = document.getElementById('sv-sidebar-overlay');
-    if (!btn) return;
-
-    function openDrawer() {
-      sidebar.classList.add('is-open');
-      overlay.classList.add('is-visible');
-      btn.setAttribute('aria-expanded', 'true');
-    }
-    function closeDrawer() {
-      sidebar.classList.remove('is-open');
-      overlay.classList.remove('is-visible');
-      btn.setAttribute('aria-expanded', 'false');
-    }
-    btn.addEventListener('click', function () {
-      sidebar.classList.contains('is-open') ? closeDrawer() : openDrawer();
-    });
-    overlay.addEventListener('click', closeDrawer);
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeDrawer();
-    });
-  }());
-  </script>
 </body>
 </html>
