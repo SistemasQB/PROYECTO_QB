@@ -16,6 +16,8 @@
     document.body.classList.toggle('light', light);
     const icon = light ? SVG_MOON : SVG_SUN;
     THEME_BTN_IDS.forEach(id => { const el = $(id); if (el) el.innerHTML = icon; });
+    const metaTheme = document.getElementById('meta-theme-color');
+    if (metaTheme) metaTheme.content = light ? '#edf2f8' : '#0f1928';
   }
 
   const savedTheme = localStorage.getItem('theme');
@@ -1110,8 +1112,8 @@
 
           // Cabecera clicable del ítem (siempre visible)
           html += '<div class="item-card-header">';
-          html += `<span class="item-num">Ítem ${escHtml(String(it.item))}</span>`;
-          if (idStr) html += `<span class="item-id">${escHtml(idStr)}</span>`;
+          html += `<span class="item-num">${escHtml(String(it.item))}</span>`;
+          html += `<span class="item-id">${idStr ? escHtml(idStr) : 'Ítem registrado'}</span>`;
           html += `<span class="item-collapse-icon">${CHEVRON_SVG}</span>`;
           html += '</div>';
 
@@ -1169,7 +1171,8 @@
       } else if (hasRaw) {
         html += `<div class="item-card">
           <div class="item-card-header">
-            <span class="item-num">Texto dictado</span>
+            <span class="item-num">•</span>
+            <span class="item-id">Texto dictado</span>
             <span class="item-collapse-icon">${CHEVRON_SVG}</span>
           </div>
           <div class="item-card-body" style="padding:16px;">
