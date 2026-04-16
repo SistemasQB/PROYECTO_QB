@@ -6,7 +6,6 @@ import usuarios from "./modelo_usuarios.js"
 import api_keys from "./api_keys.js"
 import LogsSistemas from "./logsSistema.js"
 
-
 const modelosGenerales = {
     modelonom10001,
     vistaempleados,

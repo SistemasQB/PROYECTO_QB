@@ -1,6 +1,17 @@
 import axios from 'axios';
 import multer from 'multer';
+import { Op } from 'sequelize';
 import manejadorErrores from '../middleware/manejadorErrores.js';
+import { Reporte, Cotizacion, ReporteBody } from '../models/capturacion/barril_modelo_capturacion.js';
+import modeloVistaEmpleados from '../models/generales/vistaEmpleados.js';
+import { where } from 'sequelize';
+import sequelizeClase from "../public/clases/sequelize_clase.js";
+import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
+import nom10006 from '../models/generales/nom10006.js';
+import Informaciondepartamento from '../models/generales/nom10003.js';
+import { QueryTypes } from 'sequelize';
+import db from "../config/db.js";
+import dbReportes from "../config/dbReportes.js";
 
 const storage = multer.memoryStorage();
 export const uploadPdf = multer({
@@ -175,8 +186,6 @@ NOTAS CRÍTICAS:
 - En "identificadores" incluye ÚNICAMENTE los tipos que el inspector mencionó — no agregues campos vacíos.
 - muestra siempre 0, resultado siempre "", libero siempre "".
 - No solicites ni incluyas planta, cliente, turno, numeroParte, nombreParte, tipoServicio, elaboro — esos vienen de la cabecera.`;
-
-import sequelizeClase from '../public/clases/sequelize_clase.js';
 const controlador = {}
 
 controlador.botReportes = (req, res) => {
@@ -327,11 +336,193 @@ controlador.botChatWithPdf = async (req, res) => {
     }
 };
 
+controlador.reportesDiarios = async (req, res) => {
+    try {
+        res.render('bots/reportesDiarios.ejs', { csrfToken: req.csrfToken() })
+    } catch (error) {
+        manejadorErrores(res, error);
+    }
+}
+
+controlador.reportesFiltrados = async (req, res) => {
+    try {
+        console.log('Reportes filtrados por supervisor iniciando...');
+
+        // 1. Validar que exista el usuario en la request (usamos ? por seguridad)
+        let usuarioCodigo = req.usuario?.codigoempleado;
+
+        if (!usuarioCodigo) {
+            return res.status(401).json({
+                ok: false,
+                error: 'No se detectó la sesión del usuario.'
+            });
+        }
+
+        // --- INICIO DE TU LÓGICA DE USUARIO ---
+        let clase = new sequelizeClase({
+            modelo: modelosGenerales.modelonom10001
+        })
+        let datosUsuario = await clase.obtener1Registro({
+            criterio: { codigoempleado: usuarioCodigo }
+        })
+
+        // obtener puesto
+        let clasePuesto = new sequelizeClase({
+            modelo: nom10006
+        })
+        let puesto = await clasePuesto.obtener1Registro({
+            criterio: { idpuesto: datosUsuario.idpuesto }
+        })
+
+        // obtener departamento
+        let claseDepartamento = new sequelizeClase({
+            modelo: Informaciondepartamento
+        })
+        let departamento = await claseDepartamento.obtener1Registro({
+            criterio: { iddepartamento: datosUsuario.iddepartamento }
+        })
+
+        datosUsuario.puesto = puesto ? puesto.descripcion : ''
+        datosUsuario.departamento = departamento ? departamento.descripcion : ''
+
+        // ESTA ES LA VARIABLE CLAVE: El nombre real del supervisor
+        const nombreUsuario = datosUsuario.nombrelargo;
+
+        console.log('Usuario:', nombreUsuario, 'Puesto:', datosUsuario.puesto, 'Departamento:', datosUsuario.departamento);
+        // --- FIN DE TU LÓGICA DE USUARIO ---
+
+
+        // --- INICIO DE LÓGICA DE REPORTES ---
+        // Limpiamos el nombre por seguridad
+        const nombreFiltro = nombreUsuario.trim();
+
+        console.log(`Ejecutando Raw SQL para el supervisor: ${nombreFiltro}`);
+
+        const querySQL = `
+            SELECT 
+                r.id AS reporte_id,
+                r.nombre_inspector,
+                r.turno,
+                r.created_at,
+                c.id AS cotizacion_id,
+                c.planta,
+                c.cliente,
+                c.numero_parte,
+                c.nombre_supervisor
+            FROM reportes r
+            INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
+            WHERE c.nombre_supervisor LIKE :supervisorFiltro
+            ORDER BY r.created_at DESC;
+        `;
+
+        const reportesDelSupervisor = await dbReportes.query(querySQL, {
+            // El % antes y después hace la función de comodín para ignorar espacios extra
+            replacements: { supervisorFiltro: `%${nombreFiltro}%` },
+            type: QueryTypes.SELECT
+        });
+
+        // --- RESPUESTA ---
+        return res.json({
+            ok: true,
+            usuarioInfo: {
+                nombre: nombreUsuario,
+                puesto: datosUsuario.puesto,
+                departamento: datosUsuario.departamento
+            },
+            totalReportes: reportesDelSupervisor.length,
+            reportes: reportesDelSupervisor
+        });
+
+    } catch (error) {
+        console.error('[reportesFiltrados] Error:', error);
+        manejadorErrores(res, error);
+    }
+}
+
+
+controlador.reportesFiltradosPorParametros = async (req, res) => {
+    try {
+        // Validar sesión del usuario
+        let usuarioCodigo = req.usuario?.codigoempleado;
+        if (!usuarioCodigo) {
+            return res.status(401).json({ ok: false, error: 'No se detectó la sesión del usuario.' });
+        }
+
+        // Leer y validar query params opcionales
+        const { fecha, numeroParte } = req.query;
+
+        if (fecha !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+            return res.status(400).json({ ok: false, error: 'Formato de fecha inválido. Use YYYY-MM-DD.' });
+        }
+
+        // Obtener datos del usuario logueado
+        let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 });
+        let datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: usuarioCodigo } });
+
+        let clasePuesto = new sequelizeClase({ modelo: nom10006 });
+        let puesto = await clasePuesto.obtener1Registro({ criterio: { idpuesto: datosUsuario.idpuesto } });
+
+        let claseDepartamento = new sequelizeClase({ modelo: Informaciondepartamento });
+        let departamento = await claseDepartamento.obtener1Registro({ criterio: { iddepartamento: datosUsuario.iddepartamento } });
+
+        datosUsuario.puesto = puesto ? puesto.descripcion : '';
+        datosUsuario.departamento = departamento ? departamento.descripcion : '';
+
+        const nombreUsuario = datosUsuario.nombrelargo;
+        const nombreFiltro = nombreUsuario.trim();
+
+        // Construir query dinámica
+        let whereClause = 'WHERE c.nombre_supervisor LIKE :supervisorFiltro';
+        const replacements = { supervisorFiltro: `%${nombreFiltro}%` };
+
+        if (fecha) {
+            whereClause += ' AND DATE(r.created_at) = :fecha';
+            replacements.fecha = fecha;
+        }
+
+        if (numeroParte) {
+            whereClause += ' AND c.numero_parte = :numeroParte';
+            replacements.numeroParte = numeroParte;
+        }
+
+        const querySQL = 'SELECT r.id AS reporte_id, r.nombre_inspector, r.turno, r.created_at, ' +
+            'c.id AS cotizacion_id, c.planta, c.cliente, c.numero_parte, c.nombre_supervisor ' +
+            'FROM reportes r ' +
+            'INNER JOIN cotizaciones c ON r.cotizacion_id = c.id ' +
+            whereClause + ' ' +
+            'ORDER BY r.created_at DESC';
+
+        const reportes = await dbReportes.query(querySQL, {
+            replacements,
+            type: QueryTypes.SELECT
+        });
+
+        return res.json({
+            ok: true,
+            usuarioInfo: {
+                nombre: nombreUsuario,
+                puesto: datosUsuario.puesto,
+                departamento: datosUsuario.departamento
+            },
+            filtrosAplicados: {
+                fecha: fecha || null,
+                numeroParte: numeroParte || null
+            },
+            totalReportes: reportes.length,
+            reportes
+        });
+
+    } catch (error) {
+        console.error('[reportesFiltradosPorParametros] Error:', error);
+        manejadorErrores(res, error);
+    }
+}
+
 const SYSTEM_PROMPT_NORMALIZE =
-  'Eres un normalizador de texto para formularios industriales de calidad. ' +
-  'El texto fue capturado por reconocimiento de voz y puede contener palabras en lugar de símbolos o dígitos. ' +
-  'Convierte el texto al formato correcto del campo. ' +
-  'Responde ÚNICAMENTE con el valor normalizado: sin explicaciones, sin comillas, sin puntuación extra.';
+    'Eres un normalizador de texto para formularios industriales de calidad. ' +
+    'El texto fue capturado por reconocimiento de voz y puede contener palabras en lugar de símbolos o dígitos. ' +
+    'Convierte el texto al formato correcto del campo. ' +
+    'Responde ÚNICAMENTE con el valor normalizado: sin explicaciones, sin comillas, sin puntuación extra.';
 
 controlador.normalizarCampo = async (req, res) => {
     try {
@@ -369,5 +560,488 @@ controlador.normalizarCampo = async (req, res) => {
     }
 };
 
+controlador.reportesSupervisores = async (req, res) => {
+    try {
+        res.render('bots/supervisor_reportes.ejs', { csrfToken: req.csrfToken() })
+    } catch (error) {
+        manejadorErrores(res, error);
+    }
+}
+
+controlador.firmarReporte = async (req, res) => { //realiza la firma de un reporte, actualiza el campo firma en items y cambia el estatus del reporte a signed
+    try {
+        let usuarioCodigo = req.usuario?.codigoempleado;
+        if (!usuarioCodigo) {
+            return res.status(401).json({
+                ok: false,
+                error: 'No se detectó la sesión del usuario.'
+            });
+        }
+
+        const { bodyId } = req.body;
+        if (!bodyId) {
+            return res.status(400).json({
+                ok: false,
+                error: 'Se requiere el ID del reporte body (bodyId).'
+            });
+        }
+
+        let clase = new sequelizeClase({
+            modelo: modelosGenerales.modelonom10001
+        });
+
+        let datosUsuario = await clase.obtener1Registro({
+            criterio: { codigoempleado: usuarioCodigo }
+        });
+
+        if (!datosUsuario) {
+            return res.status(404).json({
+                ok: false,
+                error: 'No se encontraron los datos del supervisor.'
+            });
+        }
+
+        const nombreSupervisor = datosUsuario.nombrelargo.trim();
+
+        const bodyDelReporte = await ReporteBody.findByPk(bodyId);
+
+        if (!bodyDelReporte) {
+            return res.status(404).json({
+                ok: false,
+                error: 'No se encontró el contenido (body) de este reporte para firmar.'
+            });
+        }
+
+        // Actualizar las columnas reales del reporte_body (no el JSON items)
+        bodyDelReporte.status = 'signed';
+        bodyDelReporte.firma = nombreSupervisor.toUpperCase();
+        bodyDelReporte.fecha_firma = new Date();
+        await bodyDelReporte.save();
+
+        const totalBodiesFirmados = 1;
+
+        const reporteCabecera = await Reporte.findByPk(bodyDelReporte.reporte_id);
+
+        if (reporteCabecera) {
+            reporteCabecera.status = 'signed';
+            await reporteCabecera.save();
+        }
+
+        return res.json({
+            ok: true,
+            mensaje: 'Reporte firmado y actualizado exitosamente',
+            firmaAplicada: nombreSupervisor,
+            nuevoEstatus: 'signed',
+            totalBodiesFirmados
+        });
+
+    } catch (error) {
+        console.error('[firmarReporte] Error:', error);
+        manejadorErrores(res, error);
+    }
+};
+
+controlador.publicarReporte = async (req, res) => {
+    try {
+        let usuarioCodigo = req.usuario?.codigoempleado;
+        if (!usuarioCodigo) {
+            return res.status(401).json({ ok: false, error: 'No se detectó la sesión del usuario.' });
+        }
+
+        // Obtener bodyId y reporteId del body del request
+        const { bodyId, reporteId } = req.body;
+        if (!bodyId) {
+            return res.status(400).json({ ok: false, error: 'Se requiere el ID del body del reporte (bodyId).' });
+        }
+
+        // Cargar el ReporteBody para validar y actualizar columnas reales
+        const bodyDelReporte = await ReporteBody.findByPk(bodyId);
+        if (!bodyDelReporte) {
+            return res.status(404).json({ ok: false, error: 'No se encontró el contenido (body) del reporte.' });
+        }
+
+        // Validar que el body está firmado antes de publicar
+        if (bodyDelReporte.status !== 'signed') {
+            return res.status(400).json({
+                ok: false,
+                error: 'El reporte debe estar firmado antes de publicar.'
+            });
+        }
+
+        // Actualizar la columna real del reporte_body (no el JSON items)
+        bodyDelReporte.status = 'published';
+        await bodyDelReporte.save();
+
+        // Determinar el reporte_id: se prefiere el que viene en el body,
+        // si no se envió se toma el del registro del body
+        const idReporte = reporteId ?? bodyDelReporte.reporte_id;
+
+        // Buscar la cabecera del reporte en la base de datos
+        const reporteCabecera = await Reporte.findByPk(idReporte);
+        if (!reporteCabecera) {
+            return res.status(404).json({ ok: false, error: 'No se encontró el reporte.' });
+        }
+
+        if (reporteCabecera.status === 'published') {
+            return res.json({
+                ok: true,
+                mensaje: 'El reporte ya se encontraba publicado.',
+                nuevoEstatus: 'published'
+            });
+        }
+
+        reporteCabecera.status = 'published';
+        await reporteCabecera.save();
+
+        return res.json({
+            ok: true,
+            mensaje: 'Reporte publicado exitosamente',
+            nuevoEstatus: 'published',
+            reporteId: reporteCabecera.id
+        });
+
+    } catch (error) {
+        manejadorErrores(res, error);
+    }
+}
+
+
+// ─── Helpers internos ────────────────────────────────────────────────────────
+
+/**
+ * Obtiene los datos del supervisor que está logueado.
+ * Retorna { datosUsuario, nombreUsuario } o lanza error si no hay sesión.
+ */
+async function obtenerDatosSupervisor(req, res) {
+    const usuarioCodigo = req.usuario?.codigoempleado;
+    if (!usuarioCodigo) {
+        res.status(401).json({ ok: false, error: 'No se detectó la sesión del usuario.' });
+        return null;
+    }
+
+    const clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 });
+    const datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: usuarioCodigo } });
+
+    const clasePuesto = new sequelizeClase({ modelo: nom10006 });
+    const puesto = await clasePuesto.obtener1Registro({ criterio: { idpuesto: datosUsuario.idpuesto } });
+
+    const claseDepartamento = new sequelizeClase({ modelo: Informaciondepartamento });
+    const departamento = await claseDepartamento.obtener1Registro({ criterio: { iddepartamento: datosUsuario.iddepartamento } });
+
+    datosUsuario.puesto = puesto ? puesto.descripcion : '';
+    datosUsuario.departamento = departamento ? departamento.descripcion : '';
+    const nombreUsuario = datosUsuario.nombrelargo;
+
+    return { datosUsuario, nombreUsuario };
+}
+
+// ─── P-05: Bandeja del supervisor ────────────────────────────────────────────
+
+/**
+ * Consulta central de bandeja: devuelve los reportes pendientes/firmados
+ * del supervisor autenticado. Reutilizada por la vista y el endpoint JSON.
+ */
+async function consultaBandeja(nombreFiltro) {
+    const querySQL = `
+        SELECT
+            r.id AS reporte_id,
+            rb.id AS body_id,
+            r.nombre_inspector,
+            r.turno,
+            r.status,
+            r.created_at,
+            c.id AS cotizacion_id,
+            c.planta,
+            c.cliente,
+            c.numero_parte,
+            c.nombre_parte,
+            c.nombre_supervisor,
+            rb.numero_items,
+            rb.status AS body_status,
+            rb.firma,
+            rb.fecha_firma
+        FROM reportes r
+        INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
+        LEFT JOIN reporte_body rb ON r.id = rb.reporte_id
+        WHERE c.nombre_supervisor LIKE :supervisorFiltro
+          AND rb.status IN ('pending', 'signed')
+        ORDER BY r.created_at DESC;
+    `;
+
+    return dbReportes.query(querySQL, {
+        replacements: { supervisorFiltro: `%${nombreFiltro}%` },
+        type: QueryTypes.SELECT
+    });
+}
+
+controlador.bandejaSupervisor = async (req, res) => {
+    try {
+        const datos = await obtenerDatosSupervisor(req, res);
+        if (!datos) return;
+        const { datosUsuario, nombreUsuario } = datos;
+
+        const reportes = await consultaBandeja(nombreUsuario.trim());
+
+        // Agrupar por nombre_inspector en JS usando reduce
+        const reportesPorInspector = reportes.reduce((acc, reporte) => {
+            const inspector = reporte.nombre_inspector || 'Sin inspector';
+            if (!acc[inspector]) acc[inspector] = [];
+            acc[inspector].push(reporte);
+            return acc;
+        }, {});
+
+        res.render('admin/supervisor/bandeja_supervisor.ejs', {
+            csrfToken: req.csrfToken(),
+            supervisor: {
+                nombre: nombreUsuario,
+                puesto: datosUsuario.puesto
+            },
+            reportesPorInspector,
+            totalPendientes: reportes.length
+        });
+
+    } catch (error) {
+        console.error('[bandejaSupervisor] Error:', error);
+        manejadorErrores(res, error);
+    }
+};
+
+// ─── P-05 JSON: datos de bandeja para polling ────────────────────────────────
+
+controlador.bandejaSupervisorData = async (req, res) => {
+    try {
+        const datos = await obtenerDatosSupervisor(req, res);
+        if (!datos) return;
+        const { nombreUsuario } = datos;
+
+        const reportes = await consultaBandeja(nombreUsuario.trim());
+
+        const reportesPorInspector = reportes.reduce((acc, reporte) => {
+            const inspector = reporte.nombre_inspector || 'Sin inspector';
+            if (!acc[inspector]) acc[inspector] = [];
+            acc[inspector].push(reporte);
+            return acc;
+        }, {});
+
+        return res.json({
+            ok: true,
+            totalPendientes: reportes.length,
+            reportesPorInspector
+        });
+
+    } catch (error) {
+        console.error('[bandejaSupervisorData] Error:', error);
+        return res.status(500).json({ ok: false, error: 'Error interno del servidor.' });
+    }
+};
+
+// ─── P-06: Detalle de un reporte (para firma / edición) ──────────────────────
+
+controlador.detalleReporte = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const datos = await obtenerDatosSupervisor(req, res);
+        if (!datos) return;
+        const { nombreUsuario } = datos;
+
+        const bodyReporte = await ReporteBody.findByPk(id);
+        if (!bodyReporte) {
+            return res.redirect('/bots/supervisor/bandeja');
+        }
+
+        const reporte = await Reporte.findOne({ where: { id: bodyReporte.reporte_id } });
+        if (!reporte) {
+            return res.redirect('/bots/supervisor/bandeja')
+        }
+        const cotizacion = await Cotizacion.findByPk(reporte.cotizacion_id);
+
+        let items = [];
+        if (bodyReporte) {
+            items = bodyReporte.items || [];
+            if (typeof items === 'string') {
+                try { items = JSON.parse(items); } catch { items = []; }
+            }
+            if (!Array.isArray(items)) items = [items];
+        }
+
+        res.render('admin/supervisor/detalle_reporte', {
+            csrfToken: req.csrfToken(),
+            supervisor: { nombre: nombreUsuario },
+            reporte,
+            cotizacion,
+            items,
+            bodyId: bodyReporte.id,
+            bodyStatus: bodyReporte.status || 'pending',
+            bodyFirma: bodyReporte.firma || null,
+            bodyFechaFirma: bodyReporte.fecha_firma || null
+        });
+
+    } catch (error) {
+        console.error('[detalleReporte] Error:', error);
+        manejadorErrores(res, error);
+    }
+};
+
+// ─── P-07: Historial de reportes publicados ───────────────────────────────────
+
+controlador.historialPublicados = async (req, res) => {
+    try {
+        const datos = await obtenerDatosSupervisor(req, res);
+        if (!datos) return;
+        const { nombreUsuario } = datos;
+        const nombreFiltro = nombreUsuario.trim();
+
+        // Leer filtros opcionales desde query params
+        const { fecha, numeroParte } = req.query;
+
+        if (fecha !== undefined && fecha !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+            return res.status(400).json({ ok: false, error: 'Formato de fecha inválido. Use YYYY-MM-DD.' });
+        }
+
+        // Construir query dinámica para publicados
+        let whereClause = `WHERE c.nombre_supervisor LIKE :supervisorFiltro AND rb.status = 'published'`;
+        const replacements = { supervisorFiltro: `%${nombreFiltro}%` };
+
+        if (fecha) {
+            whereClause += ' AND DATE(r.created_at) = :fecha';
+            replacements.fecha = fecha;
+        }
+        if (numeroParte) {
+            whereClause += ' AND c.numero_parte = :numeroParte';
+            replacements.numeroParte = numeroParte;
+        }
+
+        const querySQL = `
+            SELECT
+                r.id AS reporte_id,
+                rb.id AS body_id,
+                r.nombre_inspector,
+                r.turno,
+                r.status,
+                r.created_at,
+                c.id AS cotizacion_id,
+                c.planta,
+                c.cliente,
+                c.numero_parte,
+                c.nombre_supervisor,
+                rb.numero_items,
+                rb.items,
+                rb.firma AS firmado_por,
+                rb.fecha_firma AS fecha_firma_item
+            FROM reportes r
+            INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
+            LEFT JOIN reporte_body rb ON r.id = rb.reporte_id
+            ${whereClause}
+            ORDER BY r.created_at DESC;
+        `;
+
+        let reportes = await dbReportes.query(querySQL, {
+            replacements,
+            type: QueryTypes.SELECT
+        });
+
+        // Calcular total_piezas sumando item.total de cada item en el JSON items
+        reportes = reportes.map(r => {
+            const items = typeof r.items === 'string'
+                ? (() => { try { return JSON.parse(r.items); } catch { return []; } })()
+                : (r.items || []);
+            const totalPiezas = Array.isArray(items)
+                ? items.reduce((sum, item) => sum + (item.totalPiezas || item.total || 0), 0)
+                : 0;
+            return { ...r, total_piezas: totalPiezas };
+        });
+
+        // Obtener números de parte únicos de los reportes publicados del supervisor
+        // para poblar el select dinámicamente (sin filtros de fecha/parte aplicados)
+        const partesSQL = `
+            SELECT DISTINCT c.numero_parte
+            FROM reportes r
+            INNER JOIN cotizaciones c ON r.cotizacion_id = c.id
+            LEFT JOIN reporte_body rb ON r.id = rb.reporte_id
+            WHERE c.nombre_supervisor LIKE :supervisorFiltro
+              AND rb.status = 'published'
+            ORDER BY c.numero_parte ASC;
+        `;
+        const partesRows = await dbReportes.query(partesSQL, {
+            replacements: { supervisorFiltro: `%${nombreFiltro}%` },
+            type: QueryTypes.SELECT
+        });
+        const numerosParteUnicos = partesRows.map(p => p.numero_parte).filter(Boolean);
+
+        res.render('admin/supervisor/historial_publicados', {
+            csrfToken: req.csrfToken(),
+            supervisor: { nombre: nombreUsuario },
+            reportes,
+            numerosParteUnicos,
+            kpis: {
+                totalReportes: reportes.length,
+                totalLotes: reportes.reduce((sum, r) => sum + (r.numero_items || 0), 0)
+            },
+            filtros: {
+                fecha: fecha || '',
+                numeroParte: numeroParte || ''
+            }
+        });
+
+    } catch (error) {
+        console.error('[historialPublicados] Error:', error);
+        manejadorErrores(res, error);
+    }
+};
+
+// ─── P-08: Detalle de reporte publicado (solo lectura) ───────────────────────
+
+controlador.detallePublicado = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const datos = await obtenerDatosSupervisor(req, res);
+        if (!datos) return;
+        const { nombreUsuario } = datos;
+
+        const bodyReporte = await ReporteBody.findByPk(id);
+
+        if (!bodyReporte) {
+            return res.redirect('/bots/supervisor/historial');
+        }
+
+        const reporte = await Reporte.findByPk(bodyReporte.reporte_id);
+
+        if (!reporte || reporte.status !== 'published') {
+            return res.redirect('/bots/supervisor/historial');
+        }
+
+        const cotizacion = await Cotizacion.findByPk(reporte.cotizacion_id);
+
+        let items = bodyReporte.items || [];
+
+        if (typeof items === 'string') {
+            try {
+                items = JSON.parse(items);
+            } catch {
+                items = [];
+            }
+        }
+
+        if (!Array.isArray(items)) {
+            items = [items];
+        }
+
+        res.render('admin/supervisor/detalle_publicado', {
+            csrfToken: req.csrfToken(),
+            supervisor: { nombre: nombreUsuario },
+            reporte,
+            cotizacion,
+            items,
+            bodyFirma: bodyReporte.firma || null,
+            bodyFechaFirma: bodyReporte.fecha_firma || null
+        });
+
+    } catch (error) {
+        console.error('[detallePublicado] Error:', error);
+        manejadorErrores(res, error);
+    }
+};
 
 export default controlador

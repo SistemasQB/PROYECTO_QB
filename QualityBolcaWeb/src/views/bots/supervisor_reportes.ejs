@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supervisor — Reportes | Quality Bolca</title>
+  <link rel="stylesheet" href="/styles/bots/estilos_supervisor_reportes.css" />
+  <meta name="csrf-token" content="<%= csrfToken %>">
+</head>
+<body>
+
+<!-- ============================================================
+     P-05: BANDEJA DE ENTRADA SUPERVISOR
+     ============================================================ -->
+<div class="screen" id="screen-bandeja">
+
+  <!-- Header -->
+  <header class="sv-header">
+    <div class="sv-header__brand">
+      <img
+        class="sv-header__logo"
+        src="https://qualitybolca.com/assets/images/logo.png"
+        alt="Quality Bolca"
+        onerror="this.style.display='none'"
+      />
+      <span class="sv-header__app">Quality Bolca</span>
+    </div>
+    <div class="sv-header__user">
+      <span class="sv-header__username">María González</span>
+      <span class="sv-badge sv-badge--warning">3 reportes pendientes</span>
+    </div>
+  </header>
+
+  <div class="sv-layout">
+
+    <!-- Sidebar -->
+    <nav class="sv-sidebar" aria-label="Navegación principal">
+      <ul class="sv-sidebar__list">
+        <li>
+          <button
+            class="sv-sidebar__item sv-sidebar__item--active"
+            onclick="showScreen('screen-bandeja')"
+            aria-current="page"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Bandeja
+          </button>
+        </li>
+        <li>
+          <button
+            class="sv-sidebar__item"
+            onclick="showScreen('screen-historial')"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Historial publicados
+          </button>
+        </li>
+        <li>
+          <button class="sv-sidebar__item">
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Mi perfil
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="sv-main">
+      <div class="sv-page-header">
+        <h1 class="sv-page-title">Bandeja de Entrada</h1>
+        <p class="sv-page-subtitle">Reportes pendientes de revisión</p>
+      </div>
+
+      <!-- Grupo Inspector: Juan Pérez -->
+      <section class="sv-inspector-group" aria-labelledby="inspector-juan">
+        <div class="sv-inspector-group__header">
+          <div class="sv-inspector-group__info">
+            <span class="sv-inspector-group__avatar">JP</span>
+            <div>
+              <h2 class="sv-inspector-group__name" id="inspector-juan">Juan Pérez</h2>
+              <span class="sv-inspector-group__count">2 reportes pendientes</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sv-table-wrapper">
+          <table class="sv-table" aria-label="Reportes de Juan Pérez">
+            <thead>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Turno</th>
+                <th scope="col">Número de parte</th>
+                <th scope="col">Lotes</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>10/04/2026</td>
+                <td>Vespertino</td>
+                <td><span class="sv-part-number">48-6123-A</span></td>
+                <td>3 lotes</td>
+                <td><span class="sv-badge sv-badge--warning">PENDIENTE</span></td>
+                <td>
+                  <button
+                    class="sv-btn sv-btn--primary sv-btn--sm"
+                    onclick="irADetalle('juan-vespertino')"
+                    aria-label="Revisar reporte de Juan Pérez, 10/04/2026 Vespertino"
+                  >
+                    REVISAR
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>09/04/2026</td>
+                <td>Nocturno</td>
+                <td><span class="sv-part-number">48-6123-A</span></td>
+                <td>5 lotes</td>
+                <td><span class="sv-badge sv-badge--warning">PENDIENTE</span></td>
+                <td>
+                  <button
+                    class="sv-btn sv-btn--primary sv-btn--sm"
+                    onclick="irADetalle('juan-nocturno')"
+                    aria-label="Revisar reporte de Juan Pérez, 09/04/2026 Nocturno"
+                  >
+                    REVISAR
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Grupo Inspector: Carlos Ramos -->
+      <section class="sv-inspector-group" aria-labelledby="inspector-carlos">
+        <div class="sv-inspector-group__header">
+          <div class="sv-inspector-group__info">
+            <span class="sv-inspector-group__avatar">CR</span>
+            <div>
+              <h2 class="sv-inspector-group__name" id="inspector-carlos">Carlos Ramos</h2>
+              <span class="sv-inspector-group__count">1 reporte pendiente</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sv-table-wrapper">
+          <table class="sv-table" aria-label="Reportes de Carlos Ramos">
+            <thead>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Turno</th>
+                <th scope="col">Número de parte</th>
+                <th scope="col">Lotes</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>10/04/2026</td>
+                <td>Matutino</td>
+                <td><span class="sv-part-number">32-9001-C</span></td>
+                <td>4 lotes</td>
+                <td><span class="sv-badge sv-badge--warning">PENDIENTE</span></td>
+                <td>
+                  <button
+                    class="sv-btn sv-btn--primary sv-btn--sm"
+                    onclick="irADetalle('carlos-matutino')"
+                    aria-label="Revisar reporte de Carlos Ramos, 10/04/2026 Matutino"
+                  >
+                    REVISAR
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div><!-- /sv-layout -->
+</div><!-- /screen-bandeja -->
+
+
+<!-- ============================================================
+     P-06: DETALLE DEL REPORTE + CHATBOT DE EDICIÓN
+     ============================================================ -->
+<div class="screen hidden" id="screen-detalle">
+
+  <!-- Header -->
+  <header class="sv-header">
+    <div class="sv-header__brand">
+      <img
+        class="sv-header__logo"
+        src="https://qualitybolca.com/assets/images/logo.png"
+        alt="Quality Bolca"
+        onerror="this.style.display='none'"
+      />
+      <span class="sv-header__app">Quality Bolca</span>
+    </div>
+    <div class="sv-header__actions">
+      <span class="sv-header__username">María González</span>
+      <button
+        class="sv-btn sv-btn--ghost"
+        onclick="showScreen('screen-bandeja')"
+        aria-label="Volver a la bandeja"
+      >
+        &larr; Volver a bandeja
+      </button>
+    </div>
+  </header>
+
+  <div class="sv-layout">
+
+    <!-- Sidebar -->
+    <nav class="sv-sidebar" aria-label="Navegación principal">
+      <ul class="sv-sidebar__list">
+        <li>
+          <button
+            class="sv-sidebar__item sv-sidebar__item--active"
+            onclick="showScreen('screen-bandeja')"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Bandeja
+          </button>
+        </li>
+        <li>
+          <button
+            class="sv-sidebar__item"
+            onclick="showScreen('screen-historial')"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Historial publicados
+          </button>
+        </li>
+        <li>
+          <button class="sv-sidebar__item">
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Mi perfil
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Contenido principal: split view -->
+    <main class="sv-main sv-main--split">
+
+      <!-- Panel izquierdo: detalle del reporte -->
+      <section class="sv-detail-panel" aria-label="Detalle del reporte">
+        <div class="sv-panel-header">
+          <h2 class="sv-panel-title">Detalle del Reporte</h2>
+          <p class="sv-panel-meta">Juan Pérez &middot; 10/04/2026 Vespertino</p>
+        </div>
+
+        <!-- Alerta de error de validación (oculta por defecto) -->
+        <div class="sv-alert sv-alert--error hidden" id="alerta-validacion" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Error de validación matemática: la suma de piezas buenas y NG no coincide con el total. Por favor verifique los datos antes de firmar.
+        </div>
+
+        <!-- Tabla: Datos Generales -->
+        <h3 class="sv-section-title">Datos Generales</h3>
+        <div class="sv-table-wrapper">
+          <table class="sv-table sv-table--compact" aria-label="Datos generales del reporte">
+            <tbody>
+              <tr>
+                <th scope="row">Planta</th>
+                <td>Planta Norte — Línea 3</td>
+                <th scope="row">Cliente</th>
+                <td>Ford Motor Company</td>
+              </tr>
+              <tr>
+                <th scope="row">Número de parte</th>
+                <td><span class="sv-part-number">48-6123-A</span></td>
+                <th scope="row">Nombre de parte</th>
+                <td>Bracket Soporte Trasero</td>
+              </tr>
+              <tr>
+                <th scope="row">Turno</th>
+                <td>Vespertino</td>
+                <th scope="row">Tipo de servicio</th>
+                <td>Selección 100%</td>
+              </tr>
+              <tr>
+                <th scope="row">Tipo de lote</th>
+                <td>Producción</td>
+                <th scope="row">Inspector</th>
+                <td>Juan Pérez</td>
+              </tr>
+              <tr>
+                <th scope="row">Estado</th>
+                <td colspan="3"><span class="sv-badge sv-badge--warning">PENDIENTE DE REVISIÓN</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tabla: Lotes Inspeccionados -->
+        <h3 class="sv-section-title">Lotes Inspeccionados</h3>
+        <div class="sv-table-wrapper">
+          <table class="sv-table" aria-label="Lotes inspeccionados">
+            <thead>
+              <tr>
+                <th scope="col">Lote</th>
+                <th scope="col">Total</th>
+                <th scope="col">Buenas</th>
+                <th scope="col">NG</th>
+                <th scope="col">Defectos</th>
+                <th scope="col">Validación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>L-001</td>
+                <td>1,200</td>
+                <td>1,185</td>
+                <td>15</td>
+                <td>Rayadura, Golpe</td>
+                <td><span class="sv-badge sv-badge--success">OK</span></td>
+              </tr>
+              <tr>
+                <td>L-002</td>
+                <td>980</td>
+                <td>972</td>
+                <td>8</td>
+                <td>Rayadura</td>
+                <td><span class="sv-badge sv-badge--success">OK</span></td>
+              </tr>
+              <tr>
+                <td>L-003</td>
+                <td>1,450</td>
+                <td>1,430</td>
+                <td>20</td>
+                <td>Doblez, Faltante</td>
+                <td><span class="sv-badge sv-badge--success">OK</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Acciones del reporte -->
+        <div class="sv-detail-actions">
+          <button
+            class="sv-btn sv-btn--primary"
+            id="btn-firmar"
+            onclick="firmarReporte()"
+          >
+            Firmar Reporte
+          </button>
+          <button
+            class="sv-btn sv-btn--success"
+            id="btn-publicar"
+            disabled
+            aria-disabled="true"
+          >
+            Publicar Reporte
+          </button>
+        </div>
+
+      </section><!-- /sv-detail-panel -->
+
+      <!-- Panel derecho: Chatbot de edición -->
+      <aside class="sv-chat-panel" aria-label="Chatbot de edición">
+        <div class="sv-chat-header">
+          <div class="sv-chat-header__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="sv-chat-header__title">Chatbot de Edición</h2>
+            <p class="sv-chat-header__subtitle">Asistente de revisión de reportes</p>
+          </div>
+        </div>
+
+        <!-- Historial de mensajes -->
+        <div class="sv-chat-messages" id="chat-messages" aria-live="polite" aria-label="Historial de mensajes">
+          <div class="sv-chat-bubble sv-chat-bubble--system">
+            <p>Hola María, he cargado el reporte de Juan Pérez del 10/04/2026 turno Vespertino. Puedo ayudarte a revisar los datos, identificar discrepancias o editar información. ¿En qué te puedo asistir?</p>
+          </div>
+          <div class="sv-chat-bubble sv-chat-bubble--system">
+            <p>Los 3 lotes pasan la validación matemática. El total general es 3,630 piezas con 33 NG (0.91% de rechazo).</p>
+          </div>
+        </div>
+
+        <!-- Selector de modo de entrada -->
+        <div class="sv-chat-mode" role="group" aria-label="Modo de entrada">
+          <button class="sv-chat-mode__btn sv-chat-mode__btn--active" id="modo-texto" onclick="setModoChat('texto')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Texto
+          </button>
+          <button class="sv-chat-mode__btn" id="modo-voz" onclick="setModoChat('voz')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M12 2a3 3 0 013 3v7a3 3 0 01-6 0V5a3 3 0 013-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+            Voz
+          </button>
+        </div>
+
+        <!-- Input de texto -->
+        <div class="sv-chat-input-area">
+          <label for="chat-input" class="sr-only">Escribe un mensaje</label>
+          <input
+            type="text"
+            id="chat-input"
+            class="sv-chat-input"
+            placeholder="Escribe tu consulta o instrucción..."
+            autocomplete="off"
+            aria-label="Mensaje para el chatbot"
+          />
+          <button
+            class="sv-btn sv-btn--primary sv-chat-send"
+            id="btn-chat-send"
+            onclick="enviarMensajeChat()"
+            aria-label="Enviar mensaje"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+
+      </aside><!-- /sv-chat-panel -->
+
+    </main>
+  </div><!-- /sv-layout -->
+</div><!-- /screen-detalle -->
+
+
+<!-- ============================================================
+     P-07: HISTORIAL DE REPORTES PUBLICADOS
+     ============================================================ -->
+<div class="screen hidden" id="screen-historial">
+
+  <!-- Header -->
+  <header class="sv-header">
+    <div class="sv-header__brand">
+      <img
+        class="sv-header__logo"
+        src="https://qualitybolca.com/assets/images/logo.png"
+        alt="Quality Bolca"
+        onerror="this.style.display='none'"
+      />
+      <span class="sv-header__app">Quality Bolca</span>
+    </div>
+    <div class="sv-header__user">
+      <span class="sv-header__username">María González</span>
+    </div>
+  </header>
+
+  <div class="sv-layout">
+
+    <!-- Sidebar -->
+    <nav class="sv-sidebar" aria-label="Navegación principal">
+      <ul class="sv-sidebar__list">
+        <li>
+          <button
+            class="sv-sidebar__item"
+            onclick="showScreen('screen-bandeja')"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Bandeja
+          </button>
+        </li>
+        <li>
+          <button
+            class="sv-sidebar__item sv-sidebar__item--active"
+            onclick="showScreen('screen-historial')"
+            aria-current="page"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Historial publicados
+          </button>
+        </li>
+        <li>
+          <button class="sv-sidebar__item">
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Mi perfil
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="sv-main">
+      <div class="sv-page-header">
+        <h1 class="sv-page-title">Historial de Reportes Publicados</h1>
+      </div>
+
+      <!-- Barra de filtros -->
+      <div class="sv-filters" role="search" aria-label="Filtros de búsqueda">
+        <div class="sv-filters__group">
+          <label for="filtro-parte" class="sv-label">Número de parte</label>
+          <select id="filtro-parte" class="sv-select" aria-label="Filtrar por número de parte">
+            <option value="">Todos</option>
+            <option value="48-6123-A">48-6123-A</option>
+            <option value="32-9001-C">32-9001-C</option>
+            <option value="17-4452-B">17-4452-B</option>
+            <option value="55-8801-D">55-8801-D</option>
+          </select>
+        </div>
+        <div class="sv-filters__group">
+          <label for="filtro-desde" class="sv-label">Desde</label>
+          <input type="date" id="filtro-desde" class="sv-input" aria-label="Fecha desde" />
+        </div>
+        <div class="sv-filters__group">
+          <label for="filtro-hasta" class="sv-label">Hasta</label>
+          <input type="date" id="filtro-hasta" class="sv-input" aria-label="Fecha hasta" />
+        </div>
+        <div class="sv-filters__actions">
+          <button class="sv-btn sv-btn--primary" onclick="buscarHistorial()" aria-label="Buscar reportes">
+            Buscar
+          </button>
+          <button class="sv-btn sv-btn--secondary" onclick="limpiarFiltros()" aria-label="Limpiar filtros">
+            Limpiar
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="sv-kpi-row" aria-label="Indicadores clave">
+        <article class="sv-kpi-card">
+          <span class="sv-kpi-card__number">24</span>
+          <span class="sv-kpi-card__label">Total reportes publicados</span>
+        </article>
+        <article class="sv-kpi-card">
+          <span class="sv-kpi-card__number">54,320</span>
+          <span class="sv-kpi-card__label">Total piezas inspeccionadas</span>
+        </article>
+        <article class="sv-kpi-card">
+          <span class="sv-kpi-card__number">112</span>
+          <span class="sv-kpi-card__label">Total lotes</span>
+        </article>
+      </div>
+
+      <!-- Tabla de historial -->
+      <div class="sv-table-wrapper" id="historial-tabla-wrapper">
+        <table class="sv-table" id="historial-tabla" aria-label="Historial de reportes publicados">
+          <thead>
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Inspector</th>
+              <th scope="col">Turno</th>
+              <th scope="col">N&ordm; Parte</th>
+              <th scope="col">Lotes</th>
+              <th scope="col">Piezas Tot.</th>
+              <th scope="col">Firmado por</th>
+              <th scope="col">Publicado</th>
+              <th scope="col">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="historial-tbody">
+            <tr data-parte="48-6123-A">
+              <td>08/04/2026</td>
+              <td>Juan Pérez</td>
+              <td>Matutino</td>
+              <td><span class="sv-part-number">48-6123-A</span></td>
+              <td>4</td>
+              <td>4,820</td>
+              <td>María González</td>
+              <td>08/04/2026 14:32</td>
+              <td>
+                <button
+                  class="sv-btn sv-btn--outline sv-btn--sm"
+                  onclick="irAPublicado('rep-001')"
+                  aria-label="Ver reporte 48-6123-A del 08/04/2026"
+                >
+                  VER
+                </button>
+              </td>
+            </tr>
+            <tr data-parte="32-9001-C">
+              <td>07/04/2026</td>
+              <td>Carlos Ramos</td>
+              <td>Vespertino</td>
+              <td><span class="sv-part-number">32-9001-C</span></td>
+              <td>3</td>
+              <td>3,610</td>
+              <td>María González</td>
+              <td>07/04/2026 19:15</td>
+              <td>
+                <button
+                  class="sv-btn sv-btn--outline sv-btn--sm"
+                  onclick="irAPublicado('rep-002')"
+                  aria-label="Ver reporte 32-9001-C del 07/04/2026"
+                >
+                  VER
+                </button>
+              </td>
+            </tr>
+            <tr data-parte="17-4452-B">
+              <td>06/04/2026</td>
+              <td>Ana Torres</td>
+              <td>Nocturno</td>
+              <td><span class="sv-part-number">17-4452-B</span></td>
+              <td>5</td>
+              <td>6,200</td>
+              <td>María González</td>
+              <td>06/04/2026 07:04</td>
+              <td>
+                <button
+                  class="sv-btn sv-btn--outline sv-btn--sm"
+                  onclick="irAPublicado('rep-003')"
+                  aria-label="Ver reporte 17-4452-B del 06/04/2026"
+                >
+                  VER
+                </button>
+              </td>
+            </tr>
+            <tr data-parte="55-8801-D">
+              <td>05/04/2026</td>
+              <td>Roberto Soto</td>
+              <td>Matutino</td>
+              <td><span class="sv-part-number">55-8801-D</span></td>
+              <td>6</td>
+              <td>7,140</td>
+              <td>María González</td>
+              <td>05/04/2026 14:55</td>
+              <td>
+                <button
+                  class="sv-btn sv-btn--outline sv-btn--sm"
+                  onclick="irAPublicado('rep-004')"
+                  aria-label="Ver reporte 55-8801-D del 05/04/2026"
+                >
+                  VER
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <nav class="sv-pagination" aria-label="Paginación del historial">
+        <button class="sv-pagination__btn" aria-label="Página anterior" disabled>Anterior</button>
+        <button class="sv-pagination__btn sv-pagination__btn--active" aria-current="page" aria-label="Página 1">1</button>
+        <button class="sv-pagination__btn" aria-label="Página 2">2</button>
+        <button class="sv-pagination__btn" aria-label="Página 3">3</button>
+        <button class="sv-pagination__btn" aria-label="Página siguiente">Siguiente</button>
+      </nav>
+
+    </main>
+  </div><!-- /sv-layout -->
+</div><!-- /screen-historial -->
+
+
+<!-- ============================================================
+     P-08: DETALLE DE REPORTE PUBLICADO (solo lectura)
+     ============================================================ -->
+<div class="screen hidden" id="screen-publicado">
+
+  <!-- Header -->
+  <header class="sv-header">
+    <div class="sv-header__brand">
+      <img
+        class="sv-header__logo"
+        src="https://qualitybolca.com/assets/images/logo.png"
+        alt="Quality Bolca"
+        onerror="this.style.display='none'"
+      />
+      <span class="sv-header__app">Quality Bolca</span>
+    </div>
+    <div class="sv-header__actions">
+      <span class="sv-header__username">María González</span>
+      <button
+        class="sv-btn sv-btn--ghost"
+        onclick="showScreen('screen-historial')"
+        aria-label="Volver al historial"
+      >
+        &larr; Volver al historial
+      </button>
+    </div>
+  </header>
+
+  <div class="sv-layout">
+
+    <!-- Sidebar -->
+    <nav class="sv-sidebar" aria-label="Navegación principal">
+      <ul class="sv-sidebar__list">
+        <li>
+          <button
+            class="sv-sidebar__item"
+            onclick="showScreen('screen-bandeja')"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Bandeja
+          </button>
+        </li>
+        <li>
+          <button
+            class="sv-sidebar__item sv-sidebar__item--active"
+            onclick="showScreen('screen-historial')"
+            aria-current="page"
+          >
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Historial publicados
+          </button>
+        </li>
+        <li>
+          <button class="sv-sidebar__item">
+            <svg class="sv-sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Mi perfil
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="sv-main">
+      <div class="sv-page-header sv-page-header--row">
+        <div>
+          <h1 class="sv-page-title">Reporte de Inspección</h1>
+          <p class="sv-page-subtitle">Juan Pérez &middot; 48-6123-A &middot; 08/04/2026 Matutino</p>
+        </div>
+        <span class="sv-badge sv-badge--success sv-badge--lg">PUBLICADO</span>
+      </div>
+
+      <!-- Franja de auditoría -->
+      <div class="sv-audit-strip" aria-label="Información de auditoría">
+        <div class="sv-audit-strip__item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span><strong>Firmado por:</strong> María González</span>
+        </div>
+        <div class="sv-audit-strip__item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span><strong>Fecha de firma:</strong> 08/04/2026 13:47</span>
+        </div>
+        <div class="sv-audit-strip__item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span><strong>Publicado en:</strong> 08/04/2026 14:32</span>
+        </div>
+      </div>
+
+      <!-- Datos Generales en grid 3 columnas -->
+      <h2 class="sv-section-title">Datos Generales</h2>
+      <div class="sv-data-grid">
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Planta</span>
+          <span class="sv-data-grid__value">Planta Norte — Línea 3</span>
+        </div>
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Cliente</span>
+          <span class="sv-data-grid__value">Ford Motor Company</span>
+        </div>
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Número de parte</span>
+          <span class="sv-data-grid__value sv-part-number">48-6123-A</span>
+        </div>
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Nombre de parte</span>
+          <span class="sv-data-grid__value">Bracket Soporte Trasero</span>
+        </div>
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Turno</span>
+          <span class="sv-data-grid__value">Matutino</span>
+        </div>
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Tipo de servicio</span>
+          <span class="sv-data-grid__value">Selección 100%</span>
+        </div>
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Tipo de lote</span>
+          <span class="sv-data-grid__value">Producción</span>
+        </div>
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Inspector</span>
+          <span class="sv-data-grid__value">Juan Pérez</span>
+        </div>
+        <div class="sv-data-grid__item">
+          <span class="sv-data-grid__label">Estado</span>
+          <span class="sv-data-grid__value">
+            <span class="sv-badge sv-badge--success">PUBLICADO</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Tabla: Lotes inspeccionados (solo lectura) -->
+      <h2 class="sv-section-title">
+        Lotes Inspeccionados
+        <span class="sv-readonly-badge">solo lectura</span>
+      </h2>
+      <div class="sv-table-wrapper">
+        <table class="sv-table sv-table--readonly" aria-label="Lotes inspeccionados — solo lectura">
+          <thead>
+            <tr>
+              <th scope="col">Lote</th>
+              <th scope="col">Total</th>
+              <th scope="col">Buenas</th>
+              <th scope="col">NG</th>
+              <th scope="col">Scrap</th>
+              <th scope="col">Defectos</th>
+              <th scope="col">Liber&oacute;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>L-001</td>
+              <td>1,200</td>
+              <td>1,185</td>
+              <td>10</td>
+              <td>5</td>
+              <td>Rayadura, Golpe</td>
+              <td>Juan Pérez</td>
+            </tr>
+            <tr>
+              <td>L-002</td>
+              <td>980</td>
+              <td>974</td>
+              <td>4</td>
+              <td>2</td>
+              <td>Rayadura</td>
+              <td>Juan Pérez</td>
+            </tr>
+            <tr>
+              <td>L-003</td>
+              <td>1,450</td>
+              <td>1,436</td>
+              <td>9</td>
+              <td>5</td>
+              <td>Doblez, Faltante</td>
+              <td>Juan Pérez</td>
+            </tr>
+            <tr>
+              <td>L-004</td>
+              <td>1,190</td>
+              <td>1,178</td>
+              <td>8</td>
+              <td>4</td>
+              <td>Faltante</td>
+              <td>Juan Pérez</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div><!-- /sv-layout -->
+</div><!-- /screen-publicado -->
+
+
+<script src="/scripts/bots/scripts_supervisor_reportes.js"></script>
+</body>
+</html>

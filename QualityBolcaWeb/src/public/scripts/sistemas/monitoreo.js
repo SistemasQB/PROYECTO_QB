@@ -21,6 +21,8 @@ function selectPlant(el) {
     cargarTicketsMonitoreo();
     cargarRequisicionesMonitoreo();
     cargarInventarioMonitoreo();
+    cargarSlaMonitoreo();
+    cargarResolucionSemanal();
 }
 
 // ── CHARTS ──────────────────────────────────────────────────────────────────
@@ -72,21 +74,31 @@ const ticketChart = new Chart(ticketCtx, {
 });
 
 const csatCtx = document.getElementById('csatChart').getContext('2d');
-new Chart(csatCtx, {
+let resolucionChart = new Chart(csatCtx, {
     type: 'line',
     data: {
-        labels: ['S8', 'S9', 'S10', 'S11', 'S12', 'S13'],
+        labels: [],
         datasets: [
             {
-                label: 'CSAT', data: [6.2, 6.8, 7.0, 6.9, 7.1, 7.4],
-                borderColor: '#0071e3', backgroundColor: 'rgba(0,113,227,0.07)',
-                borderWidth: 2, pointBackgroundColor: '#0071e3', pointRadius: 4,
-                tension: 0.4, fill: true
+                label: 'Resolución %',
+                data: [],
+                borderColor: '#0071e3',
+                backgroundColor: 'rgba(0,113,227,0.07)',
+                borderWidth: 2,
+                pointBackgroundColor: '#0071e3',
+                pointRadius: 4,
+                tension: 0.4,
+                fill: true,
+                spanGaps: false
             },
             {
-                label: 'Meta (8)', data: [8, 8, 8, 8, 8, 8],
-                borderColor: 'rgba(40,205,65,0.4)', borderWidth: 1.5,
-                borderDash: [5, 4], pointRadius: 0, fill: false
+                label: 'Meta (80%)',
+                data: [],
+                borderColor: 'rgba(40,205,65,0.4)',
+                borderWidth: 1.5,
+                borderDash: [5, 4],
+                pointRadius: 0,
+                fill: false
             }
         ]
     },
@@ -101,7 +113,7 @@ new Chart(csatCtx, {
         },
         scales: {
             x: { grid: { display: false }, border: { display: false }, ticks: { color: '#aeaeb2' } },
-            y: { grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false }, ticks: { color: '#aeaeb2' }, min: 0, max: 10 }
+            y: { grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false }, ticks: { color: '#aeaeb2' }, min: 0, max: 100 }
         }
     }
 });
@@ -350,6 +362,42 @@ function actualizarKpis(resumen, semana) {
 }
 
 /**
+ * Puebla el alert scroll con chips de tickets críticos: vencidos + sin asignar.
+ * Duplica los chips para que la animación CSS de loop continuo funcione sin cortes.
+ * @param {object} data - respuesta completa del endpoint /api/monitoreo/tickets
+ */
+function renderAlertScroll(data) {
+    const inner = document.getElementById('alertScrollInner');
+    if (!inner) return;
+
+    // Reunir tickets que merecen alerta: vencidos y abiertos sin asignar
+    const alertas = [];
+
+    (data.tickets.vencidos || []).forEach(t => {
+        const planta = t.departamento ? ` — ${t.departamento}` : '';
+        alertas.push(`${escapar(t.folio)} vencido${planta}`);
+    });
+
+    (data.tickets.abiertos || []).forEach(t => {
+        if (!t.asignadoA) {
+            const planta = t.departamento ? ` — ${t.departamento}` : '';
+            alertas.push(`${escapar(t.folio)} sin asignar${planta}`);
+        }
+    });
+
+    if (alertas.length === 0) {
+        // Duplicar el chip para que la animación CSS de loop continuo (-50%) funcione igual que con alertas reales
+        const chip = '<span class="alert-chip">Sin alertas activas</span>';
+        inner.innerHTML = chip + chip;
+        return;
+    }
+
+    // Duplicar chips para que el scroll sea continuo (misma técnica que el HTML original)
+    const chips = alertas.map(a => `<span class="alert-chip">${a}</span>`).join('');
+    inner.innerHTML = chips + chips;
+}
+
+/**
  * Carga los datos reales de tickets desde la API y actualiza el dashboard.
  */
 async function cargarTicketsMonitoreo() {
@@ -379,6 +427,7 @@ async function cargarTicketsMonitoreo() {
         renderTickets(data);
         actualizarGrafica(data.grafica, data.semana);
         actualizarKpis(data.resumenSemanal, data.semana);
+        renderAlertScroll(data);
 
     } catch (err) {
         console.error('Error de red al cargar tickets del monitoreo:', err);
@@ -628,14 +677,198 @@ function renderInventario(data) {
     `).join('');
 }
 
+// ── AGENTES / EQUIPO ─────────────────────────────────────────────────────────
+
+/**
+ * Construye el HTML de una fila de agente para la card "Equipo".
+ * @param {object} a - objeto agente desde la API
+ */
+function buildAgenteRow(a) {
+    const estadoBadge = a.estado === 'Ocupado'
+        ? '<span class="status-badge sb-warn">Ocupado</span>'
+        : '<span class="status-badge sb-ok">Activo</span>';
+
+    const countHTML = a.ticketsActivos > 0
+        ? `<div class="agent-count">${a.ticketsActivos}</div>`
+        : `<div class="agent-count" style="color:var(--label-4)">—</div>`;
+
+    return `
+        <div class="agent-row"
+             onclick="openAgent('${escapar(a.nombre)}','${escapar(a.rol)}','${a.ticketsActivos || '—'}','${a.estado}','')">
+            <div class="avatar ${a.avatarClass}">${escapar(a.iniciales)}</div>
+            <div class="agent-info">
+                <div class="agent-name">${escapar(a.nombre)}</div>
+                <div class="agent-role">${escapar(a.rol)}</div>
+            </div>
+            <div class="agent-right">
+                ${countHTML}
+                ${estadoBadge}
+            </div>
+        </div>`;
+}
+
+/**
+ * Renderiza la lista de agentes en la card "Equipo".
+ */
+function renderAgentes(data) {
+    const container = document.getElementById('agentes-container');
+    const badge = document.getElementById('agentes-badge');
+
+    if (!container) return;
+
+    if (!data.agentes || data.agentes.length === 0) {
+        container.innerHTML = '<div class="tkt-vacio">Sin agentes registrados</div>';
+        return;
+    }
+
+    if (badge) badge.textContent = `${data.agentes.length} agentes`;
+
+    container.innerHTML = data.agentes.map(a => buildAgenteRow(a)).join('');
+}
+
+/**
+ * Carga los datos de agentes desde la API y actualiza la card "Equipo".
+ */
+async function cargarAgentesMonitoreo() {
+    try {
+        const res = await fetch('/sistemas/api/monitoreo/agentes', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        });
+
+        if (!res.ok) {
+            console.error('Error al cargar agentes del monitoreo:', res.status);
+            return;
+        }
+
+        const data = await res.json();
+
+        if (!data.ok) {
+            console.error('La API de agentes devolvió ok: false');
+            return;
+        }
+
+        renderAgentes(data);
+
+    } catch (err) {
+        console.error('Error de red al cargar agentes del monitoreo:', err);
+    }
+}
+
+// ── SLA ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Carga los datos de SLA desde la API y renderiza las métricas dinámicamente.
+ */
+async function cargarSlaMonitoreo() {
+    const container = document.getElementById('sla-container');
+    container.innerHTML = '<div class="tkt-vacio">Cargando...</div>';
+
+    try {
+        const params = plantaActiva !== 'todas' ? `?planta=${encodeURIComponent(plantaActiva)}` : '';
+        const res = await fetch(`/sistemas/api/monitoreo/sla${params}`);
+        const data = await res.json();
+
+        if (!data.ok) throw new Error('Respuesta no ok');
+
+        const metricas = [
+            { nombre: 'Cumplimiento general', valor: data.pctCumplidoGeneral, tipo: 'pct' },
+            { nombre: 'Críticos a tiempo',    valor: data.pctCumplidoCriticos, tipo: 'pct' },
+            { nombre: 'Prom. resolución',     valor: data.promedioResolucionHoras, tipo: 'horas' }
+        ];
+
+        container.innerHTML = metricas.map(m => {
+            if (m.valor === null || m.valor === undefined) {
+                return `
+                    <div class="sla-item">
+                        <div class="sla-head">
+                            <div class="sla-name">${m.nombre}</div>
+                            <div class="sla-pct" style="color:#aeaeb2">Sin datos</div>
+                        </div>
+                    </div>`;
+            }
+            if (m.tipo === 'horas') {
+                return `
+                    <div class="sla-item">
+                        <div class="sla-head">
+                            <div class="sla-name">${m.nombre}</div>
+                            <div class="sla-pct" style="color:var(--blue)">${m.valor} h</div>
+                        </div>
+                    </div>`;
+            }
+            const color = m.valor >= 80 ? 'green' : m.valor >= 50 ? 'amber' : 'red';
+            return `
+                <div class="sla-item">
+                    <div class="sla-head">
+                        <div class="sla-name">${m.nombre}</div>
+                        <div class="sla-pct ${color}">${m.valor}%</div>
+                    </div>
+                    <div class="sla-track">
+                        <div class="sla-fill ${color}" style="width:${m.valor}%"></div>
+                    </div>
+                </div>`;
+        }).join('');
+
+        if (data.ticketsVencidosActivos > 0) {
+            container.innerHTML += `
+                <div class="sla-item" style="margin-top:4px;border-top:1px solid rgba(255,59,48,0.15);padding-top:8px">
+                    <div class="sla-head">
+                        <div class="sla-name" style="color:var(--red)">SLA vencido activo</div>
+                        <div class="sla-pct red">${data.ticketsVencidosActivos}</div>
+                    </div>
+                </div>`;
+        }
+
+    } catch (e) {
+        container.innerHTML = '<div class="tkt-vacio" style="color:var(--red)">Error al cargar datos</div>';
+    }
+}
+
+// ── RESOLUCIÓN SEMANAL ────────────────────────────────────────────────────────
+
+/**
+ * Carga los datos de resolución semanal y actualiza el gráfico de línea.
+ */
+async function cargarResolucionSemanal() {
+    try {
+        const params = plantaActiva !== 'todas' ? `?planta=${encodeURIComponent(plantaActiva)}` : '';
+        const res = await fetch(`/sistemas/api/monitoreo/resolucion-semanal${params}`);
+        const data = await res.json();
+
+        if (!data.ok || !data.labels || data.labels.length === 0) throw new Error('Sin datos');
+
+        const rango = `${data.labels[0]}–${data.labels[data.labels.length - 1]}`;
+        const badgeEl = document.getElementById('resolucion-rango');
+        if (badgeEl) badgeEl.textContent = rango;
+
+        resolucionChart.data.labels = data.labels;
+        resolucionChart.data.datasets[0].data = data.tasas;
+        resolucionChart.data.datasets[1].data = data.labels.map(() => 80);
+        resolucionChart.update();
+
+    } catch (e) {
+        const ctx = document.getElementById('csatChart').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillStyle = '#aeaeb2';
+        ctx.font = '12px DM Sans, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Sin datos disponibles', ctx.canvas.width / 2, ctx.canvas.height / 2);
+    }
+}
+
 // Carga inicial al abrir la página
 cargarTicketsMonitoreo();
 cargarRequisicionesMonitoreo();
 cargarInventarioMonitoreo();
+cargarAgentesMonitoreo();
+cargarSlaMonitoreo();
+cargarResolucionSemanal();
 
 // Auto-refresh cada 60 segundos para mantener el dashboard al día
 setInterval(() => {
     cargarTicketsMonitoreo();
     cargarRequisicionesMonitoreo();
     cargarInventarioMonitoreo();
+    cargarAgentesMonitoreo();
 }, 60_000);

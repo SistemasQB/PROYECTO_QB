@@ -18,6 +18,7 @@ import modelo_inventarios from "../sistemas/modelo_inventario.js";
         modelo_plantas_gastos,
         modelo_pedido_insumos,
         modelo_requisiciones,
+        modelo_formulario_de_reportes,
         modelo_regionesGastos,
         modelo_inventarios
     }
