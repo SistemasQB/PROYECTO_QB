@@ -5,6 +5,7 @@ import db from "../config/db.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import nodemailerClase from "../public/clases/nodemailer.js";
 import { QueryTypes, Op } from "sequelize";
+import nom10006 from "../models/generales/nom10006.js";
 
 const infraestructuraController = {}
 //controlador de inicio
@@ -492,6 +493,9 @@ infraestructuraController.requisicionGastos = async (req, res) => {
 
         const departamentoReq = usuarioReq[0]?.departamento || null
 
+        const rolesUsuario = await getRolesUsuario(usuario)
+        const departamentosAutorizados = rolesUsuario || (departamentoReq ? [departamentoReq] : [])
+
         // Contadores — varían según nivel
         let pendientesConfirmacion = 0
         let porComprobar = 0
@@ -520,17 +524,17 @@ infraestructuraController.requisicionGastos = async (req, res) => {
 
             statsResult = stats
 
-        } else if (esNivelAlto && departamentoReq) {
-            // Ve su departamento
+        } else if (esNivelAlto && departamentosAutorizados.length) {
+            // Ve los departamentos que puede autorizar
             const [dashboard] = await db.query(`
                 SELECT
                     SUM(CASE WHEN estatus = 'INGRESADA' THEN 1 ELSE 0 END) AS pendientesConfirmacion,
                     SUM(CASE WHEN estatus = 'APROBADA'  THEN 1 ELSE 0 END) AS porComprobar,
                     SUM(CASE WHEN fechaEntrega >= DATE_FORMAT(NOW(), '%Y-%m-01') THEN total ELSE 0 END) AS montoTotalMes
                 FROM requisiciones
-                WHERE departamento = :departamento OR solicitante = :nombreUsuario
+                WHERE (autoriza IN (:departamentos) OR solicitante = :nombreUsuario)
             `, {
-                replacements: { departamento: departamentoReq, nombreUsuario },
+                replacements: { departamentos: departamentosAutorizados, nombreUsuario },
                 type: db.QueryTypes.SELECT
             })
 
@@ -542,9 +546,9 @@ infraestructuraController.requisicionGastos = async (req, res) => {
                 SELECT COUNT(*) as total_pendientes, COALESCE(SUM(total), 0) as monto_total
                 FROM requisiciones
                 WHERE estatus = 'INGRESADA'
-                AND autoriza = :departamento
+                AND autoriza IN (:departamentos)
             `, {
-                replacements: { departamento: departamentoReq },
+                replacements: { departamentos: departamentosAutorizados },
                 type: db.QueryTypes.SELECT
             })
 
@@ -568,14 +572,14 @@ infraestructuraController.requisicionGastos = async (req, res) => {
             porComprobar = dashboard.porComprobar || 0
             montoTotalMes = dashboard.montoTotalMes || 0
 
-            if (departamentoReq) {
+            if (departamentosAutorizados.length) {
                 const stats = await db.query(`
                     SELECT COUNT(*) as total_pendientes, COALESCE(SUM(total), 0) as monto_total
                     FROM requisiciones
                     WHERE estatus = 'INGRESADA'
-                    AND autoriza = :departamento
+                    AND autoriza IN (:departamentos)
                 `, {
-                    replacements: { departamento: departamentoReq },
+                    replacements: { departamentos: departamentosAutorizados },
                     type: db.QueryTypes.SELECT
                 })
                 statsResult = stats
@@ -738,20 +742,21 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                         SELECT departamento
                         FROM usuariosRequisiciones
                         WHERE nombre = :nombre
-                        LIMIT 1 
+                        LIMIT 1
                     `, {
                         replacements: { nombre: nombreUsuario },
                         type: db.QueryTypes.SELECT
                     })
 
-                    if (!deptUsuario.length) {
+                    const rolesTabla = await getRolesUsuario(usuario)
+                    const deptsTabla = rolesTabla || (deptUsuario.length ? [deptUsuario[0].departamento] : [])
+
+                    if (!deptsTabla.length) {
                         return res.json({ ok: true, datos: [], esNivelAlto: false })
                     }
 
-                    const departamento = deptUsuario[0].departamento
-
                     requisiciones = await db.query(`
-                        SELECT 
+                        SELECT
                             id,
                             horaRegistro,
                             asunto,
@@ -759,12 +764,12 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                             estatus,
                             solicitante
                         FROM requisiciones
-                        WHERE departamento = :departamento
+                        WHERE autoriza IN (:departamentos)
                             OR solicitante = :nombreUsuario
                         ORDER BY horaRegistro DESC
                         LIMIT 35
                     `, {
-                        replacements: { departamento, nombreUsuario },
+                        replacements: { departamentos: deptsTabla, nombreUsuario },
                         type: db.QueryTypes.SELECT
                     })
 
@@ -873,7 +878,12 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                     type: QueryTypes.SELECT
                 })
 
-                if (!usuarioReq.length || usuarioReq[0].departamento !== reqDB.autoriza) {
+                const rolesResolver = await getRolesUsuario(usuario)
+                const deptsResolver = rolesResolver
+                    ? rolesResolver
+                    : (usuarioReq.length ? [usuarioReq[0].departamento.toUpperCase()] : [])
+                const autorizaReq = (reqDB.autoriza || '').toUpperCase()
+                if (!deptsResolver.includes(autorizaReq)) {
                     return res.json({
                         ok: false,
                         msg: 'No tienes permisos para aprobar esta requisición'
@@ -1106,7 +1116,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
         
         // obtener puesto
         let clasePuesto = new sequelizeClase({
-            modelo: informacionpuesto
+            modelo: nom10006
         })
 
         let puesto = await clasePuesto.obtener1Registro({
@@ -1170,6 +1180,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
                 tok: req.csrfToken(),
                 stats: { total_pendientes: 0, monto_total: 0 },
                 requisiciones: [],
+                requisicionesAprobadas: [],
                 esSuperAdmin,
                 esNivelAlto
             })
@@ -1184,6 +1195,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
                 tok: req.csrfToken(),
                 stats: { total_pendientes: 0, monto_total: 0 },
                 requisiciones: [],
+                requisicionesAprobadas: [],
                 esSuperAdmin,
                 esNivelAlto
             })
@@ -1191,6 +1203,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
 
         let statsResult
         let requisiciones
+        let requisicionesAprobadas
 
         if (esSuperAdmin) {
             // Ve TODAS las pendientes de aprobación del sistema
@@ -1209,30 +1222,59 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
                 ORDER BY horaRegistro DESC
             `, { type: QueryTypes.SELECT })
 
-        } else if (esNivelAlto || jerarquia <= 4) {
-            // Ve las pendientes de su departamento
-            statsResult = await db.query(`
-                SELECT 
-                    COUNT(*) as total_pendientes,
-                    COALESCE(SUM(total), 0) as monto_total
-                FROM requisiciones
-                WHERE estatus = 'INGRESADA'
-                AND autoriza = :departamento
-            `, {
-                replacements: { departamento: departamentoReq },
-                type: QueryTypes.SELECT
-            })
-
-            requisiciones = await db.query(`
+            requisicionesAprobadas = await db.query(`
                 SELECT *
                 FROM requisiciones
-                WHERE estatus = 'INGRESADA'
-                AND autoriza = :departamento
+                WHERE estatus = 'APROBADA'
                 ORDER BY horaRegistro DESC
-            `, {
-                replacements: { departamento: departamentoReq },
-                type: QueryTypes.SELECT
-            })
+                LIMIT 50
+            `, { type: QueryTypes.SELECT })
+
+        } else if (esNivelAlto || jerarquia <= 4) {
+            // Ve las pendientes de los departamentos que puede autorizar
+            const rolesAprobacion = await getRolesUsuario(usuario)
+            const deptsAprobacion = rolesAprobacion || (departamentoReq ? [departamentoReq] : [])
+
+            if (!deptsAprobacion.length) {
+                statsResult = [{ total_pendientes: 0, monto_total: 0 }]
+                requisiciones = []
+                requisicionesAprobadas = []
+            } else {
+                statsResult = await db.query(`
+                    SELECT
+                        COUNT(*) as total_pendientes,
+                        COALESCE(SUM(total), 0) as monto_total
+                    FROM requisiciones
+                    WHERE estatus = 'INGRESADA'
+                    AND autoriza IN (:departamentos)
+                `, {
+                    replacements: { departamentos: deptsAprobacion },
+                    type: QueryTypes.SELECT
+                })
+
+                requisiciones = await db.query(`
+                    SELECT *
+                    FROM requisiciones
+                    WHERE estatus = 'INGRESADA'
+                    AND autoriza IN (:departamentos)
+                    ORDER BY horaRegistro DESC
+                `, {
+                    replacements: { departamentos: deptsAprobacion },
+                    type: QueryTypes.SELECT
+                })
+
+                requisicionesAprobadas = await db.query(`
+                    SELECT *
+                    FROM requisiciones
+                    WHERE estatus = 'APROBADA'
+                    AND autoriza IN (:departamentos)
+                    ORDER BY horaRegistro DESC
+                    LIMIT 50
+                `, {
+                    replacements: { departamentos: deptsAprobacion },
+                    type: QueryTypes.SELECT
+                })
+            }
         }
 
         res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', {
@@ -1240,6 +1282,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
             tok: req.csrfToken(),
             stats: statsResult[0],
             requisiciones,
+            requisicionesAprobadas: requisicionesAprobadas || [],
             esSuperAdmin,
             esNivelAlto
         })
@@ -1251,6 +1294,25 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
 
 infraestructuraController.comprobarRequisicionesGastos = async (req, res) => {
     res.render('admin/infraestructura/comprobarRequisicionesGastos.ejs', { tok: req.csrfToken() })
+}
+
+async function getRolesUsuario(codigoempleado) {
+    try {
+        const result = await db.query(
+            `SELECT permisos FROM usuarios WHERE codigoempleado = :codigoempleado LIMIT 1`,
+            { replacements: { codigoempleado }, type: QueryTypes.SELECT }
+        )
+        if (!result.length) return null
+        const permisos = typeof result[0].permisos === 'string'
+            ? JSON.parse(result[0].permisos)
+            : result[0].permisos
+        const roles = permisos?.roles
+        if (!Array.isArray(roles) || roles.length === 0) return null
+        return roles.map(r => r.toUpperCase())
+    } catch (e) {
+        console.error('getRolesUsuario error:', e)
+        return null
+    }
 }
 
 function Clasificacion(puesto) {

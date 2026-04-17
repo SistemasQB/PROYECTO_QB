@@ -36,7 +36,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
 })
 
 // Función dinámica para generar e inyectar el Modal
-async function abrirModal(id) {
+async function abrirModal(id, soloLectura = false) {
 
     const res = await fetch('/infraestructura/crudRequisicionGastos', {
         method: 'POST',
@@ -64,6 +64,16 @@ async function abrirModal(id) {
 
     const tablaConceptos = generarTablaConceptos(req.descripcion || '')
 
+    const footerHTML = soloLectura
+        ? `<div class="modal-footer">
+            <span style="color: #16a34a; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Requisición aprobada por: ${req.autorizo || '—'}</span>
+            <button class="btn-outline" onclick="cerrarModal()">Cerrar</button>
+           </div>`
+        : `<div class="modal-footer">
+            <button class="btn-rechazar" onclick="accionRequisicion(${req.id}, 'RECHAZADA')"><i class="fa-solid fa-ban"></i> Rechazar Requisición</button>
+            <button class="btn-aprobar" onclick="accionRequisicion(${req.id}, 'APROBADA')"><i class="fa-solid fa-check"></i> Aprobar Requisición</button>
+           </div>`
+
     const modalHTML = `
                 <div class="modal-overlay" onclick="cerrarModal(event)">
                     <div class="modal-content" onclick="event.stopPropagation()">
@@ -78,7 +88,7 @@ async function abrirModal(id) {
                             </div>
                             <button class="close-btn" onclick="cerrarModal()"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        
+
                         <div class="modal-body">
                             <div class="info-grid">
                                 <div class="info-item"><label>Nombre del gasto</label><div class="val">${req.asunto}</div></div>
@@ -128,10 +138,7 @@ async function abrirModal(id) {
                             </div>
                         </div>
 
-                        <div class="modal-footer">
-                            <button class="btn-rechazar" onclick="accionRequisicion(${req.id}, 'RECHAZADA')"><i class="fa-solid fa-ban"></i> Rechazar Requisición</button>
-                            <button class="btn-aprobar" onclick="accionRequisicion(${req.id}, 'APROBADA')"><i class="fa-solid fa-check"></i> Aprobar Requisición</button>
-                        </div>
+                        ${footerHTML}
                     </div>
                 </div>
             `;
