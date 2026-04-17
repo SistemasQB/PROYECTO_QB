@@ -147,66 +147,6 @@
                 </div>
             </div>
 
-            <div class="table-container" style="margin-top: 2rem;">
-                <div class="table-header" style="padding: 1rem 1.25rem; border-bottom: 1px solid #e5e7eb;">
-                    <h3 style="margin: 0; font-size: 1rem; font-weight: 600; color: #374151;">
-                        <i class="fa-solid fa-circle-check" style="color: #16a34a; margin-right: 0.5rem;"></i>
-                        Historial de Requisiciones Aprobadas
-                    </h3>
-                </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Folio</th>
-                                <th>Asunto</th>
-                                <th>Fecha de Solicitud</th>
-                                <th>Solicitante</th>
-                                <th>Departamento</th>
-                                <th>Monto</th>
-                                <th>Aprobado por</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-aprobadas">
-                            <% if (!requisicionesAprobadas || requisicionesAprobadas.length === 0) { %>
-                                <tr>
-                                    <td colspan="8" style="text-align:center; padding:20px; color: #6b7280;">
-                                        No hay requisiciones aprobadas para mostrar
-                                    </td>
-                                </tr>
-                            <% } else { %>
-                                <% requisicionesAprobadas.forEach(req => { %>
-                                    <tr>
-                                        <td style="color: var(--primary-blue); font-weight: 600;">
-                                            #REQ-<%= req.id %>
-                                        </td>
-                                        <td><%= req.asunto %></td>
-                                        <td><%= new Date(req.horaRegistro).toLocaleDateString('es-MX') %></td>
-                                        <td>
-                                            <div class="solicitante">
-                                                <div class="solicitante-avatar" data-nombre="<%= req.solicitante %>">
-                                                    <%= req.solicitante?.charAt(0) || 'U' %>
-                                                </div>
-                                                <%= req.solicitante %>
-                                            </div>
-                                        </td>
-                                        <td><span class="tag"><%= req.departamento %></span></td>
-                                        <td style="font-weight: 600;">$<%= Number(req.total).toLocaleString('es-MX') %></td>
-                                        <td><%= req.autorizo || '—' %></td>
-                                        <td>
-                                            <button class="btn-outline" onclick="abrirModal(<%= req.id %>, true)">
-                                                Ver Detalle
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </main>
     </div>
 
