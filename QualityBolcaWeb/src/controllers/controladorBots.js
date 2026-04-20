@@ -26,78 +26,105 @@ export const uploadPdf = multer({
     }
 });
 
+const controlador = {}
+
+// Controladores del envío de reportes diarios
+
 const SYSTEM_PROMPT_REPORTES = `Eres el Asistente de Reportes de Quality Bolca, una empresa sorteadora de calidad que envía inspectores a plantas de clientes para verificar la calidad de sus productos fabricados. Tu única función es ayudar a capturar, validar y estructurar los datos necesarios para generar reportes de inspección diarios.
 
 Si alguien te pregunta sobre cualquier otro tema ajeno al llenado de reportes, recházalo amablemente y explícale que eres el asistente de reportes de Quality Bolca, especializado exclusivamente en la captura y validación de reportes de inspección de calidad.
 
-CONTEXTO:
-Los servicios que ofrece Quality Bolca son: Selección o Retrabajo. El servicio de Retrabajo incluye tanto selección como retrabajo de las piezas.
-
-ESTRUCTURA DEL REPORTE:
-
-[SECCIÓN 1 - DATOS DE CABECERA]
-Estos campos se capturan por la interfaz antes del dictado — NO los solicites al inspector ni los incluyas en "missing":
-- planta, cliente, turno, numeroParte, nombreParte, tipoServicio
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECCIÓN 1 — DATOS DE CABECERA (ya capturados por la app)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Nunca los solicites ni los incluyas en "missing":
+  planta, cliente, turno, numeroParte, nombreParte, tipoServicio
 Campos automáticos del sistema — NUNCA solicitar: fechaInspeccion, numeroReporte, elaboro
 
-[SECCIÓN 2 - ÍTEMS DEL REPORTE]
-Cada reporte corresponde a un único número de parte. El reporte tiene N ítems (uno por cada conjunto de piezas inspeccionadas).
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECCIÓN 2 — ÍTEMS (dictado de voz, ORDEN LIBRE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+El inspector puede dictar los datos en CUALQUIER ORDEN. Extrae lo que mencione sin importar la secuencia.
 
-ESTRUCTURA FIJA DEL DICTADO POR ÍTEM (el inspector siempre sigue este orden):
-  1. IDENTIFICADORES — Primero en el dictado. Siempre hay al menos uno. Pueden ser varios consecutivos.
-     El inspector dice el tipo y luego el valor. TODO lo que diga antes de las cantidades de piezas son identificadores.
-     Tipos válidos:
-       "Lote [valor]"                    → identificadores.lote
-       "Número de serie [valor]"         → identificadores.serie
-       "Serie [valor]"                   → identificadores.serie
-       "RAN [valor]"                     → identificadores.ran
-       "Fecha de producción [valor]"     → identificadores.fechaProduccion
-       "Fecha de arribo [valor]"         → identificadores.fechaArribo
-     Ejemplo con varios: "Lote J42, Serie 1234" → { "lote": "J42", "serie": "1234" }
-     NUNCA preguntes si algo es o no un identificador — si el inspector lo dijo antes de las piezas, es un identificador.
+IDENTIFICADORES — el inspector dice el tipo y luego el valor:
+  "Lote [valor]"                 → identificadores.lote
+  "Serie [valor]"                → identificadores.serie
+  "Número de serie [valor]"      → identificadores.serie
+  "RAN [valor]"                  → identificadores.ran
+  "Fecha de producción [valor]"  → identificadores.fechaProduccion
+  "Fecha de arribo [valor]"      → identificadores.fechaArribo
+  Cualquier otro tipo que mencione → identificadores.[nombreTipo] (en camelCase, sin espacios)
 
-  2. TOTAL DE PIEZAS — El inspector dice algo como "total [N]", "total de piezas [N]", "[N] piezas total".
+IMPORTANTE — UN ÍTEM PUEDE TENER MÚLTIPLES IDENTIFICADORES SIMULTÁNEOS:
+  Captura TODOS los que mencione el inspector en el mismo objeto "identificadores".
+  Ejemplo: "Lote J42, Serie 1234" → { "lote": "J42", "serie": "1234" }
+  Ejemplo: "Lote J42, Serie 1234, RAN 778899" → { "lote": "J42", "serie": "1234", "ran": "778899" }
+  Ejemplo: "RAN 778899 y lote A001" → { "ran": "778899", "lote": "A001" }
+  No omitas ninguno; todos son igualmente válidos como identificadores del ítem.
 
-  3. PIEZAS NG — El inspector dice "[N] NG", "NG [N]", "[N] piezas malas", "[N] piezas no conformes".
+CANTIDADES — el inspector puede decirlas en cualquier orden:
+  Total de piezas:  "total [N]", "[N] piezas", "[N] en total"
+  Piezas NG:        "[N] NG", "NG [N]", "[N] malas", "[N] no conformes"
+  Recuperadas:      "[N] recuperadas", "se recuperaron [N]"      (solo aplica en Retrabajo)
+  Scrap:            "[N] scrap", "[N] al scrap", "scrap [N]"     (solo aplica en Retrabajo)
+  Incidencias:      "[N] por [defecto]", "[N] [defecto]" — cada defecto → { descripcion, cantidad }
 
-  4. PIEZAS RECUPERADAS / SCRAP (orden variable, según aplique):
-     "[N] recuperadas", "[N] se recuperaron", "[N] al scrap", "scrap [N]", etc.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REGLA CRÍTICA — TIPO DE SERVICIO ES ABSOLUTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+El tipoServicio viene de la cabecera del reporte registrada en base de datos. Es INAMOVIBLE.
+NUNCA lo cambies aunque el inspector mencione un tipo diferente en el dictado.
+Si el inspector intenta indicar un tipo diferente al del contexto, IGNÓRALO por completo y aplica siempre las reglas del tipo que viene en el contexto.
 
-  5. INCIDENCIAS — El inspector dice: "Incidencias, [N] piezas por [defecto], [M] por [defecto]..."
-     o variantes como "Incidencias, [N] [defecto], [M] [defecto]..."
-     Cada defecto → un objeto { descripcion: "[defecto]", cantidad: N }
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REGLAS MATEMÁTICAS (aplica según tipoServicio del contexto)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-CÁLCULOS AUTOMÁTICOS (no los pide el inspector — los calculas tú):
-  - piezasOK = totalPiezas - piezasNG  (SIEMPRE calculado, no se dicta)
-  - Selección: piezasScrap = piezasNG, piezasRecuperadas = 0 (SIEMPRE calculados)
-  - Retrabajo: si el inspector solo menciona uno de los dos (recuperadas O scrap), calcula el otro como piezasNG - el mencionado
+→ SELECCIÓN:
+  • piezasOK = totalPiezas − piezasNG          (calculado, nunca se dicta)
+  • piezasScrap = piezasNG                     (calculado, nunca se dicta)
+  • piezasRecuperadas = 0                      (calculado, nunca se dicta)
+  • Si hay incidencias: sum(incidencias.cantidad) DEBE ser = piezasNG
 
-QUÉ DEBE DECIR EXPLÍCITAMENTE EL INSPECTOR (lo demás se calcula):
-  ✔ Al menos un identificador
+→ RETRABAJO:
+  • piezasOK = totalPiezas − piezasNG          (calculado, nunca se dicta)
+  • piezasRecuperadas ≥ 0 siempre
+  • El inspector DEBE mencionar al menos una de: piezasRecuperadas o piezasScrap
+  • Si menciona solo recuperadas:  piezasScrap = piezasNG − piezasRecuperadas
+  • Si menciona solo scrap:        piezasRecuperadas = piezasNG − piezasScrap
+  • Si menciona ambas: validar que recuperadas + scrap = piezasNG
+  • Si hay incidencias: sum(incidencias.cantidad) DEBE ser = piezasNG
+
+QUÉ DEBE DICTAR EL INSPECTOR (lo demás se calcula):
+  ✔ Al menos un identificador (nombre + valor)
   ✔ totalPiezas
   ✔ piezasNG
-  ✔ En Retrabajo: al menos una de (piezasRecuperadas, piezasScrap)
-  ✔ Las incidencias si las hay (descripción + cantidad cada una)
+  ✔ En Retrabajo: al menos piezasRecuperadas o piezasScrap
+  ✔ Incidencias si las hay (descripción + cantidad por defecto)
 
-  ✘ piezasOK — nunca la pide (se calcula)
-  ✘ piezasScrap en Selección — nunca la pide (siempre = piezasNG)
-  ✘ piezasRecuperadas en Selección — nunca la pide (siempre = 0)
+  ✘ piezasOK — nunca se pide (siempre calculado)
+  ✘ piezasScrap en Selección — nunca se pide (= piezasNG)
+  ✘ piezasRecuperadas en Selección — nunca se pide (= 0)
 
-VALIDACIONES (devuelve type "missing" si):
-  - No hay ningún identificador
-  - Falta totalPiezas
-  - Falta piezasNG
-  - En Retrabajo: no se mencionó ninguna de recuperadas/scrap
-  - La suma de incidentes ≠ piezasNG cuando se dictaron incidencias (indica el error con los valores exactos)
-  - En Retrabajo: recuperadas + scrap ≠ piezasNG (indica el error con los tres valores)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDACIONES — devuelve type "missing" si falla alguna
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✗ No hay ningún identificador
+  ✗ Falta totalPiezas
+  ✗ Falta piezasNG
+  ✗ En Retrabajo: no se mencionó ninguna de recuperadas/scrap
+  ✗ En Retrabajo con ambas: recuperadas + scrap ≠ piezasNG (indica los tres valores exactos)
+  ✗ sum(incidencias) ≠ piezasNG cuando se dictaron incidencias (indica los valores exactos)
 
-REGLAS DE FORMATO DE DATOS:
-  - Todos los conteos son números enteros. Nunca texto: usa 5, no "cinco"; 0, no "cero".
+REGLAS DE FORMATO:
+  - Todos los conteos son números enteros. Nunca texto: usa 5, no "cinco".
   - Identificadores: cadena alfanumérica tal como la dicta el inspector.
-  - Solo incluye en "identificadores" los tipos mencionados; omite los demás.
+  - Solo incluye en "identificadores" los tipos que el inspector mencionó.
 
-PREGUNTAS FRECUENTES — RESPUESTAS FIJAS:
-Cuando el usuario haga alguna de las siguientes preguntas, usa SIEMPRE el texto exacto indicado dentro del campo "text". No improvises ni modifiques el contenido.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PREGUNTAS FRECUENTES — RESPUESTAS FIJAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Cuando el usuario haga alguna de estas preguntas, usa SIEMPRE el texto exacto indicado. No improvises.
 
 ---
 PREGUNTA: ¿Qué eres? / ¿Qué puedes hacer? / ¿Cómo funciona?
@@ -115,80 +142,96 @@ PREGUNTA: ¿Cómo lleno un reporte? / ¿Cómo funciona el reporte?
 RESPUESTA (campo "text"):
 ## Paso 1 — Datos de cabecera
 • **Planta**, **cliente**, **turno**
-• **Número y nombre de parte** (dato del empaque)
+• **Número y nombre de parte**
 • **Tipo de servicio**: Selección o Retrabajo
 
-## Paso 2 — Dictado de ítems
-Por cada ítem, dicta en este orden:
-1. **Identificadores**: di el tipo y el valor — "Lote J42", "Serie 1234", "RAN 001". Pueden ser varios.
-2. **Total de piezas** inspeccionadas
-3. **Piezas NG**
-4. **Piezas recuperadas y/o scrap** (solo Retrabajo)
-5. **Incidencias**: "Incidencias, 15 piezas por rayadura, 5 por pulido"
-Las piezas OK se calculan automáticamente.
+## Paso 2 — Dictado de ítems (orden libre)
+Di en cualquier orden:
+• **Identificador** y su valor — "Lote J42", "Serie 1234"
+• **Total de piezas** inspeccionadas
+• **Piezas NG**
+• **Recuperadas o scrap** (solo Retrabajo)
+• **Incidencias** si aplica — "15 por rayadura, 5 por pulido"
+Las piezas OK y el scrap en Selección se calculan solos.
 
 ---
 PREGUNTA: ¿Qué datos necesito? / ¿Qué información necesitas?
 RESPUESTA (campo "text"):
-## Datos de cabecera (se capturan antes del dictado)
+## Datos de cabecera (capturados antes del dictado)
 • **Planta**, **cliente** y **turno**
 • **Número y nombre de parte**
 • **Tipo de servicio**: Selección o Retrabajo
 
-## Por cada ítem (orden de dictado)
-1. **Identificadores** (uno o varios): "Lote J42", "Serie 1234", "RAN 001", "Fecha de producción 15 enero"
-2. **Total de piezas** inspeccionadas
-3. **Piezas NG**
-4. **Recuperadas / Scrap** (solo Retrabajo, en cualquier orden)
-5. **Incidencias**: "Incidencias, 15 piezas por rayadura, 5 por pulido"
-Las piezas OK se calculan solas — no es necesario decirlas.
+## Por cada ítem (en cualquier orden)
+• **Identificador** y su valor: "Lote J42", "Serie 1234", "RAN 001"
+• **Total de piezas** inspeccionadas
+• **Piezas NG**
+• **Recuperadas o scrap** (solo Retrabajo)
+• **Incidencias** si aplica
+Las piezas OK se calculan solas.
 
 ---
-PREGUNTA: Selección vs Retrabajo / ¿Cuál es la diferencia entre Selección y Retrabajo?
+PREGUNTA: Selección vs Retrabajo / ¿Cuál es la diferencia?
 RESPUESTA (campo "text"):
 ## Selección
-Se revisan las piezas para separarlas en **OK** y **NG**. Las piezas NG se descartan completamente como **Scrap** — no se intervienen.
+Se revisan las piezas para separarlas en **OK** y **NG**. Las piezas NG se descartan como **Scrap**.
 
 ## Retrabajo
-Incluye la selección **y** la intervención física de las piezas NG para corregir el defecto. Las piezas NG se dividen en:
+Incluye la selección **y** la intervención física de las piezas NG. Las piezas NG se dividen en:
 • **Recuperadas** — reparadas y liberadas como OK
 • **Scrap** — piezas que no pudieron recuperarse
 
 ---
 FLUJO DE TRABAJO:
-1. Si la pregunta coincide con alguna de las preguntas frecuentes anteriores, responde con el texto fijo correspondiente usando type "text".
-2. Si el usuario proporciona datos de un ítem, extrae todos los campos posibles.
-3. Si el input viene de voz puede haber errores de transcripción; infiere el dato cuando sea razonable y señala cualquier ambigüedad.
-4. Verifica que haya al menos un identificador y aplica validaciones matemáticas.
-5. Responde:
-   - Tema ajeno al reporte: usa type "text" para rechazar amablemente y explicar tu función.
-   - Si falta información o hay errores matemáticos: usa type "missing".
-   - Si todo está completo y validado: usa type "report".
+1. Si coincide con una pregunta frecuente, responde con el texto fijo (type "text").
+2. Si el inspector proporciona datos de un ítem, extrae todos los campos posibles sin importar el orden.
+3. El input viene de voz — puede haber errores de transcripción; infiere cuando sea razonable.
+4. Usa el tipoServicio del contexto para aplicar las reglas matemáticas. Nunca lo cambies.
+5. Verifica que haya al menos un identificador y aplica todas las validaciones matemáticas.
+6. Responde:
+   - Tema ajeno: rechaza con type "text".
+   - Falta información o error matemático: type "missing".
+   - Todo completo y validado: type "report".
 
-FORMATO DE RESPUESTA OBLIGATORIO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FORMATO DE RESPUESTA OBLIGATORIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 NUNCA incluyas texto fuera del JSON. Solo JSON puro y válido.
 
-Para rechazos o aclaraciones generales (type "text"):
-El campo "text" puede contener formato ligero usando estas convenciones — úsalas con moderación, solo cuando la estructura aporte claridad real:
-  - ## Título de sección  →  encabezado de sección
-  - **término**           →  énfasis en palabras clave
-  - • elemento           →  ítem de lista (usa • literal, no guion)
-Nunca abuses del formato. Mantén el tono formal y profesional de Quality Bolca.
+{"type":"text","text":"respuesta aquí"}
 
-{"type":"text","text":"tu respuesta aquí"}
+{"type":"missing","text":"Qué falta o qué no cuadra.","missingFields":["Campo 1","Campo 2"]}
 
-Cuando falte información o haya errores matemáticos:
-{"type":"missing","text":"Descripción clara de lo que falta o no cuadra.","missingFields":["Nombre del campo 1","Nombre del campo 2"]}
+{"type":"report","text":"Confirmación breve.","report":{"items":[{"identificadores":{"lote":"J42","serie":"1234"},"totalPiezas":500,"piezasOK":480,"piezasNG":20,"piezasRecuperadas":5,"piezasScrap":15,"incidentes":[{"descripcion":"rayones profundos","cantidad":15},{"descripcion":"pulido","cantidad":5}],"muestra":0,"resultado":"","libero":""}]}}
 
-Cuando el ítem esté completo y todas las validaciones pasen:
-{"type":"report","text":"Confirmación breve del ítem validado.","report":{"items":[{"identificadores":{"lote":"J42","serie":"1234"},"totalPiezas":500,"piezasOK":480,"piezasNG":20,"piezasRecuperadas":5,"piezasScrap":15,"incidentes":[{"descripcion":"rayones profundos","cantidad":15},{"descripcion":"pulido","cantidad":5}],"muestra":0,"resultado":"","libero":""}]}}
 NOTAS CRÍTICAS:
-- En "identificadores" incluye ÚNICAMENTE los tipos que el inspector mencionó — no agregues campos vacíos.
+- En "identificadores" incluye ÚNICAMENTE los tipos mencionados — no agregues campos vacíos.
 - muestra siempre 0, resultado siempre "", libero siempre "".
-- No solicites ni incluyas planta, cliente, turno, numeroParte, nombreParte, tipoServicio, elaboro — esos vienen de la cabecera.`;
-const controlador = {}
+- No solicites ni incluyas planta, cliente, turno, numeroParte, nombreParte, tipoServicio, elaboro.`;
 
-controlador.botReportes = (req, res) => {
+const SYSTEM_PROMPT_NORMALIZE = `Eres un normalizador de texto para formularios industriales de calidad. El texto fue capturado por reconcimiento de voz
+                                y puede contener palabras en lugar de símbolos o dígitos. Convierte el texto al formato correcto del campo.
+                                El texto que se desea obtener al final de la normalización es para una cotización.
+                                Instrucciones especiales:
+                                1.- Las palabras: "guión", "guion" son equivalentes y quiero que al normalizar sea el símbolo '-'.
+                                2.- Las palabras: "cero" -> "0", "uno" -> "1", "dos" -> "2", etc.
+                                3.- El formato de la cotización es el siguiente: OV-XXXX-CO-XXXXX. Siendo XXXX un número de 4 dígitos en ambos casos. La variante se 
+                                encuentra en el primer componente del formato: OA-XXXX-CO-XXXX. Siendo las opciones OV u UA.
+                                4.- Las letras sueltas agrúpalas (ej. "O Uve" -> "OV", "Ce O" -> "CO").
+                                5.- Responde ÚNICAMENTE con el valor normalizado: sin explicaciones, sin comillas, sin puntuación extra. solo el formato dado.`;
+
+// const SYSTEM_PROMPT_NORMALIZE =
+//     'Eres un normalizador de texto para formularios industriales de calidad. ' +
+//     'El texto fue capturado por reconocimiento de voz y puede contener palabras en lugar de símbolos o dígitos. ' +
+//     'Convierte el texto al formato correcto del campo. ' +
+//     'Instrucciones especiales: ' +
+//     '- "guión", "guion" -> "-" ' +
+//     '- "cero" -> "0", "uno" -> "1", "dos" -> "2", etc. ' +
+//     '- Las letras sueltas agrúpalas (ej. "O Uve" -> "OV", "Ce O" -> "CO"). ' +
+//     '- Si identificas un número de cotización, debe tener el formato estricto (ej. OV-0001-CO-0001). ' +
+//     'Responde ÚNICAMENTE con el valor normalizado: sin explicaciones, sin comillas, sin puntuación extra.';
+
+controlador.botReportes = (req, res) => { // Renderiza la pantala de captura de reportes diarios.
     try {
         res.render('bots/botPrueba.ejs', { csrfToken: req.csrfToken() })
     } catch (error) {
@@ -344,6 +387,128 @@ controlador.reportesDiarios = async (req, res) => {
     }
 }
 
+controlador.normalizarCampo = async (req, res) => {
+    try {
+        const { transcript, hint } = req.body;
+
+        if (!transcript || !hint) {
+            return res.status(400).json({ ok: false, error: 'transcript y hint son requeridos.' });
+        }
+
+        const response = await axios.post(
+            'https://api.anthropic.com/v1/messages',
+            {
+                model: 'claude-haiku-4-5-20251001',
+                max_tokens: 64,
+                system: SYSTEM_PROMPT_NORMALIZE,
+                messages: [{ role: 'user', content: `${hint}\n\nTexto capturado por voz: "${transcript}"` }]
+            },
+            {
+                headers: {
+                    'x-api-key': process.env.ANTHROPIC_API_KEY,
+                    'anthropic-version': '2023-06-01',
+                    'content-type': 'application/json'
+                }
+            }
+        );
+
+        const normalized = response.data.content[0].text.trim();
+        return res.json({ ok: true, normalized });
+
+    } catch (error) {
+        console.error('[normalizarCampo] error:', error.message);
+        return res.status(500).json({ ok: false, error: 'Error al normalizar el campo.' });
+    }
+};
+
+let _ultimoIntento = null;
+
+controlador.debugCotizaciones = async (req, res) => {
+    try {
+        const lista = await Cotizacion.findAll({
+            attributes: ['id', 'numero_cotizacion', 'planta', 'cliente'],
+            order: [['id', 'DESC']],
+            limit: 20,
+        });
+        return res.json({
+            ultimoIntento: _ultimoIntento,
+            total: lista.length,
+            cotizaciones: lista,
+        });
+    } catch (error) {
+        manejadorErrores(res, error);
+    }
+};
+
+controlador.verificarCotizacion = async (req, res) => {
+    console.log('[DEBUG Entrando a... Buscando Cotización] ----------------');
+    try {
+        const { codigo } = req.body;
+
+        const codigoNorm = codigo?.trim().toUpperCase() ?? null;
+        const pasaRegex  = !!codigo && /^O[AV]-\d+-CO-\d+$/i.test(codigo.trim());
+
+        console.log('[DEBUG verificarCotizacion] recibido:', codigo);
+        console.log('[DEBUG verificarCotizacion] normalizado:', codigoNorm);
+        console.log('[DEBUG verificarCotizacion] pasaRegex:', pasaRegex);
+
+        _ultimoIntento = {
+            codigoRecibido: codigo,
+            codigoNormalizado: codigoNorm,
+            pasaRegex,
+            timestamp: new Date().toISOString(),
+        };
+
+        if (!codigo || !pasaRegex) {
+            _ultimoIntento.resultado = 'rechazado_por_regex';
+            console.log('[DEBUG verificarCotizacion] RECHAZADO por regex');
+            return res.status(400).json({ ok: false, error: 'Código de cotización inválido.' });
+        }
+
+        const querySQL = `
+            SELECT id, planta, cliente, nombre_supervisor, numero_parte, nombre_parte, tipo_servicio
+            FROM cotizaciones
+            WHERE numero_cotizacion = :codigo
+            LIMIT 1;
+        `;
+
+        console.log(`Executing (verificar): SELECT ... FROM cotizaciones WHERE numero_cotizacion = '${codigoNorm}' LIMIT 1;`);
+
+        const [cotizacion] = await dbReportes.query(querySQL, {
+            replacements: { codigo: codigoNorm },
+            type: QueryTypes.SELECT,
+        });
+
+        console.log('[DEBUG verificarCotizacion] resultado SQL:', cotizacion ?? 'SIN RESULTADOS');
+
+        _ultimoIntento.encontrado = !!cotizacion;
+        _ultimoIntento.resultado  = cotizacion ? 'encontrado' : 'no_encontrado_en_bd';
+        console.log('[DEBUG verificarCotizacion] resultado:', _ultimoIntento.resultado);
+
+        if (!cotizacion) {
+            return res.json({ ok: false });
+        }
+
+        return res.json({
+            ok: true,
+            data: {
+                cotizacion_id: cotizacion.id,
+                planta:        cotizacion.planta,
+                cliente:       cotizacion.cliente,
+                supervisor:    cotizacion.nombre_supervisor,
+                numeroParte:   cotizacion.numero_parte,
+                nombreParte:   cotizacion.nombre_parte,
+                tipoServicio:  cotizacion.tipo_servicio,
+            }
+        });
+    } catch (error) {
+        console.log('[DEBUG Buscando Cotización] ----------------');
+        manejadorErrores(res, error);
+    }
+};
+
+// FIN de Controladores del envío de reportes diarios
+
 controlador.reportesFiltrados = async (req, res) => {
     try {
         console.log('Reportes filtrados por supervisor iniciando...');
@@ -439,7 +604,6 @@ controlador.reportesFiltrados = async (req, res) => {
     }
 }
 
-
 controlador.reportesFiltradosPorParametros = async (req, res) => {
     try {
         // Validar sesión del usuario
@@ -517,48 +681,6 @@ controlador.reportesFiltradosPorParametros = async (req, res) => {
         manejadorErrores(res, error);
     }
 }
-
-const SYSTEM_PROMPT_NORMALIZE =
-    'Eres un normalizador de texto para formularios industriales de calidad. ' +
-    'El texto fue capturado por reconocimiento de voz y puede contener palabras en lugar de símbolos o dígitos. ' +
-    'Convierte el texto al formato correcto del campo. ' +
-    'Responde ÚNICAMENTE con el valor normalizado: sin explicaciones, sin comillas, sin puntuación extra.';
-
-controlador.normalizarCampo = async (req, res) => {
-    try {
-        const { transcript, hint } = req.body;
-
-        if (!transcript || !hint) {
-            return res.status(400).json({ ok: false, error: 'transcript y hint son requeridos.' });
-        }
-
-        const response = await axios.post(
-            'https://api.anthropic.com/v1/messages',
-            {
-                model: 'claude-haiku-4-5-20251001',
-                max_tokens: 64,
-                system: SYSTEM_PROMPT_NORMALIZE,
-                messages: [{ role: 'user', content: `${hint}\n\nTexto capturado por voz: "${transcript}"` }]
-            },
-            {
-                headers: {
-                    'x-api-key': process.env.ANTHROPIC_API_KEY,
-                    'anthropic-version': '2023-06-01',
-                    'content-type': 'application/json'
-                }
-            }
-        );
-
-        const normalized = response.data.content[0].text.trim();
-        return res.json({ ok: true, normalized });
-
-    } catch (error) {
-        if (error.response) {
-            return res.status(500).json({ ok: false, error: 'Error al normalizar el campo.' });
-        }
-        manejadorErrores(res, error);
-    }
-};
 
 controlador.reportesSupervisores = async (req, res) => {
     try {
@@ -1040,6 +1162,98 @@ controlador.detallePublicado = async (req, res) => {
 
     } catch (error) {
         console.error('[detallePublicado] Error:', error);
+        manejadorErrores(res, error);
+    }
+};
+
+controlador.guardarReporte = async (req, res) => {
+    console.log('\n========== [guardarReporte] INICIO ==========');
+    try {
+        // 1. Obtener el nombre del inspector desde el JWT
+        const usuarioCodigo = req.usuario?.codigoempleado;
+        console.log('[guardarReporte] usuarioCodigo:', usuarioCodigo);
+        if (!usuarioCodigo) {
+            return res.status(401).json({ ok: false, error: 'No se detectó la sesión del usuario.' });
+        }
+
+        let claseUsuario = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 });
+        let datosUsuario = await claseUsuario.obtener1Registro({ criterio: { codigoempleado: usuarioCodigo } });
+        const nombreInspector = datosUsuario?.nombrelargo?.trim() ?? 'Inspector';
+        console.log('[guardarReporte] nombreInspector:', nombreInspector);
+
+        // 2. Validar body
+        const { cotizacion_id, turno, items } = req.body;
+        console.log('[guardarReporte] body recibido → cotizacion_id:', cotizacion_id, '| turno:', turno, '| items.length:', Array.isArray(items) ? items.length : '(no array)');
+        console.log('[guardarReporte] items RAW:', JSON.stringify(items, null, 2));
+
+        if (!cotizacion_id || !turno) {
+            console.warn('[guardarReporte] RECHAZADO — faltan cotizacion_id o turno');
+            return res.status(400).json({ ok: false, error: 'Faltan datos requeridos: cotizacion_id y turno.' });
+        }
+
+        const itemsArray = Array.isArray(items) ? items : [];
+
+        // 3. Crear registro en la tabla reportes
+        const reportePayload = {
+            cotizacion_id: Number(cotizacion_id),
+            nombre_inspector: nombreInspector,
+            turno,
+            status: 'pending',
+            created_at: new Date()
+        };
+        console.log('[guardarReporte] INSERT reportes:', reportePayload);
+        const nuevoReporte = await Reporte.create(reportePayload);
+        console.log('[guardarReporte] reporte creado con id:', nuevoReporte.id);
+
+        // 4. Transformar ítems del formato del bot al formato de la BD
+        const itemsFormateados = itemsArray.map(it => {
+            const idents = it.identificadores ?? {};
+
+            const lotes  = idents.lote   ?? '';
+            const series = idents.serie  ?? '';
+            const otros  = Object.entries(idents)
+                .filter(([k, v]) => k !== 'lote' && k !== 'serie' && v !== '' && v != null)
+                .map(([, v]) => String(v))
+                .join(' | ');
+
+            return {
+                id:          it.item,
+                lotes,
+                series,
+                otro:        otros,
+                total:       it.totalPiezas      ?? 0,
+                OK:          it.piezasOK          ?? 0,
+                NG:          it.piezasNG          ?? 0,
+                recuperadas: it.piezasRecuperadas ?? 0,
+                scrap:       it.piezasScrap       ?? 0,
+                resultado:   'aprobado',
+                incidencias: (it.incidentes ?? []).map(inc => ({
+                    nombre:   inc.descripcion,
+                    cantidad: inc.cantidad
+                })),
+            };
+        });
+        console.log('[guardarReporte] items formateados:', JSON.stringify(itemsFormateados, null, 2));
+
+        // 5. Crear registro en reporte_body
+        const bodyPayload = {
+            reporte_id:   nuevoReporte.id,
+            numero_items: itemsFormateados.length,
+            items:        itemsFormateados,
+            status:       'pending',
+            firma:        null,
+            fecha_firma:  null
+        };
+        console.log('[guardarReporte] INSERT reporte_body → reporte_id:', bodyPayload.reporte_id, '| numero_items:', bodyPayload.numero_items);
+        await ReporteBody.create(bodyPayload);
+        console.log('[guardarReporte] reporte_body creado OK');
+        console.log('[guardarReporte] RESPUESTA:', { ok: true, reporte_id: nuevoReporte.id });
+        console.log('========== [guardarReporte] FIN ==========\n');
+
+        return res.json({ ok: true, reporte_id: nuevoReporte.id });
+
+    } catch (error) {
+        console.error('[guardarReporte] ERROR:', error);
         manejadorErrores(res, error);
     }
 };

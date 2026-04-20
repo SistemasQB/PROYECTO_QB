@@ -1,17 +1,5 @@
-<<<<<<< HEAD
 (function () {
   'use strict';
-=======
-
-  // ─── Configuración ──────────────────────────────────────────────
-  // IMPORTANTE: Reemplaza esto con tu API key de Anthropic.
-  // En producción nunca expongas tu API key en el frontend;
-  // haz las llamadas desde tu propio backend/servidor.
-alert('Funciona');
-const API_KEY = "TU_API_KEY_AQUI";
-  const API_URL = "https://api.anthropic.com/v1/messages";
-  const MODEL   = "claude-sonnet-4-20250514";
->>>>>>> ramaAlex
 
   const $ = id => document.getElementById(id);
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
@@ -53,9 +41,9 @@ const API_KEY = "TU_API_KEY_AQUI";
 
   function showScreen(id) {
     SCREENS.forEach(sid => $(sid).classList.toggle('hidden', sid !== id));
-    // El botón de ayuda solo aparece en bienvenida
     const hb = $('help-btn');
     if (hb) hb.classList.toggle('hidden', id !== 'screen-welcome');
+    if (id !== 'screen-capture') hideCotToast();
   }
 
   /* ============================================================
@@ -115,6 +103,48 @@ const API_KEY = "TU_API_KEY_AQUI";
   }
 
   function stopSpeaking() { if (synth) synth.cancel(); }
+
+  /* ============================================================
+     TOAST – DATOS CARGADOS DESDE COTIZACIÓN
+     ============================================================ */
+  const COT_TOAST_LABELS = {
+    planta:       'Planta',
+    cliente:      'Cliente',
+    supervisor:   'Supervisor',
+    numeroParte:  'N° Parte',
+    nombreParte:  'Nombre parte',
+    tipoServicio: 'Servicio',
+  };
+
+  let _toastTimer = null;
+
+  function showCotToast(data) {
+    const bodyEl = $('cot-toast-body');
+    bodyEl.innerHTML = Object.entries(COT_TOAST_LABELS)
+      .filter(([k]) => data[k])
+      .map(([k, lbl]) =>
+        `<div class="cot-toast-row">
+          <span class="cot-toast-lbl">${lbl}</span>
+          <span class="cot-toast-val" title="${escHtml(data[k])}">${escHtml(data[k])}</span>
+        </div>`)
+      .join('');
+
+    const toast = $('cot-toast');
+    toast.classList.remove('hidden');
+    void toast.offsetWidth; // forzar reflow para activar la transición
+    toast.classList.add('cot-toast-visible');
+
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(hideCotToast, 7000);
+
+    $('cot-toast-close').onclick = () => { clearTimeout(_toastTimer); hideCotToast(); };
+  }
+
+  function hideCotToast() {
+    const toast = $('cot-toast');
+    toast.classList.remove('cot-toast-visible');
+    setTimeout(() => toast.classList.add('hidden'), 380);
+  }
 
   if (synth) {
     if (synth.getVoices().length > 0) _bestVoice = pickBestVoice();
@@ -235,11 +265,19 @@ const API_KEY = "TU_API_KEY_AQUI";
      ============================================================ */
   const NORMALIZE_HINTS = {
     cotizacion:
-      'El dato es un código de cotización con formato exacto OA-NNNNN-CO-NNNNN ' +
-      '(letras OA, guion, 5 dígitos, guion, letras CO, guion, 5 dígitos). ' +
-      'Ejemplo: "OA cero uno dos tres cuatro CO cero cinco seis siete ocho" → OA-01234-CO-05678. ' +
-      'Rellena con ceros a la izquierda hasta completar 5 dígitos en cada grupo. ' +
-      'Devuelve SOLO el código en formato OA-NNNNN-CO-NNNNN.',
+      'Convierte una cotización dictada por voz al formato exacto: (OV|OA)-DDDD-CO-DDDD. ' +
+      'ESTRUCTURA FIJA: 4 partes separadas por guiones. ' +
+      '  Parte 1: SIEMPRE "OV" u "OA" (nunca otra). ' +
+      '  Parte 2: SIEMPRE exactamente 4 dígitos. ' +
+      '  Parte 3: SIEMPRE "CO" (nunca otra). ' +
+      '  Parte 4: SIEMPRE exactamente 4 dígitos. ' +
+      'Los 4 dígitos de cada sección se dictan en DOS PARES de 2 dígitos. Cada par tiene ceros a la izquierda si aplica. ' +
+      'Ejemplos de pares: "cero uno"→01, "cero cero"→00, "diez"→10, "veintiuno"→21, "cero cinco"→05. ' +
+      'Ejemplos completos: ' +
+      '  "O Uve guion cero uno cero cero guion CE O guion cero cero veintiuno" → OV-0100-CO-0021. ' +
+      '  "O A guion cero cero cero uno guion C O guion diez veinticinco" → OA-0001-CO-1025. ' +
+      'LETRAS: "O A"→OA | "O uve/ve/V"→OV | "CE O"/"C O"→CO | "guion"/"guión"→-. ' +
+      'Devuelve SOLO el código en mayúsculas, sin espacios ni texto extra.',
 
     alphanumeric:
       'El texto fue dictado por voz y representa un código alfanumérico de formato VARIABLE ' +
@@ -271,33 +309,107 @@ const API_KEY = "TU_API_KEY_AQUI";
     return text;
   }
 
+  function localNormalizeCotizacion(text) {
+    let t = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase();
+
+    // Convertir palabras de dígitos a números antes de todo
+    t = t
+      .replace(/\bCERO\b/g,   '0')
+      .replace(/\bUNO\b/g,    '1')
+      .replace(/\bDOS\b/g,    '2')
+      .replace(/\bTRES\b/g,   '3')
+      .replace(/\bCUATRO\b/g, '4')
+      .replace(/\bCINCO\b/g,  '5')
+      .replace(/\bSEIS\b/g,   '6')
+      .replace(/\bSIETE\b/g,  '7')
+      .replace(/\bOCHO\b/g,   '8')
+      .replace(/\bNUEVE\b/g,  '9');
+
+    t = t
+      .replace(/\bO\s+A\b/g,                'OA')
+      .replace(/\bO\s+(?:UVE|VE|UV|V|F)\b/g, 'OV') // OF = STT confunde V con F
+      .replace(/\bOF\b/g,                   'OV') // "of" (inglés) → OV
+      .replace(/\bOB\b/g,                   'OV') // OB = STT confunde B/V
+      .replace(/\bCE\s+O\b/g,               'CO')
+      .replace(/\bC\s+O\b/g,                'CO')
+      .replace(/\s*[-–]\s*/g,               '-');
+
+    // Agregar guion si falta después de OV/OA o CO
+    t = t.replace(/\b(OV|OA)\s+(\d)/g, '$1-$2');
+    t = t.replace(/\bCO\s+(\d)/g,      'CO-$1');
+
+    // Limpieza final agresiva: espacios alrededor de guiones y bordes
+    t = t.replace(/\s*[-–]\s*/g, '-').trim();
+
+    console.log('[QB-local] string exacto:', JSON.stringify(t));
+
+    // Formato estricto: (OV|OA) - 4 dígitos (en 2 pares con posible espacio) - CO - 4 dígitos
+    const m = t.match(/^(OV|OA)-([0-9][0-9 ]*)-CO-([0-9][0-9 ]*)$/);
+    if (!m) { console.log('[QB-local] regex NO coincidió'); return null; }
+
+    // Construir el número desde los pares dictados
+    // • 1 token  → número colapsado por STT, rellenar a 4 dígitos
+    // • 2 tokens → dos pares, rellenar cada uno a 2 dígitos
+    // • 3+ tokens → ambiguo, dejar a Claude
+    function buildGroup(raw) {
+      const tokens = raw.trim().split(/\s+/).filter(Boolean);
+      if (tokens.length === 0) return null;
+      if (tokens.length === 1) return tokens[0].padStart(4, '0');
+      if (tokens.length === 2) return tokens[0].padStart(2, '0') + tokens[1].padStart(2, '0');
+      return null; // 3+ tokens → Claude
+    }
+
+    const n1 = buildGroup(m[2]);
+    const n2 = buildGroup(m[3]);
+    if (!n1 || !n2) return null;
+    return `${m[1]}-${n1}-CO-${n2}`;
+  }
+
   async function normalizeValue(transcript, type) {
     if (type === 'turno')        return normalizeTurno(transcript);
     if (type === 'tipoServicio') return normalizeTipoServicio(transcript);
+    if (type === 'cotizacion') {
+      const processed = transcript
+        .replace(/gu[ií][oó]n/gi, '-')
+        .replace(/\s*[-–]\s*/g, '-')
+        .trim();
+      console.log('[QB-normalize] raw:', transcript, '→ processed:', processed);
+      const local = localNormalizeCotizacion(processed);
+      console.log('[QB-normalize] local result:', local);
+      if (local) return local;
+      transcript = processed; // usar el procesado al enviar a Claude
+    }
 
     const hint = NORMALIZE_HINTS[type];
     if (!hint) return transcript;
 
-    const res = await fetch('/bot/normalize', {
+    const res = await fetch('/bots/bot/normalize', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
       body:    JSON.stringify({ transcript, hint }),
     });
-    if (!res.ok) throw new Error('normalize_error');
+    const contentType = res.headers.get('content-type') ?? '';
+    if (!res.ok || !contentType.includes('application/json')) {
+      const body = await res.text();
+      console.log('[QB-normalize] respuesta no-JSON (status', res.status, '):', body.slice(0, 200));
+      throw new Error('normalize_error');
+    }
     const data = await res.json();
-    return data.normalized || transcript;
+    const normalized = data.normalized || transcript;
+    // Para cotización: limpiar espacios alrededor de guiones que Claude pudo dejar
+    if (type === 'cotizacion') return normalized.replace(/\s*[-–]\s*/g, '-').trim();
+    return normalized;
   }
 
   /* ============================================================
-     COTIZACIÓN – stub API
-     Cuando la ruta esté disponible, reemplazar el return por la
-     llamada real: POST /api/cotizaciones/verificar { codigo }
-     Respuesta esperada: { ok: true, data: { planta, cliente, ... } }
-                      ó: { ok: false }
+     COTIZACIÓN – verificación en BD
+     Formatos válidos: OA-XXXX-CO-XXXX  /  OV-XXXX-CO-XXXX
      ============================================================ */
+  const COT_REGEX = /^O[AV]-\d+-CO-\d+$/i;
+
   async function verificarCotizacion(codigo) {
     try {
-      const res = await fetch('/api/cotizaciones/verificar', {
+      const res = await fetch('/bots/bot/cotizacion/verificar', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
         body:    JSON.stringify({ codigo }),
@@ -321,6 +433,7 @@ const API_KEY = "TU_API_KEY_AQUI";
       rawItemsText: null,  // texto bruto acumulado de lotes
       items:        [],    // items estructurados validados por IA
       cotizacion:   null,  // código de cotización (si se usó)
+      cotizacionId: null,  // ID de la cotización en BD (para guardar el reporte)
       fieldsDone:   0,     // campos de encabezado completados
       aborted:      false,
     };
@@ -339,6 +452,7 @@ const API_KEY = "TU_API_KEY_AQUI";
         rawItemsText: state.rawItemsText,
         items:        state.items,
         cotizacion:   state.cotizacion,
+        cotizacionId: state.cotizacionId,
         fieldsDone:   state.fieldsDone,
       }));
     } catch (_) {}
@@ -359,11 +473,12 @@ const API_KEY = "TU_API_KEY_AQUI";
   function saveLastReport() {
     try {
       localStorage.setItem(LAST_REPORT_KEY, JSON.stringify({
-        report:     state.report,
-        items:      state.items,
-        cotizacion: state.cotizacion,
-        savedAt:    new Date().toISOString(),
-        sent:       false,
+        report:       state.report,
+        items:        state.items,
+        cotizacion:   state.cotizacion,
+        cotizacionId: state.cotizacionId,
+        savedAt:      new Date().toISOString(),
+        sent:         false,
       }));
     } catch (_) {}
   }
@@ -502,9 +617,9 @@ const API_KEY = "TU_API_KEY_AQUI";
     // ── Filas de campos del encabezado, siempre visibles ──
     CAMPOS.forEach((c, i) => {
       const val      = state.report[c.key];
-      const isFilled = i < state.fieldsDone && val !== undefined && val !== '';
-      // Solo marcar activo si NO estamos en el paso de cotización
-      const isActive = !_cotizacionStep && i === state.fieldsDone && state.fieldsDone < CAMPOS.length;
+      const isFilled = val !== undefined && val !== '';
+      // Solo marcar activo si el campo está vacío y es el turno actual
+      const isActive = !isFilled && !_cotizacionStep && i === state.fieldsDone && state.fieldsDone < CAMPOS.length;
       const rowClass = isFilled ? 'row-filled' : isActive ? 'row-active' : 'row-empty';
       const valClass = isFilled ? ''           : isActive ? 'val-active' : 'val-empty';
       const valText  = isFilled ? escHtml(String(val)) : isActive ? 'Escuchando…' : '—';
@@ -642,8 +757,13 @@ const API_KEY = "TU_API_KEY_AQUI";
           setMicState('speaking');
           try {
             finalValue = await normalizeValue(transcript, normalizeType);
-          } catch (_) {
-            finalValue = transcript; // fallback al texto bruto si falla la IA
+          } catch (err) {
+            console.log('[QB-normalize] EXCEPCIÓN en normalizeValue:', err);
+            finalValue = transcript;
+          }
+          // Limpieza de espacios alrededor de guiones como último recurso
+          if (normalizeType === 'cotizacion') {
+            finalValue = finalValue.replace(/\s*[-–]\s*/g, '-').trim();
           }
           if (aborted()) return null;
         }
@@ -777,7 +897,7 @@ const API_KEY = "TU_API_KEY_AQUI";
           'Dictado: "' + accumulated.trim() + '"';
 
         try {
-          const res = await fetch('/bot/chat', {
+          const res = await fetch('/bots/bot/chat', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
             body:    JSON.stringify({ messages: [{ role: 'user', content: promptContext }] }),
@@ -903,7 +1023,7 @@ const API_KEY = "TU_API_KEY_AQUI";
       $('items-mic-btn').onclick = () => running ? stopDictation() : startDictation();
 
       if (!state.items || state.items.length === 0) {
-        speak('Dicta el ítem en orden: primero los identificadores, por ejemplo Lote jota cuarenta y dos, Serie mil doscientos. Luego el total de piezas. Luego las piezas NG. Luego recuperadas y scrap si aplica. Al final las incidencias. Toca Detener cuando termines.')
+        speak('Di el nombre del identificador y su valor, por ejemplo: Lote A cero cero uno. Luego el total de piezas y las piezas NG. Si el servicio es Retrabajo, agrega recuperadas o scrap. Toca Detener cuando termines.')
           .then(() => {
             // Breve pausa para que el STT anterior termine de cerrar antes de iniciar el nuevo
             setTimeout(() => { if (!aborted()) startDictation(); }, 400);
@@ -985,9 +1105,18 @@ const API_KEY = "TU_API_KEY_AQUI";
       hideConfirmButtons();
 
       if (cotDec === 'continue') {
-        const codigo = await captureField('Número de cotización', 'Indica tu número de cotización, carácter por carácter.', gen, 'cotizacion');
-        if (codigo === null) return;
+        console.log('[QB-DEBUG] captureField iniciado para cotización');
+        const rawCodigo = await captureField(
+          'Número de cotización',
+          'Di el número de cotización:',
+          gen,
+          'cotizacion'
+        );
+        console.log('[QB-DEBUG] captureField terminó, rawCodigo=', rawCodigo);
+        if (rawCodigo === null) { console.log('[QB-DEBUG] rawCodigo null → abort'); return; }
 
+        const codigo = rawCodigo.trim().toUpperCase();
+        console.log('[QB-DEBUG] codigo final a verificar:', codigo);
         state.cotizacion = codigo;
         saveProgress();
 
@@ -996,15 +1125,18 @@ const API_KEY = "TU_API_KEY_AQUI";
         setMicState('speaking');
         await speak('Verificando.');
 
+        console.log('[QB-DEBUG] llamando verificarCotizacion...');
         const apiResult = await verificarCotizacion(codigo);
+        console.log('[QB-DEBUG] respuesta verificarCotizacion:', apiResult);
 
         if (apiResult.ok && apiResult.data) {
-          Object.assign(state.report, apiResult.data);
-          state.fieldsDone = CAMPOS.length;
+          state.cotizacionId = apiResult.data.cotizacion_id ?? null;
+          const { cotizacion_id: _cid, ...camposCotizacion } = apiResult.data;
+          Object.assign(state.report, camposCotizacion);
           _cotizacionStep = false;
           updateSummary();
           saveProgress();
-          await speak('Cotización verificada. Los datos del encabezado se cargaron automáticamente.');
+          await speak('Cotización verificada. Los datos se cargaron. Solo falta indicar el turno.');
         } else {
           await speak('No encontré esa cotización. Vamos a llenar los datos uno por uno.');
         }
@@ -1025,6 +1157,15 @@ const API_KEY = "TU_API_KEY_AQUI";
       state.fieldsDone = i;
 
       const campo = CAMPOS[i];
+
+      // Saltar campos ya llenados desde la cotización verificada
+      if (state.report[campo.key] !== undefined && state.report[campo.key] !== '') {
+        state.fieldsDone = i + 1;
+        updateProgress(i + 1, CAMPOS.length);
+        updateSummary();
+        continue;
+      }
+
       const value = await captureField(campo.label, campo.tts, gen, campo.normalize ?? null);
       if (value === null) return;
 
@@ -1119,8 +1260,8 @@ const API_KEY = "TU_API_KEY_AQUI";
             idStr = String(it.identificador);
           }
 
-          // item-card sin clase "expanded" → inicia colapsado
-          html += '<div class="item-card">';
+          // item-card inicia expandido — todos los datos visibles sin interacción
+          html += '<div class="item-card expanded">';
 
           // Cabecera clicable del ítem (siempre visible)
           html += '<div class="item-card-header">';
@@ -1181,7 +1322,7 @@ const API_KEY = "TU_API_KEY_AQUI";
         });
 
       } else if (hasRaw) {
-        html += `<div class="item-card">
+        html += `<div class="item-card expanded">
           <div class="item-card-header">
             <span class="item-num">•</span>
             <span class="item-id">Texto dictado</span>
@@ -1234,6 +1375,7 @@ const API_KEY = "TU_API_KEY_AQUI";
         state.rawItemsText = saved.rawItemsText ?? null;
         state.items        = saved.items        ?? [];
         state.cotizacion   = saved.cotizacion   ?? null;
+        state.cotizacionId = saved.cotizacionId ?? null;
         state.fieldsDone   = saved.fieldsDone   ?? 0;
       }
       runCapture().catch(console.error);
@@ -1249,14 +1391,58 @@ const API_KEY = "TU_API_KEY_AQUI";
     btn.textContent = 'Enviando…';
 
     try {
-      // TODO: reemplazar con POST real a la BD cuando esté disponible
-      await new Promise(r => setTimeout(r, 1500));
+      // Cargar datos desde localStorage si el state ya fue limpiado (ej. pantalla finalizada)
+      const lastReport = loadLastReport();
+      const reportData = (lastReport && !lastReport.sent) ? lastReport : {
+        report:       state.report,
+        items:        state.items,
+        cotizacionId: state.cotizacionId,
+      };
+
+      const body = {
+        cotizacion_id: reportData.cotizacionId,
+        turno:         reportData.report?.turno ?? '',
+        items:         reportData.items ?? [],
+      };
+
+      console.log('[doSendReport] iniciando envío');
+      console.log('[doSendReport] csrfToken:', csrfToken ? 'presente' : 'VACÍO');
+      console.log('[doSendReport] body a enviar:', JSON.stringify(body, null, 2));
+
+      const resp = await fetch('/bots/bot/reporte/guardar', {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'X-CSRF-Token':  csrfToken,
+        },
+        body: JSON.stringify(body),
+      });
+
+      console.log('[doSendReport] respuesta → status:', resp.status, '| url final:', resp.url, '| content-type:', resp.headers.get('content-type'));
+
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        console.error('[doSendReport] error del servidor:', errData);
+        throw new Error(errData.error ?? `Error ${resp.status}`);
+      }
+
+      // Si redirigió al login el content-type será text/html, no JSON
+      const contentType = resp.headers.get('content-type') ?? '';
+      if (!contentType.includes('application/json')) {
+        console.error('[doSendReport] respuesta no es JSON — probablemente redirigió al login (sin sesión activa)');
+        throw new Error('Sin sesión activa. Inicia sesión e intenta de nuevo.');
+      }
+
+      const data = await resp.json();
+      console.log('[doSendReport] respuesta JSON:', data);
+
       markLastReportSent();
       clearProgress();
       await speak('Reporte guardado correctamente en la base de datos. Gracias.');
       btn.textContent = 'Enviado ✓';
       return true;
-    } catch (_) {
+    } catch (err) {
+      console.error('[doSendReport] ERROR:', err.message);
       btn.disabled    = false;
       btn.textContent = 'Enviar reporte';
       await speak('Ocurrió un problema al enviar. Intente de nuevo.');
@@ -1344,6 +1530,7 @@ const API_KEY = "TU_API_KEY_AQUI";
       state.rawItemsText = saved.rawItemsText ?? null;
       state.items        = saved.items        ?? [];
       state.cotizacion   = saved.cotizacion   ?? null;
+      state.cotizacionId = saved.cotizacionId ?? null;
       state.fieldsDone   = saved.fieldsDone   ?? 0;
       runCapture().catch(console.error);
     } else {

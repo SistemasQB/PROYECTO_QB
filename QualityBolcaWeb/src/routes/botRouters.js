@@ -4,10 +4,13 @@ import protegetRuta from "../middleware/protegetRuta.js";
 
 const router = express.Router();
 
-router.get('/bot', controladorBots.botReportes);
+router.get('/bot', protegetRuta, controladorBots.botReportes);
 router.post('/bot/chat', controladorBots.botChat);
 router.post('/bot/chat-with-pdf', uploadPdf.single('pdf'), controladorBots.botChatWithPdf);
 router.post('/bot/normalize', controladorBots.normalizarCampo);
+router.post('/bot/cotizacion/verificar', controladorBots.verificarCotizacion);
+router.post('/bot/reporte/guardar', protegetRuta, controladorBots.guardarReporte);
+router.get('/bot/debug/cotizaciones', controladorBots.debugCotizaciones);
 
 router.get('/reportesDiarios', controladorBots.reportesDiarios);
 router.get('/reportesSupervisores', protegetRuta, controladorBots.reportesSupervisores);

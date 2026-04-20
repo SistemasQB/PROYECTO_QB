@@ -31,6 +31,11 @@ const Cotizacion = dbReportes.define('cotizacion', {
         type: DataTypes.STRING(100),
         allowNull: false
     },
+    numero_cotizacion: {
+        type: DataTypes.STRING(30),
+        allowNull: true,
+        unique: true
+    },
     fecha_creacion: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
