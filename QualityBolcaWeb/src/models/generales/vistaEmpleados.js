@@ -29,11 +29,39 @@ const modeloVistaEmpleados = db.define('empleados', {
     departamento: {
         type: DataTypes.STRING,
         allowNull: true
-    }
+    },
+    departamentoLocal: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    correo: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
 }, {
     timestamps: false,
     freezeTableName: true,
     tableName: 'empleados'
+    // hooks:{
+    //         beforeCreate: async function (usuario) {
+    //             const salt = await bcrypt.genSalt(10);
+    //             usuario.password = await bcrypt.hash( usuario.password, salt);
+    //         }
+    //     },
+    //     scopes: {
+    //         eliminarPassword: {
+    //             attributes:{
+    //                 exclude: ['password','token','confirmado']
+    //             }
+    //         },
+    //         eliminarPasswordConfirmado: {
+    //             attributes: {
+    //                 exclude: ['password','confirmado']
+    //             }
+    //         }
+            
+    //     }
+    
 });
 
 export default modeloVistaEmpleados

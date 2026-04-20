@@ -66,6 +66,7 @@
                            // Lógica para extraer roles y permisos
                            let roles = [];
                            let permisos = [];
+                           let requisicionPermisos = [];
                            try {
                                // Intentamos leer el JSON si viene como string
                                const data = (typeof user.permisos === 'string') 
@@ -74,6 +75,7 @@
                                
                                roles = data.roles || [];
                                permisos = data.permisos || [];
+                               requisicionPermisos = data.requisicionPermisos || [];
                            } catch(e) {
                                // Si falla o es nulo, dejamos arrays vacíos
                            }
@@ -87,7 +89,11 @@
                             <span class="table-chip permiso"><%= permiso %></span>
                         <% }) %>
 
-                        <% if (roles.length === 0 && permisos.length === 0) { %>
+                       <% requisicionPermisos.forEach(requisicionPermiso => { %>
+                            <span class="table-chip requisicion"><%= requisicionPermiso %></span>
+                        <% }) %>
+
+                        <% if (roles.length === 0 && permisos.length === 0 && requisicionPermisos.length === 0) { %>
                             <span style="color: #94a3b8; font-size: 0.8rem; font-style: italic;">Sin asignación</span>
                         <% } %>
                     </div>

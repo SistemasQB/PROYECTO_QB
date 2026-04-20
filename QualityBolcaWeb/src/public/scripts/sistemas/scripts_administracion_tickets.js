@@ -5,6 +5,10 @@ let ticketsData = []
 let currentPage = 1;
 let itemsPerPage = 20;
 let filteredData = [];
+let ticketsRefreshInterval = null;
+let ticketsRefreshInProgress = false;
+
+const TICKETS_REFRESH_MS = 15000;
 
 // Mapeo de textos para prioridades y estatus
 const priorityLabels = {
@@ -37,7 +41,39 @@ const statusIcons = {
     closed: 'fa-circle'
 };
 
+function aplicarFiltrosActuales({ reiniciarPagina = false } = {}) {
+    const searchCriteriaEl = document.getElementById('searchCriteria');
+    const searchInputEl = document.getElementById('searchInput');
+
+    if (!searchCriteriaEl || !searchInputEl) {
+        filteredData = [...ticketsData];
+    } else {
+        const searchCriteria = searchCriteriaEl.value;
+        const searchTerm = searchInputEl.value.trim().toLowerCase();
+
+        if (!searchTerm) {
+            filteredData = [...ticketsData];
+        } else {
+            filteredData = ticketsData.filter(ticket => {
+                const value = String(ticket[searchCriteria] ?? '').toLowerCase();
+                return value.includes(searchTerm);
+            });
+        }
+    }
+
+    if (reiniciarPagina) {
+        currentPage = 1;
+        return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(filteredData.length / itemsPerPage));
+    currentPage = Math.min(currentPage, totalPages);
+}
+
 async function cargarTicketsDesdeBackend() {
+    if (ticketsRefreshInProgress) return;
+    ticketsRefreshInProgress = true;
+
     try {
         const res = await fetch('/sistemas/crudTickets');
 
@@ -70,11 +106,13 @@ async function cargarTicketsDesdeBackend() {
             ultimaActualizacion: t.updatedAt
         }));
 
-        filteredData = [...ticketsData];
+        aplicarFiltrosActuales();
         renderTable();
 
     } catch (error) {
         console.error('Error cargando tickets:', error);
+    } finally {
+        ticketsRefreshInProgress = false;
     }
 }
 
@@ -151,7 +189,7 @@ function updatePaginationInfo() {
 
 // Función para renderizar los botones de paginación
 function renderPaginationButtons() {
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(filteredData.length / itemsPerPage));
     const pageNumbers = document.getElementById('pageNumbers');
     pageNumbers.innerHTML = '';
 
@@ -186,20 +224,16 @@ function renderPaginationButtons() {
 
 // Función de búsqueda
 function performSearch() {
-    const searchCriteria = document.getElementById('searchCriteria').value;
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
-    if (!searchTerm) {
-        filteredData = [...ticketsData];
-    } else {
-        filteredData = ticketsData.filter(ticket => {
-            const value = ticket[searchCriteria].toLowerCase();
-            return value.includes(searchTerm);
-        });
-    }
-
-    currentPage = 1;
+    aplicarFiltrosActuales({ reiniciarPagina: true });
     renderTable();
+}
+
+function iniciarActualizacionAutomaticaTickets() {
+    clearInterval(ticketsRefreshInterval);
+    ticketsRefreshInterval = setInterval(() => {
+        if (document.hidden) return;
+        cargarTicketsDesdeBackend();
+    }, TICKETS_REFRESH_MS);
 }
 
 // Event Listeners
@@ -233,7 +267,7 @@ document.getElementById('nextPage').addEventListener('click', () => {
 });
 
 document.getElementById('lastPage').addEventListener('click', () => {
-    currentPage = Math.ceil(filteredData.length / itemsPerPage);
+    currentPage = Math.max(1, Math.ceil(filteredData.length / itemsPerPage));
     renderTable();
 });
 
@@ -302,7 +336,8 @@ function renderAsignacion(ticket) {
             <option value="Omar Vazquez">Omar Vazquez</option>
             <option value="Alejandro Robledo">Alejandro Robledo</option>
             <option value="Guillermo Reyes">Guillermo Reyes</option>
-            <option value="Luis Oliva">Luis Oliva</option>
+            <option value="Fernando de la Cruz">Fernando de la Cruz</option>
+            <option value="Cesar Reyes">Cesar Reyes</option>
         </select>
     `;
 }
@@ -765,4 +800,9 @@ function crearModalLectura({ titulo, items }) {
 
 document.addEventListener('DOMContentLoaded', () => {
     cargarTicketsDesdeBackend();
+    iniciarActualizacionAutomaticaTickets();
+});
+
+window.addEventListener('beforeunload', () => {
+    clearInterval(ticketsRefreshInterval);
 });

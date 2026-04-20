@@ -1,5 +1,4 @@
 import adminRouters from "./adminRoutes.js";
-import routerAll from "./allRoutes.js";
 import atraccionRouters from "./atraccionRoutes.js";
 import calidadRouters from "./calidadRoutes.js";
 import capitalHumanoRouters from "./capitalHumanoRoutes.js";
@@ -12,11 +11,14 @@ import sistemasRouters from "./sistemasRoutes.js";
 import sorteoRouters from "./sorteoRoutes.js";
 import userRouters from "./userRoutes.js";
 import routerGenerales from "./routerGenerales.js";
+import capturacionRouters from "./capturacionRouter.js";    
+import botRouter from "./botRouters.js";
+import routerApis from "./routers_Apis.js";
+
 
 
 const routers = {
     adminRouters,
-    routerAll,
     atraccionRouters,
     capitalHumanoRouters,
     contabilidadRouters,
@@ -28,7 +30,10 @@ const routers = {
     sistemasRouters,
     calidadRouters,
     userRouters,
-    routerGenerales
+    routerGenerales,
+    capturacionRouters,
+    botRouter,
+    routerApis
 }
 
 export default routers;

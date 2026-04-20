@@ -31,7 +31,7 @@ const modeloRequisiciones = db.define(
             defaultValue: "NO ESPECIFICADO",
         },
         descripcion: {
-            type: DataTypes.TEXT,
+            type: DataTypes.JSON,
             allowNull: false,
             defaultValue: "NO ESPECIFICADO",
         },
@@ -118,17 +118,17 @@ const modeloRequisiciones = db.define(
     foto:{
         type: DataTypes.STRING(250),
         allowNull: false,
-        defaultValue: "NO ESPECIFICADO",
+        defaultValue: "NO",
     },
     delegado:{
         type: DataTypes.STRING(250),
         allowNull: false,
-        defaultValue: "NO ESPECIFICADO",
+        defaultValue: "N/A",
     },
     autorizo:{
         type: DataTypes.STRING(250),
         allowNull: false,
-        defaultValue: "NO ESPECIFICADO",
+        defaultValue: "N/A",
     }
 },
     {

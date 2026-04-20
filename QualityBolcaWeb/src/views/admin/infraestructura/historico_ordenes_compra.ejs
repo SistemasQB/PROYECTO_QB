@@ -7,7 +7,6 @@
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <%-include('partials/menu-hamburguesa.ejs')%>
 
@@ -19,37 +18,108 @@
                 <p>Gestiona y revisa todas las órdenes de compra realizadas</p>
             </div>
 
-            <!-- Search Section -->
-            <div class="search-section">
-                <div class="search-container">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar por fecha, lugar, proveedor..." onkeyup="filterTable()">
+            <!-- ===== SECCIÓN BÚSQUEDA POR FECHA ===== -->
+            <div class="date-filter-card">
+                <div class="date-filter-header">
+                    <div class="date-filter-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h2>Consulta por Rango de Fechas</h2>
+                    </div>
                 </div>
-                <a class="btn-primary" id="btnNuevaOrden" href="ordenCompra">
-                    
-                    Nueva Orden
-                </a>
+                <div class="date-filter-body">
+                    <div class="date-filter-inputs">
+                        <div class="date-input-group">
+                            <label for="fechaInicio"><i class="fas fa-calendar-day"></i> Fecha inicio</label>
+                            <input type="date" id="fechaInicio">
+                        </div>
+                        <div class="date-filter-separator">—</div>
+                        <div class="date-input-group">
+                            <label for="fechaFin"><i class="fas fa-calendar-check"></i> Fecha fin</label>
+                            <input type="date" id="fechaFin">
+                        </div>
+                        <button class="btn-primary btn-buscar" onclick="buscarPorFecha()">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                        <button class="btn-secondary btn-limpiar" onclick="limpiarBusqueda()">
+                            <i class="fas fa-times"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Orders Table -->
-            <div class="table-container">
-                <table class="orders-table" id="ordersTable">
-                    <thead>
-                        <tr>
-                            <th>numero de Orden</th>
-                            <th>Fecha</th>
-                            <th>Lugar</th>
-                            <th>Proveedor</th>
-                            <th>Solicitudes</th>
-                            <th>Observaciones</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaOrdenes">
-                        
-                    </tbody>
-                </table>
+            <!-- ===== TABLA 1: TODAS LAS ÓRDENES ===== -->
+            <div class="table-section">
+                <div class="table-section-header" onclick="toggleSection('seccionTabla1', 'iconTabla1')">
+                    <div class="table-section-title">
+                        <i class="fas fa-list-alt"></i>
+                        <h2>Todas las Órdenes de Compra</h2>
+                    </div>
+                    <i class="fas fa-chevron-up toggle-icon" id="iconTabla1"></i>
+                </div>
+
+                <div id="seccionTabla1">
+                    <!-- Search Section -->
+                    <div class="search-section">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="searchInput" placeholder="Buscar por fecha, lugar, proveedor..." onkeyup="filterTable()">
+                        </div>
+                        <a class="btn-primary" id="btnNuevaOrden" href="ordenCompra">
+                            Nueva Orden
+                        </a>
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div class="table-container">
+                        <table class="orders-table" id="ordersTable">
+                            <thead>
+                                <tr>
+                                    <th>Número de Orden</th>
+                                    <th>Fecha</th>
+                                    <th>Lugar</th>
+                                    <th>Proveedor</th>
+                                    <th>Solicitudes</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaOrdenes"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+
+            <!-- ===== TABLA 2: RESULTADOS POR FECHA ===== -->
+            <div class="table-section" id="seccionResultadosFecha" style="display:none;">
+                <div class="table-section-header" onclick="toggleSection('seccionTabla2', 'iconTabla2')">
+                    <div class="table-section-title">
+                        <i class="fas fa-filter"></i>
+                        <h2>Resultados por Rango de Fechas</h2>
+                        <span class="badge-resultados" id="badgeResultados">0 resultados</span>
+                    </div>
+                    <i class="fas fa-chevron-up toggle-icon" id="iconTabla2"></i>
+                </div>
+
+                <div id="seccionTabla2">
+                    <div class="table-container">
+                        <table class="orders-table" id="ordersTableFecha">
+                            <thead>
+                                <tr>
+                                    <th>Número de Orden</th>
+                                    <th>Fecha</th>
+                                    <th>Lugar</th>
+                                    <th>Proveedor</th>
+                                    <th>Solicitudes</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaOrdenesFecha"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -91,41 +161,26 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="productsTableBody">
-                            <!-- <tr>
-                                <td>1</td>
-                                <td><input type="text" name="producto[]" required></td>
-                                <td><input type="number" name="cantidad[]" min="1" step="1" required></td>
-                                <td><input type="number" name="precioUnitario[]" min="0" step="0.01" required></td>
-                                <td class="precio-total">$0.00</td>
-                                <td><button type="button" class="btn-remove">Eliminar</button></td>
-                            </tr> -->
-                        </tbody>
+                        <tbody id="productsTableBody"></tbody>
                     </table>
                 </div>
                 <div class="form-group-t">
                     <div class="totals-section">
-                    <div class="totals-grid">
-                        <div class="total-item">
-                            <label>Subtotal:</label>
-                            <span id="subtotal">$0.00</span>
-                        </div>
-                        <div class="total-item">
-                            <label>IVA (16%):</label>
-                            <span id="iva">$0.00</span>
-                        </div>
-                        <!-- <div class="total-item">
-                            <label>ISR (10%):</label>
-                            <span id="isr">$0.00</span>
-                        </div> -->
-                        <div class="total-item total-final">
-                            <label>Total:</label>
-                            <span id="total">$0.00</span>
+                        <div class="totals-grid">
+                            <div class="total-item">
+                                <label>Subtotal:</label>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="total-item">
+                                <label>IVA (16%):</label>
+                                <span id="iva">$0.00</span>
+                            </div>
+                            <div class="total-item total-final">
+                                <label>Total:</label>
+                                <span id="total">$0.00</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                    <!-- <label for="editSolicitudes">Solicitudes:</label>
-                    <textarea id="editSolicitudes" rows="3" required></textarea> -->
                 </div>
                 <div class="form-group">
                     <label for="editObservaciones">Observaciones:</label>
@@ -139,8 +194,23 @@
         </div>
     </div>
 
+    <!-- View Modal (visualizar orden) -->
+    <div class="modal" id="viewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-eye" style="margin-right:8px;color:#4a90e2;"></i>Visualizar Orden de Compra</h3>
+                <button class="close-btn" onclick="closeViewModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-form" id="viewContent">
+                <!-- Se rellena dinámicamente -->
+            </div>
+        </div>
+    </div>
+
     <script src="/scripts/infraestructura/scripts_global.js"></script>
-    <script src="/scripts/infraestructura/scripts_historico_ordenes_compra.js"></script>
+    <script src="/scripts/infraestructura/scripts_historico_ordenesordenes_compra.js"></script>
     <script src="/scripts/calidad/funcion_fetch_calidad.js"></script>
     <link rel="stylesheet" href="/styles/infraestructura/estilos_historico_ordenes_compra.css">
     <script>

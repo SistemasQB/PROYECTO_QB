@@ -8,42 +8,20 @@ const multer = new miMulter('src/public/evidencias_sorteo');
 const modelos = new miMulter('src/public/evidencias/modelos');
 const router = express.Router();
 
-router.get('/kiosk',sorteoController.kiosk);
-router.post('/kiosk',sorteoController.kiosk2);
-router.get('/honda/etiquetado',sorteoController.etiquetado);
-router.post('/honda/etiquetado',sorteoController.etiquetado2);
-router.get('/cc1/vistatotal',sorteoController.vistatotal);
-router.get('/cc1/checklist',sorteoController.checklist);
-router.post('/cc1/checklist',sorteoController.checklist2);
-router.get('/cc1/vistachecklist',sorteoController.vistachecklist);
-router.get('/cc1/registromaterial',sorteoController.registromaterial);
-router.get('/cc1/personaloperativo',sorteoController.personaloperativo);
-router.post('/cc1/personaloperativo',sorteoController.personaloperativo2);
-router.get('/cc1/cotizaciones',sorteoController.cotizaciones);
-router.post('/cc1/cotizaciones',sorteoController.cotizaciones2);
-router.get('/cc1/controldepiezas',sorteoController.controldepiezas);
-router.post('/cc1/controldepiezas',sorteoController.controldepiezas2);
-router.get('/cc1/secciones',sorteoController.secciones);
-router.post('/cc1/secciones',sorteoController.secciones2);
-router.get('/cc1/lote',sorteoController.lote);
-router.post('/cc1/lote',sorteoController.lote2);
-
 //rutas de inicio
 router.get('/inicio',protegerRuta,sorteoController.inicio);
 
 // rutas de entrega Material almacen
-router.get("/form-envio", protegerRuta,protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.prueba)
-router.get("/embarques/:cliente", protegerRuta,protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.vistaCliente)
+router.get("/form-envio",protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.prueba)
 
 //rutas de entrega de material cliente y visualizacion
-router.get("/form-entrega",protegerRuta, protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.entregaMaterial) //formulario de entrega de material
+router.get("/form-entrega", protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.entregaMaterial) //formulario de entrega de material
 router.post("/envioMaterial", protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),multer.multiplesArchivos('imagenes', 3), sorteoController.envioMaterial) //ruta de envio
-router.get("/admin-entrega-material",protegerRuta, protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.adminEntregaMaterial) //gestion de los envios
+router.get("/admin-entrega-material", protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 5}),sorteoController.adminEntregaMaterial) //gestion de los envios
   
-
 //rutas de inventario de almacen
 router.get("/admin-almacen",protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 4}),sorteoController.adminAlmacen) //gestion de almacen
-router.get("/ingreso/:id",sorteoController.puntoEntrada) 
+router.get("/ingreso/:id",protegerRuta, sorteoController.puntoEntrada) 
 
 //rutas de output
 router.get("/output",protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['supervisor', 'supervisor regional de proyectos'], jerarquia: 4}) ,sorteoController.output) //vista del output
@@ -53,6 +31,8 @@ router.get('/gestionOutput',protegerRuta, validarAcceso({roles:['sorteo', 'calid
 //rutas de produccion con tensor flex
 // router.get('/contador-produccion', protegerRuta,sorteoController.contador)
 // router.post('/evaluacion-produccion',modelos.archivoUnico('imagen'),sorteoController.evaluacionProduccion)
+
+router.get('/dashboard', protegerRuta,sorteoController.dashboard)
 
 
 

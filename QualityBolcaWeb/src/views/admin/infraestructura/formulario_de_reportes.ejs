@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulario de Reportes - Sistema de Administración</title>
+  <link rel="stylesheet" href="/styles/infraestructura/estilos_formulario_de_reportes.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <div class="page-wrapper">
+    <header class="form-header">
+      <h1>Formulario de Reportes</h1>
+    </header>
+
+    <form action="/reporte/nuevo" method="POST" enctype="multipart/form-data" id="reporteForm">
+      <input type="hidden" name="_csrf" value="<%= tok %>">
+      
+      <div class="main-grid">
+        
+        <div class="column-left">
+          
+          <section class="form-section">
+            <div class="section-header">
+              <h2>Información general</h2>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label>Folio</label>
+                <div class="input-auto data-db">
+                  <span class="auto-dot"></span>
+                  <span id="folioAuto"><%= typeof reporte !== 'undefined' && reporte.folio ? reporte.folio : 'Generando al cargar la base de datos...' %></span>
+                </div>
+              </div>
+              
+              <div class="field">
+                <label>Fecha y hora</label>
+                <div class="input-auto">
+                  <span class="auto-dot"></span>
+                  <span id="fechaAuto"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Quién reporta</label>
+              <div class="input-auto data-db">
+                <span class="auto-dot"></span>
+                <span id="solicitanteAuto"><%= typeof req !== 'undefined' && req.usuario ? req.usuario.nombre : 'Cargando usuario...' %></span>
+              </div>
+            </div>
+
+            <!-- <div class="field">
+              <label>Nombre del solicitante</label>
+              <div class="input-auto data-db">
+                <span class="auto-dot"></span>
+                <span id="correoAuto"><%= typeof req !== 'undefined' && req.usuario ? req.usuario.correo : 'Cargando usuario...' %></span>
+              </div>
+            </div> -->
+
+            <div class="grid-2">
+              <div class="field">
+                <label>Región</label>
+                <div class="input-auto data-db">
+                  <span class="auto-dot"></span>
+                  <span id="regionAuto"><%= typeof req !== 'undefined' && req.usuario ? req.usuario.region : 'Cargando región...' %></span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Departamento <span class="required">*</span></label>
+                <div class="input-auto data-db" style="padding: 0; overflow: hidden;">
+                  
+                  <select id="departamentoAuto" disabled 
+                    style="width: 100%; border: none; background-color: transparent; box-shadow: none; padding: 0.65rem 0.8rem; font-weight: inherit; color: inherit; outline: none; cursor: not-allowed;">
+                    <option value="administracion">Administración</option>
+                    <option value="compras">Compras y Suministros</option>
+                    <option value="direccion">Dirección General</option>
+                    <option value="infraestructura">Infraestructura</option>
+                    <option value="rrhh">Recursos Humanos</option>
+                    <option value="departamento" selected>Cargando departamento...</option> </select>
+
+                  <input type="hidden" name="departamento" value="departamento">
+                  
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-header">
+              <h2>Ubicación de la falla</h2>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="piso">Piso <span class="required">*</span></label>
+                <select name="piso" id="piso" required>
+                  <option value="" disabled selected>Seleccionar piso</option>
+                  <option value="piso1">Piso 1</option>
+                  <option value="piso2">Piso 2</option>
+                </select>
+                <p class="field-hint">Selecciona el piso para ver las áreas</p>
+              </div>
+
+              <div class="field">
+                <label for="area">Área <span class="required">*</span></label>
+                <select name="area" id="area" required disabled>
+                  <option value="" disabled selected>— Selecciona piso primero —</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+        </div> <div class="column-right">
+          
+          <section class="form-section" style="border-top: none; margin-top: 0; padding-top: 0;">
+            <div class="section-header">
+              <h2>Detalles de la falla</h2>
+            </div>
+
+<!--             <div class="field">
+              <label for="falla">Descripción de la falla <span class="required">*</span></label>
+              <textarea name="falla" id="falla" rows="3"
+                placeholder="Describe detalladamente el problema que presenta el área o equipo..."
+                required></textarea>
+            </div> -->
+
+            <div class="field">
+              <label for="falla">Descripción del problema <span class="required">*</span></label>
+              <textarea name="falla" id="falla" rows="3" maxlength="1000"
+                placeholder="Describe detalladamente el problema que presenta el área o equipo..." required></textarea>
+              <div class="textarea-footer">
+                <span class="field-hint">Sé lo más específico posible.</span>
+                <span class="char-counter" id="contadorFalla">0 / 1000</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>
+                Evidencia Fotográfica
+                <span class="campo-opcional">(máx. 3 · jpg, png, jpeg · máx. 5 MB c/u)</span>
+              </label>
+              
+              <div class="photo-uploader-container" id="photoUploaderContainer">
+                
+                <div class="preview-grid" id="previewGrid"></div>
+                
+                <div class="upload-slot" id="uploadSlot">
+                  <span class="upload-icon">+</span>
+                  <span class="upload-text-mini">Añadir foto</span>
+                  <input type="file" name="fotos" id="fotosInput" accept=".jpg,.jpeg,.png" multiple style="display:none;" />
+                </div>
+
+              </div>
+              
+              <p class="field-error hidden" id="fotoError">Máximo 3 fotos permitidas (JPG/PNG/JPEG, 5 MB c/u)</p>
+            </div>
+
+<!--             <div class="field">
+              <label for="observaciones">Observaciones adicionales</label>
+              <textarea name="observaciones" id="observaciones" rows="2"
+                placeholder="Cualquier información adicional relevante..."></textarea>
+            </div> -->
+
+            <div class="field">
+              <label for="observaciones">Observaciones adicionales</label>
+              <textarea name="observaciones" id="observaciones" rows="2" maxlength="500"
+                placeholder="Cualquier información adicional relevante..."></textarea>
+              <div class="textarea-footer">
+                <span class="field-hint">Opcional.</span>
+                <span class="char-counter" id="contadorObs">0 / 500</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- <section class="form-section section-info">
+            <div class="section-header">
+              <h2>Notificación de sistema</h2>
+            </div>
+            
+            <div class="info-row">
+              <span class="info-label">Mensaje al concluir:</span>
+              <span class="info-value">Dirigido a <%= typeof req !== 'undefined' && req.usuario ? req.usuario.nombre : 'solicitante' %>, Laura y Gaby.</span>
+            </div>
+            
+            <div class="info-box">
+              <strong>Previsualización del correo a enviar:</strong> <br>
+              "Buen día, Equipo de Dirección de Administración / Compras y Suministros: Tienes un reporte de <em><%= typeof req !== 'undefined' && req.usuario ? req.usuario.nombre : 'Solicitante' %></em> en el área seleccionada, revisado y autorizado por compras o dirección de administración."
+            </div>
+          </section> -->
+
+        </div> </div> <div class="form-actions">
+        <button type="button" class="btn-secondary" onclick="history.back()">Cancelar</button>
+        <button type="submit" class="btn-primary" id="submitBtn">
+          Enviar reporte
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <script src="/scripts/infraestructura/scripts_formulario_de_reporte.js"></script>
+</body>
+</html>

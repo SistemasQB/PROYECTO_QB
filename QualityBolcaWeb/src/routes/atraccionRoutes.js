@@ -3,14 +3,6 @@ import {default as atraccionController} from './../controllers/atraccionControll
 import protegetRuta from "../middleware/protegetRuta.js";
 
 const router = express.Router();
-
-router.get('/solicitudes', protegetRuta, atraccionController.solicitudes);
-router.post('/solicitudes', protegetRuta, atraccionController.solicitudes2);
-router.get('/test', atraccionController.test);
-router.post('/test', atraccionController.test2);
-// router.post('/subirCurso', allController.subirCurso2);
-
-
-
+router.get('/solicitudes', protegetRuta, atraccionController.inicio);
 
 export default router;

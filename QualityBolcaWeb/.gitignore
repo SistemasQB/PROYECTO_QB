@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.production
+.claude
 
 # Ignorar carpetas generadas por la aplicación
 src/public/2025
@@ -11,6 +12,7 @@ src/public/evidencias_sorteo
 src/public/evidencias
 src/public/firmas
 src/public/img
+.claude
 
 # Ignorar logs
 *.log

@@ -74,7 +74,7 @@ const bitacoraActividades  = db.define('bitacoraActividades', {
     },
 },{
         tablename:"bitacoraCalidad",
-        timestamps:false,
+        timestamps:false
     });
 
     export default bitacoraActividades;
