@@ -140,31 +140,7 @@
             <% } else { %>
               <% reportes.forEach(function(reporte) { %>
                 <% const fechaFormateada = new Date(reporte.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
-                <tr data-parte="<%= reporte.numero_parte %>">Se restablece en 4 h 24 min
-                
-                14% usado
-                
-                Límites semanales
-                Más información sobre los límites de uso
-                
-                Todos los modelos
-                
-                Se restablece en 23 h 24 min
-                
-                24% usado
-                
-                Última actualización: hace 2 minutos
-                
-                
-                Funciones adicionales
-                Ejecuciones de rutinas diarias incluidas
-                
-                
-                Aún no has ejecutado ninguna rutina
-                
-                0 / 25
-                
-                Missing permissions: members:manage required.
+                <tr data-parte="<%= reporte.numero_parte %>">
                   <td><%= fechaFormateada %></td>
                   <td><%= reporte.nombre_inspector %></td>
                   <td><%= reporte.turno %></td>
