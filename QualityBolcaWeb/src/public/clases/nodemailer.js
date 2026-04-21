@@ -679,7 +679,92 @@ htmlNotificacionNuevaReqEquipo(datosNotificacion){
 }
     
 
-htmlRequisicionAprobada({ datos, autorizador }) {
+htmlNuevaRequisicion({ solicitante, departamentoAutorizador }) {
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva Requisición Pendiente</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
+
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 600px;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #003366; padding: 30px 40px; border-radius: 8px 8px 0 0; text-align: center;">
+              <h1 style="color: #ffffff; font-size: 22px; font-weight: bold; margin: 0;">
+                Nueva Solicitud de Aprobación
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 40px;">
+              <p style="color: #1f2937; font-size: 16px; margin: 0 0 20px 0;">
+                Buen día, <strong>${departamentoAutorizador}</strong>.
+              </p>
+              <p style="color: #4b5563; font-size: 15px; line-height: 26px; margin: 0 0 24px 0;">
+                Tienes una solicitud de aprobación de requisición de
+                <strong style="color: #003366;">${solicitante}</strong>,
+                por favor ingresa al sistema para aceptar o rechazar la misma.
+              </p>
+
+              <!-- Info Box -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #eff6ff; border-left: 4px solid #003366; margin: 0 0 28px 0;">
+                <tr>
+                  <td style="padding: 18px 20px;">
+                    <p style="color: #1e3a5f; font-size: 14px; margin: 0; font-weight: 600;">
+                      Accion requerida
+                    </p>
+                    <p style="color: #1e40af; font-size: 14px; margin: 8px 0 0 0;">
+                      Ingresa al sistema de requisiciones para revisar y resolver esta solicitud.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Button -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="center" style="padding: 10px 0 20px 0;">
+                    <a href="https://www.qualitybolca.net/infraestructura/requisicionGastos" style="background-color: #003366; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold; padding: 13px 36px; border-radius: 6px; display: inline-block;">
+                      Ir al Sistema
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="color: #374151; font-size: 13px; margin: 0 0 6px 0; font-weight: 600;">
+                EXPENSE SUPPORT SYSTEM
+              </p>
+              <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                No responda a este mensaje, es un envio automatico.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`
+  }
+
+  htmlRequisicionAprobada({ datos, autorizador }) {
 
     let cuerpo = `
     Buen día, <b>Equipo de Gestión de Gastos/ Compras y Suministros:</b><br><br>
@@ -732,9 +817,16 @@ htmlRequisicionAprobada({ datos, autorizador }) {
                     <!-- INFO -->
                     <tr>
                         <td style='padding:20px;'>
+                            <b>Nombre del gasto:</b> ${datos.asunto} <br>
                             <b>Solicitante:</b> ${datos.solicitante} <br>
-                            <b>Departamento:</b> ${datos.departamento} <br>
                             <b>Fecha:</b> ${new Date(datos.horaRegistro).toLocaleDateString('es-MX')}
+                            <b>Proceso: </b> ${datos.proceso} <br>
+                            <b>Departamento: </b> ${datos.departamento} <br>
+                            <b>Región y planta: </b> ${datos.region} - ${datos.planta} <br>
+                            <b>Tipo de gasto: </b> ${datos.rentabilidad} <br>
+                            <b>Orden: </b> ${datos.orden} <br>
+                            <b>Fecha de entrega: </b> ${new Date(datos.fechaEntrega).toLocaleDateString('es-MX')} <br>
+                            <b>Cuenta: </b> ${datos.noCuenta} <br>
                         </td>
                     </tr>
 
@@ -770,6 +862,9 @@ htmlRequisicionAprobada({ datos, autorizador }) {
 
                             <b>Expectativa:</b><br>
                             ${datos.detallesEspectativa || 'N/A'}
+
+                            <b>Comentarios adicionales:</b><br>
+                            ${datos.comentariosAdicionales || 'N/A'}
                         </td>
                     </tr>
 

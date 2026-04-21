@@ -13,6 +13,12 @@
 
 <body>
 
+    <!-- Toast conexión -->
+    <div class="toast-conexion" id="toastConexion">
+        <i class="fa-solid fa-wifi-slash" id="toastConexionIcon"></i>
+        <span id="toastConexionMsg">Sin conexión a internet. Algunas funciones no estarán disponibles.</span>
+    </div>
+
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
 
@@ -53,10 +59,6 @@
             <% if (jerarquia <=4) { %>
                 <a href="aprobaciones" class="nav-item">
                     <i class="fa-solid fa-check-double"></i> Aprobaciones
-                </a>
-
-                <a href="comprobar" class="nav-item">
-                    <i class="fa-solid fa-file-invoice"></i> Comprobaciones
                 </a>
                 <% } %>
         </ul>
