@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Capital Humano — Quality Bolca</title>
+  <link rel="stylesheet" href="/styles/capitalhumano/estilos_inicioCapitalHumano.css" />
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">QB</div>
+    <div class="logo-text">
+      <strong>Quality Bolca</strong>
+      <span>Capital Humano</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    <!-- Inicio -->
+    <div class="nav-item active" onclick="navigate('dashboard', this)" data-label="Inicio">
+      <span class="nav-icon">🏠</span> Inicio
+    </div>
+
+    <!-- GCH -->
+    <div class="nav-section-label">Gestión de Capital Humano</div>
+
+    <div class="nav-item" onclick="navigate('gch-empleados', this)" data-label="Empleados">
+      <span class="nav-icon">👤</span> Empleados
+      <span class="nav-badge">248</span>
+    </div>
+    <div class="nav-item" onclick="navigate('gch-posicion', this)" data-label="Posiciones">
+      <span class="nav-icon">🏗️</span> Posiciones
+    </div>
+    <div class="nav-item" onclick="navigate('gch-historial', this)" data-label="Historial Laboral">
+      <span class="nav-icon">📋</span> Historial Laboral
+    </div>
+    <div class="nav-item" onclick="navigate('gch-documentos', this)" data-label="Documentos">
+      <span class="nav-icon">📄</span> Documentos
+    </div>
+    <div class="nav-item" onclick="navigate('gch-beneficios', this)" data-label="Beneficios">
+      <span class="nav-icon">🎁</span> Beneficios e INFONAVIT
+    </div>
+
+    <!-- ACH -->
+    <div class="nav-section-label">Atracción de Capital Humano</div>
+
+    <div class="nav-item" onclick="navigate('ach-reclutamiento', this)" data-label="Reclutamiento">
+      <span class="nav-icon">🔍</span> Reclutamiento
+      <span class="nav-badge">5</span>
+    </div>
+    <div class="nav-item" onclick="navigate('ach-cursos', this)" data-label="Cursos">
+      <span class="nav-icon">📚</span> Cursos
+    </div>
+    <div class="nav-item" onclick="navigate('ach-eventos', this)" data-label="Eventos">
+      <span class="nav-icon">🎉</span> Eventos
+    </div>
+
+    <!-- Catálogos -->
+    <div class="nav-section-label">Configuración</div>
+    <div class="nav-item" onclick="navigate('catalogos', this)" data-label="Catálogos">
+      <span class="nav-icon">⚙️</span> Catálogos
+    </div>
+
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-avatar">AR</div>
+    <div class="user-info">
+      <strong>Admin RRHH</strong>
+      <span>Recursos Humanos</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══════════════════════════════════════════════════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- HEADER -->
+  <header class="header">
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="breadcrumb">
+      Capital Humano <span>›</span> <span class="current" id="breadcrumbCurrent">Inicio</span>
+    </div>
+    <div class="header-search">
+      <span>🔎</span>
+      <input type="text" placeholder="Buscar empleado, curso..."/>
+    </div>
+    <div class="header-actions">
+      <button class="action-btn" title="Notificaciones">
+        🔔 <span class="notif-dot"></span>
+      </button>
+      <button class="action-btn" title="Ayuda">❓</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- ══ DASHBOARD ══════════════════════════════════════════ -->
+    <div class="page active" id="page-dashboard">
+
+      <!-- Welcome banner -->
+      <div class="welcome-banner">
+        <div>
+          <h2>Bienvenido al módulo de Capital Humano 👋</h2>
+          <p>Gestiona empleados, cursos, eventos y reclutamiento desde un solo lugar.</p>
+        </div>
+        <div class="banner-date" id="bannerDate"></div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card blue">
+          <div class="kpi-top">
+            <div class="kpi-icon">👥</div>
+            <span class="kpi-trend trend-up">↑ 3%</span>
+          </div>
+          <div class="kpi-value">248</div>
+          <div class="kpi-label">Empleados activos</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-top">
+            <div class="kpi-icon">🆕</div>
+            <span class="kpi-trend trend-up">↑ 5</span>
+          </div>
+          <div class="kpi-value">12</div>
+          <div class="kpi-label">Ingresos este mes</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-top">
+            <div class="kpi-icon">📚</div>
+            <span class="kpi-trend trend-up">↑ 2</span>
+          </div>
+          <div class="kpi-value">6</div>
+          <div class="kpi-label">Cursos próximos</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-top">
+            <div class="kpi-icon">📤</div>
+            <span class="kpi-trend trend-down">↓ 2</span>
+          </div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-label">Bajas este mes</div>
+        </div>
+      </div>
+
+      <!-- Acciones rápidas -->
+      <div class="card" style="margin-bottom:24px">
+        <div class="card-header">
+          <div class="card-title"><span class="dot"></span>Acciones rápidas</div>
+        </div>
+        <div class="card-body">
+          <div class="quick-grid">
+            <div class="quick-btn" onclick="navigate('gch-empleados', null)">
+              <span class="qb-icon">➕</span>
+              <span class="qb-label">Nuevo empleado</span>
+            </div>
+            <div class="quick-btn" onclick="navigate('ach-reclutamiento', null)">
+              <span class="qb-icon">🔍</span>
+              <span class="qb-label">Nueva vacante</span>
+            </div>
+            <div class="quick-btn" onclick="navigate('ach-cursos', null)">
+              <span class="qb-icon">📚</span>
+              <span class="qb-label">Registrar curso</span>
+            </div>
+            <div class="quick-btn" onclick="navigate('gch-documentos', null)">
+              <span class="qb-icon">📄</span>
+              <span class="qb-label">Subir documento</span>
+            </div>
+            <div class="quick-btn" onclick="navigate('gch-beneficios', null)">
+              <span class="qb-icon">🏦</span>
+              <span class="qb-label">INFONAVIT</span>
+            </div>
+            <div class="quick-btn" onclick="navigate('ach-eventos', null)">
+              <span class="qb-icon">🎉</span>
+              <span class="qb-label">Nuevo evento</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dos columnas -->
+      <div class="two-col">
+
+        <!-- Próximos cursos -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="dot"></span>Próximos cursos</div>
+            <button class="card-action" onclick="navigate('ach-cursos', null)">Ver todos</button>
+          </div>
+          <div class="card-body">
+            <div class="course-item">
+              <div class="course-date-box">
+                <div class="month">ABR</div>
+                <div class="day">25</div>
+              </div>
+              <div class="course-info">
+                <div class="course-name">Seguridad e Higiene Industrial</div>
+                <div class="course-meta"><span>⏱ 8 hrs</span><span>📍 Planta Norte</span></div>
+              </div>
+              <span class="course-tag tag-all">Todos</span>
+            </div>
+            <div class="course-item">
+              <div class="course-date-box">
+                <div class="month">MAY</div>
+                <div class="day">02</div>
+              </div>
+              <div class="course-info">
+                <div class="course-name">Inducción a la empresa</div>
+                <div class="course-meta"><span>⏱ 4 hrs</span><span>📍 Sala de juntas</span></div>
+              </div>
+              <span class="course-tag tag-ach">ACH</span>
+            </div>
+            <div class="course-item">
+              <div class="course-date-box">
+                <div class="month">MAY</div>
+                <div class="day">08</div>
+              </div>
+              <div class="course-info">
+                <div class="course-name">Manejo de EPP y equipo de trabajo</div>
+                <div class="course-meta"><span>⏱ 6 hrs</span><span>📍 Planta Sur</span></div>
+              </div>
+              <span class="course-tag tag-gch">GCH</span>
+            </div>
+            <div class="course-item">
+              <div class="course-date-box">
+                <div class="month">MAY</div>
+                <div class="day">15</div>
+              </div>
+              <div class="course-info">
+                <div class="course-name">Primeros auxilios</div>
+                <div class="course-meta"><span>⏱ 5 hrs</span><span>📍 IMSS</span></div>
+              </div>
+              <span class="course-tag tag-all">Todos</span>
+            </div>
+            <div class="course-item">
+              <div class="course-date-box">
+                <div class="month">MAY</div>
+                <div class="day">22</div>
+              </div>
+              <div class="course-info">
+                <div class="course-name">Liderazgo y trabajo en equipo</div>
+                <div class="course-meta"><span>⏱ 12 hrs</span><span>📍 Auditorio</span></div>
+              </div>
+              <span class="course-tag tag-gch">GCH</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Avance cursos + actividad reciente -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+          <!-- Avance de cumplimiento -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="dot"></span>Cumplimiento de cursos</div>
+            </div>
+            <div class="card-body">
+              <div class="progress-row">
+                <div class="progress-label"><span>Seguridad e Higiene</span><strong>87%</strong></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:87%"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label"><span>Inducción</span><strong>100%</strong></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill green" style="width:100%"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label"><span>Primeros auxilios</span><strong>64%</strong></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill orange" style="width:64%"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label"><span>Manejo de EPP</span><strong>72%</strong></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:72%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actividad reciente -->
+          <div class="card" style="flex:1">
+            <div class="card-header">
+              <div class="card-title"><span class="dot"></span>Actividad reciente</div>
+            </div>
+            <div class="card-body">
+              <div class="activity-item">
+                <div class="activity-dot alta"></div>
+                <div>
+                  <div class="activity-text"><strong>Juan Pérez García</strong> fue dado de alta</div>
+                  <div class="activity-time">Hoy, 09:14 am · GCH</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot curso"></div>
+                <div>
+                  <div class="activity-text"><strong>15 empleados</strong> completaron "Seguridad e Higiene"</div>
+                  <div class="activity-time">Hoy, 08:30 am · ACH</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot doc"></div>
+                <div>
+                  <div class="activity-text">Expediente de <strong>María López</strong> actualizado</div>
+                  <div class="activity-time">Ayer, 04:52 pm · GCH</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot baja"></div>
+                <div>
+                  <div class="activity-text"><strong>Carlos Ruiz</strong> causó baja por renuncia</div>
+                  <div class="activity-time">Ayer, 02:10 pm · GCH</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot evento"></div>
+                <div>
+                  <div class="activity-text">Evento <strong>Día del Trabajo</strong> programado</div>
+                  <div class="activity-time">Ayer, 11:00 am · ACH</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /dashboard -->
+
+    <!-- ══ GCH — EMPLEADOS ════════════════════════════════════ -->
+    <div class="page" id="page-gch-empleados">
+      <div class="page-title">Empleados</div>
+      <div class="page-subtitle">Gestión de Capital Humano · Directorio y perfil de empleados</div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-search">
+            <span>🔎</span>
+            <input type="text" placeholder="Buscar por nombre, clave, NSS..."/>
+          </div>
+          <button class="btn-primary">➕ Nuevo empleado</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Clave</th>
+              <th>Nombre</th>
+              <th>Departamento</th>
+              <th>Planta</th>
+              <th>Contratación</th>
+              <th>Estatus</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>00001</strong></td>
+              <td>Ana Martínez Ríos</td>
+              <td>Producción</td>
+              <td>Planta Norte</td>
+              <td>Indeterminado</td>
+              <td><span class="status-pill status-alta">ALTA</span></td>
+              <td><button class="card-action">Ver perfil</button></td>
+            </tr>
+            <tr>
+              <td><strong>00002</strong></td>
+              <td>Luis Hernández Vega</td>
+              <td>Calidad</td>
+              <td>Planta Sur</td>
+              <td>Determinado</td>
+              <td><span class="status-pill status-alta">ALTA</span></td>
+              <td><button class="card-action">Ver perfil</button></td>
+            </tr>
+            <tr>
+              <td><strong>00048</strong></td>
+              <td>Sandra Torres Medina</td>
+              <td>Recursos Humanos</td>
+              <td>Corporativo</td>
+              <td>Indeterminado</td>
+              <td><span class="status-pill status-alta">ALTA</span></td>
+              <td><button class="card-action">Ver perfil</button></td>
+            </tr>
+            <tr>
+              <td><strong>00103</strong></td>
+              <td>Miguel Ángel Soto</td>
+              <td>Mantenimiento</td>
+              <td>Planta Norte</td>
+              <td>Eventual</td>
+              <td><span class="status-pill status-baja">BAJA</span></td>
+              <td><button class="card-action">Ver perfil</button></td>
+            </tr>
+            <tr>
+              <td><strong>00215</strong></td>
+              <td>Paola Guzmán López</td>
+              <td>Administración</td>
+              <td>Corporativo</td>
+              <td>Indeterminado</td>
+              <td><span class="status-pill status-alta">ALTA</span></td>
+              <td><button class="card-action">Ver perfil</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ GCH — POSICIÓN ════════════════════════════════════ -->
+    <div class="page" id="page-gch-posicion">
+      <div class="page-title">Posiciones</div>
+      <div class="page-subtitle">Gestión de Capital Humano · Puestos, departamentos y plantas</div>
+      <div class="placeholder-page">
+        <div class="ph-icon">🏗️</div>
+        <h3>Gestión de posiciones</h3>
+        <p>Asigna puestos, departamentos, plantas y tipo de contratación a cada empleado.</p>
+        <button class="ph-btn">Empezar</button>
+      </div>
+    </div>
+
+    <!-- ══ GCH — HISTORIAL ═══════════════════════════════════ -->
+    <div class="page" id="page-gch-historial">
+      <div class="page-title">Historial Laboral</div>
+      <div class="page-subtitle">Gestión de Capital Humano · Registro de altas y bajas</div>
+      <div class="placeholder-page">
+        <div class="ph-icon">📋</div>
+        <h3>Historial de empleo</h3>
+        <p>Consulta y registra las fechas de alta, baja, motivos y lotes IDSE por empleado.</p>
+        <button class="ph-btn">Empezar</button>
+      </div>
+    </div>
+
+    <!-- ══ GCH — DOCUMENTOS ══════════════════════════════════ -->
+    <div class="page" id="page-gch-documentos">
+      <div class="page-title">Documentos</div>
+      <div class="page-subtitle">Gestión de Capital Humano · Expediente digital del empleado</div>
+      <div class="placeholder-page">
+        <div class="ph-icon">📄</div>
+        <h3>Gestión de documentos</h3>
+        <p>Administra licencias, convenios, actas administrativas y expedientes digitales.</p>
+        <button class="ph-btn">Empezar</button>
+      </div>
+    </div>
+
+    <!-- ══ GCH — BENEFICIOS ══════════════════════════════════ -->
+    <div class="page" id="page-gch-beneficios">
+      <div class="page-title">Beneficios e INFONAVIT</div>
+      <div class="page-subtitle">Gestión de Capital Humano · FONACOT, INFONAVIT y garantías</div>
+      <div class="placeholder-page">
+        <div class="ph-icon">🏦</div>
+        <h3>Beneficios e INFONAVIT</h3>
+        <p>Gestiona créditos INFONAVIT, tipos de descuento, pagos bimestrales y FONACOT.</p>
+        <button class="ph-btn">Empezar</button>
+      </div>
+    </div>
+
+    <!-- ══ ACH — RECLUTAMIENTO ═══════════════════════════════ -->
+    <div class="page" id="page-ach-reclutamiento">
+      <div class="page-title">Reclutamiento</div>
+      <div class="page-subtitle">Atracción de Capital Humano · Pipeline de vacantes y candidatos</div>
+
+      <div class="kpi-grid" style="margin-bottom:20px">
+        <div class="kpi-card blue">
+          <div class="kpi-top"><div class="kpi-icon">💼</div></div>
+          <div class="kpi-value">5</div>
+          <div class="kpi-label">Vacantes abiertas</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-top"><div class="kpi-icon">👤</div></div>
+          <div class="kpi-value">18</div>
+          <div class="kpi-label">Candidatos en proceso</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-top"><div class="kpi-icon">✅</div></div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-label">Contratados este mes</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="card-title"><span class="dot"></span>Vacantes activas</span>
+          <button class="btn-primary">➕ Nueva vacante</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Puesto</th><th>Departamento</th><th>Planta</th><th>Recomendante</th><th>Estatus</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Operador de línea</td><td>Producción</td><td>Planta Norte</td><td>Sandra Torres</td>
+              <td><span class="status-pill status-proceso">EN PROCESO</span></td>
+            </tr>
+            <tr>
+              <td>Técnico de mantenimiento</td><td>Mantenimiento</td><td>Planta Sur</td><td>—</td>
+              <td><span class="status-pill status-pend">PENDIENTE</span></td>
+            </tr>
+            <tr>
+              <td>Analista de calidad</td><td>Calidad</td><td>Corporativo</td><td>Luis Hernández</td>
+              <td><span class="status-pill status-proceso">EN PROCESO</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ ACH — CURSOS ══════════════════════════════════════ -->
+    <div class="page" id="page-ach-cursos">
+      <div class="page-title">Cursos</div>
+      <div class="page-subtitle">Atracción de Capital Humano · Catálogo y registro de cursos</div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-search">
+            <span>🔎</span>
+            <input type="text" placeholder="Buscar curso..."/>
+          </div>
+          <button class="btn-primary">➕ Nuevo curso</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nombre del curso</th><th>Duración (hrs)</th><th>Departamento</th><th>Completados</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Seguridad e Higiene Industrial</td><td>8</td><td>Todos</td><td><span class="status-pill status-alta">87%</span></td></tr>
+            <tr><td>2</td><td>Inducción a la empresa</td><td>4</td><td>ACH</td><td><span class="status-pill status-alta">100%</span></td></tr>
+            <tr><td>3</td><td>Manejo de EPP</td><td>6</td><td>GCH</td><td><span class="status-pill status-proceso">72%</span></td></tr>
+            <tr><td>4</td><td>Primeros auxilios</td><td>5</td><td>Todos</td><td><span class="status-pill status-pend">64%</span></td></tr>
+            <tr><td>5</td><td>Liderazgo y trabajo en equipo</td><td>12</td><td>GCH</td><td><span class="status-pill status-pend">45%</span></td></tr>
+            <tr><td>6</td><td>Normativa ambiental</td><td>3</td><td>Producción</td><td><span class="status-pill status-proceso">58%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ ACH — EVENTOS ════════════════════════════════════ -->
+    <div class="page" id="page-ach-eventos">
+      <div class="page-title">Eventos</div>
+      <div class="page-subtitle">Atracción de Capital Humano · Calendario de eventos y asistencia</div>
+      <div class="placeholder-page">
+        <div class="ph-icon">🎉</div>
+        <h3>Gestión de eventos</h3>
+        <p>Registra eventos como Posada, Día de Madres, Día del Padre y controla la asistencia de empleados.</p>
+        <button class="ph-btn">Empezar</button>
+      </div>
+    </div>
+
+    <!-- ══ CATÁLOGOS ════════════════════════════════════════ -->
+    <div class="page" id="page-catalogos">
+      <div class="page-title">Catálogos</div>
+      <div class="page-subtitle">Configuración · Tablas maestras del sistema</div>
+      <div class="quick-grid" style="margin-top:4px">
+        <div class="quick-btn"><span class="qb-icon">🏭</span><span class="qb-label">Plantas</span></div>
+        <div class="quick-btn"><span class="qb-icon">🏢</span><span class="qb-label">Departamentos</span></div>
+        <div class="quick-btn"><span class="qb-icon">🪑</span><span class="qb-label">Puestos</span></div>
+        <div class="quick-btn"><span class="qb-icon">🗺️</span><span class="qb-label">Regiones</span></div>
+        <div class="quick-btn"><span class="qb-icon">🎓</span><span class="qb-label">Escolaridades</span></div>
+        <div class="quick-btn"><span class="qb-icon">📝</span><span class="qb-label">Tipos contratación</span></div>
+        <div class="quick-btn"><span class="qb-icon">🚪</span><span class="qb-label">Motivos de baja</span></div>
+        <div class="quick-btn"><span class="qb-icon">🏦</span><span class="qb-label">INFONAVIT desc.</span></div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /main-wrapper -->
+
+<script src="/scripts/capitalhumano/scripts_inicioCapitalHumano.js"></script>
+</body>
+</html>

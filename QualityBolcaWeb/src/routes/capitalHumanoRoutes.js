@@ -4,6 +4,6 @@ import protegetRuta from "../middleware/protegetRuta.js";
 
 const router = express.Router();
 
-router.get('/solicitudes', protegetRuta, controladorACH.inicio);
+router.get('/inicio', protegetRuta, controladorACH.inicio);
 
 export default router;

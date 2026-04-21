@@ -1,0 +1,404 @@
+===============================================================
+  ARQUITECTURA: PROTECCIÓN DE ARCHIVOS SERVIDOS
+  Proyecto: QualityBolcaWeb
+  Fecha de planeación: 2026-04-17
+===============================================================
+
+RESUMEN
+-------
+Servir archivos privados (imágenes y documentos) de forma segura,
+con acceso controlado por departamento para usuarios web y por
+API key para la aplicación de escritorio.
+
+Tipos de archivo soportados: jpg, png, jpeg, pdf, doc, ppt, xlsx, xlsm
+Clientes: usuarios web (JWT + departamento), app escritorio (API key),
+          app móvil (pendiente de desarrollo)
+
+
+===============================================================
+1. ESTRUCTURA DE CARPETAS PROPUESTA
+===============================================================
+
+QualityBolcaWeb/
+├── private/
+│   └── uploads/                  ← archivos privados (NO accesible por URL directa)
+│       ├── calidad/
+│       ├── infraestructura/
+│       ├── sistemas/
+│       └── ...
+├── src/
+│   ├── middleware/
+│   │   └── middlewareAccesoArchivo.js   ← NUEVO
+│   ├── controllers/
+│   │   └── archivosController.js        ← NUEVO
+│   └── routes/
+│       └── archivosRoutes.js            ← NUEVO
+
+IMPORTANTE: La carpeta /private/uploads/ debe estar FUERA de /public/
+para que Express no la sirva como asset estático. Solo se accede
+a través de la ruta protegida.
+
+
+===============================================================
+2. TABLA EN BASE DE DATOS
+===============================================================
+
+Cada archivo subido necesita un registro en BD para poder
+validar a qué departamento pertenece antes de servirlo.
+
+-- Ejecutar en la base de datos principal (BD_NOMBRE)
+
+CREATE TABLE archivos_privados (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  nombre_disco  VARCHAR(255) NOT NULL,   -- nombre con el que se guardó en disco
+  nombre_orig   VARCHAR(255) NOT NULL,   -- nombre original del archivo
+  mime_type     VARCHAR(100) NOT NULL,   -- image/jpeg, application/pdf, etc.
+  departamento  VARCHAR(100) NOT NULL,   -- 'calidad', 'infraestructura', etc.
+  subido_por    INT NOT NULL,            -- id del usuario que lo subió
+  ruta          VARCHAR(500) NOT NULL,   -- ruta relativa dentro de /private/uploads/
+  created_at    DATETIME DEFAULT NOW()
+);
+
+NOTA: Al momento de subir un archivo con multer, además de guardarlo
+en disco hay que hacer el INSERT en esta tabla con los datos del
+usuario autenticado (req.clienteValidado o req.session).
+
+
+===============================================================
+3. MIDDLEWARE DE ACCESO — middlewareAccesoArchivo.js
+===============================================================
+
+UBICACIÓN: src/middleware/middlewareAccesoArchivo.js
+
+RESPONSABILIDAD: Detectar si la petición viene de la app de escritorio
+(API key) o del navegador web (JWT en cookie) y validar credenciales.
+Pone el resultado en req.clienteValidado para que el controlador lo use.
+
+-------------------------------------------------------------
+
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import modelosGenerales from '../models/generales/barrilModelosGenerales.js';
+
+const middlewareAccesoArchivo = async (req, res, next) => {
+
+    const apiKey = req.headers['x-api-key'];
+    const token  = req.cookies?._token;
+
+    // ── CASO 1: Aplicación de escritorio (API Key) ──────────────────────
+    if (apiKey) {
+        try {
+            const keysActivas = await modelosGenerales.api_keys.findAll({
+                where: { activa: 1 }
+            });
+
+            let keyValida = false;
+            for (const registro of keysActivas) {
+                const coincide = await bcrypt.compare(apiKey, registro.key_hash);
+                if (coincide) {
+                    keyValida = true;
+                    break;
+                }
+            }
+
+            if (!keyValida) {
+                return res.status(401).json({ ok: false, msg: 'API key inválida' });
+            }
+
+            // Marcas que es cliente de escritorio — acceso limitado
+            req.clienteValidado = { tipo: 'desktop', departamento: null };
+            return next();
+
+        } catch (error) {
+            console.error('Error validando API key:', error);
+            return res.status(500).json({ ok: false, msg: 'Error de servidor' });
+        }
+    }
+
+    // ── CASO 2: Usuario web (JWT en cookie) ─────────────────────────────
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            req.clienteValidado = {
+                tipo:         'web',
+                id:           decoded.id,
+                departamento: decoded.departamento,  // viene del JWT al hacer login
+                puesto:       decoded.puesto
+            };
+            return next();
+
+        } catch (error) {
+            return res.status(401).json({ ok: false, msg: 'Sesión inválida o expirada' });
+        }
+    }
+
+    // ── CASO 3: Sin credenciales ─────────────────────────────────────────
+    return res.status(401).json({ ok: false, msg: 'No autorizado' });
+};
+
+export default middlewareAccesoArchivo;
+
+-------------------------------------------------------------
+
+NOTAS:
+- Se reutiliza el modelo api_keys y bcrypt que ya existen en el proyecto.
+- El campo 'departamento' en el JWT debe ser poblado al momento del login
+  en customerController.js cuando se firma el token.
+- Para la app móvil (futura): agregar un tercer caso con Bearer token
+  en el header Authorization.
+
+
+===============================================================
+4. CONTROLADOR — archivosController.js
+===============================================================
+
+UBICACIÓN: src/controllers/archivosController.js
+
+RESPONSABILIDAD: Buscar el archivo en BD, validar que el usuario
+tenga acceso según su departamento, y servir el archivo desde disco.
+
+-------------------------------------------------------------
+
+import path from 'path';
+import { fileURLToPath } from 'url';
+import modeloArchivo from '../models/archivosPrivados.js'; // crear este modelo
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+
+// Ruta absoluta a la carpeta privada — FUERA de public/
+const RAIZ_PRIVADA = path.join(__dirname, '../../private/uploads');
+
+const archivosController = {};
+
+archivosController.servir = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const cliente = req.clienteValidado; // viene del middlewareAccesoArchivo
+
+        // ── 1. Buscar el registro del archivo en BD ──────────────────────
+        const archivo = await modeloArchivo.findByPk(id);
+        if (!archivo) {
+            return res.status(404).json({ ok: false, msg: 'Archivo no encontrado' });
+        }
+
+        // ── 2. Validar acceso por departamento ───────────────────────────
+
+        // App de escritorio: solo puede ver archivos de tipo 'analisis'
+        if (cliente.tipo === 'desktop') {
+            if (archivo.departamento !== 'analisis') {
+                return res.status(403).json({ ok: false, msg: 'Acceso denegado' });
+            }
+        }
+
+        // Usuario web: su departamento debe coincidir con el del archivo
+        if (cliente.tipo === 'web') {
+            if (archivo.departamento !== cliente.departamento) {
+                return res.status(403).json({
+                    ok: false,
+                    msg: 'No tienes acceso a este documento'
+                });
+            }
+        }
+
+        // ── 3. Construir ruta absoluta y servir el archivo ───────────────
+        const rutaCompleta = path.join(RAIZ_PRIVADA, archivo.ruta);
+
+        return res.sendFile(rutaCompleta, (error) => {
+            if (error) {
+                console.error('Error sirviendo archivo:', error);
+                return res.status(404).json({ ok: false, msg: 'Archivo no disponible en disco' });
+            }
+        });
+
+    } catch (error) {
+        console.error('Error en archivosController.servir:', error);
+        return res.status(500).json({ ok: false, msg: 'Error de servidor' });
+    }
+};
+
+export default archivosController;
+
+-------------------------------------------------------------
+
+NOTAS:
+- Se accede por ID de BD, no por nombre de archivo en disco.
+  El usuario nunca conoce la ruta real — no puede adivinar otros archivos.
+- res.sendFile() hace streaming eficiente y maneja los headers
+  Content-Type y Content-Disposition automáticamente.
+- El modelo archivosPrivados.js hay que crearlo apuntando a la tabla
+  archivos_privados en la BD principal.
+
+
+===============================================================
+5. RUTA — archivosRoutes.js
+===============================================================
+
+UBICACIÓN: src/routes/archivosRoutes.js
+
+-------------------------------------------------------------
+
+import express from 'express';
+import middlewareAccesoArchivo from '../middleware/middlewareAccesoArchivo.js';
+import archivosController from '../controllers/archivosController.js';
+
+const router = express.Router();
+
+// GET /archivos/123  ← el :id es el registro en BD, NO el nombre del archivo
+router.get('/:id', middlewareAccesoArchivo, archivosController.servir);
+
+export default router;
+
+-------------------------------------------------------------
+
+
+===============================================================
+6. REGISTRO EN index.js
+===============================================================
+
+Agregar estas dos líneas en el index.js principal:
+
+import archivosRouter from './src/routes/archivosRoutes.js';
+
+// Sin csrfProtection — el middleware propio ya valida la identidad
+app.use('/archivos', archivosRouter);
+
+IMPORTANTE: Esta ruta NO lleva csrfProtection porque también recibe
+peticiones desde la app de escritorio con API key, que no tienen
+cookies ni token CSRF. La seguridad la provee el propio middleware
+de acceso (API key o JWT).
+
+
+===============================================================
+7. MODELO SEQUELIZE — archivosPrivados.js (PENDIENTE DE CREAR)
+===============================================================
+
+UBICACIÓN SUGERIDA: src/models/generales/archivosPrivados.js
+(o en el módulo que más tenga sentido según el uso principal)
+
+-------------------------------------------------------------
+
+import { DataTypes } from 'sequelize';
+import db from '../../config/db.js';
+
+const modeloArchivo = db.define('archivosPrivados', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    nombre_disco: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    nombre_orig: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    mime_type: {
+        type: DataTypes.STRING(100),
+        allowNull: false
+    },
+    departamento: {
+        type: DataTypes.STRING(100),
+        allowNull: false
+    },
+    subido_por: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    ruta: {
+        type: DataTypes.STRING(500),
+        allowNull: false
+    }
+}, {
+    tableName: 'archivos_privados',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: false
+});
+
+export default modeloArchivo;
+
+-------------------------------------------------------------
+
+
+===============================================================
+8. FLUJO COMPLETO — PASO A PASO
+===============================================================
+
+SUBIDA DE ARCHIVO (cuando el usuario sube desde el formulario):
+--------------------------------------------------------------
+1. multer guarda el archivo en /private/uploads/{departamento}/
+2. El controlador recibe req.file (datos del archivo)
+3. Se hace INSERT en archivos_privados con:
+   - nombre_disco  = req.file.filename
+   - nombre_orig   = req.file.originalname
+   - mime_type     = req.file.mimetype
+   - departamento  = req.clienteValidado.departamento (o valor fijo según la ruta)
+   - subido_por    = req.clienteValidado.id
+   - ruta          = '{departamento}/' + req.file.filename
+4. Se devuelve el ID generado al frontend para que lo guarde o lo muestre
+
+SERVIR EL ARCHIVO (cuando alguien quiere verlo):
+------------------------------------------------
+1. El cliente hace GET /archivos/{id}
+2. middlewareAccesoArchivo valida credenciales y llena req.clienteValidado
+3. archivosController.servir busca el registro en BD por id
+4. Verifica que cliente.departamento === archivo.departamento
+5. Construye la ruta absoluta: RAIZ_PRIVADA + archivo.ruta
+6. res.sendFile() envía el archivo al cliente
+
+
+===============================================================
+9. PENDIENTES / CHECKLIST DE IMPLEMENTACIÓN
+===============================================================
+
+[ ] Crear carpeta /private/uploads/ en la raíz del proyecto
+[ ] Agregar /private/ al .gitignore para no subir archivos al repo
+[ ] Crear la tabla archivos_privados en la BD
+[ ] Crear el modelo src/models/generales/archivosPrivados.js
+[ ] Crear src/middleware/middlewareAccesoArchivo.js
+[ ] Crear src/controllers/archivosController.js
+[ ] Crear src/routes/archivosRoutes.js
+[ ] Registrar la ruta en index.js
+[ ] Verificar que el campo 'departamento' se incluye al firmar el JWT en login
+[ ] Actualizar la clase multer existente para apuntar a /private/uploads/
+    en lugar de /public/evidencias/
+[ ] Mover archivos existentes de /public/evidencias/ a /private/uploads/
+    y actualizar las rutas en BD si ya había registros
+
+
+===============================================================
+10. CONSIDERACIONES FUTURAS (App Móvil)
+===============================================================
+
+Cuando se desarrolle la app móvil, agregar un tercer caso en
+middlewareAccesoArchivo.js:
+
+    // ── CASO 3: App móvil (Bearer token en header) ──────────────────────
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const bearerToken = authHeader.split(' ')[1];
+        try {
+            const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET);
+            req.clienteValidado = {
+                tipo:         'mobile',
+                id:           decoded.id,
+                departamento: decoded.departamento,
+                puesto:       decoded.puesto
+            };
+            return next();
+        } catch (error) {
+            return res.status(401).json({ ok: false, msg: 'Token móvil inválido' });
+        }
+    }
+
+La lógica de validación de departamento en el controlador aplica
+igual para 'mobile' que para 'web'.
+
+
+===============================================================
+FIN DEL DOCUMENTO
+===============================================================
