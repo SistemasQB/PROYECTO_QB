@@ -101,6 +101,19 @@ function renderTabla(lista) {
         }
     }
     let html = ''
+
+    if (lista.length === 0) {
+        const colspan = esNivelAlto ? 7 : 6
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="${colspan}" style="text-align:center; padding:40px 16px; color:#6b7280; font-size:14px; background:#fff;">
+                    <style="font-size:28px; display:block; margin-bottom:10px; opacity:0.5;"></i>
+                    No se han enviado requisiciones
+                </td>
+            </tr>`
+        return
+    }
+
     lista.forEach(req => {
 
         const fecha = new Date(req.horaRegistro).toLocaleDateString('es-MX')

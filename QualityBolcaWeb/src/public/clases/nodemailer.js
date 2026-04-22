@@ -765,125 +765,239 @@ htmlNuevaRequisicion({ solicitante, departamentoAutorizador }) {
   }
 
   htmlRequisicionAprobada({ datos, autorizador }) {
+    const foto = (!datos.foto || datos.foto === 'NO') ? 'N/A' : datos.foto
+    const imagenHtml = foto !== 'N/A'
+        ? `<img src='https://www.qualitybolca.net/img/Quality-BOLCA2.png' alt='Imagen Adjunta' style='max-width: 100px; max-height: 100px;'>`
+        : 'N/A'
 
-    let cuerpo = `
-    Buen día, <b>Equipo de Gestión de Gastos/ Compras y Suministros:</b><br><br>
-
-    Tienes una requisicion de <b>${datos.solicitante}</b>, revisada y autorizada por <b>${autorizador}</b>.<br><br>
-
-    Sin mas por el momento, que tenga un buen día.<br><br>
-
-    EXPENSE SUPPORT SYSTEM <br><br>
-
-    <b>No responda a este mensaje, es un envío automático.</b>
-    `
+    const fechaRegistro = datos.horaRegistro ? new Date(datos.horaRegistro).toLocaleDateString('es-MX') : ''
+    const fechaEntrega = datos.fechaEntrega ? new Date(datos.fechaEntrega).toLocaleDateString('es-MX') : ''
 
     let filas = ''
-    const partes = (datos.descripcion || '').split('|')
+    let sumatoria = 0
+    const rawDesc = (datos.descripcion || '').trim()
+    let idx = 0
 
-    for (let i = 0; i < partes.length; i += 4) {
+    // Detectar formato: JSON array o pipe-separated
+    const esJson = rawDesc.startsWith('[')
 
-        const concepto = partes[i] || ''
-        const cantidad = partes[i + 1] || ''
-        const precio = Number(partes[i + 2] || 0)
-        const subtotal = Number(partes[i + 3] || 0)
-
-        filas += `
+    if (esJson) {
+        // Formato nuevo: [{"id":1,"desc":"...","unidad":1,"precio":10}, ...]
+        let items = []
+        try {
+            items = JSON.parse(rawDesc)
+        } catch (_) {
+            items = []
+        }
+        for (const item of items) {
+            const concepto = (item.desc || '').trim()
+            if (!concepto) continue
+            const cantidad = Number(item.unidad || 0)
+            const precio = Number(item.precio || 0)
+            const subtotal = cantidad * precio
+            sumatoria += subtotal
+            idx++
+            filas += `
         <tr>
-            <td align='center' style='border:1px solid #ccc; padding:8px;'>${i/4 + 1}</td>
-            <td style='border:1px solid #ccc; padding:8px;'>${concepto}</td>
-            <td align='center' style='border:1px solid #ccc; padding:8px;'>${cantidad}</td>
-            <td align='right' style='border:1px solid #ccc; padding:8px;'>${this.formatearPesos(precio)}</td>
-            <td align='right' style='border:1px solid #ccc; padding:8px; font-weight:bold;'>${this.formatearPesos(subtotal)}</td>
-        </tr>
-        `
+            <td align='center' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px; background-color: #f9f9f9;'>${idx}</td>
+            <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${concepto}</td>
+            <td align='center' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${cantidad}</td>
+            <td align='right' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${this.formatearPesos(precio)}</td>
+            <td align='right' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px; font-weight: bold;'>${this.formatearPesos(subtotal)}</td>
+        </tr>`
+        }
+    } else {
+        // Formato antiguo: descripcion|unidad|precio|total|descripcion|unidad|...
+        const partes = rawDesc.split('|')
+        for (let i = 0; i < partes.length; i += 4) {
+            const concepto = (partes[i] || '').trim()
+            if (!concepto) continue
+            const cantidad = partes[i + 1] || ''
+            const precio = Number(partes[i + 2] || 0)
+            const subtotal = Number(partes[i + 3] || 0)
+            sumatoria += subtotal
+            idx++
+            filas += `
+        <tr>
+            <td align='center' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px; background-color: #f9f9f9;'>${idx}</td>
+            <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${concepto}</td>
+            <td align='center' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${cantidad}</td>
+            <td align='right' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${this.formatearPesos(precio)}</td>
+            <td align='right' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px; font-weight: bold;'>${this.formatearPesos(subtotal)}</td>
+        </tr>`
+        }
     }
 
     return `
-    ${cuerpo}
+    Buen día, <b>Equipo de Gestión de Gastos/ Compras y Suministros:</b><br><br>
+    Tienes una requisicion de <b>${datos.solicitante}</b>, revisada y autorizada por <b>${autorizador}</b>.<br><br>
+    Sin mas por el momento, que tenga un buen día.<br><br>
+    EXPENSE SUPPORT SYSTEM <br><br>
+    <b>No responda a este mensaje, es un envío automático.</b>
 
-    <table width='100%' cellpadding='0' cellspacing='0' style='background:#f4f4f4; padding:20px;'>
+    <table width='100%' cellpadding='0' cellspacing='0' border='0' style='background-color: #f4f4f4; padding: 20px;'>
         <tr>
             <td align='center'>
-                <table width='800' style='background:#fff; border:1px solid #ccc;'>
+                <table width='800' cellpadding='0' cellspacing='0' border='0' style='background-color: #ffffff; border: 1px solid #cccccc;'>
 
-                    <!-- HEADER -->
+                    <!-- Header -->
                     <tr>
-                        <td style='padding:20px; background:#003366; color:#fff;'>
-                            <h2>Requisición de compra</h2>
-                        </td>
-                    </tr>
-
-                    <!-- INFO -->
-                    <tr>
-                        <td style='padding:20px;'>
-                            <b>Nombre del gasto:</b> ${datos.asunto} <br>
-                            <b>Solicitante:</b> ${datos.solicitante} <br>
-                            <b>Fecha:</b> ${new Date(datos.horaRegistro).toLocaleDateString('es-MX')}
-                            <b>Proceso: </b> ${datos.proceso} <br>
-                            <b>Departamento: </b> ${datos.departamento} <br>
-                            <b>Región y planta: </b> ${datos.region} - ${datos.planta} <br>
-                            <b>Tipo de gasto: </b> ${datos.rentabilidad} <br>
-                            <b>Orden: </b> ${datos.orden} <br>
-                            <b>Fecha de entrega: </b> ${new Date(datos.fechaEntrega).toLocaleDateString('es-MX')} <br>
-                            <b>Cuenta: </b> ${datos.noCuenta} <br>
-                        </td>
-                    </tr>
-
-                    <!-- TABLA -->
-                    <tr>
-                        <td style='padding:20px;'>
-                            <table width='100%' style='border-collapse:collapse;'>
-
-                                <tr style='background:#003366; color:white;'>
-                                    <th>#</th>
-                                    <th>Descripción</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio</th>
-                                    <th>Total</th>
-                                </tr>
-
-                                ${filas}
-
+                        <td style='padding: 20px; background-color: #003366; color: #ffffff;'>
+                            <table width='100%' cellpadding='0' cellspacing='0' border='0'>
                                 <tr>
-                                    <td colspan='4' align='right'><b>Total:</b></td>
-                                    <td><b>${this.formatearPesos(datos.total)}</b></td>
+                                    <td><img src='https://www.qualitybolca.net/img/Quality-BOLCA.png' alt='' height='100' width='100'></td>
+                                    <td style='font-size: 24px; font-weight: bold;'>Requisición de compra</td>
+                                    <td align='right' style='font-size: 12px;'>
+                                        <div style='margin-bottom: 5px;'>Código: QB-FR-A-11-01</div>
+                                        <div>Rev: 07</div>
+                                        <div>Fecha de emisión: 07-08-2019</div>
+                                        <div>Fecha de revisión: 16-02-2024</div>
+                                    </td>
                                 </tr>
-
                             </table>
                         </td>
                     </tr>
 
-                    <!-- JUSTIFICACIÓN -->
+                    <!-- Información del Solicitante -->
                     <tr>
-                        <td style='padding:20px;'>
-                            <b>Situación actual:</b><br>
-                            ${datos.situacionActual || 'N/A'}<br><br>
-
-                            <b>Expectativa:</b><br>
-                            ${datos.detallesEspectativa || 'N/A'}
-
-                            <b>Comentarios adicionales:</b><br>
-                            ${datos.comentariosAdicionales || 'N/A'}
+                        <td style='padding: 20px;'>
+                            <table width='100%' cellpadding='8' cellspacing='0' border='0'>
+                                <tr>
+                                    <td colspan='2' style='background-color: #2572be; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold; text-align: center;'>Información del Solicitante</td>
+                                </tr>
+                                <tr>
+                                    <td width='50%' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Orden de Servicio (Cotización):</strong><br>
+                                        <span style='color: #0066cc;'>${datos.orden || ''}</span>
+                                    </td>
+                                    <td width='50%' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Fecha de Solicitud:</strong><br>
+                                        <span style='color: #0066cc;'>${fechaRegistro}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Nombre de Solicitante:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.solicitante || ''}</span>
+                                    </td>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Puesto:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.puesto || ''}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Departamento:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.departamento || ''}</span>
+                                    </td>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Región y Planta:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.region || ''}/${datos.planta || ''}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Fecha de entrega requerida:</strong><br>
+                                        <span style='color: #0066cc;'>${fechaEntrega}</span>
+                                    </td>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Rentabilidad que aplica:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.rentabilidad || ''}</span>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
 
-                    <!-- FIRMAS -->
+                    <!-- Descripción Detallada -->
                     <tr>
-                        <td style='padding:20px; text-align:center;'>
-                            <b>${datos.solicitante}</b><br>
-                            Firma del solicitante
-                            <br><br>
-                            <b>${autorizador}</b><br>
-                            Firma del jefe inmediato
+                        <td style='padding: 0 20px 20px 20px;'>
+                            <table width='100%' cellpadding='8' cellspacing='0' border='0' style='border-collapse: collapse;'>
+                                <tr>
+                                    <td colspan='5' style='background-color: #2572be; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold; text-align: center; outline: solid 1px black;'>DESCRIPCIÓN DETALLADA</td>
+                                </tr>
+                                <tr>
+                                    <td width='5%' align='center' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>#</td>
+                                    <td width='45%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>Descripción detallada</td>
+                                    <td width='15%' align='center' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>Unidad</td>
+                                    <td width='17.5%' align='center' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>Precio Unitario con IVA</td>
+                                    <td width='17.5%' align='center' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>Precio total con IVA</td>
+                                </tr>
+                                ${filas}
+                                <tr>
+                                    <td colspan='4' align='right' style='border: 1px solid #003366; padding: 10px; font-size: 14px; font-weight: bold; background-color: #e8f4f8;'>Importe Total:</td>
+                                    <td align='right' style='border: 1px solid #003366; padding: 10px; font-size: 14px; font-weight: bold; background-color: #e8f4f8; color: #003366;'>${this.formatearPesos(sumatoria)}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Justificación -->
+                    <tr>
+                        <td style='padding: 0 20px 20px 20px;'>
+                            <table width='100%' cellpadding='8' cellspacing='0' border='0'>
+                                <tr>
+                                    <td colspan='2' style='background-color: #2572be; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold; text-align: center; outline: solid 1px black;'>JUSTIFICACIÓN</td>
+                                </tr>
+                                <tr>
+                                    <td width='50%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold;'>Detallar situación actual</td>
+                                    <td width='50%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold;'>Detallar expectativa</td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 12px; font-size: 12px; vertical-align: top; height: 80px;'>${datos.situacionActual || 'N/A'}</td>
+                                    <td style='border: 1px solid #cccccc; padding: 12px; font-size: 12px; vertical-align: top; height: 80px;'>${datos.detallesEspectativa || 'N/A'}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Comentarios Adicionales -->
+                    <tr>
+                        <td style='padding: 0 20px 20px 20px;'>
+                            <table width='100%' cellpadding='8' cellspacing='0' border='0'>
+                                <tr>
+                                    <td width='50%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold;'>Comentarios adicionales</td>
+                                    <td width='50%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold;'>Imagen</td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 12px; font-size: 12px; height: 60px; vertical-align: top;'>${datos.comentariosAdicionales || 'N/A'}</td>
+                                    <td style='border: 1px solid #cccccc; padding: 12px; font-size: 12px; height: 60px; text-align: center; vertical-align: middle;'>${imagenHtml}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Firmas -->
+                    <tr>
+                        <td style='padding: 0 20px 30px 20px;'>
+                            <table width='100%' cellpadding='15' cellspacing='0' border='0'>
+                                <tr>
+                                    <td width='50%' align='center' style='border: 1px solid #cccccc; vertical-align: bottom; background-color: #f9f9f9;'>
+                                        <div style='height: 60px; margin-bottom: 10px;'></div>
+                                        <p>${datos.solicitante || ''}</p>
+                                        <div style='border-top: 2px solid #003366; padding-top: 8px; font-size: 12px; font-weight: bold;'>Firma del Solicitante</div>
+                                    </td>
+                                    <td width='50%' align='center' style='border: 1px solid #cccccc; vertical-align: bottom; background-color: #f9f9f9;'>
+                                        <div style='height: 60px; margin-bottom: 10px;'></div>
+                                        <p>${autorizador || ''}</p>
+                                        <div style='border-top: 2px solid #003366; padding-top: 8px; font-size: 12px; font-weight: bold;'>Firma del Jefe Inmediato</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style='padding: 15px 20px; background-color: #f4f4f4; border-top: 3px solid #003366; font-size: 10px; color: #666666; text-align: center;'>
+                            Este documento es una requisición de compra generada electrónicamente. Favor de verificar toda la información antes de proceder.
                         </td>
                     </tr>
 
                 </table>
             </td>
         </tr>
-    </table>
-    `
+    </table>`
 }
 
   formatearPesos(monto) {

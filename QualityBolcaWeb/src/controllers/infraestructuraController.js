@@ -646,7 +646,12 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 delete campos._csrf
                 delete campos.tipo
                 campos.solicitante = usuarioM.apellidopaterno + ' ' + usuarioM.apellidomaterno + ' ' + usuarioM.nombre
-                campos.puesto = usuarioM.departamentoLocal
+                const solicitanteReq = await db.query(
+                    `SELECT puesto, departamento FROM usuariosRequisiciones WHERE nombre = :nombre LIMIT 1`,
+                    { replacements: { nombre: campos.solicitante }, type: QueryTypes.SELECT }
+                )
+                campos.puesto = solicitanteReq[0]?.puesto || usuarioM.departamentoLocal
+                campos.departamento = solicitanteReq[0]?.departamento || usuarioM.departamentoLocal
                 campos.contacto = usuarioM.correo
                 const respuesta = await clase.insertar({ datosInsertar: campos })
                 if (!respuesta) return res.json({ ok: false, msg: 'no se pudo ingresar la informacion' })
@@ -913,7 +918,7 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 }
 
                 const datosUsuarioAuth = await db.query(`
-                    SELECT nombrelargo
+                    SELECT nombrelargo, correoelectronico
                     FROM nom10001
                     WHERE codigoempleado = :usuario
                 `, {
@@ -922,6 +927,7 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 })
 
                 const nombreAutorizador = datosUsuarioAuth[0].nombrelargo
+                const correoAutorizador = datosUsuarioAuth[0].correoelectronico || null
 
                 const [reqDB] = await db.query(`
                     SELECT *
@@ -1009,19 +1015,22 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                         autorizador: nombreAutorizador
                     })
 
-                    const correoCompras = 'info.sistemas@qualitybolca.com'
+                    const destinatario = [
+                        process.env.correoCompras,
+                        process.env.correoGastos1,
+                        process.env.correoGastos2
+                    ].filter(Boolean).join(', ')
 
-                    const destinatarios = [correoCompras]
-
-                    if (correoSolicitante) {
-                        destinatarios.push(correoSolicitante)
-                    }
+                    const cc = [
+                        correoSolicitante,
+                        correoAutorizador
+                    ].filter(Boolean).join(', ')
 
                     await correo.enviarCorreo({
                         Datoscorreo: {
-                            destinatario: correoCompras,
-                            cc: correoSolicitante || undefined,
-                            asunto: `Requisición APROBADA (${reqDB.id})`,
+                            destinatario,
+                            cc: cc || undefined,
+                            asunto: reqDB.asunto,
                             texto: 'Requisición aprobada',
                             html
                         }
