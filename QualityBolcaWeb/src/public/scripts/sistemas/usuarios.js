@@ -9,7 +9,36 @@ const searchInput = document.querySelector(".search-box input");
 let paginaActual = 1;
 const usuariosPorPagina = 25;
 let listaUsuarios = [];
+let listaUsuariosCompleta = [];
+let filtroActivo = 'All';
 let timeoutBusqueda;
+
+// Palabras clave por cada pill. SLP acepta variantes del nombre real en la BD.
+const mapaDepartamento = {
+    'All':           null,
+    'Administrativo':['administrativo'],
+    'Celaya':        ['celaya'],
+    'Honda':         ['honda'],
+    'Silao':         ['silao'],
+    'Reynosa':       ['reynosa'],
+    'SLP':           ['san luis', 'slp', 's.l.p']
+};
+
+function aplicarFiltro() {
+    const keywords = mapaDepartamento[filtroActivo];
+
+    if (!keywords) {
+        listaUsuarios = [...listaUsuariosCompleta];
+    } else {
+        listaUsuarios = listaUsuariosCompleta.filter(u => {
+            const depto = (u.departamento || '').toLowerCase();
+            return keywords.some(kw => depto.includes(kw));
+        });
+    }
+
+    paginaActual = 1;
+    renderTabla();
+}
 
 async function cargarUsuarios(search = "") {
 
@@ -18,10 +47,8 @@ async function cargarUsuarios(search = "") {
 
     if (!data.ok) return;
 
-    listaUsuarios = data.usuarios;
-    paginaActual = 1;
-
-    renderTabla();
+    listaUsuariosCompleta = data.usuarios;
+    aplicarFiltro();
 }
 
 cargarUsuarios();
@@ -283,6 +310,7 @@ function abrirModalCrearUsuario() {
                         <select class="form-input" id="selectDepartamento">
                             <option value="" disabled selected>Seleccionar departamento</option>
                         </select>
+                        <a href="#" class="link-crear-catalogo" id="linkCrearDepto">+ Crear departamento</a>
                     </div>
 
                     <div class="form-group">
@@ -290,6 +318,7 @@ function abrirModalCrearUsuario() {
                         <select class="form-input" id="selectPuesto">
                             <option value="" disabled selected>Seleccionar puesto</option>
                         </select>
+                        <a href="#" class="link-crear-catalogo" id="linkCrearPuesto">+ Crear puesto</a>
                     </div>
                 </div>
 
@@ -314,7 +343,7 @@ function abrirModalCrearUsuario() {
                 <div class="form-group col-span-3">
                     <div class="special-state-box">
                         <div class="special-state-text">
-                            <h4><i class="fa-solid fa-graduation-cap" style="color: #94a3b8; margin-right: 8px;"></i> Estado Especial</h4>
+                            <h4><i class="fa-solid fa-graduation-cap" style="color: #94a3b8; margin-right: 8px;"></i> Es becario?</h4>
                             <p>¿Este usuario es actualmente un becario?</p>
                         </div>
                         <label class="switch">
@@ -472,6 +501,42 @@ function abrirModalCrearUsuario() {
     }
 
     cargarDatosModal();
+
+    // Link "Crear departamento"
+    document.getElementById('linkCrearDepto').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirMiniModal({
+            titulo: 'Nuevo Departamento',
+            placeholder: 'Ej. Recursos Humanos',
+            endpoint: '/sistemas/usuarios/departamentos',
+            onCreado: (item) => {
+                const select = document.getElementById('selectDepartamento');
+                const opt = document.createElement('option');
+                opt.value = item.iddepartamento;
+                opt.textContent = item.descripcion;
+                select.appendChild(opt);
+                select.value = item.iddepartamento;
+            }
+        });
+    });
+
+    // Link "Crear puesto"
+    document.getElementById('linkCrearPuesto').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirMiniModal({
+            titulo: 'Nuevo Puesto',
+            placeholder: 'Ej. Analista de Sistemas',
+            endpoint: '/sistemas/usuarios/puestos',
+            onCreado: (item) => {
+                const select = document.getElementById('selectPuesto');
+                const opt = document.createElement('option');
+                opt.value = item.idpuesto;
+                opt.textContent = item.descripcion;
+                select.appendChild(opt);
+                select.value = item.idpuesto;
+            }
+        });
+    });
 }
 
 async function eliminarUsuario(codigo, nombre) {
@@ -666,6 +731,113 @@ async function cargarDatosEdicion(usuario) {
 // Escuchar el evento del botón principal
 if (btnAgregarUsuario) {
     btnAgregarUsuario.addEventListener("click", abrirModalCrearUsuario);
+}
+
+// --- Filtros por departamento/ciudad ---
+document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        filtroActivo = pill.textContent.trim();
+        aplicarFiltro();
+    });
+});
+
+function abrirMiniModal({ titulo, placeholder, endpoint, onCreado }) {
+    // Crear overlay del mini-modal
+    const overlay = document.createElement('div');
+    overlay.className = 'mini-modal-overlay';
+    overlay.id = 'miniModalCatalogo';
+
+    overlay.innerHTML = `
+        <div class="mini-modal-content" onclick="event.stopPropagation()">
+            <div class="mini-modal-header">
+                <h3>${titulo}</h3>
+                <button class="btn-close" id="btnCerrarMiniModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="mini-modal-body">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" class="form-input" id="inputNuevoCatalogo" placeholder="${placeholder}" autocomplete="off">
+                </div>
+                <p class="mini-modal-error" id="miniModalError" style="display:none;color:#dc2626;font-size:12px;margin-top:4px;"></p>
+            </div>
+            <div class="mini-modal-footer">
+                <button class="btn-cancel" id="btnCancelarMiniModal">Cancelar</button>
+                <button class="btn-primary" id="btnGuardarMiniModal">
+                    <i class="fa-solid fa-plus"></i> Crear
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const input = document.getElementById('inputNuevoCatalogo');
+    const errorEl = document.getElementById('miniModalError');
+    const btnGuardar = document.getElementById('btnGuardarMiniModal');
+
+    // Foco automático
+    setTimeout(() => input.focus(), 50);
+
+    const cerrar = () => overlay.remove();
+
+    document.getElementById('btnCerrarMiniModal').onclick = cerrar;
+    document.getElementById('btnCancelarMiniModal').onclick = cerrar;
+    overlay.addEventListener('click', cerrar);
+
+    // Enter para guardar
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') btnGuardar.click();
+        if (e.key === 'Escape') cerrar();
+    });
+
+    btnGuardar.addEventListener('click', async () => {
+        const descripcion = input.value.trim();
+
+        if (!descripcion) {
+            errorEl.textContent = 'El nombre no puede estar vacío.';
+            errorEl.style.display = 'block';
+            input.focus();
+            return;
+        }
+
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando…';
+        errorEl.style.display = 'none';
+
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({ descripcion })
+            });
+
+            const data = await res.json();
+
+            if (!data.ok) {
+                errorEl.textContent = data.msg || 'Error al crear el elemento.';
+                errorEl.style.display = 'block';
+                btnGuardar.disabled = false;
+                btnGuardar.innerHTML = '<i class="fa-solid fa-plus"></i> Crear';
+                return;
+            }
+
+            // Llamar callback con el item creado
+            const item = data.departamento || data.puesto;
+            onCreado(item);
+            cerrar();
+
+        } catch (err) {
+            errorEl.textContent = 'Error de conexión. Intenta de nuevo.';
+            errorEl.style.display = 'block';
+            btnGuardar.disabled = false;
+            btnGuardar.innerHTML = '<i class="fa-solid fa-plus"></i> Crear';
+        }
+    });
 }
 
 async function actualizarUsuario(codigo, cerrarModal) {

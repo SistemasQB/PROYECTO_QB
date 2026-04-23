@@ -1,6 +1,40 @@
 
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
+/* ============================================================
+   TOAST CONEXION
+   ============================================================ */
+(function initToastConexion() {
+    const toastConexion = document.getElementById('toastConexion');
+    const toastConexionIcon = document.getElementById('toastConexionIcon');
+    const toastConexionMsg = document.getElementById('toastConexionMsg');
+    let autoCloseTimer = null;
+
+    function mostrarSinConexion() {
+        clearTimeout(autoCloseTimer);
+        toastConexion.className = 'toast-conexion toast-conexion--offline is-visible';
+        toastConexionIcon.className = 'fa-solid fa-wifi-slash';
+        toastConexionMsg.textContent = 'Sin conexión a internet. Algunas funciones no estarán disponibles.';
+    }
+
+    function mostrarConexionRestaurada() {
+        clearTimeout(autoCloseTimer);
+        toastConexion.className = 'toast-conexion toast-conexion--online is-visible';
+        toastConexionIcon.className = 'fa-solid fa-wifi';
+        toastConexionMsg.textContent = 'Conexión restaurada.';
+        autoCloseTimer = setTimeout(() => {
+            toastConexion.classList.remove('is-visible');
+        }, 3000);
+    }
+
+    window.addEventListener('offline', mostrarSinConexion);
+    window.addEventListener('online', mostrarConexionRestaurada);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!navigator.onLine) mostrarSinConexion();
+    });
+})();
+
 const menuToggle = document.getElementById("menuToggle")
 const sidebar = document.getElementById("sidebar")
 const overlay = document.getElementById("sidebarOverlay")
@@ -67,6 +101,19 @@ function renderTabla(lista) {
         }
     }
     let html = ''
+
+    if (lista.length === 0) {
+        const colspan = esNivelAlto ? 7 : 6
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="${colspan}" style="text-align:center; padding:40px 16px; color:#6b7280; font-size:14px; background:#fff;">
+                    <style="font-size:28px; display:block; margin-bottom:10px; opacity:0.5;"></i>
+                    No se han enviado requisiciones
+                </td>
+            </tr>`
+        return
+    }
+
     lista.forEach(req => {
 
         const fecha = new Date(req.horaRegistro).toLocaleDateString('es-MX')

@@ -3,13 +3,17 @@ import rateLimit from "express-rate-limit";
 import csurf from "csurf";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import helmet from "helmet";
+// import { PORT, SECRET_JWT_KEY } from "./src/config.js";
 import directivas from "./src/config/directivas.js";
 import dbs from "./src/config/barril_dbs.js";
 import cors from "cors";
 import routers from "./src/routes/barrilRouters.js";
 import dotenv from "dotenv";
 // import miCron from "./src/public/clases/clase_cron.js";
+
 import path from "path";
 //configuracion del .env
 dotenv.config({path: '.env'})
@@ -32,6 +36,7 @@ const limiterApiPublica = rateLimit({
 
 const app = express();
 app.use(cors({
+
   credentials: true,
   origin: ['https://www.qualitybolca.net']   
 }));
@@ -39,6 +44,7 @@ app.use(cors({
 app.use(limiterGlobal); // ← aplica a TODO el servidor
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 // Configuración de Helmet según entorno
 if (process.env.NODE_ENV === "production") {
   app.use(helmet({   contentSecurityPolicy: {
@@ -57,7 +63,7 @@ if (process.env.NODE_ENV === "production") {
 // const __dirname = dirname(__filename);
 
 //Habilitar cookie parser
-app.use( cookieParser() )
+app.use( cookieParser(process.env.JWT_SECRET) )
 
 //conexion a la base de datos
 try {
@@ -114,11 +120,13 @@ app.use('/procedimientos', csrfProtection, routers.routerGenerales);
 app.use('/capturacion', csrfProtection,routers.capturacionRouters);
 app.use('/bots', csrfProtection, routers.botRouter);
 app.use('/apis', routers.routerApis);
+
 app.use((_, res) => {
   return res.render('admin/default/paginaNoEncontrada.ejs');
 });
 
 app.use(express.json());
+
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 })

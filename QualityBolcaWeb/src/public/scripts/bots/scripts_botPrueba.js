@@ -1,3 +1,8 @@
+
+  // ─── Configuración ──────────────────────────────────────────────
+  // IMPORTANTE: Reemplaza esto con tu API key de Anthropic.
+  // En producción nunca expongas tu API key en el frontend;
+  // haz las llamadas desde tu propio backend/servidor.
 alert('Funciona');
 const API_KEY = "TU_API_KEY_AQUI";
   const API_URL = "https://api.anthropic.com/v1/messages";

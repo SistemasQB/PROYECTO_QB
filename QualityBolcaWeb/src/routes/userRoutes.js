@@ -5,6 +5,8 @@ import upload3 from "../middleware/cargararchivo.js";
 import protegerRuta from '../middleware/protegetRuta.js';
 import rutasPublicas from "../middleware/rutasPublicas.js";
 import rateLimit from 'express-rate-limit';
+// import { csrfProtection } from '../../index.js';
+
 
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,  // ventana de 15 minutos

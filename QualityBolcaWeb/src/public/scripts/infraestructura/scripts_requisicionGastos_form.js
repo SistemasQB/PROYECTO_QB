@@ -1,4 +1,22 @@
 /* ============================================================
+   AVATAR
+   ============================================================ */
+function generarAvatar() {
+    const avatar = document.getElementById("avatarUsuario")
+    if (!avatar) return
+    const partes = nombreUsuario.split(" ")
+    const iniciales = (partes[0]?.charAt(0) || '') + (partes[1]?.charAt(0) || '')
+    const colores = ["#2563eb","#7c3aed","#db2777","#ea580c","#059669","#0891b2","#4f46e5"]
+    let hash = 0
+    for (let i = 0; i < nombreUsuario.length; i++) {
+        hash = nombreUsuario.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    avatar.style.backgroundColor = colores[Math.abs(hash) % colores.length]
+    avatar.textContent = iniciales.toUpperCase()
+}
+document.addEventListener('DOMContentLoaded', generarAvatar)
+
+/* ============================================================
    STATE
    ============================================================ */
 const areas = {
@@ -393,6 +411,40 @@ function llenarDepartamentos(proceso){
     })   
     input.innerHTML = elementos
 }
+
+/* ============================================================
+   TOAST CONEXION
+   ============================================================ */
+(function initToastConexion() {
+  const toastConexion = document.getElementById('toastConexion');
+  const toastConexionIcon = document.getElementById('toastConexionIcon');
+  const toastConexionMsg = document.getElementById('toastConexionMsg');
+  let autoCloseTimer = null;
+
+  function mostrarSinConexion() {
+    clearTimeout(autoCloseTimer);
+    toastConexion.className = 'toast-conexion toast-conexion--offline is-visible';
+    toastConexionIcon.textContent = 'wifi_off';
+    toastConexionMsg.textContent = 'Sin conexión a internet. Algunas funciones no estarán disponibles.';
+  }
+
+  function mostrarConexionRestaurada() {
+    clearTimeout(autoCloseTimer);
+    toastConexion.className = 'toast-conexion toast-conexion--online is-visible';
+    toastConexionIcon.textContent = 'wifi';
+    toastConexionMsg.textContent = 'Conexión restaurada.';
+    autoCloseTimer = setTimeout(() => {
+      toastConexion.classList.remove('is-visible');
+    }, 3000);
+  }
+
+  window.addEventListener('offline', mostrarSinConexion);
+  window.addEventListener('online', mostrarConexionRestaurada);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!navigator.onLine) mostrarSinConexion();
+  });
+})();
 
 function cambiandoCampos(datos){
   let campos = datos

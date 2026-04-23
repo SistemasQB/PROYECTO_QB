@@ -5,6 +5,9 @@ import protegerRuta from '../middleware/protegetRuta.js';
 import validarAcceso from '../middleware/validacion-permisos/calidad/permisos.js';
 
 const multer = new miMulter('src/public/evidencias/check_List_Vehicular')
+
+const multerReportes = new miMulter('src/public/formularioReportes');
+
 const uGas = new miMulter('src/public/evidencias/gastos')
 const infraestructuraRouter = express.Router();
 
@@ -39,5 +42,10 @@ infraestructuraRouter.get('/aprobaciones', protegerRuta, infraestructuraControll
 
 infraestructuraRouter.get('/misRequisiciones', protegerRuta, infraestructuraController.misRequisicionesGastos);
 infraestructuraRouter.get('/comprobar', protegerRuta, infraestructuraController.comprobarRequisicionesGastos);
+
+
+//ruta de fromulario de reportes
+infraestructuraRouter.get('/formularioReportes', protegerRuta, infraestructuraController.formularioReportes);
+infraestructuraRouter.post('/crudFormularioReportes', protegerRuta, multerReportes.multiplesArchivos('fotos', 3), infraestructuraController.crudFormularioReportes);
 
 export default infraestructuraRouter;

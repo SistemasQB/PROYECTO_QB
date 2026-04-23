@@ -28,8 +28,10 @@ router.get("/output",protegerRuta,validarAcceso({roles: ['sorteo'], permisos: ['
 router.post("/crudOutput",protegerRuta,validarAcceso({roles:['sorteo'], permisos:['supervisor regional de proyectos','supervisor'], jerarquia: 4}),sorteoController.crudOutput) //crud de output
 router.get('/gestionOutput',protegerRuta, validarAcceso({roles:['sorteo', 'calidad'], permisos:['director de sorteo', 'analista', 'gerente'], jerarquia: 4}) ,sorteoController.dashBoardOutput)
 
+//rutas de produccion con tensor flex
+// router.get('/contador-produccion', protegerRuta,sorteoController.contador)
+// router.post('/evaluacion-produccion',modelos.archivoUnico('imagen'),sorteoController.evaluacionProduccion)
 
-//dashboard de horas 
 router.get('/dashboard', protegerRuta,sorteoController.dashboard)
 
 

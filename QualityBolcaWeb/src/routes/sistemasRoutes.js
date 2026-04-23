@@ -9,13 +9,25 @@ const router = express.Router();
 router.get('/inicio', adminController.inicio);
 router.get('/dashboard', protegerRuta,adminController.dashboardTI);
 
+//rutas de dashboard monitoreo
+router.get('/monitoreo', protegerRuta, adminController.dashboardMonitoreo);
+router.get('/api/monitoreo/tickets',adminController.ticketsMonitoreo);
+router.get('/api/monitoreo/requisiciones', adminController.requisicionesMonitoreo);
+router.get('/api/monitoreo/inventario', adminController.inventarioMonitoreo);
+router.get('/api/monitoreo/agentes', adminController.agentesMonitoreo);
+//router.get('/api/monitoreo/sla',adminController.slaMonitoreo);
+//router.get('/api/monitoreo/resolucion-semanal', adminController.resolucionSemanal);
+
 //rutas de usuarios (nom10001)
 router.get('/usuarios', protegerRuta, adminController.usuarios);
 router.get('/api/usuarios', protegerRuta, adminController.obtenerUsuarios);
 router.put('/usuarios/:codigoempleado/actualizar', protegerRuta, adminController.actualizarUsuario);
-router.post("/usuarios", protegerRuta,adminController.crearUsuario);
-router.get("/usuarios/datos-nuevo", protegerRuta,adminController.obtenerDatosNuevoUsuario);
+router.post('/usuarios/departamentos', protegerRuta, adminController.crearDepartamento);
+router.post('/usuarios/puestos', protegerRuta, adminController.crearPuesto);
+router.post("/usuarios", adminController.crearUsuario);
+router.get("/usuarios/datos-nuevo", adminController.obtenerDatosNuevoUsuario);
 router.delete("/usuarios/:codigoempleado", protegerRuta, adminController.eliminarUsuario);
+
 
 //rutas gestion de permisos usuarios
 router.get('/admin-usuarios', protegerRuta,adminController.adminUsuarios); 

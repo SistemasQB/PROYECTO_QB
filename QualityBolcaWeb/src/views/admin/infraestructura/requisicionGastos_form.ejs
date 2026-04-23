@@ -5,6 +5,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <link rel="stylesheet" href="/styles/infraestructura/estilos_requisicionGastos_form.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <title>Crear Requisición de Compra</title>
@@ -82,54 +83,46 @@
 </div>
 
 <!-- ================================================
+     TOAST CONEXION
+     ================================================ -->
+<div class="toast-conexion" id="toastConexion">
+  <span class="material-symbols-outlined" id="toastConexionIcon">wifi_off</span>
+  <span id="toastConexionMsg">Sin conexión a internet. Algunas funciones no estarán disponibles.</span>
+</div>
+
+<!-- ================================================
      LAYOUT
      ================================================ -->
 <div class="layout">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">
-        <span class="material-symbols-outlined">shopping_cart</span>
-      </div>
-      <div>
-        <p class="brand-title">Gestión de Compras</p>
-        <p class="brand-sub">Admin Panel</p>
-      </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="logo-container">
+      <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+      <span>Requisiciones</span>
     </div>
-    <nav class="sidebar-nav">
-      <a href="#" class="nav-item">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span>Dashboard</span>
-      </a>
-      <a href="#" class="nav-item nav-item--active">
-        <span class="material-symbols-outlined">description</span>
-        <span>Requisiciones</span>
-      </a>
-      <a href="#" class="nav-item">
-        <span class="material-symbols-outlined">inventory_2</span>
-        <span>Inventario</span>
-      </a>
-      <a href="#" class="nav-item">
-        <span class="material-symbols-outlined">group</span>
-        <span>Proveedores</span>
-      </a>
-      <div class="nav-section-label">Configuración</div>
-      <a href="#" class="nav-item">
-        <span class="material-symbols-outlined">settings</span>
-        <span>Ajustes</span>
-      </a>
-    </nav>
-    <div class="sidebar-user">
-      <div class="user-avatar">
-        <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=137fec&color=fff&size=64" alt="Juan Pérez"/>
-      </div>
-      <div class="user-info">
-        <p class="user-name"><%-datosUsuario.nombrelargo%></p>
-        <!-- <p class="user-role"><%=datosUsuario%></p> -->
-      </div>
-      <span class="material-symbols-outlined user-logout">logout</span>
+    <div class="profile-section">
+      <div class="avatar" id="avatarUsuario"></div>
+      <div class="profile-name"><%= datosUsuario.nombrelargo %></div>
+      <div class="profile-role"><%= datosUsuario.puesto || '' %></div>
+      <div class="profile-dept"><%= datosUsuario.departamento || '' %></div>
+      <div class="profile-email"><%= datosUsuario.correoelectronico %></div>
     </div>
+    <ul class="nav-menu">
+      <a href="requisicionGastos" class="nav-item">
+        <i class="fa-solid fa-border-all"></i> Panel Principal
+      </a>
+      <a href="misRequisiciones" class="nav-item active">
+        <i class="fa-solid fa-file-lines"></i> Mis Requisiciones
+      </a>
+      <a href="aprobaciones" class="nav-item">
+        <i class="fa-solid fa-check-double"></i> Aprobaciones
+      </a>
+      <a href="comprobar" class="nav-item">
+        <i class="fa-solid fa-file-invoice"></i> Comprobaciones
+      </a>
+    </ul>
   </aside>
 
   <!-- MAIN -->
@@ -405,6 +398,7 @@
 <script src="/clases/clase_fetch.js"></script>
 <script>
     const tok = <%-JSON.stringify(tokin)%>
+    const nombreUsuario = "<%= datosUsuario.nombrelargo %>"
 </script>
 </body>
 </html>

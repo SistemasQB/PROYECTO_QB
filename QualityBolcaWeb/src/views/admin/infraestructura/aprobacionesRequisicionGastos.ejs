@@ -39,7 +39,6 @@
             <a href="requisicionGastos" class="nav-item"><i class="fa-solid fa-border-all"></i> Panel Principal</a>
             <a href="misRequisiciones" class="nav-item"><i class="fa-solid fa-file-lines"></i> Mis Requisiciones</a>
             <a href="aprobaciones" class="nav-item active"><i class="fa-solid fa-check-double"></i> Aprobaciones</a>
-            <a href="comprobaciones" class="nav-item"><i class="fa-solid fa-file-invoice"></i> Comprobaciones</a>
         </ul>
     </aside>
 
@@ -146,6 +145,37 @@
                     </table>
                 </div>
             </div>
+
+            <div class="table-container" style="margin-top: 2rem;">
+                <div class="table-header" style="padding: 1rem 1.25rem; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="margin: 0; font-size: 1rem; font-weight: 600; color: #374151;">
+                        <i class="fa-solid fa-circle-check" style="color: #16a34a; margin-right: 0.5rem;"></i>
+                        Historial de Requisiciones Aprobadas
+                    </h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Asunto</th>
+                                <th>Fecha de Solicitud</th>
+                                <th>Solicitante</th>
+                                <th>Departamento</th>
+                                <th>Monto</th>
+                                <th>Aprobado por</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-aprobadas"></tbody>
+                    </table>
+                </div>
+                <div class="paginacion-aprobadas" id="paginacion-aprobadas"></div>
+            </div>
+
+            <script>
+                const datosAprobadas = <%- JSON.stringify(requisicionesAprobadas || []) %>;
+            </script>
 
         </main>
     </div>

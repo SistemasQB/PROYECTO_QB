@@ -975,3 +975,49 @@ tr:last-child td {
 }
 
 @media (max-width: 600px) {}
+
+/* =============================================
+   TOAST CONEXION
+   ============================================= */
+.toast-conexion {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    transform: translateY(80px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    max-width: 380px;
+}
+
+.toast-conexion.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.toast-conexion--offline {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
+.toast-conexion--online {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.toast-conexion i {
+    font-size: 16px;
+    flex-shrink: 0;
+}

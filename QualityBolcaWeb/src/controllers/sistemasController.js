@@ -1,12 +1,27 @@
+import express from "express";
 import sequelizeClase from "../public/clases/sequelize_clase.js";
 import db from "../config/db.js";
 import modelosSistemas from "../models/sistemas/barril_modelos_sistemas.js";
 import modelosGenerales from "../models/generales/barrilModelosGenerales.js";
+import modeloVistaEmpleados from "../models/generales/vistaEmpleados.js";
 import manejadrorErrores from "../middleware/manejadorErrores.js";
 import miNodemailer from "../public/clases/nodemailer.js";
-import { Op, QueryTypes } from 'sequelize'
-import dbSistemas from "../config/dbSistemas.js";
+import Inventario from "../models/sistemas/modelo_inventario.js";
+import Usuario from "../models/generales/modelo_usuarios.js";
+import Vales from "../models/sistemas/modelo_vales.js";
+import RegistroMa from "../models/registroma.js";
 
+import {
+    //Solicitudservicio,
+} from "../models/index.js";
+
+import { Op, QueryTypes, where } from 'sequelize'
+import modelonom10001 from "../models/generales/nom10001.js";
+import Informaciondepartamento from "../models/generales/nom10003.js";
+import e from "express";
+import dbSistemas from "../config/dbSistemas.js";
+import modeloRequisicionEquipo from "../models/sistemas/requisicionEquipo.js";
+const app = express();
 
 const controller = {};
 
@@ -43,7 +58,7 @@ controller.addinventario2 = async (req, res) => {
         ultimoMantenimiento
     } = req.body
 
-    const InventarioR = await modelosSistemas.inventario.create({
+    const InventarioR = await Inventario.create({
         idInventario,
         tipo,
         marca,
@@ -59,10 +74,7 @@ controller.addinventario2 = async (req, res) => {
         codigoResguardo,
         ultimoMantenimiento
     })
-    if(!InventarioR){
-        res.status(400).send({ ok: false });
-        return
-    }
+
     res.status(200).send({ ok: true });
     return
 }
@@ -73,6 +85,40 @@ controller.tablainventario = async (req, res) => {
     res.render('admin/sistemas/tablainventario');
 }
 
+controller.api = async (req, res) => {
+    const { query2 } = req.params
+    let valeasignacion
+    // const resultado = await db.query(
+    //     `SELECT i.*, v.*, n1.nombrelargo, n6.descripcion
+    //      FROM inventario i
+    //      INNER JOIN vales v ON i.folio = v.idfolio
+    //      INNER JOIN nom10001 n1 ON n1.codigoempleado = v.numeroEmpleado
+    //      INNER JOIN nom10006 n6 ON n1.idpuesto = n6.idpuesto
+    //      WHERE i.folio = :nfolio;`,
+    //     {
+    //       replacements: { nfolio: '40' }, // Sustituir parámetros
+    //       type: QueryTypes.SELECT // Tipo de consulta: SELECT
+    //     }
+    //   )
+    const resultado = await db.query(
+        query2,
+        {
+            //   replacements: { nfolio: '40' }, // Sustituir parámetros
+            type: QueryTypes.SELECT // Tipo de consulta: SELECT
+        }
+    )
+        .then((resultados) => {
+            valeasignacion = resultados;
+        });
+
+
+
+    // res.render('admin/valeresguardo',{
+    //     csrfToken: req.csrfToken(),
+    //     valeasignacion
+    // })
+    res.send(valeasignacion)
+}
 
 controller.addvales = async (req, res) => {
     res.render('admin/sistemas/addvales', {
@@ -88,7 +134,7 @@ controller.addvales2 = async (req, res) => {
         fechaFolio
     } = req.body
 
-    const valesR = await modelosSistemas.vales.create({
+    const valesR = await Vales.create({
         idFolio,
         numeroEmpleado,
         fechaFolio
@@ -194,12 +240,12 @@ controller.listadopersonal = async (req, res) => {
 controller.listadosolicitudes = async (req, res) => {
     let listadoSolicitudes
     let cuentaDatos
-
+    /*
     const personal = await Solicitudservicio.findAll(
     ).then((resultados) => {
         listadoSolicitudes = resultados;
     });
-
+    */
     res.render('admin/sistemas/solicitudes', {
         csrfToken: req.csrfToken(),
         listadoSolicitudes
@@ -382,13 +428,13 @@ controller.dashboardTI = async (req, res) => {
 controller.obtenerColaboradoresSinVale = async (req, res) => {
     try {
         // Obtener todos los números de empleado que ya tienen vale
-        const vales = await modelosSistemas.vales.findAll({
+        const vales = await Vales.findAll({
             attributes: ['numeroEmpleado']
         });
 
         const empleadosConVale = vales.map(v => v.numeroEmpleado);
 
-        const colaboradores = await modelosGenerales.modelonom10001.findAll({
+        const colaboradores = await modelonom10001.findAll({
             where: {
                 codigoempleado: {
                     [Op.notIn]: empleadosConVale.length > 0 ? empleadosConVale : ['']
@@ -422,7 +468,7 @@ controller.crearVale = async (req, res) => {
         }
 
         // 1. Obtener el siguiente idFolio
-        const ultimoVale = await modelosSistemas.vales.findOne({
+        const ultimoVale = await Vales.findOne({
             order: [['idFolio', 'DESC']]
         });
 
@@ -432,7 +478,7 @@ controller.crearVale = async (req, res) => {
         const hoy = new Date().toISOString().split("T")[0];
 
         // 3. Crear el vale
-        const nuevoVale = await modelosSistemas.vales.create({
+        const nuevoVale = await Vales.create({
             idFolio: siguienteFolio,
             numeroEmpleado: numeroEmpleado,
             fechaFolio: hoy,
@@ -441,7 +487,7 @@ controller.crearVale = async (req, res) => {
         });
 
         //Asignar el folio a los equipos
-        await modelosSistemas.inventario.update(
+        await Inventario.update(
             { folio: siguienteFolio },
             {
                 where: {
@@ -467,7 +513,7 @@ controller.darBajaVale = async (req, res) => {
 
     try {
         //buscar el inventario que coincide con el folio
-        const inventarios = await modelosSistemas.inventario.findAll({
+        const inventarios = await Inventario.findAll({
             where: { folio: folio }
         });
 
@@ -476,13 +522,13 @@ controller.darBajaVale = async (req, res) => {
         }
 
         //Actualizar cambio de firma en null para la tabla de vales
-        await modelosSistemas.inventario.update(
+        await Vales.update(
             { Firma: null },
             { where: { idFolio: folio } }
         )
 
         //Actualizar el inventario en 0 todos los registros encontrados
-        await modelosSistemas.inventario.update(
+        await Inventario.update(
             { folio: 0 },
             { where: { folio: folio } }
         );
@@ -490,14 +536,14 @@ controller.darBajaVale = async (req, res) => {
         return res.json({ ok: true, message: "Todos los objetos del inventario fueron dados de baja correctamente" });
 
     } catch (error) {
-        console.error('Error al dar de baja el vale', error);
+        console.log('Error al dar de baja el vale', error);
         return res.status(500).json({ ok: false, message: error.message })
     }
 }
 
 controller.inventarioDisponible = async (req, res) => {
     try {
-        const equipos = await modelosSistemas.inventario.findAll({
+        const equipos = await Inventario.findAll({
             where: {
                 folio: 0
             }
@@ -526,7 +572,7 @@ controller.agregarEquipos = async (req, res) => {
 
     try {
         // 1. Validar que el vale existe
-        const vale = await modelosSistemas.vales.findOne({ where: { idFolio: folio } });
+        const vale = await Vales.findOne({ where: { idFolio: folio } });
 
         if (!vale) {
             return res.status(404).json({
@@ -536,7 +582,7 @@ controller.agregarEquipos = async (req, res) => {
         }
 
         // 2. Asignar los equipos al vale
-        await modelosSistemas.inventario.update(
+        await Inventario.update(
             { folio: folio },               // se asigna el folio
             { where: { idInventario: equipos } } // se asignan todos los seleccionados
         );
@@ -559,7 +605,7 @@ controller.equiposAsignados = async (req, res) => {   //obtener equipos asignado
     const { folio } = req.params;
 
     try {
-        const equipos = await modelosSistemas.inventario.findAll({
+        const equipos = await Inventario.findAll({
             where: {
                 folio: folio
             }
@@ -582,7 +628,7 @@ controller.removerEquipos = async (req, res) => {
     }
 
     try {
-        await modelosSistemas.inventario.update(
+        await Inventario.update(
             { folio: 0 },
             {
                 where: {
@@ -607,11 +653,11 @@ controller.removerEquipos = async (req, res) => {
 controller.levantamientoTicket = async (req, res) => {
     try {
         const { codigoempleado } = req.usuario;
-        const usuario = await modelosGenerales.usuarios.findOne({
+        const usuario = await Usuario.findOne({
             where: { codigoempleado }
         });
 
-        const empleado = await modelosGenerales.modelonom10001.findOne({
+        const empleado = await modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -653,11 +699,11 @@ controller.levantamientoTicket = async (req, res) => {
 controller.formularioTicket = async (req, res) => {
     try {
         const { codigoempleado } = req.usuario;
-        const usuario = await modelosGenerales.usuarios.findOne({
+        const usuario = await Usuario.findOne({
             where: { codigoempleado }
         });
 
-        const empleado = await modelosGenerales.modelonom10001.findOne({
+        const empleado = await modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -732,7 +778,7 @@ controller.crudTickets = async (req, res) => {
 
                 const { codigoempleado } = req.usuario;
 
-                const empleado = await modelosGenerales.modelonom10001.findOne({
+                const empleado = await modelonom10001.findOne({
                     where: { codigoempleado }
                 });
 
@@ -933,6 +979,7 @@ controller.asignarTicket = async (req, res) => {
 
 controller.pausarTicket = async (req, res) => {   //pausar ticket
     try {
+        console.log('pausar ticket');
         const { id } = req.params;
 
         const ticket = await modelosSistemas.modeloTickets.findOne({
@@ -1229,8 +1276,10 @@ controller.obtenerDatosNuevoUsuario = async (req, res) => {
         );
 
         const ultimoCodigoInt = parseInt(ultimoCodigo) + 1;
+        //console.log(ultimoCodigoInt);
         const ultimoCodigostr = ultimoCodigoInt.toString();
-        
+        console.log(ultimoCodigo)
+
         const departamentos = await db.query(
             `SELECT iddepartamento, descripcion 
              FROM nom10003
@@ -1455,6 +1504,9 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         const { codigoempleado } = req.params;
         const { permisos } = req.body;
 
+        console.log('PARAMS:', req.params);
+        console.log('BODY:', req.body);
+
         if (!codigoempleado || !permisos) {
             return res.status(400).json({
                 ok: false,
@@ -1476,7 +1528,7 @@ controller.actualizarPermisosUsuario = async (req, res) => {
         }
 
         // Buscar usuario
-        const usuario = await modelosGenerales.usuarios.findOne({
+        const usuario = await Usuario.findOne({
             where: { codigoempleado }
         });
 
@@ -1523,7 +1575,7 @@ controller.actualizarEstadoUsuario = async (req, res) => {
             });
         }
 
-        const empleado = await modelosGenerales.modelonom10001.findOne({
+        const empleado = await modelonom10001.findOne({
             where: { codigoempleado }
         });
 
@@ -1750,7 +1802,7 @@ controller.eliminarUsuario = async (req, res) => {
 controller.requisicionEquipos = async (req, res) => {
     try {
         let { codigoempleado } = req.usuario
-        let empleado = await modelosGenerales.vistaempleados.findOne({ where: { codigoempleado: codigoempleado } })
+        let empleado = await modeloVistaEmpleados.findOne({ where: { codigoempleado: codigoempleado } })
         let clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
         let criterios = { codigoempleado: codigoempleado }
         let datosEmpleado = await clase.obtener1Registro({ criterio: criterios })
@@ -1853,9 +1905,453 @@ controller.apiDashboard = async (req, res) => {
     }
 
 }
+
+controller.dashboardMonitoreo = async (req, res) => {
+    try {
+        res.render('admin/sistemas/monitoreo.ejs', { tok: req.csrfToken() })
+    } catch (error) {
+        manejadrorErrores(res, error);
+    }
+}
+
+controller.ticketsMonitoreo = async (req, res) => {
+    try {
+        // Filtro opcional por planta/departamento. Vacío o 'todas' = sin filtro.
+        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
+            ? req.query.planta.trim()
+            : null;
+
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll({
+            order: [['createdAt', 'DESC']]
+        });
+
+        const ahora = Date.now();
+
+        // Mapear y enriquecer cada ticket con los datos que necesita el dashboard
+        const ticketsMapeados = ticketsDB.map(t => {
+            const datos = parseDatosTicket(t);
+
+            const estatus = datos.estatus || 'open';
+
+            // Calcular horas transcurridas desde la creación
+            const horasTranscurridas = Math.floor(
+                (ahora - new Date(t.createdAt).getTime()) / (1000 * 60 * 60)
+            );
+
+            // Determinar si está vencido: SLA consumido + tiempo activo supera el límite
+            let tiempoConsumidoHoras = Math.floor((datos.slaConsumido || 0) / 3600);
+            if (datos.slaActivo && datos.slaInicio) {
+                const tiempoActivoSeg = Math.floor((ahora - new Date(datos.slaInicio).getTime()) / 1000);
+                tiempoConsumidoHoras += Math.floor(tiempoActivoSeg / 3600);
+            }
+            const slaHoras = datos.slaHoras || 72;
+            const estaVencido = tiempoConsumidoHoras >= slaHoras
+                && !['resolved', 'closed'].includes(estatus);
+
+            // Mapear prioridad a etiqueta en español
+            const prioridadMap = {
+                low: 'Baja',
+                medium: 'Media',
+                high: 'Alta',
+                critical: 'Crítica'
+            };
+
+            return {
+                id: t.id,
+                folio: t.folio,
+                titulo: datos.titulo || 'Sin título',
+                estatus,
+                asignadoA: datos.asignadoA || null,
+                prioridad: datos.prioridad || 'low',
+                prioridadLabel: prioridadMap[datos.prioridad] || 'Baja',
+                horasTranscurridas,
+                tiempoConsumidoHoras,
+                slaHoras,
+                estaVencido,
+                departamento: datos.departamento || '',
+                nombreUsuario: datos.nombreUsuario || '',
+                createdAt: t.createdAt
+            };
+        });
+
+        // Aplicar filtro por planta/departamento si fue indicado
+        const ticketsFiltrados = plantaFiltro
+            ? ticketsMapeados.filter(t =>
+                t.departamento &&
+                t.departamento.toLowerCase() === plantaFiltro.toLowerCase()
+            )
+            : ticketsMapeados;
+
+        // Separar por categorías para el dashboard
+        const abiertos = ticketsFiltrados.filter(t =>
+            t.estatus === 'open' && !t.estaVencido
+        );
+
+        const vencidos = ticketsFiltrados.filter(t =>
+            t.estaVencido
+        );
+
+        const enCurso = ticketsFiltrados.filter(t =>
+            (t.estatus === 'progress' || t.estatus === 'pending') && !t.estaVencido
+        );
+
+        // Estadísticas por día de la semana actual (lun–hoy)
+        const hoyDate = new Date();
+        const diaSemana = hoyDate.getDay(); // 0=Dom, 1=Lun ... 6=Sab
+        const inicioSemana = new Date(hoyDate);
+        // ajustar al lunes de la semana actual
+        const diffLunes = (diaSemana === 0 ? -6 : 1 - diaSemana);
+        inicioSemana.setDate(hoyDate.getDate() + diffLunes);
+        inicioSemana.setHours(0, 0, 0, 0);
+
+        const labels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Hoy'];
+        const atendidosPorDia = [0, 0, 0, 0, 0, 0, 0];
+        const noAtendidosPorDia = [0, 0, 0, 0, 0, 0, 0];
+        const vencidosPorDia = [0, 0, 0, 0, 0, 0, 0];
+
+        ticketsFiltrados.forEach(t => {
+            const fechaTicket = new Date(t.createdAt);
+            fechaTicket.setHours(0, 0, 0, 0);
+            const diffDias = Math.floor(
+                (fechaTicket - inicioSemana) / (1000 * 60 * 60 * 24)
+            );
+
+            if (diffDias < 0 || diffDias > 6) return;
+
+            const idx = diffDias === 6 ? 6 : diffDias;
+
+            if (['resolved', 'closed'].includes(t.estatus)) {
+                atendidosPorDia[idx]++;
+            } else if (t.estaVencido) {
+                vencidosPorDia[idx]++;
+            } else {
+                noAtendidosPorDia[idx]++;
+            }
+        });
+
+        // Número de semana ISO del año
+        const primerDiaAnio = new Date(hoyDate.getFullYear(), 0, 1);
+        const numeroSemana = Math.ceil(
+            (((hoyDate - primerDiaAnio) / 86400000) + primerDiaAnio.getDay() + 1) / 7
+        );
+
+        // Resumen semanal: tickets creados esta semana (respeta el filtro de planta)
+        const ticketsSemana = ticketsFiltrados.filter(t => {
+            const fechaTicket = new Date(t.createdAt);
+            return fechaTicket >= inicioSemana;
+        });
+
+        const atendidosSemana = ticketsSemana.filter(t =>
+            ['resolved', 'closed'].includes(t.estatus)
+        ).length;
+
+        const noAtendidosSemana = ticketsSemana.filter(t =>
+            !['resolved', 'closed'].includes(t.estatus)
+        ).length;
+
+        const totalSemana = atendidosSemana + noAtendidosSemana;
+        const efectividad = totalSemana > 0
+            ? Math.round((atendidosSemana / totalSemana) * 100)
+            : 0;
+
+        return res.json({
+            ok: true,
+            semana: numeroSemana,
+            totales: {
+                abiertos: abiertos.length,
+                vencidos: vencidos.length,
+                enCurso: enCurso.length,
+                activos: abiertos.length + vencidos.length + enCurso.length
+            },
+            tickets: {
+                abiertos,
+                vencidos,
+                enCurso
+            },
+            grafica: {
+                labels,
+                atendidos: atendidosPorDia,
+                noAtendidos: noAtendidosPorDia,
+                vencidos: vencidosPorDia
+            },
+            resumenSemanal: {
+                atendidos: atendidosSemana,
+                noAtendidos: noAtendidosSemana,
+                efectividad
+            }
+        });
+
+    } catch (error) {
+        console.error('Error en ticketsMonitoreo:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+}
+
+// ── AGENTES / EQUIPO ─────────────────────────────────────────────────────────
+// Lista fija de técnicos del equipo TI. El nombre debe coincidir exactamente
+// con el valor que llega en datosTicket.asignadoA para que el match funcione.
+const TECNICOS_TI = [
+    { nombre: 'VAZQUEZ CASTILLO OMAR',         iniciales: 'OV', rol: 'Analista TI',    avatarClass: 'av-blue'   },
+    { nombre: 'DE LA CRUZ HERNANDEZ FERNANDO', iniciales: 'FC', rol: 'Soporte Jr',      avatarClass: 'av-purple' },
+    { nombre: 'ROBLEDO RANGEL ALEJANDRO',    iniciales: 'AR', rol: 'Desarrollador',   avatarClass: 'av-orange' },
+    { nombre: 'REYES GOMEZ GUILLERMO',         iniciales: 'GR', rol: 'Desarrollador',   avatarClass: 'av-green'  },
+];
+
+controller.agentesMonitoreo = async (req, res) => {
+    try {
+        const ticketsDB = await modelosSistemas.modeloTickets.findAll();
+
+        // Contar tickets activos (no cerrados) por técnico usando el nombre en asignadoA
+        const conteo = {};
+        TECNICOS_TI.forEach(t => { conteo[t.nombre] = 0; });
+
+        ticketsDB.forEach(registro => {
+            const datos = parseDatosTicket(registro);
+            const asignado = (datos.asignadoA || '').trim().toUpperCase();
+            const estatus  = datos.estatus || 'open';
+
+            // Solo cuenta tickets que NO están terminados
+            if (['resolved', 'closed'].includes(estatus)) return;
+
+            if (conteo.hasOwnProperty(asignado)) {
+                conteo[asignado]++;
+            }
+        });
+
+        const agentes = TECNICOS_TI.map(t => ({
+            nombre:       t.nombre
+                            .split(' ')
+                            .map(p => p.charAt(0) + p.slice(1).toLowerCase())
+                            .join(' '),   // "ROBLEDO CASTILLO ALEJANDRO" → "Robledo Castillo Alejandro"
+            iniciales:    t.iniciales,
+            rol:          t.rol,
+            avatarClass:  t.avatarClass,
+            ticketsActivos: conteo[t.nombre],
+            estado:       conteo[t.nombre] > 0 ? 'Ocupado' : 'Activo',
+        }));
+
+        return res.json({ ok: true, agentes });
+
+    } catch (error) {
+        console.error('Error en agentesMonitoreo:', error);
+        return res.status(500).json({ ok: false, msg: 'Error interno del servidor' });
+    }
+};
+
+controller.requisicionesMonitoreo = async (req, res) => {
+    try {
+        // Filtro opcional por planta/departamento. Vacío o 'todas' = sin filtro.
+        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
+            ? req.query.planta.trim()
+            : null;
+
+        const whereClause = plantaFiltro
+            ? { department: { [Op.like]: plantaFiltro } }
+            : {};
+
+        const requisiciones = await modelosSistemas.requisicionEquipos.findAll({
+            where: whereClause,
+            order: [['createdAt', 'DESC']]
+        });
+
+        const requisicionesFormateadas = requisiciones.map(r => {
+            let items = r.items;
+
+            if (typeof items === 'string') {
+                try {
+                    items = JSON.parse(items);
+                } catch {
+                    items = [];
+                }
+            }
+
+            if (items && !Array.isArray(items)) {
+                items = [items];
+            }
+
+            return {
+                ...r.toJSON(),
+                items
+            };
+        });
+
+        // Agrupar por status: INGRESADA = abiertas, EN_PROCESO = enCurso, Completada = cerradas
+        const abiertas = requisicionesFormateadas.filter(r => r.status === 'Pendiente');
+        const enCurso = requisicionesFormateadas.filter(r => r.status === 'En Proceso');
+        const cerradas = requisicionesFormateadas.filter(r => r.status === 'Completada');
+
+        return res.json({
+            ok: true,
+            total: requisiciones.length,
+            abiertas,
+            enCurso,
+            cerradas
+        });
+
+    } catch (error) {
+        console.error('Error en requisicionesMonitoreo:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+}
+
+controller.inventarioMonitoreo = async (req, res) => {
+    try {
+        const plantaFiltro = req.query.planta && req.query.planta.toLowerCase() !== 'todas'
+            ? req.query.planta.trim()
+            : null;
+
+        const inventario = await db.query(`
+            SELECT 
+                i.idInventario,
+                i.tipo,
+                i.marca,
+                i.serie,
+                i.folio,
+                i.estado,
+
+                n3.descripcion AS region
+
+            FROM inventario i
+
+            LEFT JOIN vales v 
+                ON i.folio = v.idFolio
+
+            LEFT JOIN nom10001 n1 
+                ON v.numeroEmpleado = n1.codigoempleado
+
+            LEFT JOIN nom10003 n3 
+                ON n1.iddepartamento = n3.iddepartamento
+
+            ORDER BY i.idInventario ASC;
+        `, {
+            type: QueryTypes.SELECT
+        });
+
+        // Filtrar por planta (igual que tickets)
+        const inventarioFiltrado = plantaFiltro
+            ? inventario.filter(i =>
+                i.region &&
+                i.region.toLowerCase() === plantaFiltro.toLowerCase()
+            )
+            : inventario;
+
+        // Agrupar por tipo
+        const data = {
+            laptops: [],
+            ensamblados: [],
+            impresoras: [],
+            celulares: []
+        };
+
+        inventarioFiltrado.forEach(i => {
+            const tipo = (i.tipo || '').toLowerCase();
+
+            if (tipo.includes('laptop')) data.laptops.push(i);
+            else if (tipo.includes('ensamblado') || tipo.includes('allinone')) data.ensamblados.push(i);
+            else if (tipo.includes('impresora')) data.impresoras.push(i);
+            else if (tipo.includes('celular')) data.celulares.push(i);
+        });
+
+        return res.json({
+            ok: true,
+            totales: {
+                laptops: data.laptops.length,
+                ensamblados: data.ensamblados.length,
+                impresoras: data.impresoras.length,
+                celulares: data.celulares.length
+            },
+            inventario: data
+        });
+
+    } catch (error) {
+        console.error('Error en inventarioMonitoreo:', error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Error interno del servidor'
+        });
+    }
+};
+
 function parseDatosTicket(ticket) {
     return typeof ticket.datosTicket === 'string'
         ? JSON.parse(ticket.datosTicket)
         : ticket.datosTicket;
 }
+
+controller.crearDepartamento = async (req, res) => {
+    try {
+        const { descripcion } = req.body;
+
+        if (!descripcion?.trim()) {
+            return res.status(400).json({ ok: false, msg: 'El nombre del departamento es requerido.' });
+        }
+
+        // iddepartamento y numerodepartamento no son auto-increment
+        const [[{ maxId, maxNum }]] = await db.query(
+            `SELECT IFNULL(MAX(iddepartamento), 0) AS maxId, IFNULL(MAX(numerodepartamento), 0) AS maxNum FROM nom10003`
+        );
+
+        const nuevoId  = maxId  + 1;
+        const nuevoNum = maxNum + 1;
+
+        await db.query(
+            `INSERT INTO nom10003 (iddepartamento, numerodepartamento, descripcion) VALUES (:id, :num, :descripcion)`,
+            {
+                replacements: { id: nuevoId, num: nuevoNum, descripcion: descripcion.trim() },
+                type: QueryTypes.INSERT
+            }
+        );
+
+        return res.status(201).json({
+            ok: true,
+            departamento: { iddepartamento: nuevoId, descripcion: descripcion.trim() }
+        });
+
+    } catch (error) {
+        console.error('Error creando departamento:', error);
+        manejadrorErrores(res, error);
+    }
+};
+
+controller.crearPuesto = async (req, res) => {
+    try {
+        const { descripcion } = req.body;
+
+        if (!descripcion?.trim()) {
+            return res.status(400).json({ ok: false, msg: 'El nombre del puesto es requerido.' });
+        }
+
+        // idpuesto y numeropuesto no son auto-increment
+        const [[{ maxId, maxNum }]] = await db.query(
+            `SELECT IFNULL(MAX(idpuesto), 0) AS maxId, IFNULL(MAX(numeropuesto), 0) AS maxNum FROM nom10006`
+        );
+
+        const nuevoId  = maxId  + 1;
+        const nuevoNum = maxNum + 1;
+
+        await db.query(
+            `INSERT INTO nom10006 (idpuesto, numeropuesto, descripcion, timestamp) VALUES (:id, :num, :descripcion, NOW())`,
+            {
+                replacements: { id: nuevoId, num: nuevoNum, descripcion: descripcion.trim() },
+                type: QueryTypes.INSERT
+            }
+        );
+
+        return res.status(201).json({
+            ok: true,
+            puesto: { idpuesto: nuevoId, descripcion: descripcion.trim() }
+        });
+
+    } catch (error) {
+        console.error('Error creando puesto:', error);
+        manejadrorErrores(res, error);
+    }
+};
 export default controller;
+

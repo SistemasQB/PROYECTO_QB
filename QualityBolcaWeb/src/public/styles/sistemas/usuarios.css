@@ -663,3 +663,66 @@ input:checked+.slider:before {
 .btn-cancel:hover {
     color: var(--text-muted);
 }
+
+/* --- Link crear catálogo (debajo de selects) --- */
+.link-crear-catalogo {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--primary-blue);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+.link-crear-catalogo:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* --- Mini-modal (se superpone al modal principal) --- */
+.mini-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100; /* Mayor que el modal principal (z-index: 1000) */
+    animation: fadeIn 0.15s forwards;
+}
+
+.mini-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    width: 380px;
+    max-width: 95%;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    position: relative;
+}
+
+.mini-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.mini-modal-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.mini-modal-body {
+    margin-bottom: 20px;
+}
+
+.mini-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}

@@ -6,10 +6,6 @@ import manejadorErrores from "../middleware/manejadorErrores.js";
 import nodemailerClase from "../public/clases/nodemailer.js";
 import { QueryTypes, Op } from "sequelize";
 
-//informacionpuesto = 10006
-//informacionDepartamento = 10003
-
-
 const infraestructuraController = {}
 //controlador de inicio
 infraestructuraController.inicio = (req, res) => {
@@ -333,6 +329,81 @@ infraestructuraController.historicoCheckListVehicular = async (req, res) => {
     }
 }
 
+//controlador de formulario de reportes
+/* infraestructuraController.formularioReportes = (req, res)=>{
+    try{
+        return res.render('admin/infraestructura/formulario_de_reportes.ejs')
+    }
+    catch(ex){
+        manejadorErrores(res,ex)
+    }   
+} */
+
+infraestructuraController.formularioReportes = async (req, res) => {
+    try {
+        let tok = req.csrfToken();
+
+        // Clase para el formulario de reportes
+        const clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_formulario_de_reportes });
+
+        // Formatear el folio
+        let ultimoReporte = await clase.modelo.max('id');
+        
+        if (!ultimoReporte || isNaN(ultimoReporte)) {
+            ultimoReporte = 0;
+        }    
+        let nuevoFolio = 'REP-' + (ultimoReporte + 1).toString().padStart(4, '0');
+
+        res.render('admin/infraestructura/formulario_de_reportes.ejs', { 
+            reporte: { folio: nuevoFolio }, 
+            tok: tok,
+            req: req 
+        });
+
+    } catch (ex) {
+        manejadorErrores(res, ex);
+    }
+};
+
+infraestructuraController.crudFormularioReportes = async (req, res) => {
+    try {
+        const clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_formulario_de_reportes });
+        /* await clase.modelo.sync({ force: true }); */
+
+        const { departamento, piso, area, falla, observaciones } = req.body;
+
+        let nombresFotos = [];
+        if (req.files && req.files.length > 0) {
+            nombresFotos = req.files.map(file => file.filename);
+        }
+
+        const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+        const nuevoRegistro = {
+            fechas: fechaActual,
+            nombreSolicitante: req.usuario && req.usuario.nombre ? req.usuario.nombre : 'Usuario en sesión',
+            departamentoSolicitante: departamento,
+            region: req.usuario && req.usuario.region ? req.usuario.region : 'Región Central',
+            piso: piso,
+            areasPorPiso: area,
+            descripcionFalla: falla,
+            fotografias: nombresFotos,
+            observacion: observaciones || 'Sin observaciones',
+            estatus: 'INGRESADO'
+        };
+
+        const reporteGuardado = await clase.modelo.create(nuevoRegistro);
+
+        const folioReal = 'REP-' + reporteGuardado.id.toString().padStart(4, '0');
+         /* await clase.modelo.sync({ force: true }); */
+        res.status(200).json({ success: true, folio: folioReal });
+
+    } catch (ex) {
+        console.error("Error al guardar el reporte:", ex);
+        res.status(500).json({ success: false, message: 'Error interno al procesar el formulario' });
+    }
+};
+
 infraestructuraController.requisicionGastos = async (req, res) => {
     try {
         //obtener datos de usuario loggeado
@@ -421,6 +492,9 @@ infraestructuraController.requisicionGastos = async (req, res) => {
 
         const departamentoReq = usuarioReq[0]?.departamento || null
 
+        const rolesUsuario = await getRolesUsuario(usuario)
+        const departamentosAutorizados = rolesUsuario || (departamentoReq ? [departamentoReq] : [])
+
         // Contadores — varían según nivel
         let pendientesConfirmacion = 0
         let porComprobar = 0
@@ -449,17 +523,17 @@ infraestructuraController.requisicionGastos = async (req, res) => {
 
             statsResult = stats
 
-        } else if (esNivelAlto && departamentoReq) {
-            // Ve su departamento
+        } else if (esNivelAlto && departamentosAutorizados.length) {
+            // Ve los departamentos que puede autorizar
             const [dashboard] = await db.query(`
                 SELECT
                     SUM(CASE WHEN estatus = 'INGRESADA' THEN 1 ELSE 0 END) AS pendientesConfirmacion,
                     SUM(CASE WHEN estatus = 'APROBADA'  THEN 1 ELSE 0 END) AS porComprobar,
                     SUM(CASE WHEN fechaEntrega >= DATE_FORMAT(NOW(), '%Y-%m-01') THEN total ELSE 0 END) AS montoTotalMes
                 FROM requisiciones
-                WHERE departamento = :departamento OR solicitante = :nombreUsuario
+                WHERE (autoriza IN (:departamentos) OR solicitante = :nombreUsuario)
             `, {
-                replacements: { departamento: departamentoReq, nombreUsuario },
+                replacements: { departamentos: departamentosAutorizados, nombreUsuario },
                 type: db.QueryTypes.SELECT
             })
 
@@ -471,9 +545,9 @@ infraestructuraController.requisicionGastos = async (req, res) => {
                 SELECT COUNT(*) as total_pendientes, COALESCE(SUM(total), 0) as monto_total
                 FROM requisiciones
                 WHERE estatus = 'INGRESADA'
-                AND autoriza = :departamento
+                AND autoriza IN (:departamentos)
             `, {
-                replacements: { departamento: departamentoReq },
+                replacements: { departamentos: departamentosAutorizados },
                 type: db.QueryTypes.SELECT
             })
 
@@ -497,14 +571,14 @@ infraestructuraController.requisicionGastos = async (req, res) => {
             porComprobar = dashboard.porComprobar || 0
             montoTotalMes = dashboard.montoTotalMes || 0
 
-            if (departamentoReq) {
+            if (departamentosAutorizados.length) {
                 const stats = await db.query(`
                     SELECT COUNT(*) as total_pendientes, COALESCE(SUM(total), 0) as monto_total
                     FROM requisiciones
                     WHERE estatus = 'INGRESADA'
-                    AND autoriza = :departamento
+                    AND autoriza IN (:departamentos)
                 `, {
-                    replacements: { departamento: departamentoReq },
+                    replacements: { departamentos: departamentosAutorizados },
                     type: db.QueryTypes.SELECT
                 })
                 statsResult = stats
@@ -571,10 +645,99 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 delete campos._csrf
                 delete campos.tipo
                 campos.solicitante = usuarioM.apellidopaterno + ' ' + usuarioM.apellidomaterno + ' ' + usuarioM.nombre
-                campos.puesto = usuarioM.departamentoLocal
+                const solicitanteReq = await db.query(
+                    `SELECT puesto, departamento FROM usuariosRequisiciones WHERE nombre = :nombre LIMIT 1`,
+                    { replacements: { nombre: campos.solicitante }, type: QueryTypes.SELECT }
+                )
+                campos.puesto = solicitanteReq[0]?.puesto || usuarioM.departamentoLocal
+                campos.departamento = solicitanteReq[0]?.departamento || usuarioM.departamentoLocal
                 campos.contacto = usuarioM.correo
                 const respuesta = await clase.insertar({ datosInsertar: campos })
                 if (!respuesta) return res.json({ ok: false, msg: 'no se pudo ingresar la informacion' })
+
+                //notificar a los autorizadores cuando se crea una requisición
+                try {
+                    const candidatos = await db.query(`
+                        SELECT ur.nombre, ur.correo, u.permisos
+                        FROM usuariosRequisiciones ur
+                        LEFT JOIN nom10001 e ON e.nombrelargo COLLATE utf8mb4_general_ci = ur.nombre
+                        LEFT JOIN usuarios u ON u.codigoempleado = e.codigoempleado
+                        WHERE ur.departamento = :departamento
+                    `, {
+                        replacements: { departamento: campos.autoriza },
+                        type: db.QueryTypes.SELECT
+                    })
+
+                    console.log(`[Requisicion] Candidatos encontrados en BD para departamento "${campos.autoriza}": ${candidatos.length}`)
+
+                    const correosDestino = []
+
+                    for (const candidato of candidatos) {
+                        if (!candidato.correo) continue
+
+                        // usuariosRequisiciones es la fuente de verdad: se incluye a todos
+                        // EXCEPTO los que tengan requisicionPermisos configurado como solo 'auxiliar'
+                        let esAuxiliarExclusivo = false
+                        try {
+                            if (candidato.permisos !== null && candidato.permisos !== undefined) {
+                                const permisos = typeof candidato.permisos === 'string'
+                                    ? JSON.parse(candidato.permisos)
+                                    : candidato.permisos
+                                const requisicionPermisos = permisos?.requisicionPermisos
+                                const niveles = Array.isArray(requisicionPermisos)
+                                    ? requisicionPermisos
+                                    : (requisicionPermisos ? [requisicionPermisos] : [])
+                                // excluir solo si TODOS sus roles son 'auxiliar'
+                                if (niveles.length > 0 && niveles.every(n => n.toLowerCase() === 'auxiliar')) {
+                                    esAuxiliarExclusivo = true
+                                }
+                            }
+                        } catch (_) {
+                            // permisos malformados: incluir al candidato por defecto
+                        }
+
+                        if (!esAuxiliarExclusivo) {
+                            correosDestino.push(candidato.correo)
+                        }
+                    }
+
+                    console.log(`[Requisicion] Candidatos que pasaron el filtro: ${correosDestino.length}`)
+                    console.log(`[Requisicion] Enviando correos a: ${correosDestino.join(', ')}`)
+
+                    if (correosDestino.length > 0) {
+                        const correo = new nodemailerClase({
+                            datosSmtp: {
+                                host: process.env.EMAIL_HOST,
+                                port: process.env.EMAIL_PORT,
+                                auth: {
+                                    user: process.env.EMAILR_USER,
+                                    pass: process.env.EMAILR_PASS
+                                }
+                            }
+                        })
+
+                        const htmlNotif = correo.htmlNuevaRequisicion({
+                            solicitante: campos.solicitante,
+                            departamentoAutorizador: campos.autoriza
+                        })
+
+                        for (const destinatario of correosDestino) {
+                            await correo.enviarCorreo({
+                                Datoscorreo: {
+                                    destinatario,
+                                    asunto: 'Tienes una nueva requisición pendiente de aprobación',
+                                    texto: `Tienes una solicitud de aprobación de requisición de ${campos.solicitante}.`,
+                                    html: htmlNotif
+                                }
+                            })
+                        }
+                    } else {
+                        console.warn(`No se encontraron autorizadores con permiso suficiente para el departamento: ${campos.autoriza}`)
+                    }
+                } catch (errCorreo) {
+                    console.error('Error al enviar correo al autorizador:', errCorreo)
+                }
+
                 return res.json({ ok: true, msg: 'informacion enviada exitosamente' })
             case 'misRequisiciones': //mis requisiciones
 
@@ -667,20 +830,21 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                         SELECT departamento
                         FROM usuariosRequisiciones
                         WHERE nombre = :nombre
-                        LIMIT 1 
+                        LIMIT 1
                     `, {
                         replacements: { nombre: nombreUsuario },
                         type: db.QueryTypes.SELECT
                     })
 
-                    if (!deptUsuario.length) {
+                    const rolesTabla = await getRolesUsuario(usuario)
+                    const deptsTabla = rolesTabla || (deptUsuario.length ? [deptUsuario[0].departamento] : [])
+
+                    if (!deptsTabla.length) {
                         return res.json({ ok: true, datos: [], esNivelAlto: false })
                     }
 
-                    const departamento = deptUsuario[0].departamento
-
                     requisiciones = await db.query(`
-                        SELECT 
+                        SELECT
                             id,
                             horaRegistro,
                             asunto,
@@ -688,12 +852,12 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                             estatus,
                             solicitante
                         FROM requisiciones
-                        WHERE departamento = :departamento
+                        WHERE autoriza IN (:departamentos)
                             OR solicitante = :nombreUsuario
                         ORDER BY horaRegistro DESC
                         LIMIT 35
                     `, {
-                        replacements: { departamento, nombreUsuario },
+                        replacements: { departamentos: deptsTabla, nombreUsuario },
                         type: db.QueryTypes.SELECT
                     })
 
@@ -753,7 +917,7 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 }
 
                 const datosUsuarioAuth = await db.query(`
-                    SELECT nombrelargo
+                    SELECT nombrelargo, correoelectronico
                     FROM nom10001
                     WHERE codigoempleado = :usuario
                 `, {
@@ -762,6 +926,7 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 })
 
                 const nombreAutorizador = datosUsuarioAuth[0].nombrelargo
+                const correoAutorizador = datosUsuarioAuth[0].correoelectronico || null
 
                 const [reqDB] = await db.query(`
                     SELECT *
@@ -802,7 +967,12 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                     type: QueryTypes.SELECT
                 })
 
-                if (!usuarioReq.length || usuarioReq[0].departamento !== reqDB.autoriza) {
+                const rolesResolver = await getRolesUsuario(usuario)
+                const deptsResolver = rolesResolver
+                    ? rolesResolver
+                    : (usuarioReq.length ? [usuarioReq[0].departamento.toUpperCase()] : [])
+                const autorizaReq = (reqDB.autoriza || '').toUpperCase()
+                if (!deptsResolver.includes(autorizaReq)) {
                     return res.json({
                         ok: false,
                         msg: 'No tienes permisos para aprobar esta requisición'
@@ -844,19 +1014,22 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                         autorizador: nombreAutorizador
                     })
 
-                    const correoCompras = 'info.sistemas@qualitybolca.com'
+                    const destinatario = [
+                        process.env.correoCompras,
+                        process.env.correoGastos1,
+                        process.env.correoGastos2
+                    ].filter(Boolean).join(', ')
 
-                    const destinatarios = [correoCompras]
-
-                    if (correoSolicitante) {
-                        destinatarios.push(correoSolicitante)
-                    }
+                    const cc = [
+                        correoSolicitante,
+                        correoAutorizador
+                    ].filter(Boolean).join(', ')
 
                     await correo.enviarCorreo({
                         Datoscorreo: {
-                            destinatario: correoCompras,
-                            cc: correoSolicitante || undefined,
-                            asunto: `Requisición APROBADA (${reqDB.id})`,
+                            destinatario,
+                            cc: cc || undefined,
+                            asunto: reqDB.asunto,
                             texto: 'Requisición aprobada',
                             html
                         }
@@ -928,10 +1101,13 @@ infraestructuraController.crearRequisicionGastos = async (req, res) => {
         const puesto = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
         if (!puesto) return res.status(501).json({ ok: false, msg: 'No se pudo obtener el puesto del empleado' })
         const listaAutorizacion = Clasificacion(puesto.descripcion)
+        // Enriquecer datosUsuario con puesto y departamento para que el sidebar del form los muestre
+        datosUsuario.puesto = puesto.descripcion || ''
+        datosUsuario.departamento = puesto.departamento || ''
         clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_regionesGastos })
         const regiones = await clase.obtenerDatosPorCriterio({ criterio: { vigente: true }, ordenamiento: [['region', 'ASC']], atributos: ['region'] })
         // To do: realizar validacion si el usuario pertenece a SC y traer a los supervisores (delegado) asi como tambien a las cotizaciones con horas en caso de que sea cobro
-        res.render('admin/infraestructura/requisicionGastos_form.ejs', { tokin: req.csrfToken(), plantas, datosUsuario, listaAutorizacion, regiones })
+        res.render('admin/infraestructura/requisicionGastos_form.ejs', { tokin: req.csrfToken(), plantas, datosUsuario, listaAutorizacion, regiones, puesto })
     } catch (error) {
         manejadorErrores(res, error)
     }
@@ -1099,6 +1275,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
                 tok: req.csrfToken(),
                 stats: { total_pendientes: 0, monto_total: 0 },
                 requisiciones: [],
+                requisicionesAprobadas: [],
                 esSuperAdmin,
                 esNivelAlto
             })
@@ -1113,6 +1290,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
                 tok: req.csrfToken(),
                 stats: { total_pendientes: 0, monto_total: 0 },
                 requisiciones: [],
+                requisicionesAprobadas: [],
                 esSuperAdmin,
                 esNivelAlto
             })
@@ -1120,6 +1298,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
 
         let statsResult
         let requisiciones
+        let requisicionesAprobadas
 
         if (esSuperAdmin) {
             // Ve TODAS las pendientes de aprobación del sistema
@@ -1138,30 +1317,59 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
                 ORDER BY horaRegistro DESC
             `, { type: QueryTypes.SELECT })
 
-        } else if (esNivelAlto || jerarquia <= 4) {
-            // Ve las pendientes de su departamento
-            statsResult = await db.query(`
-                SELECT 
-                    COUNT(*) as total_pendientes,
-                    COALESCE(SUM(total), 0) as monto_total
-                FROM requisiciones
-                WHERE estatus = 'INGRESADA'
-                AND autoriza = :departamento
-            `, {
-                replacements: { departamento: departamentoReq },
-                type: QueryTypes.SELECT
-            })
-
-            requisiciones = await db.query(`
+            requisicionesAprobadas = await db.query(`
                 SELECT *
                 FROM requisiciones
-                WHERE estatus = 'INGRESADA'
-                AND autoriza = :departamento
+                WHERE estatus = 'APROBADA'
                 ORDER BY horaRegistro DESC
-            `, {
-                replacements: { departamento: departamentoReq },
-                type: QueryTypes.SELECT
-            })
+                LIMIT 50
+            `, { type: QueryTypes.SELECT })
+
+        } else if (esNivelAlto || jerarquia <= 4) {
+            // Ve las pendientes de los departamentos que puede autorizar
+            const rolesAprobacion = await getRolesUsuario(usuario)
+            const deptsAprobacion = rolesAprobacion || (departamentoReq ? [departamentoReq] : [])
+
+            if (!deptsAprobacion.length) {
+                statsResult = [{ total_pendientes: 0, monto_total: 0 }]
+                requisiciones = []
+                requisicionesAprobadas = []
+            } else {
+                statsResult = await db.query(`
+                    SELECT
+                        COUNT(*) as total_pendientes,
+                        COALESCE(SUM(total), 0) as monto_total
+                    FROM requisiciones
+                    WHERE estatus = 'INGRESADA'
+                    AND autoriza IN (:departamentos)
+                `, {
+                    replacements: { departamentos: deptsAprobacion },
+                    type: QueryTypes.SELECT
+                })
+
+                requisiciones = await db.query(`
+                    SELECT *
+                    FROM requisiciones
+                    WHERE estatus = 'INGRESADA'
+                    AND autoriza IN (:departamentos)
+                    ORDER BY horaRegistro DESC
+                `, {
+                    replacements: { departamentos: deptsAprobacion },
+                    type: QueryTypes.SELECT
+                })
+
+                requisicionesAprobadas = await db.query(`
+                    SELECT *
+                    FROM requisiciones
+                    WHERE estatus = 'APROBADA'
+                    AND autoriza IN (:departamentos)
+                    ORDER BY horaRegistro DESC
+                    LIMIT 50
+                `, {
+                    replacements: { departamentos: deptsAprobacion },
+                    type: QueryTypes.SELECT
+                })
+            }
         }
 
         res.render('admin/infraestructura/aprobacionesRequisicionGastos.ejs', {
@@ -1169,6 +1377,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
             tok: req.csrfToken(),
             stats: statsResult[0],
             requisiciones,
+            requisicionesAprobadas: requisicionesAprobadas || [],
             esSuperAdmin,
             esNivelAlto
         })
@@ -1180,6 +1389,25 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
 
 infraestructuraController.comprobarRequisicionesGastos = async (req, res) => {
     res.render('admin/infraestructura/comprobarRequisicionesGastos.ejs', { tok: req.csrfToken() })
+}
+
+async function getRolesUsuario(codigoempleado) {
+    try {
+        const result = await db.query(
+            `SELECT permisos FROM usuarios WHERE codigoempleado = :codigoempleado LIMIT 1`,
+            { replacements: { codigoempleado }, type: QueryTypes.SELECT }
+        )
+        if (!result.length) return null
+        const permisos = typeof result[0].permisos === 'string'
+            ? JSON.parse(result[0].permisos)
+            : result[0].permisos
+        const roles = permisos?.roles
+        if (!Array.isArray(roles) || roles.length === 0) return null
+        return roles.map(r => r.toUpperCase())
+    } catch (e) {
+        console.error('getRolesUsuario error:', e)
+        return null
+    }
 }
 
 function Clasificacion(puesto) {
@@ -1212,6 +1440,8 @@ function Clasificacion(puesto) {
         'DIRECTOR DE ADMINISTRACION',
         'DIRECTOR DE SORTEO',
         'DIRECCIÓN DE CAPITAL HUMANO',
+        'DESARROLLO DE SOFTWARE'
     ]
 }
 export default infraestructuraController;
+

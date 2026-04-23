@@ -36,7 +36,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
 })
 
 // Función dinámica para generar e inyectar el Modal
-async function abrirModal(id) {
+async function abrirModal(id, soloLectura = false) {
 
     const res = await fetch('/infraestructura/crudRequisicionGastos', {
         method: 'POST',
@@ -64,6 +64,16 @@ async function abrirModal(id) {
 
     const tablaConceptos = generarTablaConceptos(req.descripcion || '')
 
+    const footerHTML = soloLectura
+        ? `<div class="modal-footer">
+            <span style="color: #16a34a; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Requisición aprobada por: ${req.autorizo || '—'}</span>
+            <button class="btn-outline" onclick="cerrarModal()">Cerrar</button>
+           </div>`
+        : `<div class="modal-footer">
+            <button class="btn-rechazar" onclick="accionRequisicion(${req.id}, 'RECHAZADA')"><i class="fa-solid fa-ban"></i> Rechazar Requisición</button>
+            <button class="btn-aprobar" onclick="accionRequisicion(${req.id}, 'APROBADA')"><i class="fa-solid fa-check"></i> Aprobar Requisición</button>
+           </div>`
+
     const modalHTML = `
                 <div class="modal-overlay" onclick="cerrarModal(event)">
                     <div class="modal-content" onclick="event.stopPropagation()">
@@ -78,7 +88,7 @@ async function abrirModal(id) {
                             </div>
                             <button class="close-btn" onclick="cerrarModal()"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        
+
                         <div class="modal-body">
                             <div class="info-grid">
                                 <div class="info-item"><label>Nombre del gasto</label><div class="val">${req.asunto}</div></div>
@@ -128,10 +138,7 @@ async function abrirModal(id) {
                             </div>
                         </div>
 
-                        <div class="modal-footer">
-                            <button class="btn-rechazar" onclick="accionRequisicion(${req.id}, 'RECHAZADA')"><i class="fa-solid fa-ban"></i> Rechazar Requisición</button>
-                            <button class="btn-aprobar" onclick="accionRequisicion(${req.id}, 'APROBADA')"><i class="fa-solid fa-check"></i> Aprobar Requisición</button>
-                        </div>
+                        ${footerHTML}
                     </div>
                 </div>
             `;
@@ -295,10 +302,104 @@ function generarAvataresTabla() {
 }
 
 
+// ─── Paginación — Historial de Aprobadas ──────────────────────────────────────
+
+const FILAS_POR_PAGINA = 10
+let paginaActual = 1
+
+function renderPaginaAprobadas(pagina) {
+    const tbody = document.getElementById('tabla-aprobadas')
+    const contenedorPaginacion = document.getElementById('paginacion-aprobadas')
+
+    if (!tbody || !contenedorPaginacion) return
+
+    const datos = typeof datosAprobadas !== 'undefined' ? datosAprobadas : []
+    const totalPaginas = Math.max(1, Math.ceil(datos.length / FILAS_POR_PAGINA))
+
+    // Clamping de página
+    paginaActual = Math.min(Math.max(pagina, 1), totalPaginas)
+
+    const inicio = (paginaActual - 1) * FILAS_POR_PAGINA
+    const fin = inicio + FILAS_POR_PAGINA
+    const filasPagina = datos.slice(inicio, fin)
+
+    // Renderizar filas
+    if (datos.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" style="text-align:center; padding:20px; color: #6b7280;">
+                    No hay requisiciones aprobadas para mostrar
+                </td>
+            </tr>`
+    } else {
+        tbody.innerHTML = filasPagina.map(req => {
+            const fecha = new Date(req.horaRegistro).toLocaleDateString('es-MX')
+            const monto = Number(req.total).toLocaleString('es-MX')
+            const inicial = (req.solicitante || 'U').charAt(0).toUpperCase()
+            const autorizo = req.autorizo || '—'
+
+            return `
+                <tr>
+                    <td style="color: var(--primary-blue); font-weight: 600;">#REQ-${req.id}</td>
+                    <td>${req.asunto || ''}</td>
+                    <td>${fecha}</td>
+                    <td>
+                        <div class="solicitante">
+                            <div class="solicitante-avatar" data-nombre="${req.solicitante || ''}">${inicial}</div>
+                            ${req.solicitante || ''}
+                        </div>
+                    </td>
+                    <td><span class="tag">${req.departamento || ''}</span></td>
+                    <td style="font-weight: 600;">$${monto}</td>
+                    <td>${autorizo}</td>
+                    <td>
+                        <button class="btn-outline" onclick="abrirModal(${req.id}, true)">
+                            Ver Detalle
+                        </button>
+                    </td>
+                </tr>`
+        }).join('')
+    }
+
+    // Colorear avatares de la página recién renderizada
+    generarAvataresTabla()
+
+    // Renderizar controles de paginación
+    if (datos.length === 0) {
+        contenedorPaginacion.innerHTML = ''
+        return
+    }
+
+    const deshabilitarAnterior = paginaActual === 1
+    const deshabilitarSiguiente = paginaActual === totalPaginas
+
+    contenedorPaginacion.innerHTML = `
+        <div class="paginacion-controles">
+            <button
+                class="pag-btn"
+                id="pag-anterior"
+                onclick="renderPaginaAprobadas(${paginaActual - 1})"
+                ${deshabilitarAnterior ? 'disabled' : ''}>
+                <i class="fa-solid fa-chevron-left"></i> Anterior
+            </button>
+            <span class="pag-info">Página ${paginaActual} de ${totalPaginas}</span>
+            <button
+                class="pag-btn"
+                id="pag-siguiente"
+                onclick="renderPaginaAprobadas(${paginaActual + 1})"
+                ${deshabilitarSiguiente ? 'disabled' : ''}>
+                Siguiente <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>`
+}
+
+// ─── Inicializar ──────────────────────────────────────────────────────────────
+
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
     generarAvatar();
     generarAvataresTabla();
+    renderPaginaAprobadas(1);
 
     const searchInput = document.querySelector('.search-bar input')
     searchInput.addEventListener('input', filtrarTabla)

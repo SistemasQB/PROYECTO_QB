@@ -3,6 +3,7 @@ import barrilmodelosgenerales from '../models/generales/barrilModelosGenerales.j
 import { check, validationResult } from "express-validator";
 import { generarJWT, generarId } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword, emailContacto } from "../helpers/emails.js";
+import Usuario from "../models/generales/modelo_usuarios.js";
 
 // const upload = multer({ dest: 'images/' })
 const controller = {};
