@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Capital Humano — Quality Bolca</title>
   <link rel="stylesheet" href="/styles/capitalhumano/estilos_inicioCapitalHumano.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -99,6 +100,7 @@
         🔔 <span class="notif-dot"></span>
       </button>
       <button class="action-btn" title="Ayuda">❓</button>
+      <button class="action-btn theme-btn" id="themeBtn" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
     </div>
   </header>
 
@@ -551,21 +553,99 @@
     <div class="page" id="page-catalogos">
       <div class="page-title">Catálogos</div>
       <div class="page-subtitle">Configuración · Tablas maestras del sistema</div>
-      <div class="quick-grid" style="margin-top:4px">
-        <div class="quick-btn"><span class="qb-icon">🏭</span><span class="qb-label">Plantas</span></div>
-        <div class="quick-btn"><span class="qb-icon">🏢</span><span class="qb-label">Departamentos</span></div>
-        <div class="quick-btn"><span class="qb-icon">🪑</span><span class="qb-label">Puestos</span></div>
-        <div class="quick-btn"><span class="qb-icon">🗺️</span><span class="qb-label">Regiones</span></div>
-        <div class="quick-btn"><span class="qb-icon">🎓</span><span class="qb-label">Escolaridades</span></div>
-        <div class="quick-btn"><span class="qb-icon">📝</span><span class="qb-label">Tipos contratación</span></div>
-        <div class="quick-btn"><span class="qb-icon">🚪</span><span class="qb-label">Motivos de baja</span></div>
-        <div class="quick-btn"><span class="qb-icon">🏦</span><span class="qb-label">INFONAVIT desc.</span></div>
+
+      <!-- Botones de catálogo -->
+      <div class="quick-grid cat-grid" style="margin-top:4px; margin-bottom:24px;">
+        <div class="quick-btn cat-btn" data-catalogo="plantas"                    onclick="abrirCatalogo(this)"><span class="qb-icon">🏭</span><span class="qb-label">Plantas</span></div>
+        <div class="quick-btn cat-btn" data-catalogo="departamentos"              onclick="abrirCatalogo(this)"><span class="qb-icon">🏢</span><span class="qb-label">Departamentos</span></div>
+        <div class="quick-btn cat-btn" data-catalogo="puestos"                    onclick="abrirCatalogo(this)"><span class="qb-icon">🪑</span><span class="qb-label">Puestos</span></div>
+        <div class="quick-btn cat-btn" data-catalogo="regiones"                   onclick="abrirCatalogo(this)"><span class="qb-icon">🗺️</span><span class="qb-label">Regiones</span></div>
+        <div class="quick-btn cat-btn" data-catalogo="escolaridades"              onclick="abrirCatalogo(this)"><span class="qb-icon">🎓</span><span class="qb-label">Escolaridades</span></div>
+        <div class="quick-btn cat-btn" data-catalogo="tipos_contratacion"         onclick="abrirCatalogo(this)"><span class="qb-icon">📝</span><span class="qb-label">Tipos contratación</span></div>
+        <div class="quick-btn cat-btn" data-catalogo="motivos_baja"               onclick="abrirCatalogo(this)"><span class="qb-icon">🚪</span><span class="qb-label">Motivos de baja</span></div>
+        <div class="quick-btn cat-btn" data-catalogo="infonavit_tipos_descuento"  onclick="abrirCatalogo(this)"><span class="qb-icon">🏦</span><span class="qb-label">INFONAVIT desc.</span></div>
       </div>
+
+      <!-- Panel de tabla (oculto hasta seleccionar un catálogo) -->
+      <section class="cat-panel" id="cat-panel" hidden>
+
+        <!-- Header del panel -->
+        <div class="cat-panel-header">
+          <div class="cat-panel-info">
+            <h3 class="cat-panel-title" id="cat-panel-title">—</h3>
+            <span class="cat-panel-count" id="cat-panel-count"></span>
+          </div>
+          <div class="cat-panel-controls">
+            <div class="table-search">
+              <span>🔎</span>
+              <input type="text" id="cat-filter" placeholder="Filtrar registros..."
+                    oninput="filtrarCatalogo(this.value)" autocomplete="off"/>
+            </div>
+            <select class="cat-page-select" id="cat-page-size" onchange="cambiarTamano(+this.value)">
+              <option value="10">10 / pág.</option>
+              <option value="25">25 / pág.</option>
+              <option value="50">50 / pág.</option>
+            </select>
+            <button class="btn-primary cat-nuevo-btn" onclick="abrirModalNuevo()">＋ Nuevo</button>
+          </div>
+        </div>
+
+        <!-- Estado carga -->
+        <div class="cat-loading" id="cat-loading" hidden>
+          <div class="spinner"></div>
+          <span>Cargando información...</span>
+        </div>
+
+        <!-- Estado vacío / error -->
+        <div class="cat-empty" id="cat-empty" hidden>
+          <span class="cat-empty-icon">📭</span>
+          <p id="cat-empty-msg">Sin resultados</p>
+        </div>
+
+        <!-- Tabla dinámica -->
+        <div class="table-wrap" id="cat-table-wrap" hidden>
+          <table>
+            <thead id="cat-thead"></thead>
+            <tbody id="cat-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="cat-pagination" id="cat-pagination" hidden>
+          <span class="pag-info" id="pag-info"></span>
+          <div class="pag-controls">
+            <button class="pag-btn" id="pag-first" onclick="irPagina(1)"       title="Primera">«</button>
+            <button class="pag-btn" id="pag-prev"  onclick="cambiarPagina(-1)" title="Anterior">‹</button>
+            <div class="pag-numbers" id="pag-numbers"></div>
+            <button class="pag-btn" id="pag-next"  onclick="cambiarPagina(1)"  title="Siguiente">›</button>
+            <button class="pag-btn" id="pag-last"  onclick="irPagina('last')"  title="Última">»</button>
+          </div>
+        </div>
+
+      </section>
     </div>
 
   </main>
 </div><!-- /main-wrapper -->
+<!-- ══ MODAL — NUEVO REGISTRO ════════════════════════════════════ -->
+<div class="cat-modal-overlay" id="catModalOverlay" hidden>
+  <div class="cat-modal">
+    <div class="cat-modal-header">
+      <h3 class="cat-modal-title" id="catModalTitle">Nuevo registro</h3>
+      <button class="cat-modal-close" onclick="cerrarModal()" title="Cerrar">✕</button>
+    </div>
+    <div class="cat-modal-body" id="catModalBody"></div>
+    <div class="cat-modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary"   onclick="submitNuevo()">Aceptar</button>
+    </div>
+  </div>
+</div>
 
+<script src="/clases/clase_fetch.js"></script>
 <script src="/scripts/capitalhumano/scripts_inicioCapitalHumano.js"></script>
+<script>
+  let tok = <%-JSON.stringify(token)%>
+</script>
 </body>
 </html>

@@ -355,11 +355,11 @@ SERVIR EL ARCHIVO (cuando alguien quiere verlo):
 9. PENDIENTES / CHECKLIST DE IMPLEMENTACIÓN
 ===============================================================
 
-[ ] Crear carpeta /private/uploads/ en la raíz del proyecto
-[ ] Agregar /private/ al .gitignore para no subir archivos al repo
+[✔️] Crear carpeta /private/uploads/ en la raíz del proyecto
+[ ✔️] Agregar /private/ al .gitignore para no subir archivos al repo
 [ ] Crear la tabla archivos_privados en la BD
 [ ] Crear el modelo src/models/generales/archivosPrivados.js
-[ ] Crear src/middleware/middlewareAccesoArchivo.js
+[ ✔️] Crear src/middleware/middlewareAccesoArchivo.js
 [ ] Crear src/controllers/archivosController.js
 [ ] Crear src/routes/archivosRoutes.js
 [ ] Registrar la ruta en index.js

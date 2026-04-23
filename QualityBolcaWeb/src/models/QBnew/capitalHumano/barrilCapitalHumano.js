@@ -44,14 +44,10 @@ const modelosCapitalHumano = {
     Cursos, EmpleadosCursos
 }
 
-// ── Activa el método asociar() de cada modelo que lo tenga ──
-// En este punto TODOS los modelos ya cargaron — sin dependencias circulares.
-// Para agregar una nueva relación: solo toca el modelo correspondiente.
-// Este archivo NO necesita modificarse al agregar relaciones.
 Object.values(modelosCapitalHumano).forEach(modelo => {
     if (typeof modelo.asociar === 'function') {
         modelo.asociar(modelosCapitalHumano)
     }
 })
 
-export default modelosCapitalHumano
+export default modelosCapitalHumano;
