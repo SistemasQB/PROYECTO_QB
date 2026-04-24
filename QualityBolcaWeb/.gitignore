@@ -12,6 +12,9 @@ src/public/evidencias_sorteo
 src/public/evidencias
 src/public/firmas
 src/public/img
+private/
+
+#archivos
 .claude
 
 # Ignorar logs

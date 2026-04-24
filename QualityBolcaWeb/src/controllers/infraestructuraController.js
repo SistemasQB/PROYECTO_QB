@@ -5,7 +5,6 @@ import db from "../config/db.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import nodemailerClase from "../public/clases/nodemailer.js";
 import { QueryTypes, Op } from "sequelize";
-import nom10006 from "../models/generales/nom10006.js";
 
 const infraestructuraController = {}
 //controlador de inicio
@@ -1212,7 +1211,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
         
         // obtener puesto
         let clasePuesto = new sequelizeClase({
-            modelo: nom10006
+            modelo: modelosGenerales.nom10006
         })
 
         let puesto = await clasePuesto.obtener1Registro({
@@ -1243,7 +1242,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
 
         let esNivelAlto = false
         let esSuperAdmin = false
-
+        
         if (permisosGet.length) {
             const permisos = typeof permisosGet[0].permisos === 'string'
                 ? JSON.parse(permisosGet[0].permisos)

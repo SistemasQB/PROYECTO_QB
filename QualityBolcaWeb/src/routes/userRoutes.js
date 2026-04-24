@@ -17,7 +17,7 @@ const loginLimiter = rateLimit({
 const router = express.Router();
 //rutas de login
 router.get('/',rutasPublicas, customerController.formularioLogin);
-router.get('/login', customerController.formularioLogin);
+router.get('/login', rutasPublicas, customerController.formularioLogin);
 router.post('/login', loginLimiter, customerController.autenticar);
 //ruta logout
 router.post('/logout', protegerRuta,customerController.logout);

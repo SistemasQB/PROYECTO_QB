@@ -48,7 +48,6 @@ controller.autenticar = async (req, res) => {
         if (typeof redireccion !== 'string' || !redireccion.startsWith('/')) {
             redireccion = '/inicio';
         }
-        console.log('todo bien')
         if(process.env.NODE_ENV === 'production'){
             res.cookie('_token', token, {httpOnly: true, secure: true,})    
             return res.status(200).send({ ok: true, redirect: redireccion });
