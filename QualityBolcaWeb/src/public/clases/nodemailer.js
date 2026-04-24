@@ -679,117 +679,597 @@ htmlNotificacionNuevaReqEquipo(datosNotificacion){
 }
     
 
-htmlRequisicionAprobada({ datos, autorizador }) {
+htmlNuevaRequisicion({ solicitante, departamentoAutorizador }) {
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva Requisición Pendiente</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
 
-    let cuerpo = `
-    Buen día, <b>Equipo de Gestión de Gastos/ Compras y Suministros:</b><br><br>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4; padding: 40px 20px;">
+    <tr>
+      <td align="center">
 
-    Tienes una requisicion de <b>${datos.solicitante}</b>, revisada y autorizada por <b>${autorizador}</b>.<br><br>
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 600px;">
 
-    Sin mas por el momento, que tenga un buen día.<br><br>
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #003366; padding: 30px 40px; border-radius: 8px 8px 0 0; text-align: center;">
+              <h1 style="color: #ffffff; font-size: 22px; font-weight: bold; margin: 0;">
+                Nueva Solicitud de Aprobación
+              </h1>
+            </td>
+          </tr>
 
-    EXPENSE SUPPORT SYSTEM <br><br>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 40px;">
+              <p style="color: #1f2937; font-size: 16px; margin: 0 0 20px 0;">
+                Buen día, <strong>${departamentoAutorizador}</strong>.
+              </p>
+              <p style="color: #4b5563; font-size: 15px; line-height: 26px; margin: 0 0 24px 0;">
+                Tienes una solicitud de aprobación de requisición de
+                <strong style="color: #003366;">${solicitante}</strong>,
+                por favor ingresa al sistema para aceptar o rechazar la misma.
+              </p>
 
-    <b>No responda a este mensaje, es un envío automático.</b>
-    `
+              <!-- Info Box -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #eff6ff; border-left: 4px solid #003366; margin: 0 0 28px 0;">
+                <tr>
+                  <td style="padding: 18px 20px;">
+                    <p style="color: #1e3a5f; font-size: 14px; margin: 0; font-weight: 600;">
+                      Accion requerida
+                    </p>
+                    <p style="color: #1e40af; font-size: 14px; margin: 8px 0 0 0;">
+                      Ingresa al sistema de requisiciones para revisar y resolver esta solicitud.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Button -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="center" style="padding: 10px 0 20px 0;">
+                    <a href="https://www.qualitybolca.net/infraestructura/requisicionGastos" style="background-color: #003366; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold; padding: 13px 36px; border-radius: 6px; display: inline-block;">
+                      Ir al Sistema
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="color: #374151; font-size: 13px; margin: 0 0 6px 0; font-weight: 600;">
+                EXPENSE SUPPORT SYSTEM
+              </p>
+              <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                No responda a este mensaje, es un envio automatico.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`
+  }
+
+  htmlRequisicionAprobada({ datos, autorizador }) {
+    const foto = (!datos.foto || datos.foto === 'NO') ? 'N/A' : datos.foto
+    const imagenHtml = foto !== 'N/A'
+        ? `<img src='https://www.qualitybolca.net/img/Quality-BOLCA2.png' alt='Imagen Adjunta' style='max-width: 100px; max-height: 100px;'>`
+        : 'N/A'
+
+    const fechaRegistro = datos.horaRegistro ? new Date(datos.horaRegistro).toLocaleDateString('es-MX') : ''
+    const fechaEntrega = datos.fechaEntrega ? new Date(datos.fechaEntrega).toLocaleDateString('es-MX') : ''
 
     let filas = ''
-    const partes = (datos.descripcion || '').split('|')
+    let sumatoria = 0
+    const rawDesc = (datos.descripcion || '').trim()
+    let idx = 0
 
-    for (let i = 0; i < partes.length; i += 4) {
+    // Detectar formato: JSON array o pipe-separated
+    const esJson = rawDesc.startsWith('[')
 
-        const concepto = partes[i] || ''
-        const cantidad = partes[i + 1] || ''
-        const precio = Number(partes[i + 2] || 0)
-        const subtotal = Number(partes[i + 3] || 0)
-
-        filas += `
+    if (esJson) {
+        // Formato nuevo: [{"id":1,"desc":"...","unidad":1,"precio":10}, ...]
+        let items = []
+        try {
+            items = JSON.parse(rawDesc)
+        } catch (_) {
+            items = []
+        }
+        for (const item of items) {
+            const concepto = (item.desc || '').trim()
+            if (!concepto) continue
+            const cantidad = Number(item.unidad || 0)
+            const precio = Number(item.precio || 0)
+            const subtotal = cantidad * precio
+            sumatoria += subtotal
+            idx++
+            filas += `
         <tr>
-            <td align='center' style='border:1px solid #ccc; padding:8px;'>${i/4 + 1}</td>
-            <td style='border:1px solid #ccc; padding:8px;'>${concepto}</td>
-            <td align='center' style='border:1px solid #ccc; padding:8px;'>${cantidad}</td>
-            <td align='right' style='border:1px solid #ccc; padding:8px;'>${this.formatearPesos(precio)}</td>
-            <td align='right' style='border:1px solid #ccc; padding:8px; font-weight:bold;'>${this.formatearPesos(subtotal)}</td>
-        </tr>
-        `
+            <td align='center' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px; background-color: #f9f9f9;'>${idx}</td>
+            <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${concepto}</td>
+            <td align='center' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${cantidad}</td>
+            <td align='right' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${this.formatearPesos(precio)}</td>
+            <td align='right' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px; font-weight: bold;'>${this.formatearPesos(subtotal)}</td>
+        </tr>`
+        }
+    } else {
+        // Formato antiguo: descripcion|unidad|precio|total|descripcion|unidad|...
+        const partes = rawDesc.split('|')
+        for (let i = 0; i < partes.length; i += 4) {
+            const concepto = (partes[i] || '').trim()
+            if (!concepto) continue
+            const cantidad = partes[i + 1] || ''
+            const precio = Number(partes[i + 2] || 0)
+            const subtotal = Number(partes[i + 3] || 0)
+            sumatoria += subtotal
+            idx++
+            filas += `
+        <tr>
+            <td align='center' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px; background-color: #f9f9f9;'>${idx}</td>
+            <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${concepto}</td>
+            <td align='center' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${cantidad}</td>
+            <td align='right' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>${this.formatearPesos(precio)}</td>
+            <td align='right' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px; font-weight: bold;'>${this.formatearPesos(subtotal)}</td>
+        </tr>`
+        }
     }
 
     return `
-    ${cuerpo}
+    Buen día, <b>Equipo de Gestión de Gastos/ Compras y Suministros:</b><br><br>
+    Tienes una requisicion de <b>${datos.solicitante}</b>, revisada y autorizada por <b>${autorizador}</b>.<br><br>
+    Sin mas por el momento, que tenga un buen día.<br><br>
+    EXPENSE SUPPORT SYSTEM <br><br>
+    <b>No responda a este mensaje, es un envío automático.</b>
 
-    <table width='100%' cellpadding='0' cellspacing='0' style='background:#f4f4f4; padding:20px;'>
+    <table width='100%' cellpadding='0' cellspacing='0' border='0' style='background-color: #f4f4f4; padding: 20px;'>
         <tr>
             <td align='center'>
-                <table width='800' style='background:#fff; border:1px solid #ccc;'>
+                <table width='800' cellpadding='0' cellspacing='0' border='0' style='background-color: #ffffff; border: 1px solid #cccccc;'>
 
-                    <!-- HEADER -->
+                    <!-- Header -->
                     <tr>
-                        <td style='padding:20px; background:#003366; color:#fff;'>
-                            <h2>Requisición de compra</h2>
-                        </td>
-                    </tr>
-
-                    <!-- INFO -->
-                    <tr>
-                        <td style='padding:20px;'>
-                            <b>Solicitante:</b> ${datos.solicitante} <br>
-                            <b>Departamento:</b> ${datos.departamento} <br>
-                            <b>Fecha:</b> ${new Date(datos.horaRegistro).toLocaleDateString('es-MX')}
-                        </td>
-                    </tr>
-
-                    <!-- TABLA -->
-                    <tr>
-                        <td style='padding:20px;'>
-                            <table width='100%' style='border-collapse:collapse;'>
-
-                                <tr style='background:#003366; color:white;'>
-                                    <th>#</th>
-                                    <th>Descripción</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio</th>
-                                    <th>Total</th>
-                                </tr>
-
-                                ${filas}
-
+                        <td style='padding: 20px; background-color: #003366; color: #ffffff;'>
+                            <table width='100%' cellpadding='0' cellspacing='0' border='0'>
                                 <tr>
-                                    <td colspan='4' align='right'><b>Total:</b></td>
-                                    <td><b>${this.formatearPesos(datos.total)}</b></td>
+                                    <td><img src='https://www.qualitybolca.net/img/Quality-BOLCA.png' alt='' height='100' width='100'></td>
+                                    <td style='font-size: 24px; font-weight: bold;'>Requisición de compra</td>
+                                    <td align='right' style='font-size: 12px;'>
+                                        <div style='margin-bottom: 5px;'>Código: QB-FR-A-11-01</div>
+                                        <div>Rev: 07</div>
+                                        <div>Fecha de emisión: 07-08-2019</div>
+                                        <div>Fecha de revisión: 16-02-2024</div>
+                                    </td>
                                 </tr>
-
                             </table>
                         </td>
                     </tr>
 
-                    <!-- JUSTIFICACIÓN -->
+                    <!-- Información del Solicitante -->
                     <tr>
-                        <td style='padding:20px;'>
-                            <b>Situación actual:</b><br>
-                            ${datos.situacionActual || 'N/A'}<br><br>
-
-                            <b>Expectativa:</b><br>
-                            ${datos.detallesEspectativa || 'N/A'}
+                        <td style='padding: 20px;'>
+                            <table width='100%' cellpadding='8' cellspacing='0' border='0'>
+                                <tr>
+                                    <td colspan='2' style='background-color: #2572be; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold; text-align: center;'>Información del Solicitante</td>
+                                </tr>
+                                <tr>
+                                    <td width='50%' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Orden de Servicio (Cotización):</strong><br>
+                                        <span style='color: #0066cc;'>${datos.orden || ''}</span>
+                                    </td>
+                                    <td width='50%' style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Fecha de Solicitud:</strong><br>
+                                        <span style='color: #0066cc;'>${fechaRegistro}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Nombre de Solicitante:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.solicitante || ''}</span>
+                                    </td>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Puesto:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.puesto || ''}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Departamento:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.departamento || ''}</span>
+                                    </td>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Región y Planta:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.region || ''}/${datos.planta || ''}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Fecha de entrega requerida:</strong><br>
+                                        <span style='color: #0066cc;'>${fechaEntrega}</span>
+                                    </td>
+                                    <td style='border: 1px solid #cccccc; padding: 8px; font-size: 12px;'>
+                                        <strong>Rentabilidad que aplica:</strong><br>
+                                        <span style='color: #0066cc;'>${datos.rentabilidad || ''}</span>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
 
-                    <!-- FIRMAS -->
+                    <!-- Descripción Detallada -->
                     <tr>
-                        <td style='padding:20px; text-align:center;'>
-                            <b>${datos.solicitante}</b><br>
-                            Firma del solicitante
-                            <br><br>
-                            <b>${autorizador}</b><br>
-                            Firma del jefe inmediato
+                        <td style='padding: 0 20px 20px 20px;'>
+                            <table width='100%' cellpadding='8' cellspacing='0' border='0' style='border-collapse: collapse;'>
+                                <tr>
+                                    <td colspan='5' style='background-color: #2572be; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold; text-align: center; outline: solid 1px black;'>DESCRIPCIÓN DETALLADA</td>
+                                </tr>
+                                <tr>
+                                    <td width='5%' align='center' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>#</td>
+                                    <td width='45%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>Descripción detallada</td>
+                                    <td width='15%' align='center' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>Unidad</td>
+                                    <td width='17.5%' align='center' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>Precio Unitario con IVA</td>
+                                    <td width='17.5%' align='center' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 12px; font-weight: bold; border: 1px solid #003366;'>Precio total con IVA</td>
+                                </tr>
+                                ${filas}
+                                <tr>
+                                    <td colspan='4' align='right' style='border: 1px solid #003366; padding: 10px; font-size: 14px; font-weight: bold; background-color: #e8f4f8;'>Importe Total:</td>
+                                    <td align='right' style='border: 1px solid #003366; padding: 10px; font-size: 14px; font-weight: bold; background-color: #e8f4f8; color: #003366;'>${this.formatearPesos(sumatoria)}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Justificación -->
+                    <tr>
+                        <td style='padding: 0 20px 20px 20px;'>
+                            <table width='100%' cellpadding='8' cellspacing='0' border='0'>
+                                <tr>
+                                    <td colspan='2' style='background-color: #2572be; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold; text-align: center; outline: solid 1px black;'>JUSTIFICACIÓN</td>
+                                </tr>
+                                <tr>
+                                    <td width='50%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold;'>Detallar situación actual</td>
+                                    <td width='50%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold;'>Detallar expectativa</td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 12px; font-size: 12px; vertical-align: top; height: 80px;'>${datos.situacionActual || 'N/A'}</td>
+                                    <td style='border: 1px solid #cccccc; padding: 12px; font-size: 12px; vertical-align: top; height: 80px;'>${datos.detallesEspectativa || 'N/A'}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Comentarios Adicionales -->
+                    <tr>
+                        <td style='padding: 0 20px 20px 20px;'>
+                            <table width='100%' cellpadding='8' cellspacing='0' border='0'>
+                                <tr>
+                                    <td width='50%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold;'>Comentarios adicionales</td>
+                                    <td width='50%' style='background-color: #003366; color: #ffffff; padding: 8px; font-size: 14px; font-weight: bold;'>Imagen</td>
+                                </tr>
+                                <tr>
+                                    <td style='border: 1px solid #cccccc; padding: 12px; font-size: 12px; height: 60px; vertical-align: top;'>${datos.comentariosAdicionales || 'N/A'}</td>
+                                    <td style='border: 1px solid #cccccc; padding: 12px; font-size: 12px; height: 60px; text-align: center; vertical-align: middle;'>${imagenHtml}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Firmas -->
+                    <tr>
+                        <td style='padding: 0 20px 30px 20px;'>
+                            <table width='100%' cellpadding='15' cellspacing='0' border='0'>
+                                <tr>
+                                    <td width='50%' align='center' style='border: 1px solid #cccccc; vertical-align: bottom; background-color: #f9f9f9;'>
+                                        <div style='height: 60px; margin-bottom: 10px;'></div>
+                                        <p>${datos.solicitante || ''}</p>
+                                        <div style='border-top: 2px solid #003366; padding-top: 8px; font-size: 12px; font-weight: bold;'>Firma del Solicitante</div>
+                                    </td>
+                                    <td width='50%' align='center' style='border: 1px solid #cccccc; vertical-align: bottom; background-color: #f9f9f9;'>
+                                        <div style='height: 60px; margin-bottom: 10px;'></div>
+                                        <p>${autorizador || ''}</p>
+                                        <div style='border-top: 2px solid #003366; padding-top: 8px; font-size: 12px; font-weight: bold;'>Firma del Jefe Inmediato</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style='padding: 15px 20px; background-color: #f4f4f4; border-top: 3px solid #003366; font-size: 10px; color: #666666; text-align: center;'>
+                            Este documento es una requisición de compra generada electrónicamente. Favor de verificar toda la información antes de proceder.
                         </td>
                     </tr>
 
                 </table>
             </td>
         </tr>
-    </table>
-    `
+    </table>`
 }
+
+  htmlNuevoTicket({ folio, titulo, nombreUsuario, departamento, prioridad, categoria, descripcion, slaHoras }) {
+    const prioridadColor = {
+      critical: '#dc2626',
+      high:     '#ea580c',
+      medium:   '#ca8a04',
+      low:      '#16a34a',
+    }[prioridad] || '#4f6ef7';
+
+    const prioridadLabel = {
+      critical: 'Critica',
+      high:     'Alta',
+      medium:   'Media',
+      low:      'Baja',
+    }[prioridad] || prioridad;
+
+    const fechaHoy = new Date().toLocaleDateString('es-MX', {
+      day: '2-digit', month: 'long', year: 'numeric'
+    });
+
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nuevo Ticket de Soporte – IT</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0f1117;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f1117;padding:40px 16px;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table width="560" cellpadding="0" cellspacing="0" style="
+          background:linear-gradient(160deg,#1a1d2e 0%,#12151f 100%);
+          border-radius:20px;
+          border:1px solid #2a2f45;
+          box-shadow:0 30px 80px rgba(0,0,0,0.5);
+          overflow:hidden;
+        ">
+
+          <!-- Barra de acento superior -->
+          <tr>
+            <td style="background:linear-gradient(90deg,#4f6ef7,#a66ff7,#4fc3f7);height:4px;font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding:40px 40px 24px;">
+
+              <!-- Badge icono -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <div style="
+                      width:72px;height:72px;
+                      background:linear-gradient(135deg,#4f6ef7 0%,#a66ff7 100%);
+                      border-radius:18px;
+                      display:inline-block;
+                      box-shadow:0 8px 32px rgba(79,110,247,0.4);
+                      margin-bottom:20px;
+                    ">
+                      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                        <td align="center" valign="middle" style="height:72px;">
+                          <span style="font-size:32px;line-height:1;color:#ffffff;">&#128203;</span>
+                        </td>
+                      </tr></table>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <h1 style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#4f6ef7;">
+                Departamento de Tecnologias de la Informacion
+              </h1>
+              <h2 style="margin:0;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.3;">
+                Nuevo Ticket de Soporte
+              </h2>
+
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 40px;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#2a2f45,transparent);"></div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px 40px;">
+
+              <p style="margin:0 0 24px;font-size:15px;color:#9ba5c0;line-height:1.6;">
+                Se ha registrado un nuevo ticket en el sistema. Revisa los detalles a continuacion y asignalo al agente correspondiente.
+              </p>
+
+              <!-- Info card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="
+                background:rgba(79,110,247,0.07);
+                border:1px solid rgba(79,110,247,0.2);
+                border-radius:12px;
+                margin-bottom:24px;
+              ">
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+
+                      <!-- Fila 1: Folio / Fecha -->
+                      <tr>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Folio</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:600;">${folio}</p>
+                        </td>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Fecha de apertura</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${fechaHoy}</p>
+                        </td>
+                      </tr>
+
+                      <!-- Fila 2: Solicitante / Departamento -->
+                      <tr>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Solicitante</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${nombreUsuario}</p>
+                        </td>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Departamento</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${departamento}</p>
+                        </td>
+                      </tr>
+
+                      <!-- Fila 3: Categoria / SLA -->
+                      <tr>
+                        <td width="50%">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Categoria</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${categoria}</p>
+                        </td>
+                        <td width="50%">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">SLA</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${slaHoras} horas</p>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Titulo del ticket -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="
+                background:rgba(255,255,255,0.03);
+                border:1px solid #2a2f45;
+                border-radius:10px;
+                margin-bottom:16px;
+              ">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 6px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#6b7599;font-weight:700;">Titulo</p>
+                    <p style="margin:0;font-size:15px;color:#c4cde8;font-weight:600;line-height:1.5;">${titulo}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Descripcion -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="
+                background:rgba(255,255,255,0.03);
+                border:1px solid #2a2f45;
+                border-radius:10px;
+                margin-bottom:24px;
+              ">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 6px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#6b7599;font-weight:700;">Descripcion del problema</p>
+                    <p style="margin:0;font-size:14px;color:#9ba5c0;line-height:1.7;">${descripcion}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Badge prioridad -->
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td style="
+                    background:rgba(255,255,255,0.05);
+                    border:1px solid ${prioridadColor}55;
+                    border-radius:999px;
+                    padding:8px 18px;
+                  ">
+                    <span style="
+                      display:inline-block;width:8px;height:8px;
+                      background:${prioridadColor};border-radius:50%;
+                      margin-right:8px;vertical-align:middle;
+                    "></span>
+                    <span style="
+                      font-size:13px;font-weight:600;
+                      color:${prioridadColor};
+                      letter-spacing:0.5px;vertical-align:middle;
+                    ">Prioridad: ${prioridadLabel}</span>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Boton CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding-bottom:8px;">
+                    <a href="https://www.qualitybolca.net/sistemas/admin-tickets"
+                       style="
+                         display:inline-block;
+                         background:linear-gradient(135deg,#4f6ef7,#a66ff7);
+                         color:#ffffff;
+                         text-decoration:none;
+                         font-size:15px;
+                         font-weight:700;
+                         padding:14px 40px;
+                         border-radius:10px;
+                         letter-spacing:0.3px;
+                       ">
+                      Ver Ticket en el Sistema
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 40px;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#2a2f45,transparent);"></div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px 36px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <p style="margin:0 0 4px;font-size:12px;color:#4a5175;line-height:1.6;">
+                      Este mensaje fue generado automaticamente por el sistema de tickets de IT.
+                      Por favor no respondas a este correo directamente.
+                    </p>
+                    <p style="margin:0;font-size:12px;color:#4a5175;">
+                      &copy; 2026 &middot; Departamento de Tecnologias de la Informacion &middot; Todos los derechos reservados.
+                    </p>
+                  </td>
+                  <td align="right" valign="middle" style="padding-left:16px;">
+                    <div style="
+                      width:36px;height:36px;
+                      background:linear-gradient(135deg,#4f6ef7,#a66ff7);
+                      border-radius:8px;opacity:0.5;
+                    "></div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`;
+  }
 
   formatearPesos(monto) {
     return new Intl.NumberFormat('es-MX', {
