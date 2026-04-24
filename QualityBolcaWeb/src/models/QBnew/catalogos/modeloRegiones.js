@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize'
 import dbNew from '../../../config/dbNew.js'
 
-const Regiones = dbNew.define('regiones', {
+const Regiones = dbNew.define('c_regiones', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -15,7 +15,7 @@ const Regiones = dbNew.define('regiones', {
         defaultValue: 'SIN DEFINIR'
     }
 }, {
-    tableName: 'regiones',
+    tableName: 'c_regiones',
     freezeTableName: true,
     timestamps: false
 })

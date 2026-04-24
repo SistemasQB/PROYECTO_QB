@@ -14,6 +14,15 @@ controlador.inicio = (req, res) => {
     }
 }
 
+controlador.solicitudParcial = (req, res) => {
+    try {
+        res.status(200).render('admin/capitalHumano/solicitudParcial.ejs', { token: req.csrfToken() });
+    } catch (error) {
+        Console.error('Error en controlador.solicitudPArcial:', error);
+        menajedorErrores(res, 'Error al cargar la solicitud parcial');
+    }
+}
+
 controlador.catalogos = async(req, res) => {
     try{
         let resultado = null;

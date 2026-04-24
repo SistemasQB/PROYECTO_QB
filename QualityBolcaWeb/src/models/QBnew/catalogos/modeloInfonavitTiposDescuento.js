@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize'
 import dbNew from '../../../config/dbNew.js'
 
-const InfonavitTiposDescuento = dbNew.define('infonavit_tipos_descuento', {
+const InfonavitTiposDescuento = dbNew.define('c_infonavit_tipos_descuento', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -13,9 +13,14 @@ const InfonavitTiposDescuento = dbNew.define('infonavit_tipos_descuento', {
         allowNull: false,
         defaultValue: 'N/A'
         // 'Factor de Descuento', 'Cuota Fija', 'Porcentaje'
+    },
+    codigo:{
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        defaultValue: 'N/A'
     }
 }, {
-    tableName: 'infonavit_tipos_descuento',
+    tableName: 'c_infonavit_tipos_descuento',
     freezeTableName: true,
     timestamps: false
 })
