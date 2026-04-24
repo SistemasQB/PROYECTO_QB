@@ -110,6 +110,7 @@ app.use('/sistemas',csrfProtection, routers.sistemasRouters);
 app.use('/calidad',csrfProtection, routers.calidadRouters);
 app.use('/atraccion',csrfProtection, routers.atraccionRouters);
 app.use('/capitalhumano',csrfProtection, routers.capitalHumanoRouters);
+app.use('/ventas', csrfProtection, routers.ventasRouters);
 app.use('/sorteo',csrfProtection ,routers.sorteoRouters);
 app.use('/nominas',csrfProtection, routers.nominasRouters);
 app.use('/infraestructura', csrfProtection,routers.infraestructuraRouters);

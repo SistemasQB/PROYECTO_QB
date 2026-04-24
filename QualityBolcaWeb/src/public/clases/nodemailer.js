@@ -1000,6 +1000,277 @@ htmlNuevaRequisicion({ solicitante, departamentoAutorizador }) {
     </table>`
 }
 
+  htmlNuevoTicket({ folio, titulo, nombreUsuario, departamento, prioridad, categoria, descripcion, slaHoras }) {
+    const prioridadColor = {
+      critical: '#dc2626',
+      high:     '#ea580c',
+      medium:   '#ca8a04',
+      low:      '#16a34a',
+    }[prioridad] || '#4f6ef7';
+
+    const prioridadLabel = {
+      critical: 'Critica',
+      high:     'Alta',
+      medium:   'Media',
+      low:      'Baja',
+    }[prioridad] || prioridad;
+
+    const fechaHoy = new Date().toLocaleDateString('es-MX', {
+      day: '2-digit', month: 'long', year: 'numeric'
+    });
+
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nuevo Ticket de Soporte – IT</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0f1117;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f1117;padding:40px 16px;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table width="560" cellpadding="0" cellspacing="0" style="
+          background:linear-gradient(160deg,#1a1d2e 0%,#12151f 100%);
+          border-radius:20px;
+          border:1px solid #2a2f45;
+          box-shadow:0 30px 80px rgba(0,0,0,0.5);
+          overflow:hidden;
+        ">
+
+          <!-- Barra de acento superior -->
+          <tr>
+            <td style="background:linear-gradient(90deg,#4f6ef7,#a66ff7,#4fc3f7);height:4px;font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding:40px 40px 24px;">
+
+              <!-- Badge icono -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <div style="
+                      width:72px;height:72px;
+                      background:linear-gradient(135deg,#4f6ef7 0%,#a66ff7 100%);
+                      border-radius:18px;
+                      display:inline-block;
+                      box-shadow:0 8px 32px rgba(79,110,247,0.4);
+                      margin-bottom:20px;
+                    ">
+                      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                        <td align="center" valign="middle" style="height:72px;">
+                          <span style="font-size:32px;line-height:1;color:#ffffff;">&#128203;</span>
+                        </td>
+                      </tr></table>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <h1 style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#4f6ef7;">
+                Departamento de Tecnologias de la Informacion
+              </h1>
+              <h2 style="margin:0;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.3;">
+                Nuevo Ticket de Soporte
+              </h2>
+
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 40px;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#2a2f45,transparent);"></div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px 40px;">
+
+              <p style="margin:0 0 24px;font-size:15px;color:#9ba5c0;line-height:1.6;">
+                Se ha registrado un nuevo ticket en el sistema. Revisa los detalles a continuacion y asignalo al agente correspondiente.
+              </p>
+
+              <!-- Info card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="
+                background:rgba(79,110,247,0.07);
+                border:1px solid rgba(79,110,247,0.2);
+                border-radius:12px;
+                margin-bottom:24px;
+              ">
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+
+                      <!-- Fila 1: Folio / Fecha -->
+                      <tr>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Folio</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:600;">${folio}</p>
+                        </td>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Fecha de apertura</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${fechaHoy}</p>
+                        </td>
+                      </tr>
+
+                      <!-- Fila 2: Solicitante / Departamento -->
+                      <tr>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Solicitante</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${nombreUsuario}</p>
+                        </td>
+                        <td width="50%" style="padding-bottom:16px;">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Departamento</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${departamento}</p>
+                        </td>
+                      </tr>
+
+                      <!-- Fila 3: Categoria / SLA -->
+                      <tr>
+                        <td width="50%">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">Categoria</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${categoria}</p>
+                        </td>
+                        <td width="50%">
+                          <p style="margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#4f6ef7;font-weight:700;">SLA</p>
+                          <p style="margin:0;font-size:14px;color:#e0e6f5;font-weight:500;">${slaHoras} horas</p>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Titulo del ticket -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="
+                background:rgba(255,255,255,0.03);
+                border:1px solid #2a2f45;
+                border-radius:10px;
+                margin-bottom:16px;
+              ">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 6px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#6b7599;font-weight:700;">Titulo</p>
+                    <p style="margin:0;font-size:15px;color:#c4cde8;font-weight:600;line-height:1.5;">${titulo}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Descripcion -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="
+                background:rgba(255,255,255,0.03);
+                border:1px solid #2a2f45;
+                border-radius:10px;
+                margin-bottom:24px;
+              ">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 6px;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#6b7599;font-weight:700;">Descripcion del problema</p>
+                    <p style="margin:0;font-size:14px;color:#9ba5c0;line-height:1.7;">${descripcion}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Badge prioridad -->
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td style="
+                    background:rgba(255,255,255,0.05);
+                    border:1px solid ${prioridadColor}55;
+                    border-radius:999px;
+                    padding:8px 18px;
+                  ">
+                    <span style="
+                      display:inline-block;width:8px;height:8px;
+                      background:${prioridadColor};border-radius:50%;
+                      margin-right:8px;vertical-align:middle;
+                    "></span>
+                    <span style="
+                      font-size:13px;font-weight:600;
+                      color:${prioridadColor};
+                      letter-spacing:0.5px;vertical-align:middle;
+                    ">Prioridad: ${prioridadLabel}</span>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Boton CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding-bottom:8px;">
+                    <a href="https://www.qualitybolca.net/sistemas/admin-tickets"
+                       style="
+                         display:inline-block;
+                         background:linear-gradient(135deg,#4f6ef7,#a66ff7);
+                         color:#ffffff;
+                         text-decoration:none;
+                         font-size:15px;
+                         font-weight:700;
+                         padding:14px 40px;
+                         border-radius:10px;
+                         letter-spacing:0.3px;
+                       ">
+                      Ver Ticket en el Sistema
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 40px;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#2a2f45,transparent);"></div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px 36px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <p style="margin:0 0 4px;font-size:12px;color:#4a5175;line-height:1.6;">
+                      Este mensaje fue generado automaticamente por el sistema de tickets de IT.
+                      Por favor no respondas a este correo directamente.
+                    </p>
+                    <p style="margin:0;font-size:12px;color:#4a5175;">
+                      &copy; 2026 &middot; Departamento de Tecnologias de la Informacion &middot; Todos los derechos reservados.
+                    </p>
+                  </td>
+                  <td align="right" valign="middle" style="padding-left:16px;">
+                    <div style="
+                      width:36px;height:36px;
+                      background:linear-gradient(135deg,#4f6ef7,#a66ff7);
+                      border-radius:8px;opacity:0.5;
+                    "></div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`;
+  }
+
   formatearPesos(monto) {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Ventas — Calendario de Actividades</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/styles/ventas/calendario.css">
+</head>
+<body>
+
+  <!-- Overlay móvil -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">CRM Ventas</span>
+        <span class="brand-role">Quality Bolca</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/ventas/crm/inicio" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="/ventas/crm/clientes" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+        <span>Clientes</span>
+      </a>
+      <a href="/ventas/crm/agendaVentas" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-bullseye"></i></span>
+        <span>Agenda de Ventas</span>
+      </a>
+      <a href="/ventas/crm/seguimiento" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-list-check"></i></span>
+        <span>Seguimiento</span>
+      </a>
+      <a href="/ventas/crm/calendario" class="nav-item active">
+        <span class="nav-icon"><i class="fa-regular fa-calendar"></i></span>
+        <span>Calendario</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatarSidebar"></div>
+        <div class="user-details">
+          <span class="user-name" id="userNameSidebar">Usuario</span>
+          <span class="user-email" id="userEmailSidebar">—</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="top-bar-title">
+        <span class="breadcrumb-hint">Ventas</span>
+        <h1>Calendario</h1>
+      </div>
+      <div class="top-actions">
+        <div class="top-user-chip">
+          <div class="top-user-avatar" id="userAvatarTop"></div>
+          <span id="userNameTop">Usuario</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Calendario de Actividades</h2>
+          <p class="page-subtitle">Planeación de visitas, reuniones y llamadas</p>
+        </div>
+        <div class="header-actions">
+          <div class="view-toggle">
+            <button class="view-btn active" id="btnMes"    onclick="setView('mes')">Mes</button>
+            <button class="view-btn"         id="btnSemana" onclick="setView('semana')">Semana</button>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="abrirModalNuevo()">
+            <i class="fa-solid fa-plus"></i>
+            Evento
+          </button>
+        </div>
+      </div>
+
+      <!-- CALENDARIO -->
+      <div class="cal-card">
+
+        <!-- Navegación -->
+        <div class="cal-nav">
+          <h3 class="cal-nav-title" id="calTitle">—</h3>
+          <div class="cal-nav-actions">
+            <button class="btn-icon-sq" onclick="navCal(-1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="irHoy()">Hoy</button>
+            <button class="btn-icon-sq" onclick="navCal(1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Vista MES -->
+        <div id="vistaMes">
+          <div class="cal-day-headers">
+            <div class="cal-day-header">Dom</div>
+            <div class="cal-day-header">Lun</div>
+            <div class="cal-day-header">Mar</div>
+            <div class="cal-day-header">Mié</div>
+            <div class="cal-day-header">Jue</div>
+            <div class="cal-day-header">Vie</div>
+            <div class="cal-day-header">Sáb</div>
+          </div>
+          <div class="cal-month-grid" id="monthGrid">
+            <!-- Generado por JS -->
+          </div>
+        </div>
+
+        <!-- Vista SEMANA -->
+        <div id="vistaSemana" style="display:none;">
+          <div class="cal-week-grid" id="weekGrid">
+            <!-- Generado por JS -->
+          </div>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="cal-legend" id="calLegend">
+          <div class="legend-item"><span class="legend-dot" style="background:#007AFF"></span> Visita</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#34C759"></span> Reunión</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#FF9500"></span> Llamada</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#AF52DE"></span> Otro</div>
+        </div>
+
+      </div><!-- /cal-card -->
+
+    </div><!-- /page-body -->
+  </main>
+
+  <!-- ================================================================
+       MODAL EVENTO
+       ================================================================ -->
+  <div class="modal-backdrop" id="modalEvento">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Nuevo evento</h3>
+        <button class="modal-close" onclick="cerrarModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEvento" onsubmit="return false;">
+          <input type="hidden" id="evento_id">
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Título *</label>
+              <input type="text" class="form-input" id="field_titulo" placeholder="Nombre del evento" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo</label>
+              <select class="form-select" id="field_tipo">
+                <option value="visita">Visita</option>
+                <option value="reunión">Reunión</option>
+                <option value="llamada">Llamada</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cliente relacionado</label>
+              <select class="form-select" id="field_clienteId">
+                <option value="">(Ninguno)</option>
+                <!-- Generado por JS -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fecha</label>
+              <input type="date" class="form-input" id="field_fecha">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estado</label>
+              <select class="form-select" id="field_estado">
+                <option value="programada">Programada</option>
+                <option value="realizada">Realizada</option>
+                <option value="cancelada">Cancelada</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hora inicio</label>
+              <input type="time" class="form-input" id="field_horaInicio" value="09:00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hora fin</label>
+              <input type="time" class="form-input" id="field_horaFin" value="10:00">
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Ubicación</label>
+              <input type="text" class="form-input" id="field_ubicacion" placeholder="Dirección o sala">
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Notas</label>
+              <textarea class="form-textarea" id="field_notas" rows="3" placeholder="Observaciones…"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div id="modalDeleteBtn"></div>
+        <div class="modal-footer-right">
+          <button class="btn btn-outline" onclick="cerrarModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="guardarEvento()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/scripts/ventas/calendario.js"></script>
+</body>
+</html>

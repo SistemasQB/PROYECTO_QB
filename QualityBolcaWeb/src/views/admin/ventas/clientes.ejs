@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Ventas — Clientes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/styles/ventas/clientes.css">
+</head>
+<body>
+
+  <!-- Overlay móvil -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+  <!-- ================================================
+       SIDEBAR
+       ================================================ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">CRM Ventas</span>
+        <span class="brand-role">Quality Bolca</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/ventas/crm/inicio" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="/ventas/crm/clientes" class="nav-item active">
+        <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+        <span>Clientes</span>
+      </a>
+      <a href="/ventas/crm/agendaVentas" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-bullseye"></i></span>
+        <span>Agenda de Ventas</span>
+      </a>
+      <a href="/ventas/crm/seguimiento" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-list-check"></i></span>
+        <span>Seguimiento</span>
+      </a>
+      <a href="/ventas/crm/calendario" class="nav-item">
+        <span class="nav-icon"><i class="fa-regular fa-calendar"></i></span>
+        <span>Calendario</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatarSidebar"></div>
+        <div class="user-details">
+          <span class="user-name" id="userNameSidebar">Usuario</span>
+          <span class="user-email" id="userEmailSidebar">—</span>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ================================================
+       CONTENIDO PRINCIPAL
+       ================================================ -->
+  <main class="main-content">
+
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="top-bar-title">
+        <span class="breadcrumb-hint">Ventas</span>
+        <h1>Clientes</h1>
+      </div>
+      <div class="top-actions">
+        <div class="top-user-chip">
+          <div class="top-user-avatar" id="userAvatarTop"></div>
+          <span id="userNameTop">Usuario</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- ── PAGE HEADER ── -->
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Catálogo de clientes</h2>
+          <p class="page-subtitle">
+            Datos generales del catálogo comercial &nbsp;·&nbsp;
+            <span id="totalClientes">0</span> clientes registrados
+          </p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-outline" id="btnExportar">
+            <i class="fa-solid fa-download"></i>
+            <span>Exportar</span>
+          </button>
+          <button class="btn btn-primary" id="btnNuevoCliente">
+            <i class="fa-solid fa-plus"></i>
+            <span>Nuevo cliente</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── FILTROS ── -->
+      <div class="filters-card">
+        <div class="filters-row">
+          <div class="search-wrap">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input
+              type="text"
+              id="inputBuscar"
+              class="input-search"
+              placeholder="Buscar por folio, denominación, RFC, cotizador…"
+              autocomplete="off"
+            >
+            <button class="btn-clear-search" id="btnClearSearch" title="Limpiar búsqueda" style="display:none">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <select id="selectEstado" class="select-filter">
+            <option value="">Todos los estados</option>
+            <option>Aguascalientes</option><option>Baja California</option>
+            <option>Baja California Sur</option><option>Campeche</option>
+            <option>Chiapas</option><option>Chihuahua</option>
+            <option>Ciudad de México</option><option>Coahuila</option>
+            <option>Colima</option><option>Durango</option>
+            <option>Estado de México</option><option>Guanajuato</option>
+            <option>Guerrero</option><option>Hidalgo</option>
+            <option>Jalisco</option><option>Michoacán</option>
+            <option>Morelos</option><option>Nayarit</option>
+            <option>Nuevo León</option><option>Oaxaca</option>
+            <option>Puebla</option><option>Querétaro</option>
+            <option>Quintana Roo</option><option>San Luis Potosí</option>
+            <option>Sinaloa</option><option>Sonora</option>
+            <option>Tabasco</option><option>Tamaulipas</option>
+            <option>Tlaxcala</option><option>Veracruz</option>
+            <option>Yucatán</option><option>Zacatecas</option>
+          </select>
+          <select id="selectGiro" class="select-filter">
+            <option value="">Todos los giros</option>
+            <option>Automotriz</option><option>Metalmecánica</option>
+            <option>Plásticos</option><option>Electrónica</option>
+            <option>Alimentos</option><option>Químicos</option>
+            <option>Empaque</option><option>Logística</option>
+            <option>Construcción</option><option>Maquinaria</option>
+            <option>Médico</option><option>Ingeniería</option>
+            <option>Servicios</option><option>Textil</option>
+            <option>Otro</option>
+          </select>
+          <select id="selectMoneda" class="select-filter select-filter--sm">
+            <option value="">Moneda</option>
+            <option>MXN</option>
+            <option>USD</option>
+          </select>
+        </div>
+        <div class="filters-meta">
+          <span id="resultCount" class="result-count"></span>
+          <button class="btn-reset-filters" id="btnResetFiltros">
+            <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar filtros
+          </button>
+        </div>
+      </div>
+
+      <!-- ── TABLA DE CLIENTES ── -->
+      <div class="table-card">
+        <div class="table-wrap">
+          <table class="clientes-table" id="clientesTable">
+            <thead>
+              <tr>
+                <th class="th-sortable" data-col="folio">
+                  Folio <i class="fa-solid fa-sort sort-icon"></i>
+                </th>
+                <th class="th-sortable" data-col="denominacion">
+                  Denominación <i class="fa-solid fa-sort sort-icon"></i>
+                </th>
+                <th>RFC</th>
+                <th class="th-sortable" data-col="estado">
+                  Estado <i class="fa-solid fa-sort sort-icon"></i>
+                </th>
+                <th class="th-sortable" data-col="giro">
+                  Giro <i class="fa-solid fa-sort sort-icon"></i>
+                </th>
+                <th>Moneda</th>
+                <th class="th-sortable" data-col="fechaAlta">
+                  Alta <i class="fa-solid fa-sort sort-icon"></i>
+                </th>
+                <th class="col-acciones">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="clientesTbody">
+              <!-- generado por JS -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Estado vacío -->
+        <div class="table-empty" id="tableEmpty" style="display:none">
+          <i class="fa-solid fa-users-slash"></i>
+          <p class="table-empty-title">No se encontraron clientes</p>
+          <p class="table-empty-sub">Prueba ajustando los filtros o crea un nuevo cliente.</p>
+        </div>
+      </div>
+
+      <!-- ── PAGINACIÓN ── -->
+      <div class="pagination-bar" id="paginationBar" style="display:none">
+        <span class="pagination-info" id="paginationInfo"></span>
+        <div class="pagination-controls" id="paginationControls"></div>
+      </div>
+
+    </div><!-- /page-body -->
+  </main>
+
+  <!-- ================================================================
+       MODAL — Nuevo / Editar cliente
+       ================================================================ -->
+  <div class="modal-backdrop" id="modalBackdrop" style="display:none">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitulo">Nuevo cliente</h3>
+        <button class="modal-close" id="btnModalClose" aria-label="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="modalClienteId">
+
+        <!-- Información principal -->
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label" for="fCotizador">Cotizador</label>
+            <input type="text" id="fCotizador" class="form-input" placeholder="Nombre del cotizador">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fRfc">RFC / Tax ID</label>
+            <input type="text" id="fRfc" class="form-input" placeholder="RFC123456XXX">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fDenominacion">
+              Denominación <span class="req">*</span>
+            </label>
+            <input type="text" id="fDenominacion" class="form-input" placeholder="Nombre comercial de la empresa">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fRazonSocial">
+              Razón social <span class="req">*</span>
+            </label>
+            <input type="text" id="fRazonSocial" class="form-input" placeholder="Razón social oficial">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fEstado">Estado</label>
+            <select id="fEstado" class="form-select">
+              <option value="">Selecciona un estado…</option>
+              <option>Aguascalientes</option><option>Baja California</option>
+              <option>Baja California Sur</option><option>Campeche</option>
+              <option>Chiapas</option><option>Chihuahua</option>
+              <option>Ciudad de México</option><option>Coahuila</option>
+              <option>Colima</option><option>Durango</option>
+              <option>Estado de México</option><option>Guanajuato</option>
+              <option>Guerrero</option><option>Hidalgo</option>
+              <option>Jalisco</option><option>Michoacán</option>
+              <option>Morelos</option><option>Nayarit</option>
+              <option>Nuevo León</option><option>Oaxaca</option>
+              <option>Puebla</option><option>Querétaro</option>
+              <option>Quintana Roo</option><option>San Luis Potosí</option>
+              <option>Sinaloa</option><option>Sonora</option>
+              <option>Tabasco</option><option>Tamaulipas</option>
+              <option>Tlaxcala</option><option>Veracruz</option>
+              <option>Yucatán</option><option>Zacatecas</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fGiro">Giro</label>
+            <select id="fGiro" class="form-select">
+              <option value="">Selecciona un giro…</option>
+              <option>Automotriz</option><option>Metalmecánica</option>
+              <option>Plásticos</option><option>Electrónica</option>
+              <option>Alimentos</option><option>Químicos</option>
+              <option>Empaque</option><option>Logística</option>
+              <option>Construcción</option><option>Maquinaria</option>
+              <option>Médico</option><option>Ingeniería</option>
+              <option>Servicios</option><option>Textil</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fMoneda">Moneda</label>
+            <select id="fMoneda" class="form-select">
+              <option value="MXN">MXN — Peso mexicano</option>
+              <option value="USD">USD — Dólar americano</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Contacto Calidad -->
+        <div class="form-section-divider">
+          <i class="fa-solid fa-shield-check"></i>
+          <span>Contacto de Calidad</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label" for="fContactoCalidad">Nombre</label>
+            <input type="text" id="fContactoCalidad" class="form-input" placeholder="Nombre del contacto">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fTelCalidad">Teléfono</label>
+            <input type="tel" id="fTelCalidad" class="form-input" placeholder="(555) 000-0000">
+          </div>
+          <div class="form-field form-field--full">
+            <label class="form-label" for="fCorreoCalidad">Correo electrónico</label>
+            <input type="email" id="fCorreoCalidad" class="form-input" placeholder="calidad@empresa.com">
+          </div>
+        </div>
+
+        <!-- Contacto Compras -->
+        <div class="form-section-divider">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span>Contacto de Compras</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label" for="fContactoCompras">Nombre</label>
+            <input type="text" id="fContactoCompras" class="form-input" placeholder="Nombre del contacto">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fTelCompras">Teléfono</label>
+            <input type="tel" id="fTelCompras" class="form-input" placeholder="(555) 000-0000">
+          </div>
+          <div class="form-field form-field--full">
+            <label class="form-label" for="fCorreoCompras">Correo electrónico</label>
+            <input type="email" id="fCorreoCompras" class="form-input" placeholder="compras@empresa.com">
+          </div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <div class="modal-footer">
+        <span class="form-req-note"><span class="req">*</span> Campo obligatorio</span>
+        <div class="modal-footer-btns">
+          <button class="btn btn-outline" id="btnModalCancelar">Cancelar</button>
+          <button class="btn btn-primary" id="btnGuardar">
+            <i class="fa-solid fa-floppy-disk"></i> Guardar
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /modal -->
+  </div><!-- /modal-backdrop -->
+
+  <!-- ================================================================
+       PANEL LATERAL — Detalle del cliente
+       ================================================================ -->
+  <div class="detail-backdrop" id="detailBackdrop" style="display:none">
+    <div class="detail-panel" id="detailPanel" role="dialog" aria-modal="true">
+
+      <div class="detail-header">
+        <div class="detail-avatar" id="detailAvatar"></div>
+        <div class="detail-header-info">
+          <h3 class="detail-denominacion" id="detailDenominacion">—</h3>
+          <p class="detail-razon" id="detailRazon">—</p>
+          <div class="detail-badges" id="detailBadges"></div>
+        </div>
+        <button class="modal-close" id="btnDetalleCerrar" aria-label="Cerrar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="detail-body">
+        <div class="detail-section">
+          <p class="detail-section-title">Información general</p>
+          <div class="detail-rows" id="detailInfoGeneral"></div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-section-title">Contacto de Calidad</p>
+          <div class="detail-rows" id="detailCalidad"></div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-section-title">Contacto de Compras</p>
+          <div class="detail-rows" id="detailCompras"></div>
+        </div>
+      </div>
+
+      <div class="detail-footer">
+        <button class="btn btn-outline btn-sm" id="btnDetalleEditar">
+          <i class="fa-solid fa-pencil"></i> Editar
+        </button>
+        <button class="btn btn-danger btn-sm" id="btnDetalleEliminar">
+          <i class="fa-solid fa-trash"></i> Eliminar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Toast notifications ── -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <!-- ── Scripts ── -->
+  <script src="/scripts/ventas/clientes.js"></script>
+</body>
+</html>
