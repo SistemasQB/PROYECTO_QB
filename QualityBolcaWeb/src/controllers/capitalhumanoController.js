@@ -14,20 +14,33 @@ controlador.inicio = (req, res) => {
     }
 }
 
+const CAMPO_ORDEN = {
+    plantas:                   'nombre_planta',
+    departamentos:             'nombre_departamento',
+    puestos:                   'nombre_puesto',
+    regiones:                  'nombre_region',
+    escolaridades:             'nombre_escolaridad',
+    tipos_contratacion:        'descripcion',
+    motivos_baja:              'descripcion_baja',
+    infonavit_tipos_descuento: 'descripcion_descuento',
+}
+
 controlador.catalogos = async(req, res) => {
     try{
-        let resultado = null;
-        let clase = new sequelizeClase({modelo: capitalHumano[req.body.catalogo]});
-        switch(req.body.catalogo){
-            case 'plantas':
-                resultado = await clase.obtenerDatosPorCriterio({criterio: {id: { [Op.gt]: 0 }}, orden: ['nombre_planta', 'ASC'] } );
-                return res.status(200).json({token: req.csrfToken(), data: resultado, ok: true, msg: "Catálogo cargado correctamente",});
-            case 'departamentos':
-                resultado = await clase.obtenerDatosPorCriterio({criterio: {id: { [Op.gt]: 0 }}, orden: ['nombre_departamento', 'ASC'] } );
-                return res.status(200).json({token: req.csrfToken(), data: resultado, ok: true, msg: "Catálogo cargado correctamente",});
-            
+        const nombre = req.body.catalogo
+        const campo  = CAMPO_ORDEN[nombre]
+        const modelo = capitalHumano[nombre]
+
+        if (!campo || !modelo) {
+            return res.status(400).json({token: req.csrfToken(), ok: false, msg: `Catálogo "${nombre}" no reconocido`})
         }
-        console.log("no entro al switch");
+
+        const clase = new sequelizeClase({modelo})
+        const resultado = await clase.obtenerDatosPorCriterio({
+            criterio:     {id: {[Op.gt]: 0}},
+            ordenamiento: [campo, 'ASC'],
+        })
+        return res.status(200).json({token: req.csrfToken(), data: resultado, ok: true, msg: 'Catálogo cargado correctamente'})
     }catch(error){
         console.error('Error en controlador.catalogos:', error);
         return res.status(500).json({token: req.csrfToken(), ok: false, msg: 'Error al cargar el catálogo' });
