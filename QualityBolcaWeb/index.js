@@ -79,6 +79,8 @@ try {
   dbs.dbCapturacion.sync();
   await dbs.dbSorteo.authenticate();
   dbs.dbSorteo.sync();
+  await dbs.dbVentas.authenticate();
+  dbs.dbVentas.sync();
   console.log('Conexion Correcta a la base de datos');
 }
 catch (error) {

@@ -11,12 +11,12 @@ export const Catalogos = {
     capitalHumano:{
         departamentos: modeloDepartamentos,
         escolaridades: modeloEscolaridades,
-        infonavitTiposDescuentos: modeloinfonavitTiposDescuentos,
-        motivosBaja: modeloMotivosBaja,
+        infonavit_tipos_descuento: modeloinfonavitTiposDescuentos,
+        motivos_baja: modeloMotivosBaja,
         plantas: modeloPlantas,
         puestos: modeloPuestos,
         regiones: modeloRegiones,
-        tiposContratos: modeloTiposContratos
+        tipos_contratacion: modeloTiposContratos
     },
     gastos: {
         xmls: null

@@ -1,7 +1,6 @@
 /* ============================================================
    CRM Ventas — Seguimiento de Clientes
    Quality Bolca | 2026
-   JS vanilla con datos mock. Backend se integrará después.
    ============================================================ */
 
 'use strict';
@@ -16,106 +15,76 @@ const ICON_TIPO = {
   'otro':        'fa-comment',
 };
 
-/* ── CLIENTES MOCK (simulando los que existen en el módulo de clientes) ── */
-const clientes = [
-  { id: 'c1', denominacion: 'Industrias Regio S.A.',          folio: 'CLI-001' },
-  { id: 'c2', denominacion: 'Plásticos del Bajío',            folio: 'CLI-002' },
-  { id: 'c3', denominacion: 'Electrónica del Norte',          folio: 'CLI-003' },
-  { id: 'c4', denominacion: 'Empaques Monterrey',             folio: 'CLI-004' },
-  { id: 'c5', denominacion: 'Logística Express MX',           folio: 'CLI-005' },
-  { id: 'c6', denominacion: 'Metales Industriales Querétaro', folio: 'CLI-006' },
-  { id: 'c7', denominacion: 'Alimentos Frescos Norte',        folio: 'CLI-007' },
-  { id: 'c8', denominacion: 'Construcciones Regio',           folio: 'CLI-008' },
-];
-
-/* ── DATOS MOCK SEGUIMIENTOS ── */
-let seguimientos = [
-  {
-    id: 's1',
-    clienteId: 'c1',
-    activo: true,
-    estatus: 'En seguimiento',
-    region: 'Noreste',
-    estado: 'Nuevo León',
-    municipio: 'Monterrey',
-    parqueIndustrial: 'Parque Ind. Stiva',
-    nombreContacto: 'Carlos Medina',
-    celular: '(81) 1234-5678',
-    correo: 'c.medina@ind-regio.com',
-    ultimoContacto: '2026-04-20T10:30:00',
-    actividades: [
-      { id: 'a1', tipo: 'llamada', fecha: '2026-04-20T10:30:00', descripcion: 'Llamada de seguimiento mensual.', resultado: 'Cliente interesado en nueva línea de producto.' },
-      { id: 'a2', tipo: 'correo', fecha: '2026-04-15T09:00:00', descripcion: 'Envío de cotización de productos.', resultado: 'Esperando respuesta.' },
-    ],
-  },
-  {
-    id: 's2',
-    clienteId: 'c2',
-    activo: true,
-    estatus: 'Activo — visita programada',
-    region: 'Centro',
-    estado: 'Guanajuato',
-    municipio: 'León',
-    parqueIndustrial: 'P.I. Bajío',
-    nombreContacto: 'Ana Torres',
-    celular: '(477) 555-9900',
-    correo: 'ana.torres@plastnor.mx',
-    ultimoContacto: '2026-04-18T14:00:00',
-    actividades: [
-      { id: 'a3', tipo: 'visita', fecha: '2026-04-18T14:00:00', descripcion: 'Visita a planta para presentación de productos.', resultado: 'Se solicitó muestra de 3 productos.' },
-    ],
-  },
-  {
-    id: 's3',
-    clienteId: 'c5',
-    activo: false,
-    estatus: 'Inactivo — sin respuesta',
-    region: 'Centro',
-    estado: 'Ciudad de México',
-    municipio: 'Venustiano Carranza',
-    parqueIndustrial: '',
-    nombreContacto: 'Roberto Sánchez',
-    celular: '(55) 8800-1122',
-    correo: 'r.sanchez@logex.mx',
-    ultimoContacto: '2026-03-05T11:00:00',
-    actividades: [
-      { id: 'a4', tipo: 'llamada', fecha: '2026-03-05T11:00:00', descripcion: 'Intento de contacto.', resultado: 'No contesta.' },
-      { id: 'a5', tipo: 'correo', fecha: '2026-03-01T08:00:00', descripcion: 'Correo de recontacto enviado.', resultado: 'Sin respuesta.' },
-    ],
-  },
-  {
-    id: 's4',
-    clienteId: 'c4',
-    activo: true,
-    estatus: 'Negociación activa',
-    region: 'Occidente',
-    estado: 'Jalisco',
-    municipio: 'Guadalajara',
-    parqueIndustrial: 'P.I. Sur Guadalajara',
-    nombreContacto: 'María García',
-    celular: '(33) 3344-5566',
-    correo: 'm.garcia@empglobal.com',
-    ultimoContacto: '2026-04-22T16:00:00',
-    actividades: [
-      { id: 'a6', tipo: 'reunión', fecha: '2026-04-22T16:00:00', descripcion: 'Reunión de negociación de precios y volúmenes.', resultado: 'Acuerdo tentativo en productos línea A.' },
-      { id: 'a7', tipo: 'conferencia', fecha: '2026-04-10T10:00:00', descripcion: 'Videoconferencia con equipo de compras.', resultado: 'Se presentaron fichas técnicas.' },
-    ],
-  },
-];
-
 /* ── ESTADO ── */
-let filtros    = { q: '', activo: 'todos' };
-let editingId  = null;
-let actTargetId = null;
+let clientes     = [];
+let seguimientos = [];
+let filtros      = { q: '', activo: 'todos' };
+let editingId    = null;
+let actTargetId  = null;
+
+/* ── API HELPERS ── */
+async function apiPost(url, body) {
+  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._tok }, body: JSON.stringify(body) });
+  const j = await r.json();
+  if (j.token) window._tok = j.token;
+  return j;
+}
+
+async function apiPut(url, body) {
+  const r = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._tok }, body: JSON.stringify(body) });
+  const j = await r.json();
+  if (j.token) window._tok = j.token;
+  return j;
+}
+
+async function apiDelete(url) {
+  const r = await fetch(url, { method: 'DELETE', headers: { 'X-CSRF-Token': window._tok } });
+  const j = await r.json();
+  if (j.token) window._tok = j.token;
+  return j;
+}
+
+/* ── CARGA INICIAL ── */
+async function cargarDatos() {
+  try {
+    const [rCli, rSeg] = await Promise.all([
+      fetch('/ventas/api/clientes',     { headers: { 'X-CSRF-Token': window._tok } }),
+      fetch('/ventas/api/seguimientos', { headers: { 'X-CSRF-Token': window._tok } }),
+    ]);
+    const jCli = await rCli.json();
+    const jSeg = await rSeg.json();
+    if (jCli.token) window._tok = jCli.token;
+    if (jSeg.token) window._tok = jSeg.token;
+
+    if (jCli.ok) clientes     = jCli.data;
+    if (jSeg.ok) seguimientos = jSeg.data;
+
+    populateClienteSelect();
+    renderSeguimientos();
+  } catch (e) {
+    showToast('Error de conexión', 'error');
+  }
+}
+
+async function recargarSeguimientos() {
+  try {
+    const r = await fetch('/ventas/api/seguimientos', { headers: { 'X-CSRF-Token': window._tok } });
+    const j = await r.json();
+    if (j.token) window._tok = j.token;
+    if (j.ok) seguimientos = j.data;
+    renderSeguimientos();
+  } catch (e) {
+    showToast('Error de conexión', 'error');
+  }
+}
 
 /* ================================================================
    INIT
    ================================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   initUserChip();
-  populateClienteSelect();
   setupSwitch();
-  renderSeguimientos();
+  cargarDatos();
 });
 
 /* ── USER CHIP ── */
@@ -135,10 +104,11 @@ function initUserChip() {
 /* ── POBLAR SELECT CLIENTE ── */
 function populateClienteSelect() {
   const sel = document.getElementById('field_clienteId');
+  while (sel.options.length > 1) sel.remove(1);
   clientes.forEach(c => {
     const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = `${c.folio} — ${c.denominacion}`;
+    opt.value       = c.id;
+    opt.textContent = `${c.folio} — ${c.denominacion || c.razonSocial}`;
     sel.appendChild(opt);
   });
 }
@@ -170,8 +140,8 @@ function getFiltered() {
     if (filtros.q) {
       const cliente = clientes.find(c => c.id === s.clienteId);
       const txt = [
-        cliente?.denominacion, cliente?.folio,
-        s.nombreContacto, s.estado, s.region, s.municipio, s.estatus
+        cliente?.denominacion, cliente?.razonSocial, cliente?.folio,
+        s.nombreContacto, s.estado, s.region, s.municipio, s.estatus,
       ].filter(Boolean).join(' ').toLowerCase();
       if (!txt.includes(filtros.q)) return false;
     }
@@ -184,7 +154,7 @@ function getFiltered() {
    ================================================================ */
 function renderSeguimientos() {
   const container = document.getElementById('seguimientosList');
-  const items = getFiltered();
+  const items     = getFiltered();
 
   if (items.length === 0) {
     container.innerHTML = `
@@ -196,9 +166,9 @@ function renderSeguimientos() {
   }
 
   container.innerHTML = items.map((s, idx) => {
-    const cliente = clientes.find(c => c.id === s.clienteId);
-    const nombreCliente = cliente?.denominacion ?? '—';
-    const delay = (idx * 0.06).toFixed(2);
+    const cliente      = clientes.find(c => c.id === s.clienteId);
+    const nombreCliente = cliente?.denominacion || cliente?.razonSocial || '—';
+    const delay        = (idx * 0.06).toFixed(2);
 
     return `
       <div class="seg-card" style="animation-delay:${delay}s">
@@ -288,18 +258,18 @@ function abrirModalEditar(id) {
   editingId = id;
 
   document.getElementById('modalSeguimientoTitle').textContent = 'Editar seguimiento';
-  document.getElementById('seg_id').value                = s.id;
-  document.getElementById('clienteGroup').style.display  = 'none'; // no se cambia el cliente al editar
-  document.getElementById('field_activo').checked        = !!s.activo;
-  document.getElementById('switchLabel').textContent     = s.activo ? 'Activo' : 'Inactivo';
-  document.getElementById('field_estatus').value         = s.estatus ?? '';
-  document.getElementById('field_region').value          = s.region ?? '';
-  document.getElementById('field_estado').value          = s.estado ?? '';
-  document.getElementById('field_municipio').value       = s.municipio ?? '';
-  document.getElementById('field_parqueIndustrial').value= s.parqueIndustrial ?? '';
-  document.getElementById('field_nombreContacto').value  = s.nombreContacto ?? '';
-  document.getElementById('field_celular').value         = s.celular ?? '';
-  document.getElementById('field_correo').value          = s.correo ?? '';
+  document.getElementById('seg_id').value                 = s.id;
+  document.getElementById('clienteGroup').style.display   = 'none';
+  document.getElementById('field_activo').checked         = !!s.activo;
+  document.getElementById('switchLabel').textContent      = s.activo ? 'Activo' : 'Inactivo';
+  document.getElementById('field_estatus').value          = s.estatus ?? '';
+  document.getElementById('field_region').value           = s.region ?? '';
+  document.getElementById('field_estado').value           = s.estado ?? '';
+  document.getElementById('field_municipio').value        = s.municipio ?? '';
+  document.getElementById('field_parqueIndustrial').value = s.parqueIndustrial ?? '';
+  document.getElementById('field_nombreContacto').value   = s.nombreContacto ?? '';
+  document.getElementById('field_celular').value          = s.celular ?? '';
+  document.getElementById('field_correo').value           = s.correo ?? '';
   document.getElementById('modalSeguimiento').classList.add('open');
 }
 
@@ -307,7 +277,7 @@ function cerrarModalSeg() {
   document.getElementById('modalSeguimiento').classList.remove('open');
 }
 
-function guardarSeguimiento() {
+async function guardarSeguimiento() {
   const datos = {
     activo:           document.getElementById('field_activo').checked,
     estatus:          document.getElementById('field_estatus').value.trim(),
@@ -320,32 +290,33 @@ function guardarSeguimiento() {
     correo:           document.getElementById('field_correo').value.trim(),
   };
 
+  let j;
   if (editingId) {
-    const idx = seguimientos.findIndex(x => x.id === editingId);
-    if (idx !== -1) seguimientos[idx] = { ...seguimientos[idx], ...datos };
-    showToast('Seguimiento actualizado', 'success');
+    j = await apiPut(`/ventas/api/seguimientos/${editingId}`, datos);
   } else {
     const clienteId = document.getElementById('field_clienteId').value;
     if (!clienteId) { showToast('Selecciona un cliente', 'error'); return; }
-    seguimientos.push({
-      id: 's' + Date.now(),
-      clienteId,
-      actividades: [],
-      ultimoContacto: null,
-      ...datos,
-    });
-    showToast('Seguimiento creado', 'success');
+    j = await apiPost('/ventas/api/seguimientos', { clienteId, ...datos });
   }
 
-  cerrarModalSeg();
-  renderSeguimientos();
+  if (j.ok) {
+    showToast(editingId ? 'Seguimiento actualizado' : 'Seguimiento creado', 'success');
+    cerrarModalSeg();
+    await recargarSeguimientos();
+  } else {
+    showToast(j.msg ?? 'Error al guardar', 'error');
+  }
 }
 
-function eliminarSeguimiento(id) {
+async function eliminarSeguimiento(id) {
   if (!confirm('¿Eliminar este registro de seguimiento?')) return;
-  seguimientos = seguimientos.filter(x => x.id !== id);
-  renderSeguimientos();
-  showToast('Registro eliminado', 'success');
+  const j = await apiDelete(`/ventas/api/seguimientos/${id}`);
+  if (j.ok) {
+    showToast('Registro eliminado', 'success');
+    await recargarSeguimientos();
+  } else {
+    showToast(j.msg ?? 'Error al eliminar', 'error');
+  }
 }
 
 /* ================================================================
@@ -353,7 +324,7 @@ function eliminarSeguimiento(id) {
    ================================================================ */
 function abrirModalActividad(segId) {
   actTargetId = segId;
-  const now = new Date();
+  const now   = new Date();
   const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   document.getElementById('act_tipo').value        = 'llamada';
   document.getElementById('act_fecha').value       = local;
@@ -367,52 +338,53 @@ function cerrarModalAct() {
   actTargetId = null;
 }
 
-function guardarActividad() {
+async function guardarActividad() {
   if (!actTargetId) return;
-  const seg = seguimientos.find(x => x.id === actTargetId);
-  if (!seg) return;
 
-  const actividad = {
-    id:          'act' + Date.now(),
+  const datos = {
     tipo:        document.getElementById('act_tipo').value,
     fecha:       document.getElementById('act_fecha').value,
     descripcion: document.getElementById('act_descripcion').value.trim(),
     resultado:   document.getElementById('act_resultado').value.trim(),
   };
 
-  if (!seg.actividades) seg.actividades = [];
-  seg.actividades.unshift(actividad);
-  seg.ultimoContacto = actividad.fecha;
-
-  cerrarModalAct();
-  renderSeguimientos();
-  showToast('Actividad registrada', 'success');
+  const j = await apiPost(`/ventas/api/seguimientos/${actTargetId}/actividades`, datos);
+  if (j.ok) {
+    cerrarModalAct();
+    showToast('Actividad registrada', 'success');
+    await recargarSeguimientos();
+  } else {
+    showToast(j.msg ?? 'Error al registrar actividad', 'error');
+  }
 }
 
-function eliminarActividad(actId) {
+async function eliminarActividad(actId) {
   if (!confirm('¿Eliminar esta actividad?')) return;
-  seguimientos.forEach(s => {
-    s.actividades = (s.actividades ?? []).filter(a => a.id !== actId);
-  });
-  renderSeguimientos();
+  const j = await apiDelete(`/ventas/api/actividades/${actId}`);
+  if (j.ok) {
+    showToast('Actividad eliminada', 'success');
+    await recargarSeguimientos();
+  } else {
+    showToast(j.msg ?? 'Error al eliminar actividad', 'error');
+  }
 }
 
 /* ================================================================
    EXPORTAR CSV
    ================================================================ */
 function exportarCSV() {
-  const items = getFiltered();
+  const items   = getFiltered();
   const headers = ['Cliente','Activo','Estatus','Region','Estado','Municipio','Parque Industrial','Contacto','Celular','Correo','Ultimo Contacto','Total Actividades'];
-  const rows = items.map(s => {
+  const rows    = items.map(s => {
     const cliente = clientes.find(c => c.id === s.clienteId);
     return [
-      cliente?.denominacion ?? '', s.activo ? 'Sí' : 'No', s.estatus ?? '',
+      cliente?.denominacion || cliente?.razonSocial || '', s.activo ? 'Sí' : 'No', s.estatus ?? '',
       s.region ?? '', s.estado ?? '', s.municipio ?? '', s.parqueIndustrial ?? '',
       s.nombreContacto ?? '', s.celular ?? '', s.correo ?? '',
       fmtFechaHora(s.ultimoContacto), (s.actividades ?? []).length,
     ];
   });
-  let csv = headers.join(',') + '\n' + rows.map(r => r.map(v => `"${String(v || '').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const csv  = headers.join(',') + '\n' + rows.map(r => r.map(v => `"${String(v || '').replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -451,12 +423,13 @@ function esc(str) {
 
 function showToast(msg, type = 'success') {
   const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
+  const toast     = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-circle-xmark'}"></i> ${esc(msg)}`;
   container.appendChild(toast);
   setTimeout(() => {
-    toast.style.opacity = '0'; toast.style.transition = 'opacity .3s';
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity .3s';
     setTimeout(() => toast.remove(), 300);
   }, 2800);
 }

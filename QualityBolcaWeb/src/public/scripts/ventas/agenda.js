@@ -1,7 +1,6 @@
 /* ============================================================
    CRM Ventas — Agenda de Ventas
    Quality Bolca | 2026
-   JS vanilla con datos mock. Backend se integrará después.
    ============================================================ */
 
 'use strict';
@@ -20,25 +19,52 @@ const COLOR_ETAPA = {
   'Perdido':                '#FF3B30',
 };
 
-/* ── DATOS MOCK ── */
-let prospectos = [
-  { id: '1', razonSocial: 'Industrias Monterrey S.A.', direccion: 'Av. Industrial 340, MTY', parqueIndustrial: 'Parque Ind. Stiva', giro: 'Automotriz', nombreContacto: 'Carlos Medina', correo: 'c.medina@ind-mty.com', telefono: '(81) 1234-5678', etapa: 'Interesado', motivoRechazo: '', comentarios: 'Muy interesado en línea de limpieza industrial.', semanas: [1,2,3,10,11] },
-  { id: '2', razonSocial: 'Plásticos del Norte', direccion: 'Blvd. Insurgentes 890', parqueIndustrial: '', giro: 'Plásticos', nombreContacto: 'Ana Torres', correo: 'ana.torres@plastnor.mx', telefono: '(664) 555-9900', etapa: 'Cotización', motivoRechazo: '', comentarios: 'Esperando cotización detallada.', semanas: [5,6,7] },
-  { id: '3', razonSocial: 'Electrónica Bajío', direccion: 'Carr. León-Silao Km 12', parqueIndustrial: 'Parque Ind. Bajío', giro: 'Electrónica', nombreContacto: 'Luis Pérez', correo: 'lperez@elecbajio.com', telefono: '(477) 123-0000', etapa: 'Prospecto', motivoRechazo: '', comentarios: '', semanas: [15,16,17,18] },
-  { id: '4', razonSocial: 'Empaques Globales', direccion: 'Zona Industrial Sur', parqueIndustrial: 'P.I. Sur Guadalajara', giro: 'Empaque', nombreContacto: 'María García', correo: 'm.garcia@empglobal.com', telefono: '(33) 3344-5566', etapa: 'Negociación', motivoRechazo: '', comentarios: 'En proceso de negociación de precios.', semanas: [3,4,5] },
-  { id: '5', razonSocial: 'Logística Express MX', direccion: 'Calz. de la Viga 200', parqueIndustrial: '', giro: 'Logística', nombreContacto: 'Roberto Sánchez', correo: 'r.sanchez@logex.mx', telefono: '(55) 8800-1122', etapa: 'Perdido', motivoRechazo: 'Precio', comentarios: 'Precio fuera de rango.', semanas: [20] },
-  { id: '6', razonSocial: 'Metales Industriales Querétaro', direccion: 'Parque Ind. Querétaro', parqueIndustrial: 'P.I. Querétaro', giro: 'Metalmecánica', nombreContacto: 'Sofía Ramírez', correo: 'sofia.r@metalqro.mx', telefono: '(442) 900-7788', etapa: 'Contactado', motivoRechazo: '', comentarios: 'Primera llamada realizada.', semanas: [8,9] },
-  { id: '7', razonSocial: 'Alimentos Frescos Norte', direccion: 'Periférico Norte 1500', parqueIndustrial: '', giro: 'Alimentos', nombreContacto: 'Jorge Ibarra', correo: 'jibarra@alfrenor.com', telefono: '(614) 333-4455', etapa: 'Cerrado', motivoRechazo: '', comentarios: 'Contrato firmado.', semanas: [1,2] },
-  { id: '8', razonSocial: 'Construcciones Regio', direccion: 'Av. Constitución 750', parqueIndustrial: '', giro: 'Construcción', nombreContacto: 'Patricia Leal', correo: 'p.leal@constgregio.mx', telefono: '(81) 2200-3300', etapa: 'En busca de contacto', motivoRechazo: '', comentarios: '', semanas: [22,23,24] },
-];
-
-/* ── ESTADO DE LA VISTA ── */
-let vistaActual = 'tabla';
+/* ── ESTADO ── */
+let prospectos     = [];
+let vistaActual    = 'tabla';
 let selectedSemanas = [];
-let editingId = null;
+let editingId      = null;
+let filtros        = { q: '', etapa: 'todas', giro: 'todos', semana: 'todas' };
 
-/* ── FILTROS ── */
-let filtros = { q: '', etapa: 'todas', giro: 'todos', semana: 'todas' };
+/* ── API HELPERS ── */
+async function apiPost(url, body) {
+  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._tok }, body: JSON.stringify(body) });
+  const j = await r.json();
+  if (j.token) window._tok = j.token;
+  return j;
+}
+
+async function apiPut(url, body) {
+  const r = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': window._tok }, body: JSON.stringify(body) });
+  const j = await r.json();
+  if (j.token) window._tok = j.token;
+  return j;
+}
+
+async function apiDelete(url) {
+  const r = await fetch(url, { method: 'DELETE', headers: { 'X-CSRF-Token': window._tok } });
+  const j = await r.json();
+  if (j.token) window._tok = j.token;
+  return j;
+}
+
+/* ── CARGA INICIAL ── */
+async function cargarProspectos() {
+  try {
+    const r = await fetch('/ventas/api/prospectos', { headers: { 'X-CSRF-Token': window._tok } });
+    const j = await r.json();
+    if (j.token) window._tok = j.token;
+    if (j.ok) {
+      prospectos = j.data;
+      renderTabla();
+      if (vistaActual === 'kanban') renderKanban();
+    } else {
+      showToast('Error al cargar prospectos', 'error');
+    }
+  } catch (e) {
+    showToast('Error de conexión', 'error');
+  }
+}
 
 /* ================================================================
    INIT
@@ -47,23 +73,21 @@ document.addEventListener('DOMContentLoaded', () => {
   initUserChip();
   buildSemanasFilter();
   buildSemanasGrid();
-  renderTabla();
-  renderKanban();
+  cargarProspectos();
 });
 
 /* ── USER CHIP ── */
 function initUserChip() {
-  const nombre = 'Vendedor QB';
+  const nombre  = 'Vendedor QB';
   const inicial = nombre.charAt(0).toUpperCase();
-  const els = ['userAvatarSidebar','userAvatarTop'];
-  els.forEach(id => {
+  ['userAvatarSidebar','userAvatarTop'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = inicial;
   });
-  const nameSidebar = document.getElementById('userNameSidebar');
-  const nameTop     = document.getElementById('userNameTop');
-  if (nameSidebar) nameSidebar.textContent = nombre;
-  if (nameTop) nameTop.textContent = nombre;
+  const ns = document.getElementById('userNameSidebar');
+  const nt = document.getElementById('userNameTop');
+  if (ns) ns.textContent = nombre;
+  if (nt) nt.textContent = nombre;
 }
 
 /* ── SEMANAS FILTER SELECT ── */
@@ -99,7 +123,7 @@ function toggleSemana(n, btn) {
     btn.classList.remove('active');
   } else {
     selectedSemanas.push(n);
-    selectedSemanas.sort((a,b) => a-b);
+    selectedSemanas.sort((a, b) => a - b);
     btn.classList.add('active');
   }
   updateSemanasCount();
@@ -139,7 +163,7 @@ function getFiltered() {
    RENDER TABLA
    ================================================================ */
 function renderTabla() {
-  const body = document.getElementById('tableBody');
+  const body  = document.getElementById('tableBody');
   const items = getFiltered();
 
   if (items.length === 0) {
@@ -154,9 +178,9 @@ function renderTabla() {
   }
 
   body.innerHTML = items.map(p => {
-    const color = COLOR_ETAPA[p.etapa] ?? '#007AFF';
+    const color  = COLOR_ETAPA[p.etapa] ?? '#007AFF';
     const semStr = (p.semanas ?? []).length > 0
-      ? (p.semanas.slice(0,6).join(', ') + (p.semanas.length > 6 ? '…' : ''))
+      ? (p.semanas.slice(0, 6).join(', ') + (p.semanas.length > 6 ? '…' : ''))
       : '—';
     return `
       <tr>
@@ -210,7 +234,7 @@ function renderKanban() {
     });
 
     const colItems = items.filter(p => p.etapa === etapa);
-    const color = COLOR_ETAPA[etapa] ?? '#007AFF';
+    const color    = COLOR_ETAPA[etapa] ?? '#007AFF';
 
     col.innerHTML = `
       <div class="kanban-col-header">
@@ -253,14 +277,20 @@ function onDragStart(e) {
   setTimeout(() => card.classList.remove('dragging'), 0);
 }
 
-function moverEtapa(id, nuevaEtapa) {
+async function moverEtapa(id, nuevaEtapa) {
   const p = prospectos.find(x => x.id === id);
   if (!p || p.etapa === nuevaEtapa) return;
-  p.etapa = nuevaEtapa;
-  if (nuevaEtapa !== 'Perdido') p.motivoRechazo = '';
-  renderTabla();
-  renderKanban();
-  showToast(`Prospecto movido a "${nuevaEtapa}"`, 'success');
+
+  const datos = { ...p, etapa: nuevaEtapa };
+  if (nuevaEtapa !== 'Perdido') datos.motivoRechazo = '';
+
+  const j = await apiPut(`/ventas/api/prospectos/${id}`, datos);
+  if (j.ok) {
+    await cargarProspectos();
+    showToast(`Prospecto movido a "${nuevaEtapa}"`, 'success');
+  } else {
+    showToast(j.msg ?? 'Error al mover etapa', 'error');
+  }
 }
 
 /* ================================================================
@@ -296,17 +326,17 @@ function abrirModalEditar(id) {
   selectedSemanas = [...(p.semanas ?? [])];
 
   document.getElementById('modalTitle').textContent = 'Editar prospecto';
-  document.getElementById('prospecto_id').value       = p.id;
-  document.getElementById('field_razonSocial').value  = p.razonSocial ?? '';
-  document.getElementById('field_direccion').value    = p.direccion ?? '';
+  document.getElementById('prospecto_id').value        = p.id;
+  document.getElementById('field_razonSocial').value   = p.razonSocial ?? '';
+  document.getElementById('field_direccion').value     = p.direccion ?? '';
   document.getElementById('field_parqueIndustrial').value = p.parqueIndustrial ?? '';
-  document.getElementById('field_giro').value         = p.giro ?? '';
+  document.getElementById('field_giro').value          = p.giro ?? '';
   document.getElementById('field_nombreContacto').value = p.nombreContacto ?? '';
-  document.getElementById('field_correo').value       = p.correo ?? '';
-  document.getElementById('field_telefono').value     = p.telefono ?? '';
-  document.getElementById('field_etapa').value        = p.etapa ?? 'Prospecto';
+  document.getElementById('field_correo').value        = p.correo ?? '';
+  document.getElementById('field_telefono').value      = p.telefono ?? '';
+  document.getElementById('field_etapa').value         = p.etapa ?? 'Prospecto';
   document.getElementById('field_motivoRechazo').value = p.motivoRechazo ?? '';
-  document.getElementById('field_comentarios').value  = p.comentarios ?? '';
+  document.getElementById('field_comentarios').value   = p.comentarios ?? '';
   buildSemanasGrid();
   toggleMotivoGroup();
   document.getElementById('modalProspecto').classList.add('open');
@@ -321,14 +351,14 @@ function onEtapaChange() {
 }
 
 function toggleMotivoGroup() {
-  const etapa  = document.getElementById('field_etapa').value;
-  const grupo  = document.getElementById('motivoGroup');
+  const etapa = document.getElementById('field_etapa').value;
+  const grupo = document.getElementById('motivoGroup');
   if (etapa === 'Perdido') grupo.classList.add('visible');
   else grupo.classList.remove('visible');
 }
 
 /* ── GUARDAR ── */
-function guardarProspecto() {
+async function guardarProspecto() {
   const razonSocial = document.getElementById('field_razonSocial').value.trim();
   if (!razonSocial) { showToast('Razón social requerida', 'error'); return; }
 
@@ -346,43 +376,44 @@ function guardarProspecto() {
     semanas:          [...selectedSemanas],
   };
 
-  if (editingId) {
-    const idx = prospectos.findIndex(x => x.id === editingId);
-    if (idx !== -1) prospectos[idx] = { ...prospectos[idx], ...datos };
-    showToast('Prospecto actualizado', 'success');
-  } else {
-    datos.id = Date.now().toString();
-    prospectos.push(datos);
-    showToast('Prospecto creado', 'success');
-  }
+  const j = editingId
+    ? await apiPut(`/ventas/api/prospectos/${editingId}`, datos)
+    : await apiPost('/ventas/api/prospectos', datos);
 
-  cerrarModal();
-  renderTabla();
-  if (vistaActual === 'kanban') renderKanban();
+  if (j.ok) {
+    showToast(editingId ? 'Prospecto actualizado' : 'Prospecto creado', 'success');
+    cerrarModal();
+    await cargarProspectos();
+  } else {
+    showToast(j.msg ?? 'Error al guardar', 'error');
+  }
 }
 
 /* ── ELIMINAR ── */
-function eliminarProspecto(id) {
+async function eliminarProspecto(id) {
   if (!confirm('¿Eliminar este prospecto?')) return;
-  prospectos = prospectos.filter(x => x.id !== id);
-  renderTabla();
-  if (vistaActual === 'kanban') renderKanban();
-  showToast('Prospecto eliminado', 'success');
+  const j = await apiDelete(`/ventas/api/prospectos/${id}`);
+  if (j.ok) {
+    showToast('Prospecto eliminado', 'success');
+    await cargarProspectos();
+  } else {
+    showToast(j.msg ?? 'Error al eliminar', 'error');
+  }
 }
 
 /* ================================================================
-   EXPORTAR (stub — sin dependencia externa)
+   EXPORTAR
    ================================================================ */
 function exportarExcel() {
-  const items = getFiltered();
+  const items   = getFiltered();
   const headers = ['Razon Social','Direccion','Parque Industrial','Giro','Contacto','Correo','Telefono','Etapa','Motivo Rechazo','Comentarios','Semanas'];
-  const rows = items.map(p => [
+  const rows    = items.map(p => [
     p.razonSocial, p.direccion, p.parqueIndustrial, p.giro,
     p.nombreContacto, p.correo, p.telefono, p.etapa,
     p.motivoRechazo, p.comentarios, (p.semanas ?? []).join(', ')
   ]);
 
-  let csv = headers.join(',') + '\n' + rows.map(r => r.map(v => `"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const csv  = headers.join(',') + '\n' + rows.map(r => r.map(v => `"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -411,11 +442,15 @@ function cerrarSidebar() {
    ================================================================ */
 function showToast(msg, type = 'success') {
   const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
+  const toast     = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-circle-xmark'}"></i> ${esc(msg)}`;
   container.appendChild(toast);
-  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 2800);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity .3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 2800);
 }
 
 /* ── ESCAPE HTML ── */
