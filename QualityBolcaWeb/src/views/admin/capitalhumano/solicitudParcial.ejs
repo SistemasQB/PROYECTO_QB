@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CSRF token expuesto al JS externo mediante meta tag — evita inline script -->
+  <meta name="csrf-token" content="<%= token %>">
+  <title>Solicitud de Empleo – Quality Bolca</title>
+  <!-- Favicon corporativo -->
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <!-- Hoja de estilos del componente -->
+  <link rel="stylesheet" href="/styles/capitalHumano/estilos_solicitudParcial.css">
+</head>
+<body>
+<header class="app-header">
+
+  <div>
+    <div class="header-inner">
+      <div class="logo">
+        <img
+          src="/img/Quality-BOLCA.png"
+          alt="Quality Bolca S.A. de C.V."
+          class="logo-img"
+        >
+        <div class="logo-text">
+          Solicitud de Empleo
+          <span>Recursos Humanos</span>
+        </div>
+      </div>
+
+      <!-- Fecha dinámica inyectada por JS -->
+      <div class="header-date">
+        <strong id="hdr-date"></strong>
+        Recursos Humanos
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Indicador de progreso — visible en steps 1 a 6 -->
+  <div class="progress-shell" id="progressShell" style="display:none;">
+    <div class="step-dots" id="stepDots"></div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CONTENIDO PRINCIPAL
+     ═══════════════════════════════════════════════════════════ -->
+<main class="container">
+
+  <!-- ─────────────────────────────────────────────────────────
+       STEP 0 — PANTALLA DE BIENVENIDA
+       ───────────────────────────────────────────────────────── -->
+  <div class="step-panel active" id="panel-0">
+    <div class="card welcome">
+
+      <!-- Banda superior azul corporativa con logo centrado y grande -->
+      <div class="welcome-header-band">
+        <img
+          src="/img/Quality-BOLCA.png"
+          alt="Quality Bolca S.A. de C.V."
+          class="welcome-logo-img"
+        >
+        <span class="welcome-company-label">Quality Bolca S.A. de C.V.</span>
+        <div class="welcome-divider"></div>
+      </div>
+
+      <h1>¡Bienvenido/a!</h1>
+      <p>
+        Completa tu solicitud de empleo en <strong>Quality Bolca S.A. de C.V.</strong><br>
+        Es rápida y sencilla. Está dividida en <strong>6 secciones cortas.</strong>
+      </p>
+
+      <!-- Vista previa de las 6 secciones -->
+      <div class="steps-preview">
+        <div class="sp-item"><div class="sp-num">1</div> La vacante</div>
+        <div class="sp-item"><div class="sp-num">2</div> Datos personales</div>
+        <div class="sp-item"><div class="sp-num">3</div> Salud</div>
+        <div class="sp-item"><div class="sp-num">4</div> Educación</div>
+        <div class="sp-item"><div class="sp-num">5</div> Habilidades</div>
+        <div class="sp-item"><div class="sp-num">6</div> Sobre el empleo</div>
+      </div>
+
+      <!-- Aviso de privacidad -->
+      <div class="privacy-strip">
+        🔒 Tu información es <strong>estrictamente confidencial</strong> y será tratada
+        conforme al aviso de privacidad de Quality Bolca. Puedes solicitarlo al depto. de R.H.
+      </div>
+
+      <!-- Boton CTA de inicio — onclick mantiene referencia al JS externo -->
+      <button class="btn-begin" onclick="goTo(1)">
+        Comenzar &nbsp;→
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────
+       STEP 1 — LA VACANTE
+       ───────────────────────────────────────────────────────── -->
+  <div class="step-panel" id="panel-1">
+    <div class="card">
+      <div class="section-head">
+        <div class="section-icon">📋</div>
+        <div>
+          <h2>La Vacante</h2>
+          <p>Cuéntanos qué puesto te interesa</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field w2" id="f-puesto">
+          <label class="lbl">Puesto que solicita <span class="req">*</span></label>
+          <select id="puesto">
+            <option value="">-- Selecciona un puesto --</option>
+            <option>Operador de producción</option>
+            <option>Operador de montacargas</option>
+            <option>Almacenista</option>
+            <option>Ayudante general</option>
+            <option>Técnico de mantenimiento</option>
+            <option>Mecánico industrial</option>
+            <option>Electricista industrial</option>
+            <option>Inspector de calidad</option>
+            <option>Supervisor de área</option>
+            <option>Auxiliar administrativo</option>
+            <option>Capturista de datos</option>
+            <option>Chofer de reparto / distribución</option>
+            <option>Vigilante / Seguridad</option>
+            <option>Limpieza general</option>
+            <option>Otro (especificar)</option>
+          </select>
+          <div class="err-msg">Por favor selecciona el puesto que solicitas.</div>
+        </div>
+      </div>
+
+      <!-- Campo condicional: puesto "Otro" -->
+      <div class="cond" id="cond-otro-puesto">
+        <div class="field" id="f-puesto-otro">
+          <label class="lbl">Especifica el puesto <span class="req">*</span></label>
+          <input type="text" id="puestoOtro" placeholder="Escribe el puesto que solicitas">
+          <div class="err-msg">Por favor especifica el puesto.</div>
+        </div>
+      </div>
+
+      <div class="field" id="f-sueldo">
+        <label class="lbl">Sueldo mensual deseado</label>
+        <div class="pfx">
+          <span class="pfx-sym">$</span>
+          <input type="number" id="sueldo" placeholder="0.00" min="0">
+        </div>
+        <div class="hint">Si tienes expectativa de sueldo, escríbela aquí. No es obligatorio.</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-back" onclick="goTo(0)">← Atrás</button>
+      <button class="btn btn-next" id="btn-next-1" onclick="validateAndGo(1,2)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────
+       STEP 2 — DATOS PERSONALES
+       ───────────────────────────────────────────────────────── -->
+  <div class="step-panel" id="panel-2">
+    <div class="card">
+      <div class="section-head">
+        <div class="section-icon">👤</div>
+        <div>
+          <h2>Datos Personales</h2>
+          <p>Tu información de identificación y contacto</p>
+        </div>
+      </div>
+
+      <!-- Nombre completo -->
+      <div class="row">
+        <div class="field" id="f-apPaterno">
+          <label class="lbl">Apellido paterno <span class="req">*</span></label>
+          <input type="text" id="apPaterno" placeholder="Primer apellido">
+          <div class="err-msg">Campo obligatorio.</div>
+        </div>
+        <div class="field" id="f-apMaterno">
+          <label class="lbl">Apellido materno <span class="req">*</span></label>
+          <input type="text" id="apMaterno" placeholder="Segundo apellido">
+          <div class="err-msg">Campo obligatorio.</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field w2" id="f-nombres">
+          <label class="lbl">Nombre(s) <span class="req">*</span></label>
+          <input type="text" id="nombres" placeholder="Tus nombres de pila">
+          <div class="err-msg">Campo obligatorio.</div>
+        </div>
+      </div>
+
+      <!-- Sexo -->
+      <div class="field" id="f-sexo">
+        <label class="lbl">Sexo <span class="req">*</span></label>
+        <div class="choices">
+          <label class="choice" onclick="pick(this,'sexo','M')">
+            <input type="radio" name="sexo" value="M"> ♂ Masculino
+          </label>
+          <label class="choice" onclick="pick(this,'sexo','F')">
+            <input type="radio" name="sexo" value="F"> ♀ Femenino
+          </label>
+        </div>
+        <div class="err-msg">Por favor selecciona tu sexo.</div>
+      </div>
+
+      <hr class="div">
+
+      <!-- Dirección -->
+      <div class="field w2" id="f-calle">
+        <label class="lbl">Calle y número <span class="req">*</span></label>
+        <input type="text" id="calle" placeholder="Ej. Av. Morelos 123">
+        <div class="err-msg">Campo obligatorio.</div>
+      </div>
+      <div class="row">
+        <div class="field" id="f-colonia">
+          <label class="lbl">Colonia <span class="req">*</span></label>
+          <input type="text" id="colonia" placeholder="Nombre de tu colonia">
+          <div class="err-msg">Campo obligatorio.</div>
+        </div>
+        <div class="field w-sm" id="f-cp">
+          <label class="lbl">C.P.</label>
+          <input type="text" id="cp" placeholder="00000" maxlength="5">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field" id="f-telefono">
+          <label class="lbl">Teléfono <span class="req">*</span></label>
+          <input type="tel" id="telefono" placeholder="10 dígitos">
+          <div class="err-msg">Campo obligatorio.</div>
+        </div>
+        <div class="field" id="f-email">
+          <label class="lbl">Correo electrónico <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="tucorreo@ejemplo.com">
+          <div class="err-msg">Escribe un correo válido.</div>
+        </div>
+      </div>
+
+      <!-- CURP -->
+      <div class="field" id="f-curp">
+        <label class="lbl">CURP <span class="req">*</span></label>
+        <input type="text" id="curp" placeholder="18 caracteres" maxlength="18" style="text-transform:uppercase;">
+        <div class="hint">Clave Única de Registro de Población — 18 caracteres.</div>
+        <div class="err-msg">La CURP es obligatoria.</div>
+      </div>
+
+      <hr class="div">
+
+      <!-- Nacimiento y residencia -->
+      <div class="row">
+        <div class="field" id="f-lugarNac">
+          <label class="lbl">Lugar de nacimiento <span class="req">*</span></label>
+          <input type="text" id="lugarNac" placeholder="Ciudad, Estado">
+          <div class="err-msg">Campo obligatorio.</div>
+        </div>
+        <div class="field" id="f-fechaNac">
+          <label class="lbl">Fecha de nacimiento <span class="req">*</span></label>
+          <input type="date" id="fechaNac">
+          <div class="err-msg">Campo obligatorio.</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field" id="f-tiempoRes">
+          <label class="lbl">¿Cuánto tiempo llevas viviendo en esta ciudad?</label>
+          <input type="text" id="tiempoRes" placeholder="Ej. 5 años">
+        </div>
+        <div class="field" id="f-nac">
+          <label class="lbl">Nacionalidad <span class="req">*</span></label>
+          <div class="choices">
+            <label class="choice" onclick="pick(this,'nac','Mexicana'); openCond('cond-nac-otra',false)">
+              <input type="radio" name="nac" value="Mexicana"> 🇲🇽 Mexicana
+            </label>
+            <label class="choice" onclick="pick(this,'nac','Otra'); openCond('cond-nac-otra',true)">
+              <input type="radio" name="nac" value="Otra"> 🌎 Otra
+            </label>
+          </div>
+          <div class="err-msg">Por favor selecciona tu nacionalidad.</div>
+        </div>
+      </div>
+      <div class="cond" id="cond-nac-otra">
+        <div class="field" id="f-nacOtra">
+          <label class="lbl">¿Cuál nacionalidad?</label>
+          <input type="text" id="nacOtra" placeholder="Especifica tu nacionalidad">
+        </div>
+      </div>
+
+      <hr class="div">
+
+      <!-- Convivencia -->
+      <div class="field" id="f-viveCon">
+        <label class="lbl">¿Con quién vives actualmente? <span class="req">*</span></label>
+        <div class="choices" id="viveConChoices">
+          <label class="choice" onclick="toggleCheck(event,this,'viveCon','padres')">
+            <input type="checkbox" name="viveCon" value="padres"> 👪 Mis padres
+          </label>
+          <label class="choice" onclick="toggleCheck(event,this,'viveCon','familia')">
+            <input type="checkbox" name="viveCon" value="familia"> 🏠 Mi familia
+          </label>
+          <label class="choice" onclick="toggleCheck(event,this,'viveCon','parientes')">
+            <input type="checkbox" name="viveCon" value="parientes"> 👥 Parientes
+          </label>
+          <label class="choice" onclick="toggleCheck(event,this,'viveCon','solo')">
+            <input type="checkbox" name="viveCon" value="solo"> 🧍 Solo/a
+          </label>
+        </div>
+        <div class="err-msg">Por favor selecciona una opción.</div>
+      </div>
+
+      <!-- Datos físicos y estado civil -->
+      <div class="row">
+        <div class="field w-sm" id="f-estatura">
+          <label class="lbl">Estatura (m)</label>
+          <input type="text" id="estatura" placeholder="1.70">
+        </div>
+        <div class="field w-sm" id="f-peso">
+          <label class="lbl">Peso (kg)</label>
+          <input type="number" id="peso" placeholder="65">
+        </div>
+        <div class="field" id="f-edoCivil">
+          <label class="lbl">Estado civil <span class="req">*</span></label>
+          <div class="choices">
+            <label class="choice" onclick="pick(this,'edoCivil','Soltero/a')">
+              <input type="radio" name="edoCivil" value="Soltero/a"> Soltero/a
+            </label>
+            <label class="choice" onclick="pick(this,'edoCivil','Casado/a')">
+              <input type="radio" name="edoCivil" value="Casado/a"> Casado/a
+            </label>
+            <label class="choice" onclick="pick(this,'edoCivil','Unión libre')">
+              <input type="radio" name="edoCivil" value="Unión libre"> Unión libre
+            </label>
+          </div>
+          <div class="err-msg">Selecciona tu estado civil.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-back" onclick="goTo(1)">← Atrás</button>
+      <button class="btn btn-next" id="btn-next-2" onclick="validateAndGo(2,3)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────
+       STEP 3 — SALUD Y HÁBITOS
+       ───────────────────────────────────────────────────────── -->
+  <div class="step-panel" id="panel-3">
+    <div class="card">
+      <div class="section-head">
+        <div class="section-icon">❤️</div>
+        <div>
+          <h2>Salud y Hábitos</h2>
+          <p>Información confidencial sobre tus hábitos</p>
+        </div>
+      </div>
+
+      <div class="info-badge">
+        <span class="ico">🔒</span>
+        Esta información es completamente confidencial. Por favor sé honesto/a — nos ayuda a conocerte mejor.
+      </div>
+
+      <!-- Tabaco -->
+      <div class="field" id="f-tabaco">
+        <label class="lbl">¿Fumas o consumes tabaco? <span class="req">*</span></label>
+        <div class="choices">
+          <label class="choice" onclick="pickYN(this,'tabaco','Si','yes')">
+            <input type="radio" name="tabaco" value="Si"> 🚬 Sí
+          </label>
+          <label class="choice" onclick="pickYN(this,'tabaco','No','no')">
+            <input type="radio" name="tabaco" value="No"> ✅ No
+          </label>
+        </div>
+        <div class="err-msg">Por favor responde esta pregunta.</div>
+      </div>
+
+      <hr class="div">
+
+      <!-- Alcohol -->
+      <div class="field" id="f-alcohol">
+        <label class="lbl">¿Consumes bebidas alcohólicas? <span class="req">*</span></label>
+        <div class="choices">
+          <label class="choice" onclick="pickYN(this,'alcohol','Si','yes')">
+            <input type="radio" name="alcohol" value="Si"> 🍺 Sí
+          </label>
+          <label class="choice" onclick="pickYN(this,'alcohol','No','no')">
+            <input type="radio" name="alcohol" value="No"> ✅ No
+          </label>
+        </div>
+        <div class="err-msg">Por favor responde esta pregunta.</div>
+      </div>
+
+      <hr class="div">
+
+      <!-- Drogas -->
+      <div class="field" id="f-drogas">
+        <label class="lbl">¿Has consumido drogas o alucinógenos? <span class="req">*</span></label>
+        <div class="choices">
+          <label class="choice" onclick="pickYN(this,'drogas','Si','yes'); openCond('cond-drogas-si',true)">
+            <input type="radio" name="drogas" value="Si"> ⚠️ Sí
+          </label>
+          <label class="choice" onclick="pickYN(this,'drogas','No','no'); openCond('cond-drogas-si',false)">
+            <input type="radio" name="drogas" value="No"> ✅ No
+          </label>
+        </div>
+        <div class="err-msg">Por favor responde esta pregunta.</div>
+      </div>
+      <div class="cond" id="cond-drogas-si">
+        <div class="field" id="f-rehabilitacion">
+          <label class="lbl">¿Has estado en un programa de rehabilitación? <span class="req">*</span></label>
+          <div class="choices">
+            <label class="choice" onclick="pickYN(this,'rehabilitacion','Si','yes')">
+              <input type="radio" name="rehabilitacion" value="Si"> ✅ Sí, he recibido apoyo
+            </label>
+            <label class="choice" onclick="pickYN(this,'rehabilitacion','No','no')">
+              <input type="radio" name="rehabilitacion" value="No"> ❌ No
+            </label>
+          </div>
+          <div class="err-msg">Por favor responde esta pregunta.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-back" onclick="goTo(2)">← Atrás</button>
+      <button class="btn btn-next" id="btn-next-3" onclick="validateAndGo(3,4)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────
+       STEP 4 — EDUCACIÓN
+       ───────────────────────────────────────────────────────── -->
+  <div class="step-panel" id="panel-4">
+    <div class="card">
+      <div class="section-head">
+        <div class="section-icon">🎓</div>
+        <div>
+          <h2>Educación</h2>
+          <p>Tu nivel de estudios</p>
+        </div>
+      </div>
+
+      <div class="field" id="f-escolaridad">
+        <label class="lbl">¿Cuál es tu grado máximo de estudios? <span class="req">*</span></label>
+        <select id="escolaridad">
+          <option value="">-- Selecciona tu nivel educativo --</option>
+          <option value="Primaria">📚 Primaria</option>
+          <option value="Secundaria">📖 Secundaria</option>
+          <option value="Bachillerato / Técnica">🎒 Bachillerato / Técnica</option>
+          <option value="Título universitario">🏛️ Título universitario</option>
+          <option value="Postgrado">🏅 Postgrado (Maestría / Doctorado)</option>
+        </select>
+        <div class="err-msg">Por favor selecciona tu nivel de estudios.</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-back" onclick="goTo(3)">← Atrás</button>
+      <button class="btn btn-next" id="btn-next-4" onclick="validateAndGo(4,5)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────
+       STEP 5 — HABILIDADES
+       ───────────────────────────────────────────────────────── -->
+  <div class="step-panel" id="panel-5">
+    <div class="card">
+      <div class="section-head">
+        <div class="section-icon">🔧</div>
+        <div>
+          <h2>Habilidades</h2>
+          <p>Equipos que manejas y documentos de viaje</p>
+        </div>
+      </div>
+
+      <!-- Sistema de tags de maquinas -->
+      <div class="field" id="f-maquinas">
+        <label class="lbl">Máquinas de oficina o taller que sabes manejar</label>
+        <div class="hint" style="margin-bottom:8px;">Selecciona una opción y haz clic en "+ Agregar". Puedes agregar varias.</div>
+
+        <div class="machine-selector">
+          <select id="machineSelect">
+            <option value="">-- Selecciona una máquina --</option>
+            <optgroup label="Taller / Producción">
+              <option>Ninguna</option>
+              <option>Montacargas manual</option>
+              <option>Montacargas eléctrico</option>
+              <option>Carretilla eléctrica</option>
+              <option>Torno CNC</option>
+              <option>Fresadora</option>
+              <option>Prensa hidráulica</option>
+              <option>Soldadora MIG/MAG</option>
+              <option>Soldadora TIG</option>
+              <option>Esmeriladora</option>
+              <option>Taladro de banco</option>
+              <option>Compresor de aire</option>
+              <option>Grúa pórtico</option>
+              <option>Banda transportadora</option>
+              <option>Cortadora industrial</option>
+              <option>Pulidora</option>
+              <option>Pistola de calor</option>
+            </optgroup>
+            <optgroup label="Oficina">
+              <option>Computadora / PC</option>
+              <option>Impresora / Copiadora</option>
+              <option>Escáner</option>
+              <option>Báscula industrial</option>
+              <option>Fax</option>
+              <option>Cámara de seguridad / CCTV</option>
+            </optgroup>
+            <option value="__otro__">➕ Otra (escribir)</option>
+          </select>
+          <button class="btn-add-machine" type="button" onclick="addMachine()">+ Agregar</button>
+        </div>
+
+        <!-- Input condicional: maquina "Otra" -->
+        <div class="cond" id="cond-maq-otra" style="margin-top:8px;">
+          <input type="text" id="machineOtro" placeholder="Escribe el nombre de la máquina">
+        </div>
+
+        <!-- Contenedor de tags agregados -->
+        <div class="machine-tags" id="machineTags">
+          <span class="machine-empty">Aún no has agregado ninguna máquina.</span>
+        </div>
+      </div>
+
+      <hr class="div">
+
+      <!-- Pasaporte -->
+      <div class="field" id="f-pasaporte">
+        <label class="lbl">¿Tienes pasaporte vigente? <span class="req">*</span></label>
+        <div class="choices">
+          <label class="choice" onclick="pickYN(this,'pasaporte','Si','yes')">
+            <input type="radio" name="pasaporte" value="Si"> ✅ Sí, tengo
+          </label>
+          <label class="choice" onclick="pickYN(this,'pasaporte','No','no')">
+            <input type="radio" name="pasaporte" value="No"> ❌ No tengo
+          </label>
+        </div>
+        <div class="err-msg">Por favor responde esta pregunta.</div>
+      </div>
+
+      <!-- Visa -->
+      <div class="field" id="f-visa">
+        <label class="lbl">¿Tienes visa? <span class="req">*</span></label>
+        <div class="choices">
+          <label class="choice" onclick="pickYN(this,'visa','Si','yes')">
+            <input type="radio" name="visa" value="Si"> ✅ Sí, tengo
+          </label>
+          <label class="choice" onclick="pickYN(this,'visa','No','no')">
+            <input type="radio" name="visa" value="No"> ❌ No tengo
+          </label>
+        </div>
+        <div class="err-msg">Por favor responde esta pregunta.</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-back" onclick="goTo(4)">← Atrás</button>
+      <button class="btn btn-next" id="btn-next-5" onclick="validateAndGo(5,6)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────
+       STEP 6 — SOBRE EL EMPLEO
+       ───────────────────────────────────────────────────────── -->
+  <div class="step-panel" id="panel-6">
+    <div class="card">
+      <div class="section-head">
+        <div class="section-icon">🏭</div>
+        <div>
+          <h2>Sobre el Empleo</h2>
+          <p>Última sección — ya casi terminas</p>
+        </div>
+      </div>
+
+      <!-- Como se entero de la vacante -->
+      <div class="field" id="f-enterado">
+        <label class="lbl">¿Cómo te enteraste de la vacante en Quality Bolca? <span class="req">*</span></label>
+        <div class="choices">
+          <label class="choice" onclick="pick(this,'enterado','Anuncio'); openCond('cond-otro-medio',false)">
+            <input type="radio" name="enterado" value="Anuncio"> 📰 Anuncio
+          </label>
+          <label class="choice" onclick="pick(this,'enterado','Volante'); openCond('cond-otro-medio',false)">
+            <input type="radio" name="enterado" value="Volante"> 📄 Volante
+          </label>
+          <label class="choice" onclick="pick(this,'enterado','Redes sociales'); openCond('cond-otro-medio',false)">
+            <input type="radio" name="enterado" value="Redes sociales"> 📱 Redes sociales
+          </label>
+          <label class="choice" onclick="pick(this,'enterado','Otro'); openCond('cond-otro-medio',true)">
+            <input type="radio" name="enterado" value="Otro"> ➕ Otro
+          </label>
+        </div>
+        <div class="err-msg">Por favor selecciona cómo te enteraste.</div>
+      </div>
+      <div class="cond" id="cond-otro-medio">
+        <div class="field" id="f-otroMedio">
+          <label class="lbl">¿Cómo te enteraste? <span class="req">*</span></label>
+          <input type="text" id="otroMedio" placeholder="Ej. Un conocido me avisó, bolsa de trabajo...">
+          <div class="err-msg">Por favor especifica cómo te enteraste.</div>
+        </div>
+      </div>
+
+      <hr class="div">
+
+      <!-- Familiar en Quality Bolca -->
+      <div class="field" id="f-familiarQB">
+        <label class="lbl">¿Tienes algún familiar o amigo que trabaje actualmente en Quality Bolca? <span class="req">*</span></label>
+        <div class="choices">
+          <label class="choice" onclick="pickYN(this,'familiarQB','No','no'); openCond('cond-familiar-si',false)">
+            <input type="radio" name="familiarQB" value="No"> ❌ No
+          </label>
+          <label class="choice" onclick="pickYN(this,'familiarQB','Si','yes'); openCond('cond-familiar-si',true)">
+            <input type="radio" name="familiarQB" value="Si"> ✅ Sí
+          </label>
+        </div>
+        <div class="err-msg">Por favor responde esta pregunta.</div>
+      </div>
+      <div class="cond" id="cond-familiar-si">
+        <div class="row">
+          <div class="field" id="f-familiarNombre">
+            <label class="lbl">¿Cómo se llama? <span class="req">*</span></label>
+            <input type="text" id="familiarNombre" placeholder="Nombre completo de la persona">
+            <div class="err-msg">Campo obligatorio.</div>
+          </div>
+          <div class="field" id="f-familiarParentesco">
+            <label class="lbl">¿Qué parentesco o relación tiene contigo? <span class="req">*</span></label>
+            <input type="text" id="familiarParentesco" placeholder="Ej. Hermano, primo, amigo">
+            <div class="err-msg">Campo obligatorio.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-back" onclick="goTo(5)">← Atrás</button>
+      <button class="btn btn-submit" id="btn-submit" onclick="validateAndSubmit()">✅ Enviar solicitud</button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────
+       STEP 7 — CONFIRMACIÓN DE ÉXITO
+       ───────────────────────────────────────────────────────── -->
+  <div class="step-panel" id="panel-7">
+    <div class="card success">
+
+      <!-- Icono de exito en circulo verde -->
+      <div class="success-icon-wrap">🎉</div>
+
+      <h2>¡Solicitud enviada!</h2>
+      <p>Gracias por completar tu solicitud de empleo en <strong>Quality Bolca S.A. de C.V.</strong></p>
+      <p style="margin-top:8px; color:var(--gray-4);">
+        El departamento de Recursos Humanos revisará tu información y se pondrá en contacto contigo a la brevedad.
+      </p>
+
+      <!-- Documentos que debe presentar el candidato al ser contactado -->
+      <div class="docs-list">
+        <strong>Documentos que deberás presentar cuando te contactemos:</strong>
+        • Acta de nacimiento<br>
+        • INE<br>
+        • Comprobante de estudios<br>
+        • Comprobante de domicilio<br>
+        • Número de Seguro Social (NSS)<br>
+        • CURP<br>
+        • Constancia de situación fiscal actualizada (no mayor a 3 meses)
+  
+      </div>
+
+      <button class="btn btn-next" onclick="location.reload()" style="width:100%; justify-content:center; margin-top:4px;">
+        Llenar otra solicitud
+      </button>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- JS externo de logica del formulario — no se modifica -->
+<script src="/scripts/capitalHumano/scripts_solicitudParcial.js"></script>
+
+</body>
+</html>

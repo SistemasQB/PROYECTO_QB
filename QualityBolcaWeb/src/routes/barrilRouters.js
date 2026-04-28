@@ -1,7 +1,6 @@
 import adminRouters from "./adminRoutes.js";
-import atraccionRouters from "./atraccionRoutes.js";
 import calidadRouters from "./calidadRoutes.js";
-import capitalHumanoRouters from "./capitalHumanoRoutes.js";
+import ACH_Routers from "./ACH_Routes.js";
 import contabilidadRouters from "./contabilidadRoutes.js";
 import infraestructuraRouters from "./infraestructuraRouter.js";
 import nominasRouters from "./nominasRoutes.js";
@@ -20,8 +19,7 @@ import ventasRouters from "./ventasRoutes.js";
 
 const routers = {
     adminRouters,
-    atraccionRouters,
-    capitalHumanoRouters,
+    ACH_Routers,    
     contabilidadRouters,
     infraestructuraRouters,
     nominasRouters,

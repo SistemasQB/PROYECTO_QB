@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize'
 import dbNew from '../../../config/dbNew.js'
 
-const Plantas = dbNew.define('plantas', {
+const Plantas = dbNew.define('c_plantas', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -19,16 +19,16 @@ const Plantas = dbNew.define('plantas', {
         defaultValue: true
     }
 }, {
-    tableName: 'plantas',
+    tableName: 'c_plantas',
     freezeTableName: true,
     timestamps: false
 })
 
-Plantas.asociar = (modelos) => {
-    Plantas.hasMany(modelos.EmpleadosPosicion, {
-        foreignKey: 'id_planta',
-        as: 'posiciones'
-    })
-}
+// Plantas.asociar = (modelos) => {
+//     Plantas.hasMany(modelos.EmpleadosPosicion, {
+//         foreignKey: 'id_planta',
+//         as: 'posiciones'
+//     })
+// }
 
 export default Plantas

@@ -5,14 +5,7 @@ import modelosSistemas from './sistemas/barril_modelos_sistemas.js';
 import modelonom10001 from './generales/nom10001.js';
 import nom10006 from './generales/nom10006.js';
 
-// const sequelize = new Sequelize('informacionQB', process.env.BD_USER, process.env.BD_PASS, {host: process.env.BD_HOST,dialect: process.env.BD_DIALECT});
-// const qb = new Sequelize(process.env.BD_NOMBRE, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
-// const compras = new Sequelize(process.env.BD_COMPRAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
-// const calidad = new Sequelize(process.env.BD_CALIDAD, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
-// const sistemas = new Sequelize(process.env.BD_SISTEMAS, process.env.BD_USER, process.env.BD_PASS,{ host: process.env.BD_HOST, dialect: process.env.BD_DIALECT})
 
-// informaciongch.belongsTo(informacionpuesto, { foreignKey: 'idpuesto', targetKey: 'idpuesto' });
-// informacionpuesto.hasOne(informaciongch, { foreignKey: 'idpuesto', sourceKey: 'idpuesto' });
 // Definir asociaciones
 // Comunicacion.belongsTo(Gch_Alta, { foreignKey: 'curp', targetKey: 'id' });
 // Gch_Alta.hasOne(Comunicacion, { foreignKey: 'curp', sourceKey: 'id' });
