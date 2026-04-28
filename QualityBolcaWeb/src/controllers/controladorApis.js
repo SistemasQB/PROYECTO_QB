@@ -7,4 +7,6 @@ controlador.prueba = (req, res) => {
 controlador.semanales = (req, res) => {
     res.json({ ok: true, msg: "api de prueba" });
 }
+
+
 export default controlador;

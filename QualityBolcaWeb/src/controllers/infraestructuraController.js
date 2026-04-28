@@ -5,7 +5,6 @@ import db from "../config/db.js";
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import nodemailerClase from "../public/clases/nodemailer.js";
 import { QueryTypes, Op } from "sequelize";
-import nom10006 from "../models/generales/nom10006.js";
 
 const infraestructuraController = {}
 //controlador de inicio
@@ -646,10 +645,99 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 delete campos._csrf
                 delete campos.tipo
                 campos.solicitante = usuarioM.apellidopaterno + ' ' + usuarioM.apellidomaterno + ' ' + usuarioM.nombre
-                campos.puesto = usuarioM.departamentoLocal
+                const solicitanteReq = await db.query(
+                    `SELECT puesto, departamento FROM usuariosRequisiciones WHERE nombre = :nombre LIMIT 1`,
+                    { replacements: { nombre: campos.solicitante }, type: QueryTypes.SELECT }
+                )
+                campos.puesto = solicitanteReq[0]?.puesto || usuarioM.departamentoLocal
+                campos.departamento = solicitanteReq[0]?.departamento || usuarioM.departamentoLocal
                 campos.contacto = usuarioM.correo
                 const respuesta = await clase.insertar({ datosInsertar: campos })
                 if (!respuesta) return res.json({ ok: false, msg: 'no se pudo ingresar la informacion' })
+
+                //notificar a los autorizadores cuando se crea una requisición
+                try {
+                    const candidatos = await db.query(`
+                        SELECT ur.nombre, ur.correo, u.permisos
+                        FROM usuariosRequisiciones ur
+                        LEFT JOIN nom10001 e ON e.nombrelargo COLLATE utf8mb4_general_ci = ur.nombre
+                        LEFT JOIN usuarios u ON u.codigoempleado = e.codigoempleado
+                        WHERE ur.departamento = :departamento
+                    `, {
+                        replacements: { departamento: campos.autoriza },
+                        type: db.QueryTypes.SELECT
+                    })
+
+                    console.log(`[Requisicion] Candidatos encontrados en BD para departamento "${campos.autoriza}": ${candidatos.length}`)
+
+                    const correosDestino = []
+
+                    for (const candidato of candidatos) {
+                        if (!candidato.correo) continue
+
+                        // usuariosRequisiciones es la fuente de verdad: se incluye a todos
+                        // EXCEPTO los que tengan requisicionPermisos configurado como solo 'auxiliar'
+                        let esAuxiliarExclusivo = false
+                        try {
+                            if (candidato.permisos !== null && candidato.permisos !== undefined) {
+                                const permisos = typeof candidato.permisos === 'string'
+                                    ? JSON.parse(candidato.permisos)
+                                    : candidato.permisos
+                                const requisicionPermisos = permisos?.requisicionPermisos
+                                const niveles = Array.isArray(requisicionPermisos)
+                                    ? requisicionPermisos
+                                    : (requisicionPermisos ? [requisicionPermisos] : [])
+                                // excluir solo si TODOS sus roles son 'auxiliar'
+                                if (niveles.length > 0 && niveles.every(n => n.toLowerCase() === 'auxiliar')) {
+                                    esAuxiliarExclusivo = true
+                                }
+                            }
+                        } catch (_) {
+                            // permisos malformados: incluir al candidato por defecto
+                        }
+
+                        if (!esAuxiliarExclusivo) {
+                            correosDestino.push(candidato.correo)
+                        }
+                    }
+
+                    console.log(`[Requisicion] Candidatos que pasaron el filtro: ${correosDestino.length}`)
+                    console.log(`[Requisicion] Enviando correos a: ${correosDestino.join(', ')}`)
+
+                    if (correosDestino.length > 0) {
+                        const correo = new nodemailerClase({
+                            datosSmtp: {
+                                host: process.env.EMAIL_HOST,
+                                port: process.env.EMAIL_PORT,
+                                auth: {
+                                    user: process.env.EMAILR_USER,
+                                    pass: process.env.EMAILR_PASS
+                                }
+                            }
+                        })
+
+                        const htmlNotif = correo.htmlNuevaRequisicion({
+                            solicitante: campos.solicitante,
+                            departamentoAutorizador: campos.autoriza
+                        })
+
+                        for (const destinatario of correosDestino) {
+                            await correo.enviarCorreo({
+                                Datoscorreo: {
+                                    destinatario,
+                                    asunto: 'Tienes una nueva requisición pendiente de aprobación',
+                                    texto: `Tienes una solicitud de aprobación de requisición de ${campos.solicitante}.`,
+                                    html: htmlNotif
+                                }
+                            })
+                        }
+                    } else {
+                        console.warn(`No se encontraron autorizadores con permiso suficiente para el departamento: ${campos.autoriza}`)
+                    }
+                } catch (errCorreo) {
+                    console.error('Error al enviar correo al autorizador:', errCorreo)
+                }
+
                 return res.json({ ok: true, msg: 'informacion enviada exitosamente' })
             case 'misRequisiciones': //mis requisiciones
 
@@ -829,7 +917,7 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 }
 
                 const datosUsuarioAuth = await db.query(`
-                    SELECT nombrelargo
+                    SELECT nombrelargo, correoelectronico
                     FROM nom10001
                     WHERE codigoempleado = :usuario
                 `, {
@@ -838,6 +926,7 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                 })
 
                 const nombreAutorizador = datosUsuarioAuth[0].nombrelargo
+                const correoAutorizador = datosUsuarioAuth[0].correoelectronico || null
 
                 const [reqDB] = await db.query(`
                     SELECT *
@@ -925,19 +1014,22 @@ infraestructuraController.crudRequisicionGastos = async (req, res) => {
                         autorizador: nombreAutorizador
                     })
 
-                    const correoCompras = 'info.sistemas@qualitybolca.com'
+                    const destinatario = [
+                        process.env.correoCompras,
+                        process.env.correoGastos1,
+                        process.env.correoGastos2
+                    ].filter(Boolean).join(', ')
 
-                    const destinatarios = [correoCompras]
-
-                    if (correoSolicitante) {
-                        destinatarios.push(correoSolicitante)
-                    }
+                    const cc = [
+                        correoSolicitante,
+                        correoAutorizador
+                    ].filter(Boolean).join(', ')
 
                     await correo.enviarCorreo({
                         Datoscorreo: {
-                            destinatario: correoCompras,
-                            cc: correoSolicitante || undefined,
-                            asunto: `Requisición APROBADA (${reqDB.id})`,
+                            destinatario,
+                            cc: cc || undefined,
+                            asunto: reqDB.asunto,
                             texto: 'Requisición aprobada',
                             html
                         }
@@ -1009,10 +1101,13 @@ infraestructuraController.crearRequisicionGastos = async (req, res) => {
         const puesto = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
         if (!puesto) return res.status(501).json({ ok: false, msg: 'No se pudo obtener el puesto del empleado' })
         const listaAutorizacion = Clasificacion(puesto.descripcion)
+        // Enriquecer datosUsuario con puesto y departamento para que el sidebar del form los muestre
+        datosUsuario.puesto = puesto.descripcion || ''
+        datosUsuario.departamento = puesto.departamento || ''
         clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_regionesGastos })
         const regiones = await clase.obtenerDatosPorCriterio({ criterio: { vigente: true }, ordenamiento: [['region', 'ASC']], atributos: ['region'] })
         // To do: realizar validacion si el usuario pertenece a SC y traer a los supervisores (delegado) asi como tambien a las cotizaciones con horas en caso de que sea cobro
-        res.render('admin/infraestructura/requisicionGastos_form.ejs', { tokin: req.csrfToken(), plantas, datosUsuario, listaAutorizacion, regiones })
+        res.render('admin/infraestructura/requisicionGastos_form.ejs', { tokin: req.csrfToken(), plantas, datosUsuario, listaAutorizacion, regiones, puesto })
     } catch (error) {
         manejadorErrores(res, error)
     }
@@ -1116,7 +1211,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
         
         // obtener puesto
         let clasePuesto = new sequelizeClase({
-            modelo: nom10006
+            modelo: modelosGenerales.nom10006
         })
 
         let puesto = await clasePuesto.obtener1Registro({
@@ -1147,7 +1242,7 @@ infraestructuraController.aprobacionesRequisicionGastos = async (req, res) => {
 
         let esNivelAlto = false
         let esSuperAdmin = false
-
+        
         if (permisosGet.length) {
             const permisos = typeof permisosGet[0].permisos === 'string'
                 ? JSON.parse(permisosGet[0].permisos)
@@ -1345,6 +1440,7 @@ function Clasificacion(puesto) {
         'DIRECTOR DE ADMINISTRACION',
         'DIRECTOR DE SORTEO',
         'DIRECCIÓN DE CAPITAL HUMANO',
+        'DESARROLLO DE SOFTWARE'
     ]
 }
 export default infraestructuraController;

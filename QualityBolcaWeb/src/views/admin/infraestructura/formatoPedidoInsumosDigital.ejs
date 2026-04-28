@@ -466,7 +466,7 @@
   let order = <%-JSON.stringify(resultados)%>
   order.solicitado = JSON.parse(order.solicitado)
   console.log(order)
-
+  let surtidor = order.solicitado[0].surtio
   const campos = {
     fecha: document.getElementById('fecha'),
     tbody: document.getElementById('tbody-table'),
@@ -481,7 +481,7 @@
     const fecha = new Date(order.createdAt)
     const dia   = fecha.toLocaleDateString('es-ES').split('T')[0]
 
-    // Escapamos comillas para no romper el HTML
+    // ESCAPE DE comillas y caracteres especiales para evitar problemas de HTML
     const desc = (e.descripcion || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
     contenido += `<tr>
@@ -503,19 +503,21 @@
         <span class="footer-label">Fecha de Entrega:</span>
         <input class="footer-field" type="text" style="width:110px;" value="${order.updatedAt.split('T')[0]}"/>
       </td>
-      <td colspan="3" style="padding:4px 8px;">
+      <td colspan = "4"></td>
+      <td colspan="2" style="padding:4px 8px;">
         <span class="footer-label">Firma de Recibido:</span>
-        <input class="footer-field" type="text"/>
+        <textarea class="footer-field" type="text">${order.solicitante}</textarea>
       </td>
     </tr>
     <tr class="footer-row">
       <td colspan="2" style="padding:4px 8px;">
         <span class="footer-label">Firma de Recibido:</span>
-        <input class="footer-field" type="text" style="width:110px;"/>
+        <textarea class="footer-field" type="text" style="width:110px;" />${order.solicitante}</textarea>
       </td>
-      <td colspan="3" style="padding:4px 8px;">
+      <td colspan = "4"></td>
+      <td colspan="2" style="padding:4px 8px;">
         <span class="footer-label">Firma de Entregado:</span>
-        <input class="footer-field" type="text"/>
+        <textarea class="footer-field"  >${surtidor}</textarea>
       </td>
     </tr>`
 
