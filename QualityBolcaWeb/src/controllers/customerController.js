@@ -170,13 +170,13 @@ controller.resetPassword = async (req, res) => {
         res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
         return
     }
-    const usuario2 = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } })
+    const usuario2 = await barrilmodelosgenerales.modelonom10001.findOne({ where: { codigoempleado: codigoempleado } })
     //Generar un token y enviar email
     usuario.token = generarId();
     await usuario.save();
     //Enviar un email
     emailOlvidePassword({
-        email: usuario2.CorreoElectronico,
+        email: usuario2.correoelectronico,
         nombre: usuario2.nombrelargo,
         token: usuario.token
     })

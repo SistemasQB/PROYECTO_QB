@@ -13,7 +13,8 @@ import { format, isAfter } from "@formkit/tempo"
 const emailRegistro = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILI_USER,
       pass: process.env.EMAILI_PASS
@@ -41,7 +42,8 @@ const emailRegistro = async (datos) => {
 const emailOlvidePassword = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILI_USER,
       pass: process.env.EMAILI_PASS
@@ -69,7 +71,8 @@ const emailOlvidePassword = async (datos) => {
 const emailRequisicion = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILR_USER,
       pass: process.env.EMAILR_PASS
@@ -96,7 +99,8 @@ const emailRequisicion = async (datos) => {
 const emailContacto = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILI_USER,
       pass: process.env.EMAILI_PASS
@@ -124,7 +128,8 @@ const emailContacto = async (datos) => {
 const emailCursos = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILC_USER,
       pass: process.env.EMAILC_PASS
@@ -153,7 +158,8 @@ const emailCursos = async (datos) => {
 const registroCursos = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILC_USER,
       pass: process.env.EMAILC_PASS
@@ -183,7 +189,8 @@ const registroCursos = async (datos) => {
 const enviarQueja = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILBQ_USER,
       pass: process.env.EMAILBQ_PASS
@@ -221,7 +228,8 @@ const emailMantenimientoA = async (data) => {
 
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILMA_USER,
       pass: process.env.EMAILMA_PASS
@@ -393,7 +401,8 @@ const emailMantenimientoA = async (data) => {
 const emailSolicitud = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILMS_USER,
       pass: process.env.EMAILMS_PASS
@@ -453,7 +462,8 @@ const emailMejora = async (datos) => {
 const emailMejoraRespuesta = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILMC_USER,
       pass: process.env.EMAILMC_PASS
