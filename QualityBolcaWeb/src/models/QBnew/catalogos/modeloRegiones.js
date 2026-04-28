@@ -20,17 +20,17 @@ const Regiones = dbNew.define('c_regiones', {
     timestamps: false
 })
 
-Regiones.asociar = (modelos) => {
-    // Región donde opera el empleado (laboral)
-    Regiones.hasMany(modelos.EmpleadosPosicion, {
-        foreignKey: 'id_region',
-        as: 'posicionesLaborales'
-    })
-    // Región donde vive el empleado (domicilio)
-    Regiones.hasMany(modelos.EmpleadosContacto, {
-        foreignKey: 'id_region',
-        as: 'domicilios'
-    })
-}
+// Regiones.asociar = (modelos) => {
+//     // Región donde opera el empleado (laboral)
+//     Regiones.hasMany(modelos.EmpleadosPosicion, {
+//         foreignKey: 'id_region',
+//         as: 'posicionesLaborales'
+//     })
+//     // Región donde vive el empleado (domicilio)
+//     Regiones.hasMany(modelos.EmpleadosContacto, {
+//         foreignKey: 'id_region',
+//         as: 'domicilios'
+//     })
+// }
 
 export default Regiones

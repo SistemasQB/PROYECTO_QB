@@ -21,11 +21,11 @@ const TiposContratacion = dbNew.define('c_tipos_contratacion', {
     timestamps: false
 })
 
-TiposContratacion.asociar = (modelos) => {
-    TiposContratacion.hasMany(modelos.EmpleadosPosicion, {
-        foreignKey: 'id_tipo_contratacion',
-        as: 'posiciones'
-    })
-}
+// TiposContratacion.asociar = (modelos) => {
+//     TiposContratacion.hasMany(modelos.EmpleadosPosicion, {
+//         foreignKey: 'id_tipo_contratacion',
+//         as: 'posiciones'
+//     })
+// }
 
 export default TiposContratacion

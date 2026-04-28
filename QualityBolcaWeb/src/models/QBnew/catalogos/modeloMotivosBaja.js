@@ -25,11 +25,11 @@ const MotivosBaja = dbNew.define('c_motivos_baja', {
     timestamps: false
 })
 
-MotivosBaja.asociar = (modelos) => {
-    MotivosBaja.hasMany(modelos.HistorialEmpleo, {
-        foreignKey: 'id_motivo_baja',
-        as: 'historialBajas'
-    })
-}
+// MotivosBaja.asociar = (modelos) => {
+//     MotivosBaja.hasMany(modelos.HistorialEmpleo, {
+//         foreignKey: 'id_motivo_baja',
+//         as: 'historialBajas'
+//     })
+// }
 
 export default MotivosBaja

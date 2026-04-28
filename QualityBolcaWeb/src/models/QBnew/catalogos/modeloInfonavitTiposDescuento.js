@@ -25,11 +25,11 @@ const InfonavitTiposDescuento = dbNew.define('c_infonavit_tipos_descuento', {
     timestamps: false
 })
 
-InfonavitTiposDescuento.asociar = (modelos) => {
-    InfonavitTiposDescuento.hasMany(modelos.InfonavitCreditos, {
-        foreignKey: 'id_tipo_descuento',
-        as: 'creditos'
-    })
-}
+// InfonavitTiposDescuento.asociar = (modelos) => {
+//     InfonavitTiposDescuento.hasMany(modelos.InfonavitCreditos, {
+//         foreignKey: 'id_tipo_descuento',
+//         as: 'creditos'
+//     })
+// }
 
 export default InfonavitTiposDescuento

@@ -164,12 +164,14 @@ controller.formularioOlvidePassword = (req, res) => {
 controller.resetPassword = async (req, res) => {
     //Buscar el usuario
     const { codigoempleado } = req.body
+    let clase = new sequelizeClase({ modelo: barrrilmodelosgenerales.modelonom10001 });
     // res.status(400).send({ msg: req.body, ok: false });
-    const usuario = await Usuario.findOne({ where: { codigoempleado: codigoempleado } })
+    const usuario = await clase.CorreoElectronico( { codigoempleado: codigoempleado })
     if (!usuario) {
         res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
         return
     }
+    clase = new sequelizeClase({modelo})
     const usuario2 = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } })
     //Generar un token y enviar email
     usuario.token = generarId();

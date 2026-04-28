@@ -170,7 +170,7 @@ const STEP_RULES = {
     let ok = true;
     const req = [
       ['f-apPaterno','apPaterno'],['f-apMaterno','apMaterno'],
-      ['f-nombres','nombres'],['f-edad','edad'],
+      ['f-nombres','nombres'],
       ['f-calle','calle'],['f-colonia','colonia'],
       ['f-telefono','telefono'],['f-lugarNac','lugarNac'],['f-fechaNac','fechaNac'],
     ];
@@ -210,6 +210,8 @@ const STEP_RULES = {
   },
   5: () => {
     let ok = true;
+    // Validar que se haya agregado al menos una máquina (o "Ninguna")
+    if (machineTags.size === 0) { setErr('f-maquinas', true); ok = false; } else setErr('f-maquinas', false);
     if (!radioVal('pasaporte')) { setErr('f-pasaporte',true); ok=false; } else setErr('f-pasaporte',false);
     if (!radioVal('visa'))      { setErr('f-visa',true);      ok=false; } else setErr('f-visa',false);
     return ok;
@@ -241,14 +243,88 @@ function validateAndGo(from, to) {
     if (firstErr) firstErr.scrollIntoView({behavior:'smooth', block:'center'});
   }
 }
-function validateAndSubmit() {
+async function validateAndSubmit() {
   const ok = STEP_RULES[6]();
-  if (ok) goTo(7);
-  else {
+  if (!ok) {
     const btn = document.getElementById('btn-submit');
-    btn.classList.add('btn-shake'); setTimeout(()=>btn.classList.remove('btn-shake'),500);
+    btn.classList.add('btn-shake');
+    setTimeout(() => btn.classList.remove('btn-shake'), 500);
     const firstErr = document.querySelector('#panel-6 .has-error');
-    if (firstErr) firstErr.scrollIntoView({behavior:'smooth', block:'center'});
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  // Recopilar checkboxes múltiples de viveCon
+  const viveConSeleccionados = [...document.querySelectorAll('input[name="viveCon"]:checked')]
+    .map(i => i.value).join(',');
+
+  const payload = {
+    puesto:               val('puesto'),
+    puesto_otro:          val('puestoOtro') || null,
+    sueldo_deseado:       val('sueldo') || null,
+    ap_paterno:           val('apPaterno'),
+    ap_materno:           val('apMaterno'),
+    nombres:              val('nombres'),
+    fecha_nacimiento:     val('fechaNac'),
+    sexo:                 radioVal('sexo'),
+    calle:                val('calle'),
+    colonia:              val('colonia'),
+    cp:                   val('cp') || null,
+    telefono:             val('telefono'),
+    email:                val('email'),
+    curp:                 val('curp').toUpperCase(),
+    lugar_nacimiento:     val('lugarNac'),
+    tiempo_residencia:    val('tiempoRes') || null,
+    nacionalidad:         radioVal('nac'),
+    nacionalidad_otra:    val('nacOtra') || null,
+    vive_con:             viveConSeleccionados,
+    estatura:             val('estatura') || null,
+    peso:                 val('peso') || null,
+    estado_civil:         radioVal('edoCivil'),
+    tabaco:               radioVal('tabaco'),
+    alcohol:              radioVal('alcohol'),
+    drogas:               radioVal('drogas'),
+    rehabilitacion:       radioVal('rehabilitacion') || null,
+    escolaridad:          val('escolaridad'),
+    maquinas:             JSON.stringify([...machineTags]),
+    pasaporte:            radioVal('pasaporte'),
+    visa:                 radioVal('visa'),
+    como_se_entero:       radioVal('enterado'),
+    como_se_entero_otro:  val('otroMedio') || null,
+    familiar_en_qb:       radioVal('familiarQB'),
+    familiar_nombre:      val('familiarNombre') || null,
+    familiar_parentesco:  val('familiarParentesco') || null,
+  };
+
+  try {
+    // Leer CSRF token del meta tag inyectado por EJS
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    const resp = await fetch('/capitalhumano/solicitud', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await resp.json();
+
+    if (resp.ok && data.ok) {
+      goTo(7);
+    } else {
+      alert(data.msg || 'Ocurrió un error al enviar tu solicitud. Intenta de nuevo.');
+      btn.disabled = false;
+      btn.textContent = '✅ Enviar solicitud';
+    }
+  } catch (err) {
+    alert('Error de conexión. Por favor verifica tu internet e intenta de nuevo.');
+    btn.disabled = false;
+    btn.textContent = '✅ Enviar solicitud';
   }
 }
 

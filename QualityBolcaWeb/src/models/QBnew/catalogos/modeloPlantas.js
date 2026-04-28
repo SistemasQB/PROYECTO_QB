@@ -24,11 +24,11 @@ const Plantas = dbNew.define('c_plantas', {
     timestamps: false
 })
 
-Plantas.asociar = (modelos) => {
-    Plantas.hasMany(modelos.EmpleadosPosicion, {
-        foreignKey: 'id_planta',
-        as: 'posiciones'
-    })
-}
+// Plantas.asociar = (modelos) => {
+//     Plantas.hasMany(modelos.EmpleadosPosicion, {
+//         foreignKey: 'id_planta',
+//         as: 'posiciones'
+//     })
+// }
 
 export default Plantas

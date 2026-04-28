@@ -20,11 +20,11 @@ const Escolaridades = dbNew.define('c_escolaridades', {
     timestamps: false
 })
 
-Escolaridades.asociar = (modelos) => {
-    Escolaridades.hasMany(modelos.Empleados, {
-        foreignKey: 'id_escolaridad',
-        as: 'empleados'
-    })
-}
+// Escolaridades.asociar = (modelos) => {
+//     Escolaridades.hasMany(modelos.Empleados, {
+//         foreignKey: 'id_escolaridad',
+//         as: 'empleados'
+//     })
+// }
 
 export default Escolaridades

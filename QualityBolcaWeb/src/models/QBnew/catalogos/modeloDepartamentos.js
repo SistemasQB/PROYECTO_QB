@@ -20,11 +20,11 @@ const Departamentos = dbNew.define('c_departamentos', {
     timestamps: false
 })
 
-Departamentos.asociar = (modelos) => {
-    Departamentos.hasMany(modelos.EmpleadosPosicion, {
-        foreignKey: 'id_departamento',
-        as: 'posiciones'
-    })
-}
+// Departamentos.asociar = (modelos) => {
+    // Departamentos.hasMany(modelos.EmpleadosPosicion, {
+    //     foreignKey: 'id_departamento',
+    //     as: 'posiciones'
+    // })
+// }
 
 export default Departamentos

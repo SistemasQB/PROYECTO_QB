@@ -20,11 +20,11 @@ const Puestos = dbNew.define('c_puestos', {
     timestamps: false
 })
 
-Puestos.asociar = (modelos) => {
-    Puestos.hasMany(modelos.EmpleadosPosicion, {
-        foreignKey: 'id_puesto_principal',
-        as: 'posiciones'
-    })
-}
+// Puestos.asociar = (modelos) => {
+//     Puestos.hasMany(modelos.EmpleadosPosicion, {
+//         foreignKey: 'id_puesto_principal',
+//         as: 'posiciones'
+//     })
+// }
 
 export default Puestos
