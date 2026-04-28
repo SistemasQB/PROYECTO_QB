@@ -162,75 +162,74 @@ controller.formularioOlvidePassword = (req, res) => {
 }
 
 controller.resetPassword = async (req, res) => {
-    //Buscar el usuario
-    const { codigoempleado } = req.body
-    // res.status(400).send({ msg: req.body, ok: false });
-    const usuario = await Usuario.findOne({ where: { codigoempleado: codigoempleado } })
-    if (!usuario) {
-        res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
-        return
+    try {
+        const { codigoempleado } = req.body
+        const usuario = await Usuario.findOne({ where: { codigoempleado } })
+        if (!usuario) {
+            return res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
+        }
+        const usuario2 = await barrilmodelosgenerales.modelonom10001.findOne({ where: { codigoempleado } })
+        if (!usuario2) {
+            return res.status(400).send({ msg: 'No se encontró información del empleado', ok: false });
+        }
+        usuario.token = generarId();
+        await usuario.save();
+        emailOlvidePassword({
+            email: usuario2.correoelectronico,
+            nombre: usuario2.nombrelargo,
+            token: usuario.token
+        })
+        return res.status(200).send({ msg: 'Informacion enviada con exito', ok: true });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ msg: 'Error al procesar la solicitud', ok: false });
     }
-    const usuario2 = await barrilmodelosgenerales.modelonom10001.findOne({ where: { codigoempleado: codigoempleado } })
-    //Generar un token y enviar email
-    usuario.token = generarId();
-    await usuario.save();
-    //Enviar un email
-    emailOlvidePassword({
-        email: usuario2.correoelectronico,
-        nombre: usuario2.nombrelargo,
-        token: usuario.token
-    })
-    //Mostrar mensaje de confirmacion
-    res.status(200).send({ msg: 'Informacion enviada con exito', ok: true });
-    return
 }
 controller.comprobarToken = async (req, res) => {
-    const { token } = req.params;
-
-    const usuario = await Usuario.findOne({ where: { token } })
-    if (!usuario) {
-        return res.render('auth/reset-password', {
+    try {
+        const { token } = req.params;
+        const usuario = await Usuario.findOne({ where: { token } })
+        if (!usuario) {
+            return res.render('auth/confirmar-cuenta', {
+                errores: 'Token inválido o expirado'
+            })
+        }
+        res.render('auth/reset-password', {
             csrfToken: req.csrfToken(),
             token
         })
+    } catch (error) {
+        console.error(error);
+        return res.render('auth/confirmar-cuenta', {
+            errores: 'Hubo un error al verificar el token'
+        })
     }
-
-    //Mostrar formulario para modificar la contrseña
-
-    res.render('auth/reset-password', {
-        csrfToken: req.csrfToken(),
-        token
-    })
 }
 
 controller.nuevoPassword = async (req, res) => {
-    // Validar la contrseña
-    const { password, password2 } = req.body
-    if (password.length < 6) {
-        res.status(400).send({ msg: 'la contraseña debe tener minimo 6 caracteres', ok: false });
-        return
+    try {
+        const { password, password2 } = req.body
+        if (password.length < 6) {
+            return res.status(400).send({ msg: 'la contraseña debe tener minimo 6 caracteres', ok: false });
+        }
+        if (password !== password2) {
+            return res.status(400).send({ msg: 'las contraseñas no son iguales', ok: false });
+        }
+        const { token } = req.params
+        const usuario = await Usuario.findOne({ where: { token } })
+        if (!usuario) {
+            return res.status(400).send({ msg: 'Token inválido o expirado', ok: false });
+        }
+        const salt = await bcrypt.genSalt(10);
+        usuario.password = await bcrypt.hash(password, salt);
+        usuario.token = null;
+        usuario.confirmado = true;
+        await usuario.save()
+        return res.status(200).send({ msg: 'Contraseña cambiada con exito', ok: true });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ msg: 'Error al cambiar la contraseña', ok: false });
     }
-
-    if (password !== password2) {
-        res.status(400).send({ msg: 'las contraseñas no son iguales', ok: false });
-        return
-    }
-    //Verificar que el resultado este vacio
-
-    const { token } = req.params
-    // Identificar quien hace el cambio
-    const usuario = await Usuario.findOne({ where: { token } })
-
-    //Hasear la nueva contraseña
-    const salt = await bcrypt.genSalt(10);
-    usuario.password = await bcrypt.hash(password, salt);
-    usuario.token = null;
-    usuario.confirmado = true;
-
-    await usuario.save()
-
-    res.status(200).send({ msg: 'Contraseña cambiada con exito', ok: true });
-        return
 }
 
 controller.inicio = (req, res) => {
