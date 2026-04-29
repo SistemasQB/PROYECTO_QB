@@ -48,42 +48,27 @@
               <label>Quién reporta</label>
               <div class="input-auto data-db">
                 <span class="auto-dot"></span>
-                <span id="solicitanteAuto"><%= typeof req !== 'undefined' && req.usuario ? req.usuario.nombre : 'Cargando usuario...' %></span>
+                <span id="solicitanteAuto"><%= nombreCompleto %></span>
               </div>
+              <input type="hidden" name="nombreSolicitante" value="<%= nombreCompleto %>">
             </div>
 
-            <!-- <div class="field">
-              <label>Nombre del solicitante</label>
-              <div class="input-auto data-db">
-                <span class="auto-dot"></span>
-                <span id="correoAuto"><%= typeof req !== 'undefined' && req.usuario ? req.usuario.correo : 'Cargando usuario...' %></span>
-              </div>
-            </div> -->
-
-            <div class="grid-2">
+            <div class="grid-datos-auto">
               <div class="field">
                 <label>Región</label>
-                <div class="input-auto data-db">
+                <div class="campo-readonly">
                   <span class="auto-dot"></span>
-                  <span id="regionAuto"><%= typeof req !== 'undefined' && req.usuario ? req.usuario.region : 'Cargando región...' %></span>
+                  <span id="regionAuto"><%= datosEmpleado.departamentoLocal || 'Sin región' %></span>
                 </div>
+                <input type="hidden" name="region" value="<%= datosEmpleado.departamentoLocal || 'Sin región' %>">
               </div>
               <div class="field">
-                <label>Departamento <span class="required">*</span></label>
-                <div class="input-auto data-db" style="padding: 0; overflow: hidden;">
-                  
-                  <select id="departamentoAuto" disabled 
-                    style="width: 100%; border: none; background-color: transparent; box-shadow: none; padding: 0.65rem 0.8rem; font-weight: inherit; color: inherit; outline: none; cursor: not-allowed;">
-                    <option value="administracion">Administración</option>
-                    <option value="compras">Compras y Suministros</option>
-                    <option value="direccion">Dirección General</option>
-                    <option value="infraestructura">Infraestructura</option>
-                    <option value="rrhh">Recursos Humanos</option>
-                    <option value="departamento" selected>Cargando departamento...</option> </select>
-
-                  <input type="hidden" name="departamento" value="departamento">
-                  
+                <label>Departamento</label>
+                <div class="campo-readonly">
+                  <span class="auto-dot"></span>
+                  <span id="departamentoAuto"><%= datosEmpleado.departamento || 'Sin departamento' %></span>
                 </div>
+                <input type="hidden" name="departamento" value="<%= datosEmpleado.departamento || 'Sin departamento' %>">
               </div>
             </div>
           </section>

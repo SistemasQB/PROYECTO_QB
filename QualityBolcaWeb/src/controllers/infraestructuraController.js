@@ -343,21 +343,24 @@ infraestructuraController.formularioReportes = async (req, res) => {
     try {
         let tok = req.csrfToken();
 
-        // Clase para el formulario de reportes
         const clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_formulario_de_reportes });
-
-        // Formatear el folio
         let ultimoReporte = await clase.modelo.max('id');
-        
-        if (!ultimoReporte || isNaN(ultimoReporte)) {
-            ultimoReporte = 0;
-        }    
+        if (!ultimoReporte || isNaN(ultimoReporte)) ultimoReporte = 0;
         let nuevoFolio = 'REP-' + (ultimoReporte + 1).toString().padStart(4, '0');
 
-        res.render('admin/infraestructura/formulario_de_reportes.ejs', { 
-            reporte: { folio: nuevoFolio }, 
+        const claseEmpleados = new sequelizeClase({ modelo: modelosGenerales.vistaempleados });
+        const datosEmpleado = await claseEmpleados.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } });
+
+        const nombreCompleto = datosEmpleado
+            ? [datosEmpleado.apellidopaterno, datosEmpleado.apellidomaterno, datosEmpleado.nombre]
+                .filter(v => v && v !== 'SIN DEFINIR').join(' ')
+            : 'Sin nombre';
+
+        res.render('admin/infraestructura/formulario_de_reportes.ejs', {
+            reporte: { folio: nuevoFolio },
             tok: tok,
-            req: req 
+            datosEmpleado: datosEmpleado || {},
+            nombreCompleto
         });
 
     } catch (ex) {
@@ -370,7 +373,7 @@ infraestructuraController.crudFormularioReportes = async (req, res) => {
         const clase = new sequelizeClase({ modelo: modelosInfraestructura.modelo_formulario_de_reportes });
         /* await clase.modelo.sync({ force: true }); */
 
-        const { departamento, piso, area, falla, observaciones } = req.body;
+        const { nombreSolicitante, departamento, region, piso, area, falla, observaciones } = req.body;
 
         let nombresFotos = [];
         if (req.files && req.files.length > 0) {
@@ -381,9 +384,9 @@ infraestructuraController.crudFormularioReportes = async (req, res) => {
 
         const nuevoRegistro = {
             fechas: fechaActual,
-            nombreSolicitante: req.usuario && req.usuario.nombre ? req.usuario.nombre : 'Usuario en sesión',
-            departamentoSolicitante: departamento,
-            region: req.usuario && req.usuario.region ? req.usuario.region : 'Región Central',
+            nombreSolicitante: nombreSolicitante || req.usuario.codigoempleado,
+            departamentoSolicitante: departamento || 'Sin departamento',
+            region: region || 'Sin región',
             piso: piso,
             areasPorPiso: area,
             descripcionFalla: falla,
