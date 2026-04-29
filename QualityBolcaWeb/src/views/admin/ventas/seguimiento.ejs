@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Ventas — Seguimiento de Clientes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/styles/ventas/seguimiento.css">
+</head>
+<body>
+
+  <!-- Overlay móvil -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">CRM Ventas</span>
+        <span class="brand-role">Quality Bolca</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/ventas/crm/inicio" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="/ventas/crm/clientes" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+        <span>Clientes</span>
+      </a>
+      <a href="/ventas/crm/agendaVentas" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-bullseye"></i></span>
+        <span>Agenda de Ventas</span>
+      </a>
+      <a href="/ventas/crm/seguimiento" class="nav-item active">
+        <span class="nav-icon"><i class="fa-solid fa-list-check"></i></span>
+        <span>Seguimiento</span>
+      </a>
+      <a href="/ventas/crm/calendario" class="nav-item">
+        <span class="nav-icon"><i class="fa-regular fa-calendar"></i></span>
+        <span>Calendario</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatarSidebar"></div>
+        <div class="user-details">
+          <span class="user-name" id="userNameSidebar">Usuario</span>
+          <span class="user-email" id="userEmailSidebar">—</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="top-bar-title">
+        <span class="breadcrumb-hint">Ventas</span>
+        <h1>Seguimiento</h1>
+      </div>
+      <div class="top-actions">
+        <div class="top-user-chip">
+          <div class="top-user-avatar" id="userAvatarTop"></div>
+          <span id="userNameTop">Usuario</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Seguimiento de Clientes</h2>
+          <p class="page-subtitle">Bitácora y línea de tiempo por cliente</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline btn-sm" onclick="exportarCSV()">
+            <i class="fa-solid fa-file-excel"></i>
+            Excel
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="abrirModalNuevo()">
+            <i class="fa-solid fa-plus"></i>
+            Nuevo
+          </button>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="card filters-card">
+        <div class="filters-row">
+          <input type="text" class="filter-input" id="inputBuscar"
+            placeholder="Buscar por cliente, contacto, estado, región…"
+            oninput="aplicarFiltros()">
+          <select class="filter-select" id="selectActivo" onchange="aplicarFiltros()">
+            <option value="todos">Todos</option>
+            <option value="activos">Activos</option>
+            <option value="inactivos">Inactivos</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- LISTA SEGUIMIENTOS -->
+      <div class="seguimientos-list" id="seguimientosList">
+        <!-- Generado por JS -->
+      </div>
+
+    </div><!-- /page-body -->
+  </main>
+
+  <!-- ================================================================
+       MODAL SEGUIMIENTO
+       ================================================================ -->
+  <div class="modal-backdrop" id="modalSeguimiento">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalSeguimientoTitle">Nuevo seguimiento</h3>
+        <button class="modal-close" onclick="cerrarModalSeg()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="formSeguimiento" onsubmit="return false;">
+          <input type="hidden" id="seg_id">
+          <div class="form-grid">
+            <div class="form-group col-span-2" id="clienteGroup">
+              <label class="form-label">Cliente</label>
+              <select class="form-select" id="field_clienteId">
+                <option value="">Selecciona cliente…</option>
+                <!-- Generado por JS con lista de clientes mock -->
+              </select>
+            </div>
+            <div class="form-group col-span-2">
+              <div class="switch-row">
+                <label class="switch">
+                  <input type="checkbox" id="field_activo" checked>
+                  <span class="switch-track"></span>
+                  <span class="switch-thumb"></span>
+                </label>
+                <span class="switch-label" id="switchLabel">Activo</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estatus</label>
+              <input type="text" class="form-input" id="field_estatus" placeholder="Ej. En seguimiento">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Región</label>
+              <input type="text" class="form-input" id="field_region" placeholder="Ej. Noreste">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estado</label>
+              <select class="form-select" id="field_estado">
+                <option value="">Selecciona…</option>
+                <option value="Aguascalientes">Aguascalientes</option>
+                <option value="Baja California">Baja California</option>
+                <option value="Baja California Sur">Baja California Sur</option>
+                <option value="Campeche">Campeche</option>
+                <option value="Chiapas">Chiapas</option>
+                <option value="Chihuahua">Chihuahua</option>
+                <option value="Ciudad de México">Ciudad de México</option>
+                <option value="Coahuila">Coahuila</option>
+                <option value="Colima">Colima</option>
+                <option value="Durango">Durango</option>
+                <option value="Estado de México">Estado de México</option>
+                <option value="Guanajuato">Guanajuato</option>
+                <option value="Guerrero">Guerrero</option>
+                <option value="Hidalgo">Hidalgo</option>
+                <option value="Jalisco">Jalisco</option>
+                <option value="Michoacán">Michoacán</option>
+                <option value="Morelos">Morelos</option>
+                <option value="Nayarit">Nayarit</option>
+                <option value="Nuevo León">Nuevo León</option>
+                <option value="Oaxaca">Oaxaca</option>
+                <option value="Puebla">Puebla</option>
+                <option value="Querétaro">Querétaro</option>
+                <option value="Quintana Roo">Quintana Roo</option>
+                <option value="San Luis Potosí">San Luis Potosí</option>
+                <option value="Sinaloa">Sinaloa</option>
+                <option value="Sonora">Sonora</option>
+                <option value="Tabasco">Tabasco</option>
+                <option value="Tamaulipas">Tamaulipas</option>
+                <option value="Tlaxcala">Tlaxcala</option>
+                <option value="Veracruz">Veracruz</option>
+                <option value="Yucatán">Yucatán</option>
+                <option value="Zacatecas">Zacatecas</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Municipio</label>
+              <input type="text" class="form-input" id="field_municipio" placeholder="Ciudad o municipio">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Parque industrial</label>
+              <input type="text" class="form-input" id="field_parqueIndustrial" placeholder="Nombre del parque">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nombre de contacto</label>
+              <input type="text" class="form-input" id="field_nombreContacto" placeholder="Nombre completo">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Celular</label>
+              <input type="tel" class="form-input" id="field_celular" placeholder="(000) 000-0000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Correo</label>
+              <input type="email" class="form-input" id="field_correo" placeholder="correo@empresa.com">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="cerrarModalSeg()">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarSeguimiento()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       MODAL ACTIVIDAD
+       ================================================================ -->
+  <div class="modal-backdrop" id="modalActividad">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Nueva actividad</h3>
+        <button class="modal-close" onclick="cerrarModalAct()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="formActividad" onsubmit="return false;">
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Tipo de actividad</label>
+              <select class="form-select" id="act_tipo">
+                <option value="llamada">Llamada</option>
+                <option value="correo">Correo</option>
+                <option value="reunión">Reunión</option>
+                <option value="conferencia">Conferencia</option>
+                <option value="visita">Visita</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Fecha y hora</label>
+              <input type="datetime-local" class="form-input" id="act_fecha">
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Descripción / Observaciones</label>
+              <textarea class="form-textarea" id="act_descripcion" rows="3" placeholder="¿Qué se realizó?"></textarea>
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Resultado</label>
+              <textarea class="form-textarea" id="act_resultado" rows="2" placeholder="¿Cuál fue el resultado?"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="cerrarModalAct()">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarActividad()">Registrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>var _tok = '<%- token %>';</script>
+  <script src="/scripts/ventas/seguimiento.js"></script>
+</body>
+</html>

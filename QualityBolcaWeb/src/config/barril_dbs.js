@@ -5,9 +5,10 @@ import dbCompras from "./dbCompras.js";
 import dbSistemas from "./dbSistemas.js";
 import dbSorteo from "./dbSorteo.js";
 import dbCapturacion from "./dbCapturacion.js";
+import dbVentas from "./dbVentas.js";
 
 const dbs  = {
-    db, dbCalidad, dbcc1, dbCompras, dbSistemas, dbSorteo, dbCapturacion
+    db, dbCalidad, dbcc1, dbCompras, dbSistemas, dbSorteo, dbCapturacion, dbVentas
 }
 
 export default dbs

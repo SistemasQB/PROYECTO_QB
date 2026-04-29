@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Ventas — Agenda de Ventas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/styles/ventas/agenda.css">
+</head>
+<body>
+
+  <!-- Overlay móvil -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">CRM Ventas</span>
+        <span class="brand-role">Quality Bolca</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/ventas/crm/inicio" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="/ventas/crm/clientes" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+        <span>Clientes</span>
+      </a>
+      <a href="/ventas/crm/agendaVentas" class="nav-item active">
+        <span class="nav-icon"><i class="fa-solid fa-bullseye"></i></span>
+        <span>Agenda de Ventas</span>
+      </a>
+      <a href="/ventas/crm/seguimiento" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-list-check"></i></span>
+        <span>Seguimiento</span>
+      </a>
+      <a href="/ventas/crm/calendario" class="nav-item">
+        <span class="nav-icon"><i class="fa-regular fa-calendar"></i></span>
+        <span>Calendario</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatarSidebar"></div>
+        <div class="user-details">
+          <span class="user-name" id="userNameSidebar">Usuario</span>
+          <span class="user-email" id="userEmailSidebar">—</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="top-bar-title">
+        <span class="breadcrumb-hint">Ventas</span>
+        <h1>Agenda de Ventas</h1>
+      </div>
+      <div class="top-actions">
+        <div class="top-user-chip">
+          <div class="top-user-avatar" id="userAvatarTop"></div>
+          <span id="userNameTop">Usuario</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-body">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Agenda de Ventas</h2>
+          <p class="page-subtitle">Prospectos, etapas de ventas y planeación por semana</p>
+        </div>
+        <div class="header-actions">
+          <!-- View toggle -->
+          <div class="view-toggle">
+            <button class="view-btn active" id="btnTabla" onclick="setView('tabla')">
+              <i class="fa-solid fa-table-list"></i>
+              <span>Tabla</span>
+            </button>
+            <button class="view-btn" id="btnKanban" onclick="setView('kanban')">
+              <i class="fa-solid fa-table-columns"></i>
+              <span>Kanban</span>
+            </button>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="exportarExcel()">
+            <i class="fa-solid fa-file-excel"></i>
+            Excel
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="abrirModalNuevo()">
+            <i class="fa-solid fa-plus"></i>
+            Nuevo
+          </button>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="card filters-card">
+        <div class="filters-row">
+          <input type="text" class="filter-input" id="inputBuscar" placeholder="Buscar por razón social, contacto, giro…" oninput="aplicarFiltros()">
+          <select class="filter-select" id="selectEtapa" onchange="aplicarFiltros()">
+            <option value="todas">Todas las etapas</option>
+            <option value="Prospecto">Prospecto</option>
+            <option value="En busca de contacto">En busca de contacto</option>
+            <option value="Contactado">Contactado</option>
+            <option value="Interesado">Interesado</option>
+            <option value="Cotización">Cotización</option>
+            <option value="Negociación">Negociación</option>
+            <option value="Cerrado">Cerrado</option>
+            <option value="Perdido">Perdido</option>
+          </select>
+          <select class="filter-select" id="selectGiro" onchange="aplicarFiltros()">
+            <option value="todos">Todos los giros</option>
+            <option value="Automotriz">Automotriz</option>
+            <option value="Metalmecánica">Metalmecánica</option>
+            <option value="Plásticos">Plásticos</option>
+            <option value="Electrónica">Electrónica</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Químicos">Químicos</option>
+            <option value="Empaque">Empaque</option>
+            <option value="Logística">Logística</option>
+            <option value="Construcción">Construcción</option>
+            <option value="Maquinaria">Maquinaria</option>
+            <option value="Médico">Médico</option>
+            <option value="Ingeniería">Ingeniería</option>
+            <option value="Servicios">Servicios</option>
+            <option value="Textil">Textil</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <select class="filter-select" id="selectSemana" style="min-width:140px;" onchange="aplicarFiltros()">
+            <option value="todas">Todas las semanas</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- VISTA TABLA -->
+      <div id="vistaTabla">
+        <div class="card table-card">
+          <div class="table-scroll">
+            <table class="prospects-table">
+              <thead>
+                <tr>
+                  <th>Razón social</th>
+                  <th>Contacto</th>
+                  <th>Giro</th>
+                  <th>Etapa</th>
+                  <th>Semanas</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <!-- Generado por JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA KANBAN -->
+      <div id="vistaKanban" style="display:none;">
+        <div class="kanban-wrapper">
+          <div class="kanban-board" id="kanbanBoard">
+            <!-- Generado por JS -->
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-body -->
+  </main>
+
+  <!-- ================================================================
+       MODAL PROSPECTO
+       ================================================================ -->
+  <div class="modal-backdrop" id="modalProspecto">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Nuevo prospecto</h3>
+        <button class="modal-close" onclick="cerrarModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="formProspecto" onsubmit="return false;">
+          <input type="hidden" id="prospecto_id">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Razón social *</label>
+              <input type="text" class="form-input" id="field_razonSocial" required placeholder="Empresa S.A. de C.V.">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dirección</label>
+              <input type="text" class="form-input" id="field_direccion" placeholder="Calle, número, ciudad">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Parque industrial</label>
+              <input type="text" class="form-input" id="field_parqueIndustrial" placeholder="Ej. Parque Ind. Oriente">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Giro</label>
+              <select class="form-select" id="field_giro">
+                <option value="">Selecciona…</option>
+                <option value="Automotriz">Automotriz</option>
+                <option value="Metalmecánica">Metalmecánica</option>
+                <option value="Plásticos">Plásticos</option>
+                <option value="Electrónica">Electrónica</option>
+                <option value="Alimentos">Alimentos</option>
+                <option value="Químicos">Químicos</option>
+                <option value="Empaque">Empaque</option>
+                <option value="Logística">Logística</option>
+                <option value="Construcción">Construcción</option>
+                <option value="Maquinaria">Maquinaria</option>
+                <option value="Médico">Médico</option>
+                <option value="Ingeniería">Ingeniería</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Textil">Textil</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nombre de contacto</label>
+              <input type="text" class="form-input" id="field_nombreContacto" placeholder="Nombre completo">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Correo</label>
+              <input type="email" class="form-input" id="field_correo" placeholder="correo@empresa.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Teléfono</label>
+              <input type="tel" class="form-input" id="field_telefono" placeholder="(000) 000-0000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Etapa de ventas</label>
+              <select class="form-select" id="field_etapa" onchange="onEtapaChange()">
+                <option value="Prospecto">Prospecto</option>
+                <option value="En busca de contacto">En busca de contacto</option>
+                <option value="Contactado">Contactado</option>
+                <option value="Interesado">Interesado</option>
+                <option value="Cotización">Cotización</option>
+                <option value="Negociación">Negociación</option>
+                <option value="Cerrado">Cerrado</option>
+                <option value="Perdido">Perdido</option>
+              </select>
+            </div>
+            <div class="form-group motivo-group" id="motivoGroup">
+              <label class="form-label">Motivo de rechazo</label>
+              <select class="form-select" id="field_motivoRechazo">
+                <option value="">Selecciona…</option>
+                <option value="Precio">Precio</option>
+                <option value="Competencia">Competencia</option>
+                <option value="Presupuesto">Presupuesto</option>
+                <option value="No contestan">No contestan</option>
+                <option value="Otros">Otros</option>
+              </select>
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Comentarios</label>
+              <textarea class="form-textarea" id="field_comentarios" rows="3" placeholder="Observaciones, notas…"></textarea>
+            </div>
+            <div class="form-group col-span-2">
+              <label class="form-label">Semanas de seguimiento (1–52)</label>
+              <div class="semanas-grid" id="semanasGrid">
+                <!-- Generado por JS -->
+              </div>
+              <p class="semanas-count"><span id="semanasCount">0</span> semana(s) seleccionada(s)</p>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarProspecto()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>var _tok = '<%- token %>';</script>
+  <script src="/scripts/ventas/agenda.js"></script>
+</body>
+</html>

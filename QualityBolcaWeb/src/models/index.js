@@ -1,4 +1,3 @@
-
 import { Sequelize } from 'sequelize';
 import modelosSorteo from '../models/sorteo/barrilModelosSorteo.js'
 import modelosInfraestructura from './infraestructura/barril_modelo_compras.js';
@@ -16,7 +15,6 @@ import nom10006 from './generales/nom10006.js';
 
 modelonom10001.belongsTo(nom10006, { foreignKey: 'idpuesto', targetKey: 'idpuesto' });
 nom10006.hasOne(modelonom10001, { foreignKey: 'idpuesto', sourceKey: 'idpuesto' });
-
 
 // (async () => {
 //   try {

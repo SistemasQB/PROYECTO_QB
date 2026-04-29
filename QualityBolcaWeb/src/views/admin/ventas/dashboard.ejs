@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Ventas — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/styles/ventas/dashboard.css">
+</head>
+<body>
+
+  <!-- Overlay móvil -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="cerrarSidebar()"></div>
+
+  <!-- ================================================
+       SIDEBAR
+       ================================================ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">CRM Ventas</span>
+        <span class="brand-role">Quality Bolca</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/ventas/crm/inicio" class="nav-item active">
+        <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="/ventas/crm/clientes" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+        <span>Clientes</span>
+      </a>
+      <a href="/ventas/crm/agendaVentas" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-bullseye"></i></span>
+        <span>Agenda de Ventas</span>
+      </a>
+      <a href="/ventas/crm/seguimiento" class="nav-item">
+        <span class="nav-icon"><i class="fa-solid fa-list-check"></i></span>
+        <span>Seguimiento</span>
+      </a>
+      <a href="/ventas/crm/calendario" class="nav-item">
+        <span class="nav-icon"><i class="fa-regular fa-calendar"></i></span>
+        <span>Calendario</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatarSidebar"></div>
+        <div class="user-details">
+          <span class="user-name" id="userNameSidebar">Usuario</span>
+          <span class="user-email" id="userEmailSidebar">—</span>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ================================================
+       CONTENIDO PRINCIPAL
+       ================================================ -->
+  <main class="main-content">
+
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="top-bar-title">
+        <span class="breadcrumb-hint">Ventas</span>
+        <h1>Dashboard</h1>
+      </div>
+      <div class="top-actions">
+        <button class="btn-refresh" id="btnRefresh" title="Actualizar datos">
+          <i class="fa-solid fa-rotate"></i>
+        </button>
+        <div class="top-user-chip">
+          <div class="top-user-avatar" id="userAvatarTop"></div>
+          <span id="userNameTop">Usuario</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-body">
+
+      <!-- ── PAGE HEADER ── -->
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Resumen general</h2>
+          <p class="page-subtitle">Departamento de ventas · <span id="fechaHoy"></span></p>
+        </div>
+      </div>
+
+      <!-- ── KPI ROW 1: 4 tarjetas principales ── -->
+      <section class="kpi-grid kpi-grid--4" id="kpiGrid1">
+
+        <div class="kpi-card" data-accent="#34C759">
+          <div class="kpi-icon" style="background:rgba(52,199,89,.12);color:#34C759">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+          <div class="kpi-body">
+            <p class="kpi-label">Clientes activos</p>
+            <p class="kpi-value" data-target="47">0</p>
+          </div>
+          <div class="kpi-bar" style="background:rgba(52,199,89,.15)">
+            <div class="kpi-bar-fill" style="width:78%;background:#34C759"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card" data-accent="#FF3B30">
+          <div class="kpi-icon" style="background:rgba(255,59,48,.12);color:#FF3B30">
+            <i class="fa-solid fa-user-xmark"></i>
+          </div>
+          <div class="kpi-body">
+            <p class="kpi-label">Clientes inactivos</p>
+            <p class="kpi-value" data-target="12">0</p>
+          </div>
+          <div class="kpi-bar" style="background:rgba(255,59,48,.15)">
+            <div class="kpi-bar-fill" style="width:22%;background:#FF3B30"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card" data-accent="#007AFF">
+          <div class="kpi-icon" style="background:rgba(0,122,255,.12);color:#007AFF">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <div class="kpi-body">
+            <p class="kpi-label">Nuevos este mes</p>
+            <p class="kpi-value" data-target="8">0</p>
+          </div>
+          <div class="kpi-bar" style="background:rgba(0,122,255,.15)">
+            <div class="kpi-bar-fill" style="width:54%;background:#007AFF"></div>
+          </div>
+        </div>
+
+        <div class="kpi-card" data-accent="#FF9500">
+          <div class="kpi-icon" style="background:rgba(255,149,0,.12);color:#FF9500">
+            <i class="fa-regular fa-calendar-check"></i>
+          </div>
+          <div class="kpi-body">
+            <p class="kpi-label">Actividades esta semana</p>
+            <p class="kpi-value" data-target="14">0</p>
+          </div>
+          <div class="kpi-bar" style="background:rgba(255,149,0,.15)">
+            <div class="kpi-bar-fill" style="width:65%;background:#FF9500"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── KPI ROW 2: 3 tarjetas secundarias ── -->
+      <section class="kpi-grid kpi-grid--3" id="kpiGrid2">
+
+        <div class="kpi-card kpi-card--inline" data-accent="#5856D6">
+          <div class="kpi-icon" style="background:rgba(88,86,214,.12);color:#5856D6">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="kpi-body">
+            <p class="kpi-label">Total clientes</p>
+            <p class="kpi-value" data-target="59">0</p>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-card--inline" data-accent="#00C7BE">
+          <div class="kpi-icon" style="background:rgba(0,199,190,.12);color:#00C7BE">
+            <i class="fa-solid fa-percent"></i>
+          </div>
+          <div class="kpi-body">
+            <p class="kpi-label">Tasa de conversión</p>
+            <p class="kpi-value" data-target="23" data-suffix="%">0</p>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-card--inline" data-accent="#FF9500">
+          <div class="kpi-icon" style="background:rgba(255,149,0,.12);color:#FF9500">
+            <i class="fa-solid fa-filter"></i>
+          </div>
+          <div class="kpi-body">
+            <p class="kpi-label">En embudo</p>
+            <p class="kpi-value" data-target="31">0</p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── GRÁFICAS ── -->
+      <section class="charts-grid">
+
+        <!-- Embudo de ventas -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <h3 class="chart-title">Embudo de ventas</h3>
+              <p class="chart-subtitle">Prospectos por etapa</p>
+            </div>
+            <div class="chart-badge">
+              <i class="fa-solid fa-chart-bar"></i>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartEmbudo"></canvas>
+          </div>
+        </div>
+
+        <!-- Motivos de rechazo -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <h3 class="chart-title">Motivos de rechazo</h3>
+              <p class="chart-subtitle">Prospectos perdidos</p>
+            </div>
+            <div class="chart-badge">
+              <i class="fa-solid fa-chart-pie"></i>
+            </div>
+          </div>
+          <div class="chart-container chart-container--pie">
+            <canvas id="chartMotivos"></canvas>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── PRÓXIMAS ACTIVIDADES ── -->
+      <section class="activities-card">
+        <div class="activities-header">
+          <div>
+            <h3 class="chart-title">Próximas actividades</h3>
+            <p class="chart-subtitle">Eventos programados</p>
+          </div>
+          <a href="/ventas/calendario" class="link-ver-todas">
+            Ver calendario <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="activities-list" id="activitiesList">
+          <!-- generado por JS -->
+        </div>
+
+      </section>
+
+    </div><!-- /dashboard-body -->
+  </main>
+
+  <!-- ── Scripts ── -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script>var _tok = '<%- token %>';</script>
+  <script src="/scripts/ventas/dashboard.js"></script>
+</body>
+</html>

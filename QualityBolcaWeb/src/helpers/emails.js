@@ -13,7 +13,8 @@ import { format, isAfter } from "@formkit/tempo"
 const emailRegistro = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILI_USER,
       pass: process.env.EMAILI_PASS
@@ -41,7 +42,8 @@ const emailRegistro = async (datos) => {
 const emailOlvidePassword = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILI_USER,
       pass: process.env.EMAILI_PASS
@@ -69,7 +71,8 @@ const emailOlvidePassword = async (datos) => {
 const emailRequisicion = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILR_USER,
       pass: process.env.EMAILR_PASS
@@ -96,7 +99,8 @@ const emailRequisicion = async (datos) => {
 const emailContacto = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILI_USER,
       pass: process.env.EMAILI_PASS
@@ -124,7 +128,8 @@ const emailContacto = async (datos) => {
 const emailCursos = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILC_USER,
       pass: process.env.EMAILC_PASS
@@ -153,7 +158,8 @@ const emailCursos = async (datos) => {
 const registroCursos = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILC_USER,
       pass: process.env.EMAILC_PASS
@@ -183,7 +189,8 @@ const registroCursos = async (datos) => {
 const enviarQueja = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILBQ_USER,
       pass: process.env.EMAILBQ_PASS
@@ -221,7 +228,8 @@ const emailMantenimientoA = async (data) => {
 
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILMA_USER,
       pass: process.env.EMAILMA_PASS
@@ -393,7 +401,8 @@ const emailMantenimientoA = async (data) => {
 const emailSolicitud = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILMS_USER,
       pass: process.env.EMAILMS_PASS
@@ -453,7 +462,8 @@ const emailMejora = async (datos) => {
 const emailMejoraRespuesta = async (datos) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
     auth: {
       user: process.env.EMAILMC_USER,
       pass: process.env.EMAILMC_PASS
@@ -614,6 +624,117 @@ function obtenerMes() {
 
 }
 
+const emailAutorizacionACH = async ({ destinatario, datos }) => {
+  const transport = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT),
+    secure: true,
+    auth: {
+      user: process.env.EMAILI_USER,
+      pass: process.env.EMAILI_PASS
+    }
+  })
+
+  const fecha = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })
+
+  await transport.sendMail({
+    from: 'sistema@qualitybolca.net',
+    to: destinatario,
+    subject: `Requisición #${datos.id} de Personal Operativo — Autorizada`,
+    html: `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Requisición Autorizada – Quality Bolca</title>
+</head>
+<body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background-color:#f4f4f5;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f5;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#137fec;padding:28px 40px;text-align:center;">
+              <h1 style="color:#ffffff;font-size:20px;font-weight:700;margin:0;">Requisición de Personal Autorizada</h1>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px 40px;">
+              <p style="color:#1f2937;font-size:15px;line-height:1.6;margin:0 0 20px 0;">
+                Tu requisición de personal operativo ha sido <strong style="color:#137fec;">revisada y autorizada</strong> por el equipo de Atracción de Capital Humano.
+              </p>
+              <!-- Info box -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#eff6ff;border-left:4px solid #137fec;border-radius:4px;margin:0 0 24px 0;">
+                <tr>
+                  <td style="padding:18px 20px;">
+                    <table width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="50%" style="padding-bottom:10px;">
+                          <p style="margin:0 0 3px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;font-weight:700;">Requisición</p>
+                          <p style="margin:0;font-size:15px;color:#111827;font-weight:600;">#${datos.id}</p>
+                        </td>
+                        <td width="50%" style="padding-bottom:10px;">
+                          <p style="margin:0 0 3px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;font-weight:700;">Fecha de autorización</p>
+                          <p style="margin:0;font-size:15px;color:#111827;font-weight:600;">${fecha}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="50%" style="padding-bottom:10px;">
+                          <p style="margin:0 0 3px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;font-weight:700;">Región</p>
+                          <p style="margin:0;font-size:14px;color:#374151;">${datos.nombre_region || '—'}</p>
+                        </td>
+                        <td width="50%" style="padding-bottom:10px;">
+                          <p style="margin:0 0 3px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;font-weight:700;">Planta</p>
+                          <p style="margin:0;font-size:14px;color:#374151;">${datos.nombre_planta || '—'}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="50%">
+                          <p style="margin:0 0 3px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;font-weight:700;">Personal solicitado</p>
+                          <p style="margin:0;font-size:14px;color:#374151;">${datos.cantidad_personal}</p>
+                        </td>
+                        <td width="50%">
+                          <p style="margin:0 0 3px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;font-weight:700;">Fecha compromiso</p>
+                          <p style="margin:0;font-size:14px;color:#137fec;font-weight:700;">${datos.fecha_compromiso || '—'}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <p style="color:#4b5563;font-size:14px;line-height:1.6;margin:0 0 20px 0;">
+                El personal será presentado según la fecha compromiso indicada. Ante cualquier duda comunícate con el equipo de ACH.
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center" style="padding:10px 0 20px;">
+                    <a href="https://www.qualitybolca.net/atraccion/requisicion-personal"
+                       style="background-color:#137fec;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:13px 32px;border-radius:6px;display:inline-block;">
+                      Ver en el sistema
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 40px;text-align:center;border-top:1px solid #e5e7eb;">
+              <p style="color:#9ca3af;font-size:12px;margin:0;">Este es un mensaje automático. No respondas a este correo.</p>
+              <p style="color:#9ca3af;font-size:12px;margin:8px 0 0;">© ${new Date().getFullYear()} Quality Bolca</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+  })
+}
+
 export {
   emailRegistro,
   emailOlvidePassword,
@@ -625,5 +746,6 @@ export {
   emailSolicitud,
   emailMejora,
   emailMejoraRespuesta,
-  emailContacto
+  emailContacto,
+  emailAutorizacionACH
 }

@@ -185,6 +185,7 @@ body {
     padding: 1rem 2rem;
     background-color: var(--sidebar-bg);
     border-bottom: 1px solid var(--border-color);
+    gap: 20px;
 }
 
 .search-bar {
@@ -230,6 +231,11 @@ body {
 .btn-primary {
     background-color: var(--primary-blue);
     color: white;
+    justify-content: center;
+    flex-grow: 0;           
+    flex-shrink: 0;         
+    white-space: nowrap;    
+    width: fit-content;  
 }
 
 .btn-dark {
@@ -834,9 +840,9 @@ tr:last-child td {
 }
 
 @media (max-width: 900px) {
-
     body {
-        flex-direction: column;
+        /* Eliminamos flex-direction: column para que sigan uno al lado del otro */
+        flex-direction: row; 
     }
 
     .sidebar {
@@ -853,7 +859,8 @@ tr:last-child td {
     }
 
     .summary-cards {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 1rem;
     }
 
     .menu-toggle {

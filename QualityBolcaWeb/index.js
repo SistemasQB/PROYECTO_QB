@@ -131,4 +131,3 @@ app.listen(process.env.PORT, () => {
 // const cronos = new miCron(); 
 // cronos.iniciarCron('prueba1', '* * * * * *', () => {console.log(`trabajo ejectuado 0 veces`)});
 
-

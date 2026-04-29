@@ -815,6 +815,39 @@ controller.crudTickets = async (req, res) => {
                     datosTicket: ticketParseado
                 });
 
+                // Notificacion por correo al departamento de IT
+                try {
+                    const nod = new miNodemailer({
+                        datosSmtp: {
+                            host: process.env.EMAIL_HOST,
+                            port: process.env.EMAIL_PORT,
+                            auth: {
+                                user: process.env.EMAIL_RECORDATORIO,
+                                pass: process.env.PASS_RECORDATORIO
+                            }
+                        }
+                    });
+                    const htmlTicket = nod.htmlNuevoTicket({
+                        folio,
+                        titulo:       ticketParseado.titulo,
+                        nombreUsuario: ticketParseado.nombreUsuario,
+                        departamento: ticketParseado.departamento,
+                        prioridad:    ticketParseado.prioridad,
+                        categoria:    ticketParseado.categoria,
+                        descripcion:  ticketParseado.descripcion,
+                        slaHoras:     ticketParseado.slaHoras
+                    });
+                    await nod.enviarCorreo({
+                        Datoscorreo: {
+                            destinatario: process.env.correoSistemas,
+                            asunto: `[Nuevo Ticket] ${folio} – ${ticketParseado.titulo}`,
+                            html: htmlTicket
+                        }
+                    });
+                } catch (errorCorreo) {
+                    console.error('Error al enviar notificacion de nuevo ticket:', errorCorreo);
+                }
+
                 return res.json({ ok: true, ticket: nuevoTicket });
 
             }
