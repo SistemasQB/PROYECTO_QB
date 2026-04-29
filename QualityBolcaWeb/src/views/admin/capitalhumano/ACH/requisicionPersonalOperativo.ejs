@@ -3,1150 +3,369 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- CSRF token expuesto al JS mediante meta tag — evita inline script con dato sensible -->
   <meta name="csrf-token" content="<%= token %>">
   <title>Requisición de Personal Operativo — Quality Bolca</title>
   <link rel="icon" type="image/png" href="/img/favicon.png">
-  <!-- Inter via CDN — única dependencia externa permitida -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-<style>
-/* ════════════════════════════════════════════════════════════════
-   requisicionPersonalOperativo — Quality Bolca S.A. de C.V.
-   Formulario interno ACH — uso en escritorio / tablet de planta
-   ════════════════════════════════════════════════════════════════ */
-
-/* ── TOKENS DE DISEÑO (alineados con paleta corporativa QB) ───── */
-:root {
-  --blue:         #1a56a8;
-  --blue-dk:      #0e3a72;
-  --blue-md:      #1244a0;
-  --blue-lt:      #dbeafe;
-  --blue-xlt:     #eff6ff;
-  --gold:         #c8960c;
-  --gold-bar:     #f0b429;
-  --red:          #dc2626;
-  --red-lt:       #fee2e2;
-  --green:        #059669;
-  --green-lt:     #d1fae5;
-  --gray-0:       #f1f5f9;
-  --gray-1:       #f8fafc;
-  --gray-2:       #e2e8f0;
-  --gray-3:       #94a3b8;
-  --gray-4:       #64748b;
-  --gray-5:       #475569;
-  --text:         #1e293b;
-  --white:        #ffffff;
-
-  --radius-xs:    6px;
-  --radius-sm:    10px;
-  --radius-md:    14px;
-  --radius-lg:    20px;
-
-  --shadow-sm:    0 1px 4px rgba(14,58,114,.07);
-  --shadow:       0 2px 16px rgba(14,58,114,.10);
-  --shadow-md:    0 4px 24px rgba(14,58,114,.13);
-  --shadow-card:  0 2px 12px rgba(14,58,114,.08), 0 1px 3px rgba(14,58,114,.05);
-
-  --trans:        .22s ease;
-  --trans-slow:   .35s ease;
-}
-
-/* ── RESET BASE ─────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  /*
-    Fondo premium con textura de puntos — mismo patron que solicitudParcial
-    para coherencia visual entre formularios del módulo CH
-  */
-  background-color: #e8f0f9;
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(14,58,114,.06) 1px, transparent 0);
-  background-size: 28px 28px;
-  color: var(--text);
-  min-height: 100vh;
-  padding-bottom: 80px;
-  font-size: 15px;
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ════════════════════════════════════════════════════════════
-   HEADER CORPORATIVO — sticky, idéntico al de solicitudParcial
-   ════════════════════════════════════════════════════════════ */
-.app-header {
-  background: linear-gradient(105deg, #071f3f 0%, var(--blue-dk) 45%, #133a7a 100%);
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  box-shadow: 0 2px 24px rgba(0,0,0,.32);
-}
-
-/* Banda dorada — firma visual corporativa QB */
-.app-header::before {
-  content: '';
-  display: block;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold-bar), #fde68a 50%, var(--gold-bar));
-}
-
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 24px 12px;
-  max-width: 860px;
-  margin: 0 auto;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.logo-img {
-  height: 40px;
-  width: auto;
-  display: block;
-  filter: brightness(1.05);
-  padding-right: 14px;
-  border-right: 1px solid rgba(255,255,255,.18);
-}
-
-.logo-text {
-  color: rgba(255,255,255,.9);
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: .02em;
-  line-height: 1.3;
-}
-
-.logo-text span {
-  display: block;
-  font-size: .68rem;
-  font-weight: 400;
-  color: rgba(255,255,255,.5);
-  margin-top: 1px;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-}
-
-/* Fecha — lado derecho del header */
-.header-date {
-  color: rgba(255,255,255,.55);
-  font-size: .72rem;
-  text-align: right;
-  line-height: 1.5;
-}
-.header-date strong {
-  color: rgba(255,255,255,.88);
-  font-size: .78rem;
-  font-weight: 600;
-  display: block;
-}
-
-/* ════════════════════════════════════════════════════════════
-   CONTAINER PRINCIPAL
-   ════════════════════════════════════════════════════════════ */
-.container {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 32px 20px 40px;
-}
-
-/* Animación de entrada — coherente con el sistema de panels del proyecto */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ════════════════════════════════════════════════════════════
-   CARDS DE SECCIÓN
-   ════════════════════════════════════════════════════════════ */
-.card {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  /*
-    Border izquierdo azul: firma visual de todas las cards de sección
-    en el módulo CH — no se cambia para mantener coherencia visual
-  */
-  border-left: 4px solid var(--blue);
-  box-shadow: var(--shadow-md);
-  padding: 28px 30px;
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-  animation: fadeUp .32s ease both;
-}
-
-/* Decoración radial sutil en esquina superior derecha */
-.card::after {
-  content: '';
-  position: absolute;
-  top: -30px; right: -30px;
-  width: 130px; height: 130px;
-  background: radial-gradient(circle, rgba(26,86,168,.04) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* Delays escalonados para las 4 cards — efecto cascade */
-.card:nth-child(1) { animation-delay: .05s; }
-.card:nth-child(2) { animation-delay: .12s; }
-.card:nth-child(3) { animation-delay: .19s; }
-.card:nth-child(4) { animation-delay: .26s; }
-
-/* ════════════════════════════════════════════════════════════
-   ENCABEZADO DE SECCIÓN
-   ════════════════════════════════════════════════════════════ */
-.section-head {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 26px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--gray-2);
-  position: relative;
-}
-
-/* Acento lineal azul degradado bajo el título — elemento de diseño QB */
-.section-head::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; left: 0;
-  width: 60px; height: 2px;
-  background: linear-gradient(90deg, var(--blue), transparent);
-  border-radius: 2px;
-}
-
-.section-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(14,58,114,.25);
-}
-
-.section-head h2 {
-  font-size: 1.08rem;
-  font-weight: 800;
-  color: var(--blue-dk);
-  line-height: 1.2;
-  letter-spacing: -.01em;
-}
-.section-head p {
-  font-size: .74rem;
-  color: var(--gray-4);
-  margin-top: 3px;
-  font-weight: 400;
-}
-
-/* ════════════════════════════════════════════════════════════
-   CAMPOS DE FORMULARIO
-   ════════════════════════════════════════════════════════════ */
-.field { margin-bottom: 20px; }
-
-/* Grid de 2 columnas — layout de formulario interno (escritorio) */
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.row.row-3 { grid-template-columns: 1fr 1fr 1fr; }
-
-/* Labels en uppercase pequeño — estándar corporativo QB */
-label.lbl {
-  display: block;
-  font-size: .7rem;
-  font-weight: 700;
-  color: var(--gray-5);
-  margin-bottom: 7px;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-}
-label.lbl .req { color: var(--red); margin-left: 2px; }
-
-.hint {
-  font-size: .71rem;
-  color: var(--gray-3);
-  margin-top: 5px;
-  font-style: italic;
-}
-
-/* Inputs, selects, textareas — base unificada */
-input[type=text], input[type=number],
-select, textarea {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid var(--gray-2);
-  border-radius: var(--radius-sm);
-  font-size: .9rem;
-  color: var(--text);
-  background: var(--gray-1);
-  transition: border-color var(--trans), box-shadow var(--trans), background var(--trans);
-  outline: none;
-  font-family: inherit;
-  font-weight: 400;
-}
-
-input:focus, select:focus, textarea:focus {
-  border-color: var(--blue);
-  /* Ring de foco azul tenue — accesibilidad + identidad visual */
-  box-shadow: 0 0 0 3px rgba(26,86,168,.12);
-  background: var(--white);
-}
-
-textarea { resize: vertical; min-height: 80px; }
-
-/* Select con flecha SVG personalizada — sin aspecto nativo */
-select {
-  appearance: none;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 13px center;
-  padding-right: 36px;
-}
-
-select:disabled {
-  opacity: .6;
-  cursor: not-allowed;
-  background-color: var(--gray-0);
-}
-
-/* ── ESTADO DE ERROR ─────────────────────────────────────── */
-.field.has-error input,
-.field.has-error select,
-.field.has-error textarea {
-  border-color: var(--red) !important;
-  background: var(--red-lt) !important;
-  box-shadow: 0 0 0 3px rgba(220,38,38,.10) !important;
-}
-.field.has-error label.lbl { color: var(--red) !important; }
-.err-msg {
-  font-size: .71rem;
-  color: var(--red);
-  margin-top: 5px;
-  display: none;
-  font-weight: 600;
-}
-.field.has-error .err-msg { display: block; }
-
-/* Animación shake para campos con error */
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  20%     { transform: translateX(-5px); }
-  40%     { transform: translateX(5px); }
-  60%     { transform: translateX(-3px); }
-  80%     { transform: translateX(3px); }
-}
-.shake { animation: shake .38s ease; }
-
-/* ── SKELETON LOADING (mientras cargan catálogos) ────────── */
-.skeleton-line {
-  display: inline-block;
-  height: 1em;
-  width: 60%;
-  background: linear-gradient(90deg, var(--gray-2) 25%, var(--gray-0) 50%, var(--gray-2) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: 4px;
-  vertical-align: middle;
-}
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* ── CAMPO CONDICIONAL (mismo patrón que el proyecto) ──────── */
-.cond {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height .32s ease, opacity .25s ease, margin .25s ease;
-  opacity: 0;
-  margin-top: 0;
-}
-.cond.open {
-  max-height: 200px;
-  opacity: 1;
-  margin-top: 12px;
-}
-
-/* ════════════════════════════════════════════════════════════
-   PILLS DE DÍAS — diseño cuadrado compacto
-   ════════════════════════════════════════════════════════════ */
-.days-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-/*
-  Pill cuadrada para días (L M X J V S D) — más compacta que las
-  pills largas de elección múltiple. Diseño inspirado en calendarios
-  de apps móviles corporativas.
-*/
-.day-pill {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-xs);
-  border: 1.5px solid var(--gray-2);
-  background: var(--gray-1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: .78rem;
-  font-weight: 700;
-  color: var(--gray-5);
-  user-select: none;
-  transition: all var(--trans);
-  letter-spacing: .01em;
-  /* El input checkbox real está oculto — accesibilidad via label */
-}
-
-.day-pill input[type=checkbox] { display: none; }
-
-.day-pill:hover:not(.disabled) {
-  border-color: var(--blue);
-  color: var(--blue);
-  background: var(--blue-xlt);
-  transform: translateY(-1px);
-}
-
-/* Estado seleccionado — fondo azul corporativo */
-.day-pill.sel {
-  background: var(--blue);
-  border-color: var(--blue);
-  color: var(--white);
-  box-shadow: 0 2px 8px rgba(26,86,168,.30);
-  transform: translateY(-1px);
-}
-
-/* Estado deshabilitado — cuando diasDescanso llega a 5 */
-.day-pill.disabled {
-  opacity: .38;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-/* El pill ya seleccionado no se deshabilita así mismo */
-.day-pill.sel.disabled {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Error en grupo de pills */
-.field.has-error .day-pill:not(.sel) {
-  border-color: var(--red);
-  background: var(--red-lt);
-}
-
-/* ════════════════════════════════════════════════════════════
-   RANGO DE EDAD — diseño de dos inputs conectados
-   ════════════════════════════════════════════════════════════ */
-.age-range-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  background: var(--gray-1);
-  border: 1.5px solid var(--gray-2);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  transition: border-color var(--trans), box-shadow var(--trans);
-}
-
-/* Cuando cualquiera de los dos inputs tiene foco, el wrapper se ilumina */
-.age-range-wrap:focus-within {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(26,86,168,.12);
-  background: var(--white);
-}
-
-.age-input-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 14px;
-}
-
-.age-sub-label {
-  font-size: .6rem;
-  font-weight: 700;
-  color: var(--gray-3);
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  margin-bottom: 3px;
-}
-
-/* Los inputs de edad no heredan el estilo base — están dentro del wrapper */
-.age-input-group input[type=number] {
-  width: 60px;
-  border: none;
-  background: transparent;
-  text-align: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--blue-dk);
-  padding: 0;
-  box-shadow: none;
-  -moz-appearance: textfield;
-}
-.age-input-group input[type=number]::-webkit-inner-spin-button,
-.age-input-group input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
-.age-input-group input[type=number]:focus { box-shadow: none; background: transparent; border-color: transparent; }
-
-/* Separador visual entre edad mínima y máxima */
-.age-separator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  color: var(--gray-3);
-  font-size: .85rem;
-  font-weight: 700;
-  user-select: none;
-  flex-shrink: 0;
-}
-
-/* Línea decorativa del separador */
-.age-sep-line {
-  width: 24px;
-  height: 2px;
-  background: var(--gray-2);
-  border-radius: 2px;
-  margin-top: 2px;
-}
-
-/* Error state en el wrapper de edad */
-.field.has-error .age-range-wrap {
-  border-color: var(--red) !important;
-  background: var(--red-lt) !important;
-  box-shadow: 0 0 0 3px rgba(220,38,38,.10) !important;
-}
-
-/* ════════════════════════════════════════════════════════════
-   DIVISOR
-   ════════════════════════════════════════════════════════════ */
-hr.div {
-  border: none;
-  border-top: 1px solid var(--gray-2);
-  margin: 24px 0;
-}
-
-/* ════════════════════════════════════════════════════════════
-   BANNERS DE FEEDBACK (éxito / error de envío)
-   ════════════════════════════════════════════════════════════ */
-.feedback-banner {
-  display: none;
-  padding: 16px 20px;
-  border-radius: var(--radius-sm);
-  font-size: .88rem;
-  font-weight: 600;
-  margin-bottom: 20px;
-  line-height: 1.5;
-  animation: fadeUp .25s ease;
-}
-.feedback-banner.visible { display: flex; align-items: flex-start; gap: 12px; }
-.feedback-banner.success {
-  background: var(--green-lt);
-  border: 1.5px solid rgba(5,150,105,.3);
-  border-left: 4px solid var(--green);
-  color: #065f46;
-}
-.feedback-banner.error {
-  background: var(--red-lt);
-  border: 1.5px solid rgba(220,38,38,.2);
-  border-left: 4px solid var(--red);
-  color: #7f1d1d;
-}
-.feedback-banner .fb-icon { font-size: 1.1rem; flex-shrink: 0; }
-
-/* ════════════════════════════════════════════════════════════
-   BOTÓN DE ENVÍO
-   ════════════════════════════════════════════════════════════ */
-.submit-row {
-  margin-top: 8px;
-  display: flex;
-  justify-content: center;
-}
-
-.btn-submit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 15px 48px;
-  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
-  color: var(--white);
-  border: none;
-  border-radius: 50px; /* pill completo para CTA principal */
-  font-size: .97rem;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: .02em;
-  box-shadow: 0 4px 20px rgba(14,58,114,.32);
-  transition: all var(--trans);
-  font-family: inherit;
-  min-width: 260px;
-}
-
-.btn-submit:hover:not(:disabled) {
-  box-shadow: 0 7px 28px rgba(14,58,114,.44);
-  transform: translateY(-2px);
-}
-
-.btn-submit:disabled {
-  opacity: .65;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* ════════════════════════════════════════════════════════════
-   RESPONSIVE — MOBILE FIRST
-   ════════════════════════════════════════════════════════════ */
-@media (max-width: 680px) {
-  .header-inner { padding: 9px 16px 11px; }
-  .container    { padding: 20px 14px 40px; }
-  .card         { padding: 20px 18px; border-radius: var(--radius-md); }
-
-  /* Grid 2-col colapsa a 1 columna en móvil */
-  .row, .row.row-3 { grid-template-columns: 1fr; gap: 0; }
-
-  .logo-img     { height: 34px; }
-  .section-head h2 { font-size: .96rem; }
-  .btn-submit   { width: 100%; min-width: 0; }
-}
-
-@media (max-width: 400px) {
-  .header-date  { display: none; }
-  .day-pill     { width: 36px; height: 36px; font-size: .72rem; }
-}
-</style>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/capitalhumano/estilos_requisicionPersonalOperativo.css">
 </head>
-
 <body>
 
-<!-- ════════════════════════════════════════════════════════════
-     HEADER CORPORATIVO STICKY
-     ════════════════════════════════════════════════════════════ -->
-<header class="app-header" role="banner">
-  <div class="header-inner">
-    <div class="logo">
-      <img
-        src="/img/Quality-BOLCA.png"
-        alt="Quality Bolca S.A. de C.V."
-        class="logo-img"
-      >
-      <div class="logo-text">
-        Requisición de Personal Operativo
-        <span>Atracción de Capital Humano</span>
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="material-symbols-outlined" id="toastIcon">check_circle</span>
+  <span id="toastMsg">Mensaje</span>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+
+    <div class="logo-container">
+      <div class="logo-icon">
+        <span class="material-symbols-outlined">groups</span>
       </div>
-    </div>
-    <!-- Fecha inyectada por JS al DOMContentLoaded -->
-    <div class="header-date">
-      <strong id="hdr-date"></strong>
-      Quality Bolca
-    </div>
-  </div>
-</header>
-
-<!-- ════════════════════════════════════════════════════════════
-     CONTENIDO PRINCIPAL
-     ════════════════════════════════════════════════════════════ -->
-<main class="container" role="main">
-
-  <!-- Banners de feedback del envío — ocultos por defecto -->
-  <div class="feedback-banner success" id="banner-success" role="alert" aria-live="polite">
-    <span class="fb-icon">&#10003;</span>
-    <div id="banner-success-msg">La requisición fue enviada correctamente.</div>
-  </div>
-  <div class="feedback-banner error" id="banner-error" role="alert" aria-live="polite">
-    <span class="fb-icon">&#9888;</span>
-    <div id="banner-error-msg">Ocurrió un error al enviar. Intenta nuevamente.</div>
-  </div>
-
-  <form id="req-form" novalidate autocomplete="off">
-
-    <!-- ──────────────────────────────────────────────────────────
-         SECCIÓN 1 — INFORMACIÓN DE LA REQUISICIÓN
-         ────────────────────────────────────────────────────────── -->
-    <div class="card">
-      <div class="section-head">
-        <div class="section-icon" aria-hidden="true">&#128205;</div>
-        <div>
-          <h2>Información de la Requisición</h2>
-          <p>Datos generales de la solicitud de personal</p>
-        </div>
-      </div>
-
-      <!-- Región y Planta en grid 2 columnas -->
-      <div class="row">
-        <div class="field" id="f-region">
-          <label class="lbl" for="region">Región <span class="req" aria-hidden="true">*</span></label>
-          <select id="region" name="region" aria-required="true" aria-describedby="err-region">
-            <!-- Opción inicial: skeleton visual mientras carga -->
-            <option value="">Cargando...</option>
-          </select>
-          <div class="err-msg" id="err-region">Selecciona una región.</div>
-        </div>
-
-        <div class="field" id="f-planta">
-          <label class="lbl" for="planta">Planta <span class="req" aria-hidden="true">*</span></label>
-          <!--
-            Planta deshabilitado al inicio — se habilita cuando región tiene valor.
-            No hay relación región/planta en el modelo: se cargan todas las plantas.
-          -->
-          <select id="planta" name="planta" disabled aria-required="true" aria-describedby="err-planta">
-            <option value="">Primero selecciona una región</option>
-          </select>
-          <div class="err-msg" id="err-planta">Selecciona una planta.</div>
-        </div>
-      </div>
-
-      <!-- Cantidad de personal — ocupa media fila, más intuitivo que full-width -->
-      <div class="field" id="f-cantidadPersonal" style="max-width: 260px;">
-        <label class="lbl" for="cantidadPersonal">Cantidad de personal <span class="req" aria-hidden="true">*</span></label>
-        <input
-          type="number"
-          id="cantidadPersonal"
-          name="cantidadPersonal"
-          min="1"
-          max="500"
-          placeholder="Ej. 10"
-          aria-required="true"
-          aria-describedby="err-cantidadPersonal"
-        >
-        <div class="err-msg" id="err-cantidadPersonal">Ingresa un valor entre 1 y 500.</div>
-      </div>
-
-      <!-- Características del puesto — campo libre, espacio generoso -->
-      <div class="field" id="f-caracteristicas">
-        <label class="lbl" for="caracteristicas">Características del puesto <span class="req" aria-hidden="true">*</span></label>
-        <textarea
-          id="caracteristicas"
-          name="caracteristicas"
-          rows="4"
-          placeholder="Describe las actividades, requisitos físicos, técnicos o de experiencia del puesto..."
-          aria-required="true"
-          aria-describedby="err-caracteristicas"
-        ></textarea>
-        <div class="err-msg" id="err-caracteristicas">Describe las características del puesto (mínimo 10 caracteres).</div>
-      </div>
-
-    </div><!-- /card sección 1 -->
-
-
-    <!-- ──────────────────────────────────────────────────────────
-         SECCIÓN 2 — PERFIL DEL CANDIDATO
-         ────────────────────────────────────────────────────────── -->
-    <div class="card">
-      <div class="section-head">
-        <div class="section-icon" aria-hidden="true">&#128100;</div>
-        <div>
-          <h2>Perfil del Candidato</h2>
-          <p>Tipo de contratación, género y rango de edad</p>
-        </div>
-      </div>
-
-      <!-- Tipo contratación y Sexo en grid 2 cols -->
-      <div class="row">
-        <div class="field" id="f-tipoContratacion">
-          <label class="lbl" for="tipoContratacion">Tipo de contratación <span class="req" aria-hidden="true">*</span></label>
-          <select id="tipoContratacion" name="tipoContratacion" aria-required="true" aria-describedby="err-tipoContratacion">
-            <option value="">-- Selecciona --</option>
-            <option value="Locales">Locales</option>
-            <option value="CDR">CDR (Cambios de residencia)</option>
-          </select>
-          <div class="err-msg" id="err-tipoContratacion">Selecciona el tipo de contratación.</div>
-        </div>
-
-        <div class="field" id="f-sexo">
-          <label class="lbl" for="sexo">Sexo <span class="req" aria-hidden="true">*</span></label>
-          <select id="sexo" name="sexo" aria-required="true" aria-describedby="err-sexo">
-            <option value="">-- Selecciona --</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Indistinto">Indistinto</option>
-          </select>
-          <div class="err-msg" id="err-sexo">Selecciona el sexo requerido.</div>
-        </div>
-      </div>
-
-      <hr class="div">
-
-      <!-- Rango de edad — dos inputs visualmente conectados como un solo campo -->
-      <div class="field" id="f-edadRango">
-        <label class="lbl">Rango de edad <span class="req" aria-hidden="true">*</span></label>
-        <!--
-          El wrapper .age-range-wrap actúa como campo unificado visual.
-          focus-within permite el ring de foco al navegar por teclado.
-        -->
-        <div class="age-range-wrap" role="group" aria-label="Rango de edad mínima y máxima">
-          <div class="age-input-group">
-            <span class="age-sub-label">Mínima</span>
-            <input
-              type="number"
-              id="edadMin"
-              name="edadMin"
-              min="16" max="70"
-              value="18"
-              aria-label="Edad mínima"
-            >
-          </div>
-          <div class="age-separator" aria-hidden="true">
-            &#8212;
-            <div class="age-sep-line"></div>
-          </div>
-          <div class="age-input-group">
-            <span class="age-sub-label">Máxima</span>
-            <input
-              type="number"
-              id="edadMax"
-              name="edadMax"
-              min="16" max="70"
-              value="45"
-              aria-label="Edad máxima"
-            >
-          </div>
-        </div>
-        <div class="err-msg" id="err-edadRango">Verifica el rango: mínima 16, máxima 70, y mínima menor que máxima.</div>
-      </div>
-
-    </div><!-- /card sección 2 -->
-
-
-    <!-- ──────────────────────────────────────────────────────────
-         SECCIÓN 3 — CONDICIONES LABORALES
-         ────────────────────────────────────────────────────────── -->
-    <div class="card">
-      <div class="section-head">
-        <div class="section-icon" aria-hidden="true">&#9881;&#65039;</div>
-        <div>
-          <h2>Condiciones Laborales</h2>
-          <p>Turno, EPP y días de descanso</p>
-        </div>
-      </div>
-
-      <!-- Rolar turno -->
-      <div class="field" id="f-rolarTurno">
-        <label class="lbl" for="rolarTurno">Rolar turno <span class="req" aria-hidden="true">*</span></label>
-        <select id="rolarTurno" name="rolarTurno" aria-required="true" aria-describedby="err-rolarTurno" aria-controls="cond-rolar">
-          <option value="">-- Selecciona --</option>
-          <option value="Sí">Sí</option>
-          <option value="No">No</option>
-          <option value="Especifique">Especifique</option>
-        </select>
-        <div class="err-msg" id="err-rolarTurno">Indica si se requiere rolar turno.</div>
-      </div>
-
-      <!-- Campo condicional que aparece al seleccionar "Especifique" -->
-      <div class="cond" id="cond-rolar">
-        <div class="field" id="f-rolarTurnoEspecificacion">
-          <label class="lbl" for="rolarTurnoEspecificacion">Especifica el turno <span class="req" aria-hidden="true">*</span></label>
-          <input
-            type="text"
-            id="rolarTurnoEspecificacion"
-            name="rolarTurnoEspecificacion"
-            placeholder="Ej. Solo turno nocturno, rotación semanal..."
-            aria-describedby="err-rolarEspec"
-          >
-          <div class="err-msg" id="err-rolarEspec">Especifica el tipo de turno requerido.</div>
-        </div>
-      </div>
-
-      <hr class="div">
-
-      <!-- EPP Especial -->
-      <div class="field" id="f-eppEspecial">
-        <label class="lbl" for="eppEspecial">EPP Especial requerido <span class="req" aria-hidden="true">*</span></label>
-        <textarea
-          id="eppEspecial"
-          name="eppEspecial"
-          rows="3"
-          placeholder="Describe el equipo de protección personal especial: casco, botas dieléctricas, guantes de corte, etc..."
-          aria-required="true"
-          aria-describedby="err-eppEspecial"
-        ></textarea>
-        <div class="err-msg" id="err-eppEspecial">Describe el EPP especial requerido (mínimo 5 caracteres).</div>
-      </div>
-
-      <hr class="div">
-
-      <!-- Días de descanso — pills cuadradas, máximo 5 -->
-      <div class="field" id="f-diasDescanso">
-        <label class="lbl">Días de descanso <span class="req" aria-hidden="true">*</span></label>
-        <div class="hint" style="margin-bottom:10px;">Selecciona de 1 a 5 días.</div>
-        <!--
-          Pills implementadas como <label> con <input type=checkbox> oculto.
-          El JS gestiona .sel, .disabled y el límite de 5.
-        -->
-        <div class="days-group" id="diasDescansoGroup" role="group" aria-label="Días de descanso (máximo 5)">
-          <label class="day-pill" title="Lunes">
-            <input type="checkbox" name="diasDescanso" value="Lunes"> L
-          </label>
-          <label class="day-pill" title="Martes">
-            <input type="checkbox" name="diasDescanso" value="Martes"> M
-          </label>
-          <label class="day-pill" title="Miércoles">
-            <input type="checkbox" name="diasDescanso" value="Miércoles"> X
-          </label>
-          <label class="day-pill" title="Jueves">
-            <input type="checkbox" name="diasDescanso" value="Jueves"> J
-          </label>
-          <label class="day-pill" title="Viernes">
-            <input type="checkbox" name="diasDescanso" value="Viernes"> V
-          </label>
-          <label class="day-pill" title="Sábado">
-            <input type="checkbox" name="diasDescanso" value="Sábado"> S
-          </label>
-          <label class="day-pill" title="Domingo">
-            <input type="checkbox" name="diasDescanso" value="Domingo"> D
-          </label>
-        </div>
-        <div class="err-msg" id="err-diasDescanso">Selecciona entre 1 y 5 días de descanso.</div>
-      </div>
-
-    </div><!-- /card sección 3 -->
-
-
-    <!-- ──────────────────────────────────────────────────────────
-         SECCIÓN 4 — PROTOCOLO
-         ────────────────────────────────────────────────────────── -->
-    <div class="card">
-      <div class="section-head">
-        <div class="section-icon" aria-hidden="true">&#128203;</div>
-        <div>
-          <h2>Protocolo de Ingreso</h2>
-          <p>Configuración del proceso de entrada del personal</p>
-        </div>
-      </div>
-
-      <!-- Protocolo de ingreso -->
-      <div class="field" id="f-protocoloIngreso">
-        <label class="lbl" for="protocoloIngreso">Protocolo de ingreso <span class="req" aria-hidden="true">*</span></label>
-        <select id="protocoloIngreso" name="protocoloIngreso" aria-required="true" aria-describedby="err-protocoloIngreso" style="max-width:260px;">
-          <option value="">-- Selecciona --</option>
-          <option value="Sí">Sí</option>
-          <option value="No">No</option>
-        </select>
-        <div class="err-msg" id="err-protocoloIngreso">Indica si se requiere protocolo de ingreso.</div>
-      </div>
-
-      <hr class="div">
-
-      <!-- Día de protocolo — pills cuadradas, mínimo 1 -->
-      <div class="field" id="f-diaProtocolo">
-        <!--
-          Etiqueta exacta requerida — incluye la aclaración sobre el costo en espera.
-          Usamos el tag <label> para el grupo pero los inputs hijos no se asocian
-          directamente con él; el role="group" + aria-label en el div cubre eso.
-        -->
-        <label class="lbl">
-          Día de protocolo
-          <span class="req" aria-hidden="true">*</span>
-        </label>
-        <p class="hint" style="margin-bottom:10px; font-style:normal; font-size:.72rem; color:var(--gray-4); font-weight:500;">
-          En caso de no ser mencionado se deberá pagar el tiempo que el personal esté en espera.
-        </p>
-        <div class="days-group" id="diaProtocoloGroup" role="group" aria-label="Días de protocolo de ingreso">
-          <label class="day-pill" title="Lunes">
-            <input type="checkbox" name="diaProtocolo" value="Lunes"> L
-          </label>
-          <label class="day-pill" title="Martes">
-            <input type="checkbox" name="diaProtocolo" value="Martes"> M
-          </label>
-          <label class="day-pill" title="Miércoles">
-            <input type="checkbox" name="diaProtocolo" value="Miércoles"> X
-          </label>
-          <label class="day-pill" title="Jueves">
-            <input type="checkbox" name="diaProtocolo" value="Jueves"> J
-          </label>
-          <label class="day-pill" title="Viernes">
-            <input type="checkbox" name="diaProtocolo" value="Viernes"> V
-          </label>
-          <label class="day-pill" title="Sábado">
-            <input type="checkbox" name="diaProtocolo" value="Sábado"> S
-          </label>
-          <label class="day-pill" title="Domingo">
-            <input type="checkbox" name="diaProtocolo" value="Domingo"> D
-          </label>
-        </div>
-        <div class="err-msg" id="err-diaProtocolo">Selecciona al menos un día de protocolo.</div>
-      </div>
-
-    </div><!-- /card sección 4 -->
-
-    <!-- Botón de envío — CTA principal del formulario -->
-    <div class="submit-row">
-      <button type="submit" class="btn-submit" id="btn-submit">
-        <span id="btn-submit-text">&#10003;&nbsp; Enviar Requisición</span>
-      </button>
+      <span>Capital Humano</span>
     </div>
 
-  </form>
+    <div class="profile-section">
+      <div class="avatar" id="avatarUsuario"></div>
+      <div class="profile-name"><%= datosUsuario.nombrelargo %></div>
+      <div class="profile-role"><%= datosUsuario.puesto || '' %></div>
+      <div class="profile-dept"><%= datosUsuario.departamento || '' %></div>
+    </div>
 
-</main>
+    <ul class="nav-menu">
+      <a href="/atraccion/requisicion-personal" class="nav-item active">
+        <span class="material-symbols-outlined">post_add</span>
+        Nueva Requisición
+      </a>
+    </ul>
 
-<!-- ════════════════════════════════════════════════════════════
-     LÓGICA JS — IIFE para evitar contaminar namespace global
-     ════════════════════════════════════════════════════════════ -->
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="content-wrapper">
+
+      <header class="page-header">
+        <div>
+          <h2 class="page-title">Requisición de Personal Operativo</h2>
+          <p class="page-sub">Complete los campos para enviar la solicitud al equipo de Atracción.</p>
+        </div>
+        <button class="btn btn--primary" id="btnEnviarTop">
+          <span class="material-symbols-outlined">send</span>
+          Enviar Requisición
+        </button>
+      </header>
+
+      <form id="req-form" novalidate autocomplete="off">
+        <div class="form-sections">
+
+          <!-- SECCIÓN 1: INFORMACIÓN DE LA REQUISICIÓN -->
+          <section class="card">
+            <div class="card-header">
+              <span class="material-symbols-outlined">location_on</span>
+              <h3 class="card-title">Información de la Requisición</h3>
+            </div>
+
+            <div class="grid-2">
+              <div class="field" id="f-region">
+                <label class="field-label">Región <span class="req">*</span></label>
+                <select class="input" id="region" name="region" aria-required="true">
+                  <option value="">Cargando...</option>
+                </select>
+                <span class="field-error" id="err-region">Selecciona una región.</span>
+              </div>
+
+              <div class="field" id="f-planta">
+                <label class="field-label">Planta <span class="req">*</span></label>
+                <select class="input" id="planta" name="planta" disabled aria-required="true">
+                  <option value="">Primero selecciona una región</option>
+                </select>
+                <span class="field-error" id="err-planta">Selecciona una planta.</span>
+              </div>
+            </div>
+
+            <div class="field" id="f-cantidadPersonal" style="max-width:240px; margin-top:18px;">
+              <label class="field-label">Cantidad de personal <span class="req">*</span></label>
+              <input class="input" type="number" id="cantidadPersonal" name="cantidadPersonal" min="1" max="500" placeholder="Ej. 10">
+              <span class="field-error" id="err-cantidadPersonal">Ingresa un valor entre 1 y 500.</span>
+            </div>
+
+            <div class="field" id="f-caracteristicas" style="margin-top:18px;">
+              <label class="field-label">Características del puesto <span class="req">*</span></label>
+              <textarea class="input" id="caracteristicas" name="caracteristicas" placeholder="Describe las actividades, requisitos físicos, técnicos o de experiencia del puesto..."></textarea>
+              <span class="field-error" id="err-caracteristicas">Describe las características del puesto (mínimo 10 caracteres).</span>
+            </div>
+          </section>
+
+          <!-- SECCIÓN 2: PERFIL DEL CANDIDATO -->
+          <section class="card">
+            <div class="card-header">
+              <span class="material-symbols-outlined">person_search</span>
+              <h3 class="card-title">Perfil del Candidato</h3>
+            </div>
+
+            <div class="grid-2">
+              <div class="field" id="f-tipoContratacion">
+                <label class="field-label">Tipo de contratación <span class="req">*</span></label>
+                <select class="input" id="tipoContratacion" name="tipoContratacion">
+                  <option value="">-- Selecciona --</option>
+                  <option value="Locales">Locales</option>
+                  <option value="CDR">CDR (Cambios de residencia)</option>
+                </select>
+                <span class="field-error" id="err-tipoContratacion">Selecciona el tipo de contratación.</span>
+              </div>
+
+              <div class="field" id="f-sexo">
+                <label class="field-label">Sexo <span class="req">*</span></label>
+                <select class="input" id="sexo" name="sexo">
+                  <option value="">-- Selecciona --</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="Indistinto">Indistinto</option>
+                </select>
+                <span class="field-error" id="err-sexo">Selecciona el sexo requerido.</span>
+              </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="field" id="f-edadRango" style="max-width:260px;">
+              <label class="field-label">Rango de edad <span class="req">*</span></label>
+              <div class="age-wrap" role="group" aria-label="Rango de edad">
+                <div class="age-group">
+                  <span class="age-sublabel">Mínima</span>
+                  <input type="number" id="edadMin" name="edadMin" min="16" max="70" value="18" aria-label="Edad mínima">
+                </div>
+                <div class="age-sep">—</div>
+                <div class="age-group">
+                  <span class="age-sublabel">Máxima</span>
+                  <input type="number" id="edadMax" name="edadMax" min="16" max="70" value="45" aria-label="Edad máxima">
+                </div>
+              </div>
+              <span class="field-error" id="err-edadRango">Verifica el rango: mínima 16, máxima 70, y mínima menor que máxima.</span>
+            </div>
+          </section>
+
+          <!-- SECCIÓN 3: CONDICIONES LABORALES -->
+          <section class="card">
+            <div class="card-header">
+              <span class="material-symbols-outlined">settings</span>
+              <h3 class="card-title">Condiciones Laborales</h3>
+            </div>
+
+            <div class="grid-2">
+              <div class="field" id="f-rolarTurno">
+                <label class="field-label">Rolar turno <span class="req">*</span></label>
+                <select class="input" id="rolarTurno" name="rolarTurno">
+                  <option value="">-- Selecciona --</option>
+                  <option value="Sí">Sí</option>
+                  <option value="No">No</option>
+                </select>
+                <span class="field-error" id="err-rolarTurno">Indica si se requiere rolar turno.</span>
+              </div>
+
+              <div class="field" id="f-rolarTurnoEspecificacion">
+                <label class="field-label">Especificación del turno <span class="req">*</span></label>
+                <input class="input" type="text" id="rolarTurnoEspecificacion" name="rolarTurnoEspecificacion" placeholder="Ej. Solo turno nocturno, rotación semanal...">
+                <span class="field-error" id="err-rolarEspec">Especifica el tipo de turno requerido.</span>
+              </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="field" id="f-eppEspecial">
+              <label class="field-label">EPP Especial requerido <span class="req">*</span></label>
+              <textarea class="input" id="eppEspecial" name="eppEspecial" placeholder="Describe el equipo de protección personal especial: casco, botas dieléctricas, guantes de corte, etc..."></textarea>
+              <span class="field-error" id="err-eppEspecial">Describe el EPP especial requerido (mínimo 5 caracteres).</span>
+            </div>
+
+            <hr class="divider">
+
+            <div class="field" id="f-diasDescanso">
+              <label class="field-label">Días de descanso <span class="req">*</span></label>
+              <p class="hint">Selecciona de 1 a 5 días.</p>
+              <div class="days-group" id="diasDescansoGroup" role="group" aria-label="Días de descanso">
+                <label class="day-pill" title="Lunes"><input type="checkbox" name="diasDescanso" value="Lunes"> L</label>
+                <label class="day-pill" title="Martes"><input type="checkbox" name="diasDescanso" value="Martes"> M</label>
+                <label class="day-pill" title="Miércoles"><input type="checkbox" name="diasDescanso" value="Miércoles"> X</label>
+                <label class="day-pill" title="Jueves"><input type="checkbox" name="diasDescanso" value="Jueves"> J</label>
+                <label class="day-pill" title="Viernes"><input type="checkbox" name="diasDescanso" value="Viernes"> V</label>
+                <label class="day-pill" title="Sábado"><input type="checkbox" name="diasDescanso" value="Sábado"> S</label>
+                <label class="day-pill" title="Domingo"><input type="checkbox" name="diasDescanso" value="Domingo"> D</label>
+              </div>
+              <span class="field-error" id="err-diasDescanso">Selecciona entre 1 y 5 días de descanso.</span>
+            </div>
+          </section>
+
+          <!-- SECCIÓN 4: PROTOCOLO DE INGRESO -->
+          <section class="card">
+            <div class="card-header">
+              <span class="material-symbols-outlined">assignment</span>
+              <h3 class="card-title">Protocolo de Ingreso</h3>
+            </div>
+
+            <div class="field" id="f-protocoloIngreso" style="max-width:240px;">
+              <label class="field-label">Protocolo de ingreso <span class="req">*</span></label>
+              <select class="input" id="protocoloIngreso" name="protocoloIngreso">
+                <option value="">-- Selecciona --</option>
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+              </select>
+              <span class="field-error" id="err-protocoloIngreso">Indica si se requiere protocolo de ingreso.</span>
+            </div>
+
+            <hr class="divider">
+
+            <div class="field" id="f-diaProtocolo">
+              <label class="field-label">Día de protocolo <span class="req">*</span></label>
+              <p class="hint" style="font-style:normal; font-weight:500; color:var(--slate-500);">
+                En caso de no ser mencionado se deberá pagar el tiempo que el personal esté en espera.
+              </p>
+              <div class="days-group" id="diaProtocoloGroup" role="group" aria-label="Días de protocolo">
+                <label class="day-pill" title="Lunes"><input type="checkbox" name="diaProtocolo" value="Lunes"> L</label>
+                <label class="day-pill" title="Martes"><input type="checkbox" name="diaProtocolo" value="Martes"> M</label>
+                <label class="day-pill" title="Miércoles"><input type="checkbox" name="diaProtocolo" value="Miércoles"> X</label>
+                <label class="day-pill" title="Jueves"><input type="checkbox" name="diaProtocolo" value="Jueves"> J</label>
+                <label class="day-pill" title="Viernes"><input type="checkbox" name="diaProtocolo" value="Viernes"> V</label>
+                <label class="day-pill" title="Sábado"><input type="checkbox" name="diaProtocolo" value="Sábado"> S</label>
+                <label class="day-pill" title="Domingo"><input type="checkbox" name="diaProtocolo" value="Domingo"> D</label>
+              </div>
+              <span class="field-error" id="err-diaProtocolo">Selecciona al menos un día de protocolo.</span>
+            </div>
+          </section>
+
+        </div><!-- /form-sections -->
+
+        <footer class="page-footer">
+          <button type="button" class="btn btn--ghost" id="btnLimpiar">
+            <span class="material-symbols-outlined">restart_alt</span>
+            Limpiar
+          </button>
+          <button type="submit" class="btn btn--primary" id="btnEnviarBottom">
+            <span class="material-symbols-outlined">send</span>
+            <span id="btnEnviarText">Enviar Requisición</span>
+          </button>
+        </footer>
+
+      </form>
+
+    </div><!-- /content-wrapper -->
+  </main>
+
+</div><!-- /layout -->
+
 <script>
 (function () {
   'use strict';
 
-  /* ─── UTILITARIOS ───────────────────────────────────────── */
-
-  /** Lee el CSRF token del meta tag inyectado por EJS */
-  function getCsrfToken() {
-    const meta = document.querySelector('meta[name="csrf-token"]');
-    return meta ? meta.getAttribute('content') : '';
+  /* ─── CSRF ───────────────────────────────────────────────── */
+  function getCsrf() {
+    const m = document.querySelector('meta[name="csrf-token"]');
+    return m ? m.getAttribute('content') : '';
   }
 
-  /**
-   * Muestra/oculta un campo condicional con animación max-height.
-   * Reutiliza el patrón .cond / .cond.open del proyecto QB.
-   */
-  function toggleCond(id, show) {
-    const el = document.getElementById(id);
+  /* ─── AVATAR ─────────────────────────────────────────────── */
+  (function initAvatar() {
+    const el = document.getElementById('avatarUsuario');
     if (!el) return;
-    el.classList.toggle('open', show);
+    const nombre = '<%= datosUsuario.nombrelargo %>';
+    const partes  = nombre.trim().split(' ');
+    const iniciales = (partes[0]?.[0] || '') + (partes[1]?.[0] || '');
+    el.textContent = iniciales.toUpperCase();
+    const colores = ['#137fec','#0e6fd4','#0284c7','#0369a1','#075985'];
+    el.style.background = colores[nombre.charCodeAt(0) % colores.length];
+  })();
+
+  /* ─── TOAST ──────────────────────────────────────────────── */
+  let toastTimer;
+  function showToast(type, msg) {
+    const el   = document.getElementById('toast');
+    const icon = document.getElementById('toastIcon');
+    const text = document.getElementById('toastMsg');
+    clearTimeout(toastTimer);
+    el.className = 'toast';
+    void el.offsetWidth;
+    icon.textContent = type === 'success' ? 'check_circle' : 'error';
+    text.textContent = msg;
+    el.classList.add('is-visible', type === 'success' ? 'toast--success' : 'toast--error');
+    toastTimer = setTimeout(() => el.classList.remove('is-visible'), 4500);
   }
 
-  /** Marca un campo como error y retorna false para encadenar validaciones */
-  function setError(fieldId, show) {
+  /* ─── ERROR EN CAMPO ─────────────────────────────────────── */
+  function setError(fieldId, hasError) {
     const field = document.getElementById(fieldId);
     if (!field) return;
-    field.classList.toggle('has-error', show);
-    if (show) {
-      /* Sacude el campo para llamar la atención del usuario */
-      const input = field.querySelector('input, select, textarea, .age-range-wrap, .days-group');
-      if (input) {
-        input.classList.remove('shake');
-        /* Forzar reflow para reiniciar la animación si ya estaba activa */
-        void input.offsetWidth;
-        input.classList.add('shake');
-        input.addEventListener('animationend', () => input.classList.remove('shake'), { once: true });
+    field.classList.toggle('has-error', hasError);
+    if (hasError) {
+      const el = field.querySelector('.input, .age-wrap, .days-group');
+      if (el) {
+        el.classList.remove('shake');
+        void el.offsetWidth;
+        el.classList.add('shake');
+        el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
       }
     }
   }
 
-  /* ─── FECHA EN HEADER ────────────────────────────────────── */
-  (function renderHeaderDate() {
-    const el = document.getElementById('hdr-date');
-    if (!el) return;
-    const now = new Date();
-    /* Formato: "lunes, 28 de abril de 2026" */
-    el.textContent = now.toLocaleDateString('es-MX', {
-      weekday: 'long',
-      year:    'numeric',
-      month:   'long',
-      day:     'numeric'
-    });
-  })();
-
-  /* ─── CARGA DE CATÁLOGOS ─────────────────────────────────── */
-
-  /**
-   * Realiza un fetch POST al endpoint de catálogos QB.
-   * El endpoint responde: { ok: bool, data: [...] }
-   */
+  /* ─── CATÁLOGOS ──────────────────────────────────────────── */
   async function fetchCatalogo(catalogo) {
-    const res = await fetch('/capitalhumano/catalogos', {
-      method:  'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': getCsrfToken()
-      },
+    const res = await fetch('/atraccion/catalogos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrf() },
       body: JSON.stringify({ catalogo })
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status} al cargar catálogo "${catalogo}"`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
-    if (!json.ok) throw new Error(`Error del servidor al cargar catálogo "${catalogo}"`);
+    if (!json.ok) throw new Error(`Error cargando catálogo "${catalogo}"`);
     return json.data;
   }
 
-  /**
-   * Pobla un <select> con un array de objetos.
-   * @param {string} selectId - ID del elemento <select>
-   * @param {Array}  items    - Array de { id, label }
-   * @param {string} placeholder - Texto de la opción vacía
-   */
-  function poblarSelect(selectId, items, placeholder) {
-    const sel = document.getElementById(selectId);
+  function poblarSelect(id, items, labelField, placeholder) {
+    const sel = document.getElementById(id);
     if (!sel) return;
     sel.innerHTML = `<option value="">${placeholder}</option>`;
     items.forEach(item => {
       const opt = document.createElement('option');
       opt.value       = item.id;
-      opt.textContent = item.label;
+      opt.textContent = item[labelField];
       sel.appendChild(opt);
     });
   }
 
-  /**
-   * Carga regiones y plantas en paralelo al abrir la vista.
-   * La planta permanece deshabilitada hasta que el usuario elija región.
-   */
+  let todasLasPlantas = [];
+
   async function cargarCatalogos() {
     const selRegion = document.getElementById('region');
     const selPlanta = document.getElementById('planta');
-
-    /* Estado de carga inicial */
     selRegion.innerHTML = '<option value="">Cargando...</option>';
-    selPlanta.innerHTML = '<option value="">Cargando plantas...</option>';
-
     try {
-      /* Paralelo: ahorra ~200-400ms respecto a llamadas secuenciales */
       const [regiones, plantas] = await Promise.all([
         fetchCatalogo('regiones'),
         fetchCatalogo('plantas')
       ]);
-
-      /* Poblar regiones */
-      poblarSelect('region', regiones.map(r => ({ id: r.id, label: r.nombre_region })), '-- Selecciona región --');
-
-      /* Guardar plantas en closure para usarlas al cambiar región */
-      todasLasPlantas = plantas
-        .filter(p => p.activo !== false)
-        .map(p => ({ id: p.id, label: p.nombre_planta }));
-
-      /* Planta: esperar a que el usuario seleccione región */
+      poblarSelect('region', regiones, 'nombre_region', '-- Selecciona región --');
+      todasLasPlantas = plantas.filter(p => p.activo !== false);
       selPlanta.innerHTML = '<option value="">Primero selecciona una región</option>';
       selPlanta.disabled  = true;
-
     } catch (err) {
       console.error('[ACH] Error cargando catálogos:', err);
       selRegion.innerHTML = '<option value="">Error al cargar — recarga la página</option>';
-      selPlanta.innerHTML = '<option value="">No disponible</option>';
     }
   }
 
-  /* Array de plantas cargado al inicio, reutilizado en el evento change de región */
-  let todasLasPlantas = [];
-
-  /* Cuando el usuario selecciona región, habilitar el select de planta */
   document.getElementById('region').addEventListener('change', function () {
     const selPlanta = document.getElementById('planta');
     if (this.value) {
-      /* Habilitar y cargar todas las plantas (no hay filtro por región en el modelo) */
       selPlanta.disabled = false;
-      poblarSelect('planta', todasLasPlantas, '-- Selecciona planta --');
-      /* Limpiar error si lo había */
+      poblarSelect('planta', todasLasPlantas, 'nombre_planta', '-- Selecciona planta --');
       setError('f-region', false);
     } else {
       selPlanta.disabled  = true;
@@ -1154,99 +373,50 @@ hr.div {
     }
   });
 
-  /* ─── CAMPO CONDICIONAL: ROLAR TURNO ─────────────────────── */
-  document.getElementById('rolarTurno').addEventListener('change', function () {
-    const mostrar = this.value === 'Especifique';
-    toggleCond('cond-rolar', mostrar);
-
-    /* Limpiar el campo de especificación si se oculta */
-    if (!mostrar) {
-      const input = document.getElementById('rolarTurnoEspecificacion');
-      if (input) input.value = '';
-      setError('f-rolarTurnoEspecificacion', false);
-    }
-  });
-
-  /* ─── SISTEMA DE PILLS DE DÍAS ───────────────────────────── */
-
-  /**
-   * Inicializa el comportamiento click de las pills de días.
-   * @param {string} groupId    - ID del contenedor .days-group
-   * @param {number|null} maxSel - Límite de selección (null = sin límite)
-   */
+  /* ─── PILLS DE DÍAS ──────────────────────────────────────── */
   function initDayPills(groupId, maxSel) {
     const group = document.getElementById(groupId);
     if (!group) return;
-
     group.addEventListener('click', function (e) {
-      /* Delegación al label.day-pill más cercano */
       const pill = e.target.closest('.day-pill');
-      if (!pill || pill.classList.contains('disabled')) return;
-
-      const checkbox = pill.querySelector('input[type=checkbox]');
-      if (!checkbox) return;
-
-      /* Determinar si va a quedar seleccionado */
-      const willBeChecked = !checkbox.checked;
-
-      if (willBeChecked && maxSel !== null) {
-        /* Verificar si ya se alcanzó el límite antes de marcar */
-        const selected = group.querySelectorAll('input[type=checkbox]:checked').length;
-        if (selected >= maxSel) return; /* No hacer nada — límite alcanzado */
+      if (!pill || pill.classList.contains('pill-disabled')) return;
+      const cb = pill.querySelector('input[type=checkbox]');
+      if (!cb) return;
+      const willCheck = !cb.checked;
+      if (willCheck && maxSel !== null) {
+        const selected = group.querySelectorAll('input:checked').length;
+        if (selected >= maxSel) return;
       }
-
-      /* Actualizar checkbox y clase visual */
-      checkbox.checked = willBeChecked;
-      pill.classList.toggle('sel', willBeChecked);
-
-      /* Después de cambiar, recalcular cuáles deben deshabilitarse */
-      if (maxSel !== null) actualizarEstadoPills(group, maxSel);
-
-      /* Limpiar error del grupo si el usuario seleccionó algo */
-      const fieldId = group.closest('.field')?.id;
-      if (fieldId) setError(fieldId, false);
+      cb.checked = willCheck;
+      pill.classList.toggle('sel', willCheck);
+      if (maxSel !== null) syncPillDisabled(group, maxSel);
+      const fId = group.closest('.field')?.id;
+      if (fId) setError(fId, false);
     });
   }
 
-  /**
-   * Cuando se alcanza el límite máximo de días, deshabilita las pills
-   * no seleccionadas para dar feedback visual claro.
-   */
-  function actualizarEstadoPills(group, maxSel) {
+  function syncPillDisabled(group, maxSel) {
     const pills    = group.querySelectorAll('.day-pill');
-    const selected = group.querySelectorAll('input[type=checkbox]:checked').length;
-    const limitado = selected >= maxSel;
-
+    const selected = group.querySelectorAll('input:checked').length;
+    const full     = selected >= maxSel;
     pills.forEach(pill => {
-      const isChecked = pill.querySelector('input[type=checkbox]')?.checked;
-      if (limitado && !isChecked) {
-        /* Deshabilitar pills no seleccionadas */
-        pill.classList.add('disabled');
-      } else {
-        pill.classList.remove('disabled');
-      }
+      const checked = pill.querySelector('input')?.checked;
+      pill.classList.toggle('pill-disabled', full && !checked);
     });
   }
 
-  /* Inicializar ambos grupos de pills */
-  initDayPills('diasDescansoGroup', 5);  /* días de descanso: máx 5 */
-  initDayPills('diaProtocoloGroup', null); /* días de protocolo: sin límite */
+  initDayPills('diasDescansoGroup', 5);
+  initDayPills('diaProtocoloGroup', null);
 
   /* ─── VALIDACIÓN ─────────────────────────────────────────── */
+  function validar() {
+    let ok = true;
+    let first = null;
 
-  /**
-   * Valida todos los campos del formulario.
-   * Marca visualmente los que tienen error y retorna el estado global.
-   * @returns {{ valido: boolean, primerError: string|null }}
-   */
-  function validarFormulario() {
-    let valido      = true;
-    let primerError = null;
-
-    function marcar(fieldId, condError) {
-      setError(fieldId, condError);
-      if (condError && !primerError) primerError = fieldId;
-      if (condError) valido = false;
+    function mark(id, error) {
+      setError(id, error);
+      if (error && !first) first = id;
+      if (error) ok = false;
     }
 
     const region          = document.getElementById('region').value;
@@ -1264,168 +434,95 @@ hr.div {
     const protocolo       = document.getElementById('protocoloIngreso').value;
     const diasProt        = [...document.querySelectorAll('input[name="diaProtocolo"]:checked')];
 
-    /* Sección 1 */
-    marcar('f-region',           !region);
-    marcar('f-planta',           !planta);
-    marcar('f-cantidadPersonal', !cantidad || cantidad < 1 || cantidad > 500);
-    marcar('f-caracteristicas',  !caracteristicas || caracteristicas.length < 10);
+    mark('f-region',                  !region);
+    mark('f-planta',                  !planta);
+    mark('f-cantidadPersonal',        !cantidad || cantidad < 1 || cantidad > 500);
+    mark('f-caracteristicas',         !caracteristicas || caracteristicas.length < 10);
+    mark('f-tipoContratacion',        !tipoContr);
+    mark('f-sexo',                    !sexo);
+    mark('f-edadRango',               !edadMin || !edadMax || edadMin < 16 || edadMax > 70 || edadMin >= edadMax);
+    mark('f-rolarTurno',              !rolarTurno);
+    mark('f-rolarTurnoEspecificacion',!rolarEspec);
+    mark('f-eppEspecial',             !epp || epp.length < 5);
+    mark('f-diasDescanso',            diasDesc.length < 1 || diasDesc.length > 5);
+    mark('f-protocoloIngreso',        !protocolo);
+    mark('f-diaProtocolo',            diasProt.length < 1);
 
-    /* Sección 2 */
-    marcar('f-tipoContratacion', !tipoContr);
-    marcar('f-sexo',             !sexo);
-
-    /* Validación de rango de edad */
-    const edadInvalida =
-      !edadMin || !edadMax ||
-      edadMin < 16 || edadMin > 70 ||
-      edadMax < 16 || edadMax > 70 ||
-      edadMin >= edadMax;
-    marcar('f-edadRango', edadInvalida);
-
-    /* Sección 3 */
-    marcar('f-rolarTurno', !rolarTurno);
-    if (rolarTurno === 'Especifique') {
-      marcar('f-rolarTurnoEspecificacion', !rolarEspec);
-    }
-    marcar('f-eppEspecial',   !epp || epp.length < 5);
-    marcar('f-diasDescanso',  diasDesc.length < 1 || diasDesc.length > 5);
-
-    /* Sección 4 */
-    marcar('f-protocoloIngreso', !protocolo);
-    marcar('f-diaProtocolo',     diasProt.length < 1);
-
-    return { valido, primerError };
+    return { ok, first };
   }
 
-  /* ─── ENVÍO DEL FORMULARIO ───────────────────────────────── */
-
-  /**
-   * Muestra / oculta los banners de feedback.
-   * @param {'success'|'error'|null} type - null oculta ambos
-   * @param {string} [msg] - Mensaje personalizado
-   */
-  function mostrarBanner(type, msg) {
-    const bannerOk  = document.getElementById('banner-success');
-    const bannerErr = document.getElementById('banner-error');
-
-    bannerOk.classList.remove('visible');
-    bannerErr.classList.remove('visible');
-
-    if (type === 'success') {
-      if (msg) document.getElementById('banner-success-msg').textContent = msg;
-      bannerOk.classList.add('visible');
-    } else if (type === 'error') {
-      if (msg) document.getElementById('banner-error-msg').textContent = msg;
-      bannerErr.classList.add('visible');
-    }
-  }
-
-  /** Limpia el formulario y los estados visuales después de un envío exitoso */
-  function limpiarFormulario() {
-    document.getElementById('req-form').reset();
-
-    /* Limpiar clases de error */
-    document.querySelectorAll('.field.has-error').forEach(f => f.classList.remove('has-error'));
-
-    /* Limpiar pills seleccionadas */
-    document.querySelectorAll('.day-pill.sel').forEach(p => p.classList.remove('sel', 'disabled'));
-
-    /* Restablecer estado del select de planta */
-    const selPlanta = document.getElementById('planta');
-    selPlanta.disabled  = true;
-    selPlanta.innerHTML = '<option value="">Primero selecciona una región</option>';
-
-    /* Cerrar campos condicionales */
-    toggleCond('cond-rolar', false);
-
-    /* Scroll al top */
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  /**
-   * Handler del submit: valida, construye payload, envía, maneja respuesta.
-   * Toda la comunicación con el servidor pasa por aquí.
-   */
-  async function enviarRequisicion(e) {
+  /* ─── ENVÍO ──────────────────────────────────────────────── */
+  async function enviar(e) {
     e.preventDefault();
-    mostrarBanner(null); /* ocultar banners previos */
-
-    /* 1. Validar */
-    const { valido, primerError } = validarFormulario();
-    if (!valido) {
-      /* Hacer scroll al primer campo con error */
-      if (primerError) {
-        const errorField = document.getElementById(primerError);
-        if (errorField) {
-          errorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }
+    const { ok, first } = validar();
+    if (!ok) {
+      if (first) document.getElementById(first)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
-    /* 2. Construir payload con los nombres de campo que espera el controlador */
     const payload = {
-      id_region:             document.getElementById('region').value,
-      id_planta:             document.getElementById('planta').value,
-      cantidad_personal:     Number(document.getElementById('cantidadPersonal').value),
-      caracteristicas:       document.getElementById('caracteristicas').value.trim(),
-      tipo_contratacion:     document.getElementById('tipoContratacion').value,
-      sexo:                  document.getElementById('sexo').value,
-      edad_min:              Number(document.getElementById('edadMin').value),
-      edad_max:              Number(document.getElementById('edadMax').value),
-      rolar_turno:           document.getElementById('rolarTurno').value,
-      rolar_especificacion:  document.getElementById('rolarTurnoEspecificacion').value.trim() || null,
-      epp_especial:          document.getElementById('eppEspecial').value.trim(),
-      dias_descanso:         [...document.querySelectorAll('input[name="diasDescanso"]:checked')].map(i => i.value),
-      protocolo_ingreso:     document.getElementById('protocoloIngreso').value,
-      dias_protocolo:        [...document.querySelectorAll('input[name="diaProtocolo"]:checked')].map(i => i.value),
+      id_region:            document.getElementById('region').value,
+      id_planta:            document.getElementById('planta').value,
+      cantidad_personal:    Number(document.getElementById('cantidadPersonal').value),
+      caracteristicas:      document.getElementById('caracteristicas').value.trim(),
+      tipo_contratacion:    document.getElementById('tipoContratacion').value,
+      sexo:                 document.getElementById('sexo').value,
+      edad_min:             Number(document.getElementById('edadMin').value),
+      edad_max:             Number(document.getElementById('edadMax').value),
+      rolar_turno:          document.getElementById('rolarTurno').value,
+      rolar_especificacion: document.getElementById('rolarTurnoEspecificacion').value.trim() || null,
+      epp_especial:         document.getElementById('eppEspecial').value.trim(),
+      dias_descanso:        [...document.querySelectorAll('input[name="diasDescanso"]:checked')].map(i => i.value),
+      protocolo_ingreso:    document.getElementById('protocoloIngreso').value,
+      dias_protocolo:       [...document.querySelectorAll('input[name="diaProtocolo"]:checked')].map(i => i.value),
     };
 
-    /* 3. Deshabilitar botón durante el envío — previene doble submit */
-    const btnSubmit     = document.getElementById('btn-submit');
-    const btnSubmitText = document.getElementById('btn-submit-text');
-    btnSubmit.disabled      = true;
-    btnSubmitText.textContent = 'Enviando...';
+    const btn  = document.getElementById('btnEnviarBottom');
+    const text = document.getElementById('btnEnviarText');
+    const btnTop = document.getElementById('btnEnviarTop');
+    btn.disabled = btnTop.disabled = true;
+    text.textContent = 'Enviando...';
 
     try {
-      const res = await fetch('/capitalhumano/requisicion-personal', {
-        method:  'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': getCsrfToken()
-        },
+      const res  = await fetch('/atraccion/requisicion-personal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrf() },
         body: JSON.stringify(payload)
       });
-
       const data = await res.json();
 
       if (res.ok && data.ok) {
-        /* 4a. Éxito */
-        mostrarBanner('success', data.mensaje || 'Requisición enviada correctamente. El equipo de ACH la procesará a la brevedad.');
-        limpiarFormulario();
+        showToast('success', data.mensaje || 'Requisición enviada correctamente.');
+        limpiar();
       } else {
-        /* 4b. Error controlado del servidor */
-        mostrarBanner('error', data.mensaje || 'No se pudo registrar la requisición. Verifica los datos e intenta nuevamente.');
+        showToast('error', data.mensaje || 'No se pudo registrar la requisición.');
       }
-
     } catch (err) {
-      /* 4c. Error de red / servidor no disponible */
-      console.error('[ACH] Error de red al enviar requisición:', err);
-      mostrarBanner('error', 'Error de conexión. Verifica tu red e intenta nuevamente.');
+      console.error('[ACH]', err);
+      showToast('error', 'Error de conexión. Verifica tu red e intenta nuevamente.');
     } finally {
-      /* Siempre rehabilitar el botón */
-      btnSubmit.disabled      = false;
-      btnSubmitText.innerHTML = '&#10003;&nbsp; Enviar Requisición';
+      btn.disabled = btnTop.disabled = false;
+      text.textContent = 'Enviar Requisición';
     }
   }
 
-  /* ─── INICIALIZACIÓN ─────────────────────────────────────── */
-  document.addEventListener('DOMContentLoaded', function () {
-    /* Cargar catálogos inmediatamente al abrir la vista */
-    cargarCatalogos();
+  /* ─── LIMPIAR ────────────────────────────────────────────── */
+  function limpiar() {
+    document.getElementById('req-form').reset();
+    document.querySelectorAll('.field.has-error').forEach(f => f.classList.remove('has-error'));
+    document.querySelectorAll('.day-pill.sel').forEach(p => p.classList.remove('sel', 'pill-disabled'));
+    const selPlanta = document.getElementById('planta');
+    selPlanta.disabled  = true;
+    selPlanta.innerHTML = '<option value="">Primero selecciona una región</option>';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
-    /* Enlazar el handler de envío al formulario */
-    document.getElementById('req-form').addEventListener('submit', enviarRequisicion);
+  /* ─── INIT ───────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function () {
+    cargarCatalogos();
+    document.getElementById('req-form').addEventListener('submit', enviar);
+    document.getElementById('btnEnviarTop').addEventListener('click', () => document.getElementById('req-form').requestSubmit());
+    document.getElementById('btnLimpiar').addEventListener('click', limpiar);
   });
 
 })();

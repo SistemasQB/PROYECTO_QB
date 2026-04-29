@@ -79,8 +79,6 @@ try {
   dbs.dbCapturacion.sync();
   await dbs.dbSorteo.authenticate();
   dbs.dbSorteo.sync();
-  await dbs.dbVentas.authenticate();
-  dbs.dbVentas.sync();
   console.log('Conexion Correcta a la base de datos');
 }
 catch (error) {
@@ -110,9 +108,8 @@ app.use('/', csrfProtection,routers.userRouters);
 app.use('/admin',csrfProtection, routers.adminRouters);
 app.use('/sistemas',csrfProtection, routers.sistemasRouters);
 app.use('/calidad',csrfProtection, routers.calidadRouters);
-app.use('/atraccion',csrfProtection, routers.atraccionRouters);
-app.use('/capitalhumano',csrfProtection, routers.capitalHumanoRouters);
-app.use('/ventas', csrfProtection, routers.ventasRouters);
+app.use('/atraccion',csrfProtection, routers.ACH_Routers);
+// app.use('/capitalhumano',csrfProtection, routers.);
 app.use('/sorteo',csrfProtection ,routers.sorteoRouters);
 app.use('/nominas',csrfProtection, routers.nominasRouters);
 app.use('/infraestructura', csrfProtection,routers.infraestructuraRouters);
@@ -138,5 +135,4 @@ app.listen(process.env.PORT, () => {
 //cronos de ejecucion en tareas periodicas
 // const cronos = new miCron(); 
 // cronos.iniciarCron('prueba1', '* * * * * *', () => {console.log(`trabajo ejectuado 0 veces`)});
-
 

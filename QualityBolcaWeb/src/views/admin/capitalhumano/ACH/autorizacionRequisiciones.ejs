@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= token %>">
+  <title>Requisiciones de Personal — Quality Bolca</title>
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/capitalhumano/estilos_requisicionPersonalOperativo.css">
+  <style>
+    /* ── MODAL ───────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,.55);
+      backdrop-filter: blur(3px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: #fff; border-radius: var(--radius-lg);
+      width: 100%; max-width: 680px;
+      max-height: 88vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      transform: translateY(16px) scale(.98);
+      transition: transform .25s ease;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--slate-100);
+      position: sticky; top: 0; background: #fff; z-index: 1;
+    }
+    .modal-header-left { display: flex; align-items: center; gap: 10px; }
+    .modal-header .material-symbols-outlined { color: var(--primary); font-size: 22px; }
+    .modal-title { font-size: 15px; font-weight: 800; color: var(--slate-900); }
+    .modal-close {
+      width: 32px; height: 32px; border: none; background: transparent;
+      cursor: pointer; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--slate-400); transition: background .15s, color .15s;
+    }
+    .modal-close:hover { background: var(--slate-100); color: var(--slate-700); }
+    .modal-close .material-symbols-outlined { font-size: 20px; }
+
+    .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .modal-footer {
+      padding: 16px 24px; border-top: 1px solid var(--slate-100);
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+
+    /* ── SECCIONES DENTRO DEL MODAL ──────────────────────────── */
+    .detail-section { display: flex; flex-direction: column; gap: 14px; }
+    .detail-section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--primary);
+      border-bottom: 1px solid var(--slate-100); padding-bottom: 8px;
+    }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .detail-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .detail-item { display: flex; flex-direction: column; gap: 3px; }
+    .detail-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--slate-400);
+    }
+    .detail-value { font-size: 13px; font-weight: 500; color: var(--slate-800); }
+    .detail-value.full { grid-column: 1 / -1; }
+
+    /* ── MODAL DE AUTORIZACIÓN ───────────────────────────────── */
+    .auth-modal { max-width: 420px; }
+    .confirm-modal { max-width: 400px; }
+
+    .date-field { display: flex; flex-direction: column; gap: 6px; }
+    .date-field label {
+      font-size: 11px; font-weight: 700; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--slate-500);
+    }
+
+    /* ── EDIT MODAL ──────────────────────────────────────────── */
+    .edit-modal { max-width: 720px; }
+
+    .days-edit-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .day-edit-label {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 20px;
+      border: 1.5px solid var(--slate-200);
+      cursor: pointer; font-size: 12px; font-weight: 500;
+      color: var(--slate-600); transition: all .15s; user-select: none;
+    }
+    .day-edit-label.checked { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .day-edit-label input[type=checkbox] { display: none; }
+
+    .edit-age-row { display: flex; gap: 8px; align-items: center; }
+    .edit-age-row .input { width: 90px; }
+    .edit-age-sep { color: var(--slate-400); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="material-symbols-outlined" id="toastIcon">check_circle</span>
+  <span id="toastMsg">Mensaje</span>
+</div>
+
+<!-- MODAL: DETALLE COMPLETO -->
+<div class="modal-overlay" id="modalDetalle">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <span class="material-symbols-outlined">description</span>
+        <span class="modal-title">Detalle de Requisición <span id="detalle-id"></span></span>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modalDetalle')">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body" id="modalDetalleBody"></div>
+  </div>
+</div>
+
+<!-- MODAL: AUTORIZAR (pide fecha compromiso) -->
+<div class="modal-overlay" id="modalAutorizar">
+  <div class="modal auth-modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <span class="material-symbols-outlined">event_available</span>
+        <span class="modal-title">Autorizar Requisición</span>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modalAutorizar')">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:var(--slate-600);">
+        Indica la fecha en que te comprometes a entregar el personal solicitado.
+      </p>
+      <div class="date-field">
+        <label>Fecha compromiso <span style="color:var(--red)">*</span></label>
+        <input class="input" type="date" id="inputFechaCompromiso">
+        <span style="font-size:11px; color:var(--red); display:none;" id="errFechaCompromiso">
+          La fecha compromiso es obligatoria.
+        </span>
+      </div>
+      <div class="date-field" style="margin-top:4px;">
+        <label>Correo del jefe solicitante <span style="color:var(--red)">*</span></label>
+        <input class="input" type="email" id="inputEmailJefe" placeholder="jefe@qualitybolca.net">
+        <span style="font-size:11px; color:var(--red); display:none;" id="errEmailJefe">
+          Ingresa un correo electrónico válido.
+        </span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--ghost" onclick="cerrarModal('modalAutorizar')">Cancelar</button>
+      <button class="btn btn--primary" id="btnConfirmarAutorizar">
+        <span class="material-symbols-outlined">check</span>
+        Confirmar autorización
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRMAR RECHAZO -->
+<div class="modal-overlay" id="modalRechazar">
+  <div class="modal confirm-modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <span class="material-symbols-outlined" style="color:var(--red)">warning</span>
+        <span class="modal-title">¿Rechazar requisición?</span>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modalRechazar')">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:var(--slate-600);">
+        Esta acción no se puede deshacer. La requisición quedará marcada como <strong>rechazada</strong>.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--ghost" onclick="cerrarModal('modalRechazar')">Cancelar</button>
+      <button class="btn btn--primary" id="btnConfirmarRechazar"
+        style="background:var(--red); box-shadow:0 4px 14px rgba(239,68,68,.3)">
+        <span class="material-symbols-outlined">close</span>
+        Sí, rechazar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDITAR REQUISICIÓN -->
+<div class="modal-overlay" id="modalEditar">
+  <div class="modal edit-modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <span class="material-symbols-outlined">edit</span>
+        <span class="modal-title">Editar Requisición <span id="editar-id"></span></span>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modalEditar')">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="detail-section">
+        <div class="detail-section-title">Información general</div>
+        <div class="detail-grid">
+          <div class="field">
+            <label class="field-label">Región <span class="req">*</span></label>
+            <select class="input" id="editRegion">
+              <option value="">Cargando...</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Planta <span class="req">*</span></label>
+            <select class="input" id="editPlanta">
+              <option value="">Selecciona región primero</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Cantidad de personal <span class="req">*</span></label>
+          <input class="input" type="number" id="editCantidad" min="1" style="max-width:160px;">
+        </div>
+        <div class="field">
+          <label class="field-label">Características del puesto <span class="req">*</span></label>
+          <textarea class="input" id="editCaracteristicas" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Perfil del candidato</div>
+        <div class="detail-grid cols-3">
+          <div class="field">
+            <label class="field-label">Tipo de contratación <span class="req">*</span></label>
+            <select class="input" id="editTipoContratacion">
+              <option value="">Cargando...</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Sexo <span class="req">*</span></label>
+            <select class="input" id="editSexo">
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Indistinto">Indistinto</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Rango de edad <span class="req">*</span></label>
+            <div class="edit-age-row">
+              <input class="input" type="number" id="editEdadMin" min="18" max="99" placeholder="Min">
+              <span class="edit-age-sep">—</span>
+              <input class="input" type="number" id="editEdadMax" min="18" max="99" placeholder="Max">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Condiciones laborales</div>
+        <div class="detail-grid">
+          <div class="field">
+            <label class="field-label">Rolar turno <span class="req">*</span></label>
+            <select class="input" id="editRolarTurno">
+              <option value="Sí">Sí</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Especificación de turno</label>
+            <input class="input" type="text" id="editRolarEspec" placeholder="Ej. Solo turno matutino">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">EPP especial requerido <span class="req">*</span></label>
+          <textarea class="input" id="editEpp" rows="2"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Días de descanso <span class="req">*</span></label>
+          <div class="days-edit-wrap" id="editDiasDescanso"></div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Protocolo de ingreso</div>
+        <div class="field">
+          <label class="field-label">¿Requiere protocolo de ingreso? <span class="req">*</span></label>
+          <select class="input" id="editProtocolo" style="max-width:200px;">
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Días de protocolo <span class="req">*</span></label>
+          <div class="days-edit-wrap" id="editDiasProtocolo"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--ghost" onclick="cerrarModal('modalEditar')">Cancelar</button>
+      <button class="btn btn--primary" id="btnGuardarEdit">
+        <span class="material-symbols-outlined">save</span>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="logo-container">
+      <div class="logo-icon"><span class="material-symbols-outlined">groups</span></div>
+      <span>Capital Humano</span>
+    </div>
+    <div class="profile-section">
+      <div class="avatar" id="avatarUsuario"></div>
+      <div class="profile-name"><%= datosUsuario.nombrelargo %></div>
+      <div class="profile-role"><%= datosUsuario.puesto || '' %></div>
+      <div class="profile-dept"><%= datosUsuario.departamento || '' %></div>
+    </div>
+    <ul class="nav-menu">
+      <a href="/atraccion/requisicion-personal" class="nav-item active">
+        <span class="material-symbols-outlined">fact_check</span>
+        Requisiciones
+      </a>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="content-wrapper">
+
+      <header class="page-header">
+        <div>
+          <h2 class="page-title">Requisiciones de Personal</h2>
+          <p class="page-sub">Revisa y autoriza las solicitudes de personal operativo.</p>
+        </div>
+      </header>
+
+      <!-- FILTROS -->
+      <div class="filters">
+        <button class="filter-btn active" data-filtro="todos">Todos</button>
+        <button class="filter-btn" data-filtro="pendiente">Pendientes</button>
+        <button class="filter-btn" data-filtro="en_proceso">En proceso</button>
+        <button class="filter-btn" data-filtro="completada">Completadas</button>
+        <button class="filter-btn" data-filtro="rechazada">Rechazadas</button>
+      </div>
+
+      <!-- TABLA -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="table-wrap" style="border:none; border-radius:0; margin-top:0;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Solicitante</th>
+                <th>Región</th>
+                <th>Planta</th>
+                <th>Personal</th>
+                <th>Contratación</th>
+                <th>Estatus</th>
+                <th style="text-align:center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <% if (!requisiciones || requisiciones.length === 0) { %>
+              <tr>
+                <td colspan="9" class="td-empty">
+                  <span class="material-symbols-outlined">inbox</span>
+                  No hay requisiciones registradas.
+                </td>
+              </tr>
+              <% } else { %>
+              <% requisiciones.forEach(r => { %>
+              <tr data-estatus="<%= r.estatus %>" data-id="<%= r.id %>">
+                <td style="color:var(--slate-400);font-weight:600;">#<%= r.id %></td>
+                <td><%= r.fecha_requisicion %></td>
+                <td style="font-weight:600;"><%= r.creado_por %></td>
+                <td><%= r.nombre_region || '—' %></td>
+                <td><%= r.nombre_planta || '—' %></td>
+                <td style="text-align:center;font-weight:700;"><%= r.cantidad_personal %></td>
+                <td><%= r.tipo_contratacion %></td>
+                <td>
+                  <span class="badge badge--<%= r.estatus %>">
+                    <%= r.estatus.replace('_', ' ') %>
+                  </span>
+                </td>
+                <td>
+                  <div class="action-wrap">
+                    <button class="btn-action" onclick="verDetalle(<%= r.id %>)"
+                      style="background:var(--slate-100);color:var(--slate-600);">
+                      <span class="material-symbols-outlined">visibility</span>
+                      Ver
+                    </button>
+                    <button class="btn-action" onclick="abrirEditar(<%= r.id %>)"
+                      style="background:var(--slate-100);color:var(--slate-600);">
+                      <span class="material-symbols-outlined">edit</span>
+                      Editar
+                    </button>
+                    <% if (r.estatus === 'pendiente') { %>
+                    <button class="btn-action btn-action--ok" onclick="abrirAutorizar(<%= r.id %>)">
+                      <span class="material-symbols-outlined">check</span>
+                      Autorizar
+                    </button>
+                    <button class="btn-action btn-action--no" onclick="abrirRechazar(<%= r.id %>)">
+                      <span class="material-symbols-outlined">close</span>
+                      Rechazar
+                    </button>
+                    <% } else { %>
+                    <span style="font-size:12px;color:var(--slate-400);">
+                      <%= r.autorizado_por ? `Por: ${r.autorizado_por}` : '—' %>
+                    </span>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+              <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Datos para el modal de detalle -->
+<script>
+  const REQUISICIONES = <%- JSON.stringify(requisiciones || []) %>;
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  function getCsrf() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+  }
+
+  /* ─── AVATAR ─────────────────────────────────────────────── */
+  (function () {
+    const el     = document.getElementById('avatarUsuario');
+    const nombre = '<%= datosUsuario.nombrelargo %>';
+    const partes = nombre.trim().split(' ');
+    el.textContent = ((partes[0]?.[0] || '') + (partes[1]?.[0] || '')).toUpperCase();
+    const colores  = ['#137fec','#0e6fd4','#0284c7','#0369a1','#075985'];
+    el.style.background = colores[nombre.charCodeAt(0) % colores.length];
+  })();
+
+  /* ─── TOAST ──────────────────────────────────────────────── */
+  let toastTimer;
+  function showToast(type, msg) {
+    const el = document.getElementById('toast');
+    clearTimeout(toastTimer);
+    el.className = 'toast';
+    void el.offsetWidth;
+    document.getElementById('toastIcon').textContent = type === 'success' ? 'check_circle' : 'error';
+    document.getElementById('toastMsg').textContent  = msg;
+    el.classList.add('is-visible', type === 'success' ? 'toast--success' : 'toast--error');
+    toastTimer = setTimeout(() => el.classList.remove('is-visible'), 4500);
+  }
+
+  /* ─── MODALES ────────────────────────────────────────────── */
+  window.cerrarModal = function (id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  function abrirModal(id) {
+    document.getElementById(id).classList.add('open');
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+  });
+
+  /* ─── DETALLE COMPLETO ───────────────────────────────────── */
+  window.verDetalle = function (id) {
+    const r = REQUISICIONES.find(x => x.id === id);
+    if (!r) return;
+
+    document.getElementById('detalle-id').textContent = `#${r.id}`;
+
+    const diasDescanso  = parsarDias(r.dias_descanso);
+    const diasProtocolo = parsarDias(r.dias_protocolo);
+
+    document.getElementById('modalDetalleBody').innerHTML = `
+      <div class="detail-section">
+        <div class="detail-section-title">Información general</div>
+        <div class="detail-grid cols-3">
+          <div class="detail-item"><span class="detail-label">Solicitante</span><span class="detail-value">${r.creado_por}</span></div>
+          <div class="detail-item"><span class="detail-label">Fecha requisición</span><span class="detail-value">${r.fecha_requisicion}</span></div>
+          <div class="detail-item"><span class="detail-label">Estatus</span><span class="badge badge--${r.estatus}">${r.estatus.replace('_',' ')}</span></div>
+          <div class="detail-item"><span class="detail-label">Región</span><span class="detail-value">${r.nombre_region || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Planta</span><span class="detail-value">${r.nombre_planta || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Cantidad de personal</span><span class="detail-value">${r.cantidad_personal}</span></div>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Características del puesto</span>
+          <span class="detail-value">${r.caracteristicas}</span>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Perfil del candidato</div>
+        <div class="detail-grid cols-3">
+          <div class="detail-item"><span class="detail-label">Tipo de contratación</span><span class="detail-value">${r.tipo_contratacion}</span></div>
+          <div class="detail-item"><span class="detail-label">Sexo</span><span class="detail-value">${r.sexo}</span></div>
+          <div class="detail-item"><span class="detail-label">Rango de edad</span><span class="detail-value">${r.edad_min} — ${r.edad_max} años</span></div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Condiciones laborales</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Rolar turno</span><span class="detail-value">${r.rolar_turno}</span></div>
+          <div class="detail-item"><span class="detail-label">Especificación turno</span><span class="detail-value">${r.rolar_especificacion || '—'}</span></div>
+        </div>
+        <div class="detail-item"><span class="detail-label">EPP especial</span><span class="detail-value">${r.epp_especial}</span></div>
+        <div class="detail-item"><span class="detail-label">Días de descanso</span><span class="detail-value">${diasDescanso}</span></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Protocolo de ingreso</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Protocolo requerido</span><span class="detail-value">${r.protocolo_ingreso}</span></div>
+          <div class="detail-item"><span class="detail-label">Días de protocolo</span><span class="detail-value">${diasProtocolo}</span></div>
+        </div>
+      </div>
+
+      ${r.autorizado_por ? `
+      <div class="detail-section">
+        <div class="detail-section-title">Resolución</div>
+        <div class="detail-grid cols-3">
+          <div class="detail-item"><span class="detail-label">Procesado por</span><span class="detail-value">${r.autorizado_por}</span></div>
+          <div class="detail-item"><span class="detail-label">Fecha autorización</span><span class="detail-value">${r.fecha_autorizacion || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Fecha compromiso</span><span class="detail-value">${r.fecha_compromiso || '—'}</span></div>
+        </div>
+      </div>` : ''}
+    `;
+
+    abrirModal('modalDetalle');
+  }
+
+  function parsarDias(raw) {
+    try {
+      const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return Array.isArray(arr) ? arr.join(', ') : raw;
+    } catch { return raw || '—'; }
+  }
+
+  /* ─── AUTORIZAR ──────────────────────────────────────────── */
+  let idPendiente = null;
+
+  window.abrirAutorizar = function (id) {
+    idPendiente = id;
+    document.getElementById('inputFechaCompromiso').value = '';
+    document.getElementById('errFechaCompromiso').style.display = 'none';
+    abrirModal('modalAutorizar');
+  }
+
+  document.getElementById('btnConfirmarAutorizar').addEventListener('click', async function () {
+    const fecha      = document.getElementById('inputFechaCompromiso').value;
+    const email      = document.getElementById('inputEmailJefe').value.trim();
+    const errFecha   = document.getElementById('errFechaCompromiso');
+    const errEmail   = document.getElementById('errEmailJefe');
+    const reEmail    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    errFecha.style.display = 'none';
+    errEmail.style.display = 'none';
+
+    let valido = true;
+    if (!fecha) { errFecha.style.display = 'block'; valido = false; }
+    if (!email || !reEmail.test(email)) { errEmail.style.display = 'block'; valido = false; }
+    if (!valido) return;
+
+    await ejecutarAccion(idPendiente, 'autorizar', fecha, email);
+    cerrarModal('modalAutorizar');
+  });
+
+  /* ─── RECHAZAR ───────────────────────────────────────────── */
+  window.abrirRechazar = function (id) {
+    idPendiente = id;
+    abrirModal('modalRechazar');
+  }
+
+  document.getElementById('btnConfirmarRechazar').addEventListener('click', async function () {
+    await ejecutarAccion(idPendiente, 'rechazar', null);
+    cerrarModal('modalRechazar');
+  });
+
+  /* ─── FETCH ACCIÓN ───────────────────────────────────────── */
+  async function ejecutarAccion(id, tipo, fechaCompromiso, emailJefe) {
+    const fila = document.querySelector(`tr[data-id="${id}"]`);
+    const btns = fila?.querySelectorAll('.btn-action');
+    btns?.forEach(b => b.disabled = true);
+
+    try {
+      const body = { accion: tipo };
+      if (fechaCompromiso) body.fecha_compromiso  = fechaCompromiso;
+      if (emailJefe)       body.email_solicitante = emailJefe;
+
+      const res  = await fetch(`/atraccion/requisicion-personal/${id}/autorizar`, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrf() },
+        body:    JSON.stringify(body)
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        showToast('success', data.mensaje);
+        const nuevoEstatus = tipo === 'autorizar' ? 'en_proceso' : 'rechazada';
+        if (fila) {
+          fila.dataset.estatus = nuevoEstatus;
+          fila.querySelector('.badge').className    = `badge badge--${nuevoEstatus}`;
+          fila.querySelector('.badge').textContent  = nuevoEstatus.replace('_', ' ');
+          fila.querySelector('.action-wrap').innerHTML =
+            `<button class="btn-action" onclick="verDetalle(${id})"
+              style="background:var(--slate-100);color:var(--slate-600);">
+              <span class="material-symbols-outlined">visibility</span>Ver
+            </button>
+            <button class="btn-action" onclick="abrirEditar(${id})"
+              style="background:var(--slate-100);color:var(--slate-600);">
+              <span class="material-symbols-outlined">edit</span>Editar
+            </button>
+            <span style="font-size:12px;color:var(--slate-400);margin-left:4px;">Procesado</span>`;
+          /* Actualizar datos locales para el modal de detalle */
+          const r = REQUISICIONES.find(x => x.id === id);
+          if (r) {
+            r.estatus          = nuevoEstatus;
+            r.autorizado_por   = '<%= datosUsuario.codigoempleado || "" %>';
+            r.fecha_autorizacion = new Date().toISOString().slice(0, 10);
+            if (fechaCompromiso) r.fecha_compromiso = fechaCompromiso;
+          }
+        }
+      } else {
+        showToast('error', data.mensaje || 'No se pudo procesar.');
+        btns?.forEach(b => b.disabled = false);
+      }
+    } catch (err) {
+      console.error('[ACH]', err);
+      showToast('error', 'Error de conexión.');
+      btns?.forEach(b => b.disabled = false);
+    }
+  }
+
+  /* ─── CATÁLOGOS (para edición) ──────────────────────────── */
+  let CATAS = { regiones: [], plantas: [], tiposContratos: [] };
+  let catasListas = false;
+
+  async function cargarCatas() {
+    if (catasListas) return;
+    const csrf = getCsrf();
+    const post = (cat) => fetch('/atraccion/catalogos', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+      body:    JSON.stringify({ catalogo: cat })
+    }).then(r => r.json());
+
+    try {
+      const [d1, d2, d3] = await Promise.all([post('regiones'), post('plantas'), post('tipos_contratacion')]);
+      CATAS.regiones       = d1.data || [];
+      CATAS.plantas        = d2.data || [];
+      CATAS.tiposContratos = d3.data || [];
+      catasListas = true;
+
+      const selReg = document.getElementById('editRegion');
+      selReg.innerHTML = '<option value="">Selecciona región</option>' +
+        CATAS.regiones.map(r => `<option value="${r.id}">${r.nombre_region}</option>`).join('');
+
+      const selTipo = document.getElementById('editTipoContratacion');
+      selTipo.innerHTML = '<option value="">Selecciona tipo</option>' +
+        CATAS.tiposContratos.map(t => `<option value="${t.descripcion}">${t.descripcion}</option>`).join('');
+    } catch (e) {
+      console.error('[ACH Catas]', e);
+    }
+  }
+
+  document.getElementById('editRegion').addEventListener('change', function () {
+    const regionId  = Number(this.value);
+    const selPlanta = document.getElementById('editPlanta');
+    const plantas   = regionId
+      ? CATAS.plantas.filter(p => Number(p.id_region) === regionId)
+      : CATAS.plantas;
+    selPlanta.innerHTML = '<option value="">Selecciona planta</option>' +
+      plantas.map(p => `<option value="${p.id}">${p.nombre_planta}</option>`).join('');
+  });
+
+  /* ─── DÍAS DE SEMANA ─────────────────────────────────────── */
+  const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+  function renderDias(containerId, seleccionados) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = DIAS_SEMANA.map(dia => {
+      const chk = seleccionados.includes(dia);
+      return `<label class="day-edit-label${chk ? ' checked' : ''}">
+        <input type="checkbox" value="${dia}" ${chk ? 'checked' : ''}
+          onchange="this.closest('label').classList.toggle('checked', this.checked)">
+        ${dia}
+      </label>`;
+    }).join('');
+  }
+
+  function getDiasChecked(containerId) {
+    return [...document.querySelectorAll(`#${containerId} input[type=checkbox]:checked`)].map(c => c.value);
+  }
+
+  function parsarDias2(raw) {
+    try {
+      const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return Array.isArray(arr) ? arr : [];
+    } catch { return []; }
+  }
+
+  /* ─── EDITAR ─────────────────────────────────────────────── */
+  let idEditando = null;
+
+  window.abrirEditar = async function (id) {
+    idEditando = id;
+    await cargarCatas();
+    const r = REQUISICIONES.find(x => x.id === id);
+    if (!r) return;
+
+    document.getElementById('editar-id').textContent = `#${r.id}`;
+
+    const selReg = document.getElementById('editRegion');
+    selReg.value = r.id_region || '';
+    selReg.dispatchEvent(new Event('change'));
+
+    setTimeout(() => {
+      document.getElementById('editPlanta').value = r.id_planta || '';
+    }, 60);
+
+    document.getElementById('editTipoContratacion').value = r.tipo_contratacion || '';
+    document.getElementById('editCantidad').value         = r.cantidad_personal || '';
+    document.getElementById('editCaracteristicas').value  = r.caracteristicas   || '';
+    document.getElementById('editSexo').value             = r.sexo              || 'Indistinto';
+    document.getElementById('editEdadMin').value          = r.edad_min          || '';
+    document.getElementById('editEdadMax').value          = r.edad_max          || '';
+    document.getElementById('editRolarTurno').value       = r.rolar_turno       || 'Sí';
+    document.getElementById('editRolarEspec').value       = r.rolar_especificacion || '';
+    document.getElementById('editEpp').value              = r.epp_especial      || '';
+    document.getElementById('editProtocolo').value        = r.protocolo_ingreso || 'Sí';
+
+    renderDias('editDiasDescanso',  parsarDias2(r.dias_descanso));
+    renderDias('editDiasProtocolo', parsarDias2(r.dias_protocolo));
+
+    abrirModal('modalEditar');
+  };
+
+  document.getElementById('btnGuardarEdit').addEventListener('click', async function () {
+    const diasDescanso  = getDiasChecked('editDiasDescanso');
+    const diasProtocolo = getDiasChecked('editDiasProtocolo');
+
+    if (!diasDescanso.length)  { showToast('error', 'Selecciona al menos un día de descanso.');  return; }
+    if (!diasProtocolo.length) { showToast('error', 'Selecciona al menos un día de protocolo.'); return; }
+
+    const payload = {
+      id_region:            Number(document.getElementById('editRegion').value),
+      id_planta:            Number(document.getElementById('editPlanta').value),
+      cantidad_personal:    Number(document.getElementById('editCantidad').value),
+      caracteristicas:      document.getElementById('editCaracteristicas').value,
+      tipo_contratacion:    document.getElementById('editTipoContratacion').value,
+      sexo:                 document.getElementById('editSexo').value,
+      edad_min:             Number(document.getElementById('editEdadMin').value),
+      edad_max:             Number(document.getElementById('editEdadMax').value),
+      rolar_turno:          document.getElementById('editRolarTurno').value,
+      rolar_especificacion: document.getElementById('editRolarEspec').value,
+      epp_especial:         document.getElementById('editEpp').value,
+      protocolo_ingreso:    document.getElementById('editProtocolo').value,
+      dias_descanso:        diasDescanso,
+      dias_protocolo:       diasProtocolo
+    };
+
+    this.disabled = true;
+
+    try {
+      const res  = await fetch(`/atraccion/requisicion-personal/${idEditando}`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrf() },
+        body:    JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        const r = REQUISICIONES.find(x => x.id === idEditando);
+        if (r) {
+          Object.assign(r, {
+            id_region:            payload.id_region,
+            id_planta:            payload.id_planta,
+            nombre_region:        CATAS.regiones.find(x => x.id === payload.id_region)?.nombre_region || r.nombre_region,
+            nombre_planta:        CATAS.plantas.find(x => x.id === payload.id_planta)?.nombre_planta   || r.nombre_planta,
+            cantidad_personal:    payload.cantidad_personal,
+            caracteristicas:      payload.caracteristicas,
+            tipo_contratacion:    payload.tipo_contratacion,
+            sexo:                 payload.sexo,
+            edad_min:             payload.edad_min,
+            edad_max:             payload.edad_max,
+            rolar_turno:          payload.rolar_turno,
+            rolar_especificacion: payload.rolar_especificacion,
+            epp_especial:         payload.epp_especial,
+            protocolo_ingreso:    payload.protocolo_ingreso,
+            dias_descanso:        JSON.stringify(diasDescanso),
+            dias_protocolo:       JSON.stringify(diasProtocolo)
+          });
+          const fila = document.querySelector(`tr[data-id="${idEditando}"]`);
+          if (fila) {
+            fila.cells[3].textContent = r.nombre_region || '—';
+            fila.cells[4].textContent = r.nombre_planta || '—';
+            fila.cells[5].textContent = r.cantidad_personal;
+            fila.cells[6].textContent = r.tipo_contratacion;
+          }
+        }
+        showToast('success', data.mensaje);
+        cerrarModal('modalEditar');
+      } else {
+        showToast('error', data.mensaje || 'No se pudo editar.');
+      }
+    } catch (e) {
+      console.error('[ACH Edit]', e);
+      showToast('error', 'Error de conexión.');
+    } finally {
+      this.disabled = false;
+    }
+  });
+
+  /* ─── FILTROS ────────────────────────────────────────────── */
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const filtro = this.dataset.filtro;
+      document.querySelectorAll('#tbody tr[data-estatus]').forEach(fila => {
+        fila.style.display = (filtro === 'todos' || fila.dataset.estatus === filtro) ? '' : 'none';
+      });
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

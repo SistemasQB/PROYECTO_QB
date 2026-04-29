@@ -2,7 +2,9 @@ import manejadorErrores from '../middleware/manejadorErrores.js';
 import sequelizeClase from '../public/clases/sequelize_clase.js';
 import { capitalHumano } from '../models/QBnew/catalogos/barrilCatalogos.js';
 import modelosCapitalHumano from '../models/QBnew/capitalHumano/barrilCapitalHumano.js';
+import modelosGenerales from '../models/generales/barrilModelosGenerales.js';
 import { Op } from 'sequelize';
+import { emailAutorizacionACH } from '../helpers/emails.js';
 
 // Campos obligatorios de primer nivel para una solicitud de empleo
 const CAMPOS_REQUERIDOS_SOLICITUD = [
@@ -44,7 +46,7 @@ const CATALOGOS_CONFIG = {
     plantas:                  'nombre_planta',
     puestos:                  'nombre_puesto',
     regiones:                 'nombre_region',
-    tiposContratos:           'descripcion',
+    tipos_contratacion:       'descripcion',
 };
 
 let controlador = {}
@@ -183,12 +185,216 @@ controlador.guardarSolicitud = async (req, res) => {
     }
 }
 
-controlador.requisicionPersonalOperativo = (req, res) => {
+function parsearPermisos(raw) {
+    if (!raw) return {}
+    return typeof raw === 'string' ? JSON.parse(raw) : raw
+}
+
+controlador.requisicionPersonalOperativo = async (req, res) => {
     try {
-        res.status(200).render('admin/capitalhumano/ACH/requisicionPersonalOperativo.ejs', { token: req.csrfToken() });
+        const clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
+        const datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
+
+        const clasePuesto = new sequelizeClase({ modelo: modelosGenerales.nom10006 })
+        const puesto = await clasePuesto.obtener1Registro({ criterio: { idpuesto: datosUsuario.idpuesto } })
+
+        const claseDept = new sequelizeClase({ modelo: modelosGenerales.modelonom10003 })
+        const departamento = await claseDept.obtener1Registro({ criterio: { iddepartamento: datosUsuario.iddepartamento } })
+
+        datosUsuario.puesto = puesto ? puesto.descripcion : ''
+        datosUsuario.departamento = departamento ? departamento.descripcion : ''
+
+        const permisos      = parsearPermisos(req.usuario.permisos)
+        const roles         = Array.isArray(permisos?.roles)    ? permisos.roles.map(r => r.toLowerCase())    : []
+        const niveles       = Array.isArray(permisos?.permisos) ? permisos.permisos.map(r => r.toLowerCase()) : []
+        const esAutorizador = roles.includes('ach') && niveles.includes('jefe')
+
+        if (esAutorizador) {
+            const claseReq = new sequelizeClase({ modelo: modelosCapitalHumano.Requisiciones })
+            const requisiciones = await claseReq.ejecutarQuery({
+                query: `
+                    SELECT r.*, cr.nombre_region, cp.nombre_planta
+                    FROM ach_requisiciones_personal r
+                    LEFT JOIN c_regiones cr ON cr.id = r.id_region
+                    LEFT JOIN c_plantas  cp ON cp.id = r.id_planta
+                    ORDER BY r.fecha_requisicion DESC
+                `
+            })
+            return res.status(200).render('admin/capitalhumano/ACH/autorizacionRequisiciones.ejs', {
+                token: req.csrfToken(),
+                datosUsuario,
+                requisiciones: requisiciones || []
+            })
+        }
+
+        res.status(200).render('admin/capitalhumano/ACH/requisicionPersonalOperativo.ejs', {
+            token: req.csrfToken(),
+            datosUsuario
+        });
     } catch (error) {
         console.error('Error en controlador.requisicionPersonalOperativo:', error);
         return manejadorErrores(res, error);
+    }
+}
+
+controlador.autorizarRequisicion = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { accion, fecha_compromiso, email_solicitante } = req.body
+
+        if (!['autorizar', 'rechazar'].includes(accion)) {
+            return res.status(400).json({ ok: false, mensaje: 'Acción no válida.' })
+        }
+
+        if (accion === 'autorizar') {
+            if (!fecha_compromiso || String(fecha_compromiso).trim() === '') {
+                return res.status(400).json({ ok: false, mensaje: 'La fecha compromiso es obligatoria para autorizar.' })
+            }
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (!email_solicitante || !regexEmail.test(email_solicitante)) {
+                return res.status(400).json({ ok: false, mensaje: 'El correo del jefe solicitante es obligatorio y debe ser válido.' })
+            }
+        }
+
+        const clase = new sequelizeClase({ modelo: modelosCapitalHumano.Requisiciones })
+        const datos = {
+            estatus:            accion === 'autorizar' ? 'en_proceso' : 'rechazada',
+            autorizado_por:     req.usuario.codigoempleado,
+            fecha_autorizacion: new Date().toISOString().slice(0, 10)
+        }
+        if (accion === 'autorizar') {
+            datos.fecha_compromiso = fecha_compromiso
+            // datos.email_solicitante = email_solicitante  — activar después de correr el ALTER TABLE
+        }
+
+        const actualizado = await clase.actualizarDatos({ id, datos })
+
+        if (!actualizado) return res.status(500).json({ ok: false, mensaje: 'No se pudo actualizar la requisición.' })
+
+        if (accion === 'autorizar') {
+            const numId = parseInt(id, 10)
+            clase.ejecutarQuery({
+                query: `
+                    SELECT r.id, r.cantidad_personal, r.fecha_compromiso,
+                           cr.nombre_region, cp.nombre_planta
+                    FROM ach_requisiciones_personal r
+                    LEFT JOIN c_regiones cr ON cr.id = r.id_region
+                    LEFT JOIN c_plantas  cp ON cp.id = r.id_planta
+                    WHERE r.id = ${numId}
+                    LIMIT 1
+                `
+            }).then(rows => {
+                if (rows && rows[0]) {
+                    emailAutorizacionACH({ destinatario: email_solicitante, datos: rows[0] })
+                        .catch(e => console.error('[ACH Email]', e))
+                }
+            }).catch(e => console.error('[ACH Email Query]', e))
+        }
+
+        return res.status(200).json({
+            ok: true,
+            mensaje: accion === 'autorizar' ? 'Requisición autorizada correctamente.' : 'Requisición rechazada.'
+        })
+    } catch (error) {
+        console.error('Error en controlador.autorizarRequisicion:', error)
+        return res.status(500).json({ ok: false, mensaje: 'Error interno.' })
+    }
+}
+
+controlador.editarRequisicion = async (req, res) => {
+    try {
+        const { id } = req.params
+        const datos   = req.body
+
+        const actualizar = {}
+        if (datos.id_region         !== undefined) actualizar.id_region         = Number(datos.id_region)
+        if (datos.id_planta         !== undefined) actualizar.id_planta         = Number(datos.id_planta)
+        if (datos.cantidad_personal !== undefined) actualizar.cantidad_personal = Number(datos.cantidad_personal)
+        if (datos.caracteristicas)                 actualizar.caracteristicas   = String(datos.caracteristicas).trim()
+        if (datos.tipo_contratacion)               actualizar.tipo_contratacion = String(datos.tipo_contratacion).trim()
+        if (datos.sexo)                            actualizar.sexo              = String(datos.sexo).trim()
+        if (datos.edad_min          !== undefined) actualizar.edad_min          = Number(datos.edad_min)
+        if (datos.edad_max          !== undefined) actualizar.edad_max          = Number(datos.edad_max)
+        if (datos.rolar_turno)                     actualizar.rolar_turno       = String(datos.rolar_turno).trim()
+        actualizar.rolar_especificacion = datos.rolar_especificacion ? String(datos.rolar_especificacion).trim() : null
+        if (datos.epp_especial)                    actualizar.epp_especial      = String(datos.epp_especial).trim()
+        if (datos.protocolo_ingreso)               actualizar.protocolo_ingreso = String(datos.protocolo_ingreso).trim()
+        if (Array.isArray(datos.dias_descanso)  && datos.dias_descanso.length  > 0) actualizar.dias_descanso  = JSON.stringify(datos.dias_descanso)
+        if (Array.isArray(datos.dias_protocolo) && datos.dias_protocolo.length > 0) actualizar.dias_protocolo = JSON.stringify(datos.dias_protocolo)
+
+        if (Object.keys(actualizar).length === 0) {
+            return res.status(400).json({ ok: false, mensaje: 'No hay campos para actualizar.' })
+        }
+
+        const clase = new sequelizeClase({ modelo: modelosCapitalHumano.Requisiciones })
+        const ok = await clase.actualizarDatos({ id, datos: actualizar })
+
+        if (!ok) return res.status(500).json({ ok: false, mensaje: 'No se pudo editar la requisición.' })
+
+        return res.status(200).json({ ok: true, mensaje: 'Requisición actualizada correctamente.' })
+    } catch (error) {
+        console.error('Error en controlador.editarRequisicion:', error)
+        return res.status(500).json({ ok: false, mensaje: 'Error interno al editar la requisición.' })
+    }
+}
+
+const CAMPOS_REQUERIDOS_REQUISICION = [
+    'id_region', 'id_planta', 'cantidad_personal', 'caracteristicas',
+    'tipo_contratacion', 'sexo', 'edad_min', 'edad_max',
+    'rolar_turno', 'epp_especial', 'protocolo_ingreso'
+]
+
+controlador.guardarRequisicion = async (req, res) => {
+    try {
+        const datos = req.body
+
+        const faltantes = CAMPOS_REQUERIDOS_REQUISICION.filter(campo => {
+            const valor = datos[campo]
+            return valor === undefined || valor === null || String(valor).trim() === ''
+        })
+        if (faltantes.length > 0) {
+            return res.status(400).json({ ok: false, mensaje: `Faltan campos requeridos: ${faltantes.join(', ')}` })
+        }
+
+        if (!Array.isArray(datos.dias_descanso) || datos.dias_descanso.length < 1) {
+            return res.status(400).json({ ok: false, mensaje: 'Selecciona al menos un día de descanso.' })
+        }
+        if (!Array.isArray(datos.dias_protocolo) || datos.dias_protocolo.length < 1) {
+            return res.status(400).json({ ok: false, mensaje: 'Selecciona al menos un día de protocolo.' })
+        }
+
+        const datosInsertar = {
+            creado_por:           req.usuario.codigoempleado,
+            id_region:            Number(datos.id_region),
+            id_planta:            Number(datos.id_planta),
+            cantidad_personal:    Number(datos.cantidad_personal),
+            caracteristicas:      String(datos.caracteristicas).trim(),
+            tipo_contratacion:    String(datos.tipo_contratacion).trim(),
+            sexo:                 String(datos.sexo).trim(),
+            edad_min:             Number(datos.edad_min),
+            edad_max:             Number(datos.edad_max),
+            rolar_turno:          String(datos.rolar_turno).trim(),
+            rolar_especificacion: datos.rolar_especificacion ? String(datos.rolar_especificacion).trim() : null,
+            epp_especial:         String(datos.epp_especial).trim(),
+            dias_descanso:        JSON.stringify(datos.dias_descanso),
+            protocolo_ingreso:    String(datos.protocolo_ingreso).trim(),
+            dias_protocolo:       JSON.stringify(datos.dias_protocolo),
+            fecha_requisicion:    new Date().toISOString().slice(0, 10),
+            estatus:              'pendiente'
+        }
+
+        const clase = new sequelizeClase({ modelo: modelosCapitalHumano.Requisiciones })
+        const insertado = await clase.insertar({ datosInsertar })
+
+        if (!insertado) {
+            return res.status(500).json({ ok: false, mensaje: 'No se pudo guardar la requisición. Intenta de nuevo.' })
+        }
+
+        return res.status(200).json({ ok: true, mensaje: 'Requisición enviada correctamente. El equipo de ACH la procesará a la brevedad.' })
+
+    } catch (error) {
+        console.error('Error en controlador.guardarRequisicion:', error)
+        return res.status(500).json({ ok: false, mensaje: 'Error interno al guardar la requisición.' })
     }
 }
 

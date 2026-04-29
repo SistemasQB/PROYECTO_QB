@@ -1,3 +1,6 @@
+// ── MÓDULOS ACH ──────────────────────────────────────────────
+import RequisicionPersonal         from './modeloRequisicionPersonal.js'
+
 // ── CATÁLOGOS ────────────────────────────────────────────────
 import Puestos                     from '../catalogos/modeloPuestos.js'
 import Departamentos               from '../catalogos/modeloDepartamentos.js'
@@ -12,6 +15,7 @@ import InfonavitTiposDescuento     from '../catalogos/modeloInfonavitTiposDescue
 const modelosCapitalHumano = {
     Puestos, Departamentos, Regiones, Plantas,
     Escolaridades, TiposContratacion, MotivosBaja, InfonavitTiposDescuento,
+    Requisiciones: RequisicionPersonal,
 }
 
 Object.values(modelosCapitalHumano).forEach(modelo => {

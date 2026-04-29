@@ -13,7 +13,6 @@ import routerGenerales from "./routerGenerales.js";
 import capturacionRouters from "./capturacionRouter.js";    
 import botRouter from "./botRouters.js";
 import routerApis from "./routers_Apis.js";
-import ventasRouters from "./ventasRoutes.js";
 
 
 
@@ -32,8 +31,7 @@ const routers = {
     routerGenerales,
     capturacionRouters,
     botRouter,
-    routerApis,
-    ventasRouters
+    routerApis
 }
 
 export default routers;
