@@ -102,6 +102,52 @@
     .edit-age-row { display: flex; gap: 8px; align-items: center; }
     .edit-age-row .input { width: 90px; }
     .edit-age-sep { color: var(--slate-400); font-size: 13px; }
+
+    /* ── HISTORIAL SIDEBAR ───────────────────────────────────── */
+    .sidebar { display: flex; flex-direction: column; overflow: hidden; }
+    .hist-section { display: flex; flex-direction: column; flex: 1; overflow: hidden; margin-top: 4px; }
+    .hist-title {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--slate-400); padding-bottom: 10px;
+      border-bottom: 1px solid var(--slate-100); margin-bottom: 8px;
+    }
+    .hist-title .material-symbols-outlined { font-size: 15px; }
+    .hist-list {
+      flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
+      padding-bottom: 16px;
+    }
+    .hist-card {
+      background: #f8fafc; border: 1px solid #f1f5f9;
+      border-radius: 8px; padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .hist-folio { font-size: 13px; font-weight: 800; color: var(--primary, #137fec); }
+    .hist-region { font-size: 12px; font-weight: 600; color: var(--slate-700, #334155); }
+    .hist-detail { font-size: 11px; color: var(--slate-400, #94a3b8); }
+    .hist-actions { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+    .btn-hist {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: 600;
+      cursor: pointer; text-decoration: none; border: none; transition: background .15s;
+    }
+    .btn-hist .material-symbols-outlined { font-size: 13px; }
+    .btn-hist-pdf { background: #fff3e0; color: #e65100; }
+    .btn-hist-pdf:hover { background: #ffe0b2; }
+    .btn-hist-ver { background: #f1f5f9; color: var(--slate-600, #475569); }
+    .btn-hist-ver:hover { background: #e2e8f0; }
+    .hist-empty {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 24px 8px; color: #cbd5e1; font-size: 11px; text-align: center;
+    }
+    .hist-empty .material-symbols-outlined { font-size: 26px; }
+
+    /* ── PDF BUTTON EN TABLA ─────────────────────────────────── */
+    .btn-action--pdf {
+      background: #fff3e0 !important; color: #c2410c !important;
+      text-decoration: none;
+    }
+    .btn-action--pdf:hover { background: #ffe0b2 !important; }
   </style>
 </head>
 <body>
@@ -263,6 +309,29 @@
             </div>
           </div>
         </div>
+        <div class="detail-grid cols-3">
+          <div class="field">
+            <label class="field-label">Locales</label>
+            <select class="input" id="editLocales">
+              <option value="NO">NO</option>
+              <option value="SI">SI</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">CDR</label>
+            <select class="input" id="editCdr">
+              <option value="NO">NO</option>
+              <option value="SI">SI</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label">Antidoping</label>
+            <select class="input" id="editAntidoping">
+              <option value="NO">NO</option>
+              <option value="SI">SI</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div class="detail-section">
@@ -332,9 +401,9 @@
       <div class="profile-dept"><%= datosUsuario.departamento || '' %></div>
     </div>
     <ul class="nav-menu">
-      <a href="/atraccion/requisicion-personal" class="nav-item active">
-        <span class="material-symbols-outlined">fact_check</span>
-        Requisiciones
+      <a href="/atraccion/historial-requisiciones" class="nav-item">
+        <span class="material-symbols-outlined">history</span>
+        Historial Autorizado
       </a>
     </ul>
   </aside>
@@ -411,6 +480,11 @@
                       <span class="material-symbols-outlined">edit</span>
                       Editar
                     </button>
+                    <a href="/atraccion/requisicion-personal/<%= r.id %>/formato" target="_blank"
+                      class="btn-action btn-action--pdf">
+                      <span class="material-symbols-outlined">picture_as_pdf</span>
+                      PDF
+                    </a>
                     <% if (r.estatus === 'pendiente') { %>
                     <button class="btn-action btn-action--ok" onclick="abrirAutorizar(<%= r.id %>)">
                       <span class="material-symbols-outlined">check</span>
@@ -523,6 +597,9 @@
           <div class="detail-item"><span class="detail-label">Tipo de contratación</span><span class="detail-value">${r.tipo_contratacion}</span></div>
           <div class="detail-item"><span class="detail-label">Sexo</span><span class="detail-value">${r.sexo}</span></div>
           <div class="detail-item"><span class="detail-label">Rango de edad</span><span class="detail-value">${r.edad_min} — ${r.edad_max} años</span></div>
+          <div class="detail-item"><span class="detail-label">Locales</span><span class="detail-value">${r.locales || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">CDR</span><span class="detail-value">${r.cdr || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Antidoping</span><span class="detail-value">${r.antidoping || '—'}</span></div>
         </div>
       </div>
 
@@ -639,6 +716,10 @@
               style="background:var(--slate-100);color:var(--slate-600);">
               <span class="material-symbols-outlined">edit</span>Editar
             </button>
+            <a href="/atraccion/requisicion-personal/${id}/formato" target="_blank"
+              class="btn-action btn-action--pdf">
+              <span class="material-symbols-outlined">picture_as_pdf</span>PDF
+            </a>
             <span style="font-size:12px;color:var(--slate-400);margin-left:4px;">Procesado</span>`;
           /* Actualizar datos locales para el modal de detalle */
           const r = REQUISICIONES.find(x => x.id === id);
@@ -757,6 +838,9 @@
     document.getElementById('editRolarEspec').value       = r.rolar_especificacion || '';
     document.getElementById('editEpp').value              = r.epp_especial      || '';
     document.getElementById('editProtocolo').value        = r.protocolo_ingreso || 'Sí';
+    document.getElementById('editLocales').value          = r.locales           || 'NO';
+    document.getElementById('editCdr').value              = r.cdr               || 'NO';
+    document.getElementById('editAntidoping').value       = r.antidoping        || 'NO';
 
     renderDias('editDiasDescanso',  parsarDias2(r.dias_descanso));
     renderDias('editDiasProtocolo', parsarDias2(r.dias_protocolo));
@@ -785,7 +869,10 @@
       epp_especial:         document.getElementById('editEpp').value,
       protocolo_ingreso:    document.getElementById('editProtocolo').value,
       dias_descanso:        diasDescanso,
-      dias_protocolo:       diasProtocolo
+      dias_protocolo:       diasProtocolo,
+      locales:              document.getElementById('editLocales').value,
+      cdr:                  document.getElementById('editCdr').value,
+      antidoping:           document.getElementById('editAntidoping').value,
     };
 
     this.disabled = true;
@@ -817,7 +904,10 @@
             epp_especial:         payload.epp_especial,
             protocolo_ingreso:    payload.protocolo_ingreso,
             dias_descanso:        JSON.stringify(diasDescanso),
-            dias_protocolo:       JSON.stringify(diasProtocolo)
+            dias_protocolo:       JSON.stringify(diasProtocolo),
+            locales:              payload.locales,
+            cdr:                  payload.cdr,
+            antidoping:           payload.antidoping,
           });
           const fila = document.querySelector(`tr[data-id="${idEditando}"]`);
           if (fila) {

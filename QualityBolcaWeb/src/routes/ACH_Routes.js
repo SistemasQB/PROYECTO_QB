@@ -20,5 +20,7 @@ router.get('/requisicion-personal', protegetRuta, accesoACH, controladorACH.requ
 router.post('/requisicion-personal', protegetRuta, soloSolicitantes, controladorACH.guardarRequisicion);
 router.put('/requisicion-personal/:id/autorizar', protegetRuta, soloAutorizadoresACH, controladorACH.autorizarRequisicion);
 router.patch('/requisicion-personal/:id',          protegetRuta, soloAutorizadoresACH, controladorACH.editarRequisicion);
+router.get('/requisicion-personal/:id/formato',   protegetRuta, accesoACH,            controladorACH.verFormatoPDF);
+router.get('/historial-requisiciones',            protegetRuta, soloAutorizadoresACH, controladorACH.historialRequisiciones);
 
 export default router;

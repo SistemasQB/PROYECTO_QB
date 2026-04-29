@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= token %>">
+  <title>Historial de Requisiciones — Quality Bolca</title>
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/capitalhumano/estilos_requisicionPersonalOperativo.css">
+  <style>
+    /* ── MODAL ─────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,.55); backdrop-filter: blur(3px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: #fff; border-radius: var(--radius-lg);
+      width: 100%; max-width: 680px; max-height: 88vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      transform: translateY(16px) scale(.98); transition: transform .25s ease;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px; border-bottom: 1px solid var(--slate-100);
+      position: sticky; top: 0; background: #fff; z-index: 1;
+    }
+    .modal-header-left { display: flex; align-items: center; gap: 10px; }
+    .modal-header .material-symbols-outlined { color: var(--primary); font-size: 22px; }
+    .modal-title { font-size: 15px; font-weight: 800; color: var(--slate-900); }
+    .modal-close {
+      width: 32px; height: 32px; border: none; background: transparent;
+      cursor: pointer; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--slate-400); transition: background .15s, color .15s;
+    }
+    .modal-close:hover { background: var(--slate-100); color: var(--slate-700); }
+    .modal-close .material-symbols-outlined { font-size: 20px; }
+    .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .detail-section { display: flex; flex-direction: column; gap: 14px; }
+    .detail-section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--primary);
+      border-bottom: 1px solid var(--slate-100); padding-bottom: 8px;
+    }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .detail-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .detail-item { display: flex; flex-direction: column; gap: 3px; }
+    .detail-label { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--slate-400); }
+    .detail-value { font-size: 13px; font-weight: 500; color: var(--slate-800); }
+
+    /* ── CARDS HISTORIAL ────────────────────────────────────────── */
+    .hist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px; margin-top: 4px;
+    }
+    .hist-card {
+      background: #fff; border: 1px solid var(--slate-100);
+      border-radius: var(--radius-lg); padding: 20px;
+      display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      transition: box-shadow .15s, transform .15s;
+    }
+    .hist-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-1px); }
+    .hist-card-top { display: flex; align-items: center; justify-content: space-between; }
+    .hist-folio { font-size: 15px; font-weight: 900; color: var(--primary, #137fec); }
+    .hist-rows { display: flex; flex-direction: column; gap: 5px; }
+    .hist-row { display: flex; justify-content: space-between; font-size: 12px; }
+    .hist-row-lbl { color: var(--slate-400); font-weight: 600; }
+    .hist-row-val { color: var(--slate-700); font-weight: 600; text-align: right; }
+    .hist-actions { display: flex; gap: 8px; margin-top: 4px; }
+    .btn-sm {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 6px 12px; border-radius: 6px; font-size: 12px;
+      font-weight: 600; cursor: pointer; text-decoration: none;
+      border: none; transition: background .15s;
+    }
+    .btn-sm .material-symbols-outlined { font-size: 15px; }
+    .btn-sm-pdf { background: #fff3e0; color: #c2410c; }
+    .btn-sm-pdf:hover { background: #ffe0b2; }
+    .btn-sm-ver { background: var(--slate-100, #f1f5f9); color: var(--slate-600, #475569); }
+    .btn-sm-ver:hover { background: var(--slate-200); }
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; padding: 60px 20px; color: var(--slate-300);
+      font-size: 14px; grid-column: 1 / -1;
+    }
+    .empty-state .material-symbols-outlined { font-size: 40px; }
+  </style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="material-symbols-outlined" id="toastIcon">check_circle</span>
+  <span id="toastMsg">Mensaje</span>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modalDetalle">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <span class="material-symbols-outlined">description</span>
+        <span class="modal-title">Detalle de Requisición <span id="detalle-id"></span></span>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('modalDetalle').classList.remove('open')">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body" id="modalDetalleBody"></div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="logo-container">
+      <div class="logo-icon"><span class="material-symbols-outlined">groups</span></div>
+      <span>Capital Humano</span>
+    </div>
+    <div class="profile-section">
+      <div class="avatar" id="avatarUsuario"></div>
+      <div class="profile-name"><%= datosUsuario.nombrelargo %></div>
+      <div class="profile-role"><%= datosUsuario.puesto || '' %></div>
+      <div class="profile-dept"><%= datosUsuario.departamento || '' %></div>
+    </div>
+    <ul class="nav-menu">
+      <a href="/atraccion/requisicion-personal" class="nav-item">
+        <span class="material-symbols-outlined">fact_check</span>
+        Gestión
+      </a>
+      <a href="/atraccion/historial-requisiciones" class="nav-item active">
+        <span class="material-symbols-outlined">history</span>
+        Historial Autorizado
+      </a>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="content-wrapper">
+
+      <header class="page-header">
+        <div>
+          <h2 class="page-title">Historial de Requisiciones Autorizadas</h2>
+          <p class="page-sub">Requisiciones en proceso y completadas. Descargá el formato en PDF.</p>
+        </div>
+      </header>
+
+      <!-- FILTROS -->
+      <div class="filters">
+        <button class="filter-btn active" data-filtro="todos">Todas</button>
+        <button class="filter-btn" data-filtro="en_proceso">En proceso</button>
+        <button class="filter-btn" data-filtro="completada">Completadas</button>
+      </div>
+
+      <!-- CARDS -->
+      <div class="hist-grid" id="cardsContainer">
+        <% if (!requisiciones || requisiciones.length === 0) { %>
+        <div class="empty-state">
+          <span class="material-symbols-outlined">inbox</span>
+          No hay requisiciones autorizadas aún.
+        </div>
+        <% } %>
+        <% (requisiciones || []).forEach(r => { %>
+        <div class="hist-card" data-estatus="<%= r.estatus %>" data-id="<%= r.id %>">
+          <div class="hist-card-top">
+            <span class="hist-folio">QB<%= r.id %></span>
+            <span class="badge badge--<%= r.estatus %>"><%= r.estatus.replace('_', ' ') %></span>
+          </div>
+          <div class="hist-rows">
+            <div class="hist-row">
+              <span class="hist-row-lbl">Región</span>
+              <span class="hist-row-val"><%= r.nombre_region || '—' %></span>
+            </div>
+            <div class="hist-row">
+              <span class="hist-row-lbl">Planta</span>
+              <span class="hist-row-val"><%= r.nombre_planta || '—' %></span>
+            </div>
+            <div class="hist-row">
+              <span class="hist-row-lbl">Personal</span>
+              <span class="hist-row-val"><%= r.cantidad_personal %> persona(s)</span>
+            </div>
+            <div class="hist-row">
+              <span class="hist-row-lbl">Solicitante</span>
+              <span class="hist-row-val"><%= r.creado_por %></span>
+            </div>
+            <% if (r.fecha_compromiso) { %>
+            <div class="hist-row">
+              <span class="hist-row-lbl">Compromiso</span>
+              <span class="hist-row-val"><%= r.fecha_compromiso %></span>
+            </div>
+            <% } %>
+          </div>
+          <div class="hist-actions">
+            <a href="/atraccion/requisicion-personal/<%= r.id %>/formato"
+               target="_blank" class="btn-sm btn-sm-pdf">
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+              PDF
+            </a>
+            <button class="btn-sm btn-sm-ver" onclick="verDetalle(<%= r.id %>)">
+              <span class="material-symbols-outlined">visibility</span>
+              Ver detalle
+            </button>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const REQUISICIONES = <%- JSON.stringify(requisiciones || []) %>;
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ─── AVATAR ─────────────────────────────────────────────── */
+  (function () {
+    const el     = document.getElementById('avatarUsuario');
+    const nombre = '<%= datosUsuario.nombrelargo %>';
+    const partes = nombre.trim().split(' ');
+    el.textContent = ((partes[0]?.[0] || '') + (partes[1]?.[0] || '')).toUpperCase();
+    const colores  = ['#137fec','#0e6fd4','#0284c7','#0369a1','#075985'];
+    el.style.background = colores[nombre.charCodeAt(0) % colores.length];
+  })();
+
+  /* ─── FILTROS ────────────────────────────────────────────── */
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const filtro = this.dataset.filtro;
+      document.querySelectorAll('#cardsContainer .hist-card').forEach(card => {
+        card.style.display = (filtro === 'todos' || card.dataset.estatus === filtro) ? '' : 'none';
+      });
+    });
+  });
+
+  /* ─── DETALLE ────────────────────────────────────────────── */
+  function parsarDias(raw) {
+    try {
+      const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return Array.isArray(arr) ? arr.join(', ') : (raw || '—');
+    } catch { return raw || '—'; }
+  }
+
+  window.verDetalle = function (id) {
+    const r = REQUISICIONES.find(x => x.id === id);
+    if (!r) return;
+    document.getElementById('detalle-id').textContent = `#${r.id}`;
+    document.getElementById('modalDetalleBody').innerHTML = `
+      <div class="detail-section">
+        <div class="detail-section-title">Información general</div>
+        <div class="detail-grid cols-3">
+          <div class="detail-item"><span class="detail-label">Solicitante</span><span class="detail-value">${r.creado_por}</span></div>
+          <div class="detail-item"><span class="detail-label">Fecha requisición</span><span class="detail-value">${r.fecha_requisicion}</span></div>
+          <div class="detail-item"><span class="detail-label">Estatus</span><span class="badge badge--${r.estatus}">${r.estatus.replace('_',' ')}</span></div>
+          <div class="detail-item"><span class="detail-label">Región</span><span class="detail-value">${r.nombre_region || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Planta</span><span class="detail-value">${r.nombre_planta || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Cantidad</span><span class="detail-value">${r.cantidad_personal}</span></div>
+        </div>
+        <div class="detail-item"><span class="detail-label">Características del puesto</span><span class="detail-value">${r.caracteristicas}</span></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Perfil del candidato</div>
+        <div class="detail-grid cols-3">
+          <div class="detail-item"><span class="detail-label">Tipo contratación</span><span class="detail-value">${r.tipo_contratacion}</span></div>
+          <div class="detail-item"><span class="detail-label">Sexo</span><span class="detail-value">${r.sexo}</span></div>
+          <div class="detail-item"><span class="detail-label">Rango de edad</span><span class="detail-value">${r.edad_min} — ${r.edad_max} años</span></div>
+          <div class="detail-item"><span class="detail-label">Locales</span><span class="detail-value">${r.locales || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">CDR</span><span class="detail-value">${r.cdr || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Antidoping</span><span class="detail-value">${r.antidoping || '—'}</span></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Condiciones laborales</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Rolar turno</span><span class="detail-value">${r.rolar_turno}</span></div>
+          <div class="detail-item"><span class="detail-label">Especificación turno</span><span class="detail-value">${r.rolar_especificacion || '—'}</span></div>
+        </div>
+        <div class="detail-item"><span class="detail-label">EPP especial</span><span class="detail-value">${r.epp_especial}</span></div>
+        <div class="detail-item"><span class="detail-label">Días de descanso</span><span class="detail-value">${parsarDias(r.dias_descanso)}</span></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Protocolo de ingreso</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Protocolo requerido</span><span class="detail-value">${r.protocolo_ingreso}</span></div>
+          <div class="detail-item"><span class="detail-label">Días de protocolo</span><span class="detail-value">${parsarDias(r.dias_protocolo)}</span></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Resolución</div>
+        <div class="detail-grid cols-3">
+          <div class="detail-item"><span class="detail-label">Autorizado por</span><span class="detail-value">${r.autorizado_por || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Fecha autorización</span><span class="detail-value">${r.fecha_autorizacion || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Fecha compromiso</span><span class="detail-value">${r.fecha_compromiso || '—'}</span></div>
+        </div>
+      </div>
+    `;
+    document.getElementById('modalDetalle').classList.add('open');
+  };
+
+  document.querySelector('.modal-overlay').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+
+})();
+</script>
+
+</body>
+</html>

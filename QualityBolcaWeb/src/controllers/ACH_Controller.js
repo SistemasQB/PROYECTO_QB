@@ -321,6 +321,9 @@ controlador.editarRequisicion = async (req, res) => {
         if (datos.protocolo_ingreso)               actualizar.protocolo_ingreso = String(datos.protocolo_ingreso).trim()
         if (Array.isArray(datos.dias_descanso)  && datos.dias_descanso.length  > 0) actualizar.dias_descanso  = JSON.stringify(datos.dias_descanso)
         if (Array.isArray(datos.dias_protocolo) && datos.dias_protocolo.length > 0) actualizar.dias_protocolo = JSON.stringify(datos.dias_protocolo)
+        if (datos.locales)    actualizar.locales    = String(datos.locales).trim()
+        if (datos.cdr)        actualizar.cdr        = String(datos.cdr).trim()
+        if (datos.antidoping) actualizar.antidoping = String(datos.antidoping).trim()
 
         if (Object.keys(actualizar).length === 0) {
             return res.status(400).json({ ok: false, mensaje: 'No hay campos para actualizar.' })
@@ -335,6 +338,70 @@ controlador.editarRequisicion = async (req, res) => {
     } catch (error) {
         console.error('Error en controlador.editarRequisicion:', error)
         return res.status(500).json({ ok: false, mensaje: 'Error interno al editar la requisición.' })
+    }
+}
+
+controlador.historialRequisiciones = async (req, res) => {
+    try {
+        const clase = new sequelizeClase({ modelo: modelosGenerales.modelonom10001 })
+        const datosUsuario = await clase.obtener1Registro({ criterio: { codigoempleado: req.usuario.codigoempleado } })
+
+        const clasePuesto = new sequelizeClase({ modelo: modelosGenerales.nom10006 })
+        const puesto = await clasePuesto.obtener1Registro({ criterio: { idpuesto: datosUsuario.idpuesto } })
+        const claseDept = new sequelizeClase({ modelo: modelosGenerales.modelonom10003 })
+        const departamento = await claseDept.obtener1Registro({ criterio: { iddepartamento: datosUsuario.iddepartamento } })
+
+        datosUsuario.puesto       = puesto       ? puesto.descripcion       : ''
+        datosUsuario.departamento = departamento ? departamento.descripcion : ''
+
+        const claseReq = new sequelizeClase({ modelo: modelosCapitalHumano.Requisiciones })
+        const requisiciones = await claseReq.ejecutarQuery({
+            query: `
+                SELECT r.*, cr.nombre_region, cp.nombre_planta
+                FROM ach_requisiciones_personal r
+                LEFT JOIN c_regiones cr ON cr.id = r.id_region
+                LEFT JOIN c_plantas  cp ON cp.id = r.id_planta
+                WHERE r.estatus IN ('en_proceso', 'completada')
+                ORDER BY r.fecha_autorizacion DESC, r.id DESC
+            `
+        })
+
+        return res.status(200).render('admin/capitalhumano/ACH/historialRequisiciones.ejs', {
+            token: req.csrfToken(),
+            datosUsuario,
+            requisiciones: requisiciones || []
+        })
+    } catch (error) {
+        console.error('Error en controlador.historialRequisiciones:', error)
+        return manejadorErrores(res, error)
+    }
+}
+
+controlador.verFormatoPDF = async (req, res) => {
+    try {
+        const { id } = req.params
+        const numId = parseInt(id, 10)
+        if (!numId) return res.status(400).send('ID inválido.')
+
+        const clase = new sequelizeClase({ modelo: modelosCapitalHumano.Requisiciones })
+        const rows = await clase.ejecutarQuery({
+            query: `
+                SELECT r.*, cr.nombre_region, cp.nombre_planta
+                FROM ach_requisiciones_personal r
+                LEFT JOIN c_regiones cr ON cr.id = r.id_region
+                LEFT JOIN c_plantas  cp ON cp.id = r.id_planta
+                WHERE r.id = ${numId}
+                LIMIT 1
+            `
+        })
+        if (!rows || !rows[0]) return res.status(404).send('Requisición no encontrada.')
+
+        return res.render('admin/capitalhumano/ACH/formatoRequisicion.ejs', {
+            requisicion: rows[0]
+        })
+    } catch (error) {
+        console.error('Error en controlador.verFormatoPDF:', error)
+        return manejadorErrores(res, error)
     }
 }
 
@@ -379,6 +446,9 @@ controlador.guardarRequisicion = async (req, res) => {
             dias_descanso:        JSON.stringify(datos.dias_descanso),
             protocolo_ingreso:    String(datos.protocolo_ingreso).trim(),
             dias_protocolo:       JSON.stringify(datos.dias_protocolo),
+            locales:              datos.locales   || 'NO',
+            cdr:                  datos.cdr       || 'NO',
+            antidoping:           datos.antidoping || 'NO',
             fecha_requisicion:    new Date().toISOString().slice(0, 10),
             estatus:              'pendiente'
         }

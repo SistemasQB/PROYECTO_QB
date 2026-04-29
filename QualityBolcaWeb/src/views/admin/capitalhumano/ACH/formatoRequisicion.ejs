@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>QB-FR-A-04-16 — Requisición de Personal Operativo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; color: #000; background: #f0f0f0; }
+
+    .print-bar {
+      background: #1a4a8c; padding: 8px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .print-bar-info { color: #fff; font-size: 12px; font-weight: 700; }
+    .print-bar-info span { color: #90caf9; font-size: 11px; font-weight: 400; margin-left: 12px; }
+    .btn-print {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 16px; background: #fff; color: #1a4a8c;
+      border: none; border-radius: 5px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 14px; background: transparent; color: #fff;
+      border: 1px solid rgba(255,255,255,.4); border-radius: 5px;
+      font-size: 12px; text-decoration: none; margin-right: 8px;
+    }
+
+    .page-wrap { padding: 16px; display: flex; justify-content: center; }
+    .page { background: #fff; width: 210mm; padding: 10mm 12mm; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
+
+    /* ── CABECERA FUERA DE LA TABLA ─────────────────────────── */
+    .doc-head {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; margin-bottom: 10px; gap: 12px;
+    }
+    .doc-logo img { height: 50px; display: block; }
+    .doc-logo-text { font-size: 7pt; font-weight: 700; text-align: center; margin-top: 3px; letter-spacing: .03em; }
+    .doc-title {
+      flex: 1; text-align: center; font-size: 12pt;
+      font-weight: 900; display: flex; align-items: center; justify-content: center;
+    }
+    .doc-meta {
+      text-align: right; font-size: 7.5pt; line-height: 1.8; white-space: nowrap;
+    }
+
+    /* ── TABLA PRINCIPAL ────────────────────────────────────── */
+    table.doc { width: 100%; border-collapse: collapse; }
+    table.doc td {
+      border: 1px solid #333; padding: 3px 5px;
+      vertical-align: middle; font-size: 8.5pt;
+    }
+    .g { background: #d0d0d0; font-size: 7pt; font-weight: 700; text-transform: uppercase; }
+    .c { text-align: center; }
+    .vt { vertical-align: top; padding-top: 5px; }
+    .ck { text-align: center; font-weight: 900; font-size: 11pt; }
+    .big { font-size: 11pt; font-weight: 900; }
+  </style>
+</head>
+<body>
+
+<div class="print-bar">
+  <div class="print-bar-info">
+    QB-FR-A-04-16 — Requisición de Personal Operativo
+    <span>Folio: QB<%= requisicion.id %></span>
+  </div>
+  <div>
+    <a class="btn-back" href="javascript:history.back()">← Volver</a>
+    <button class="btn-print" onclick="window.print()">&#128438; Imprimir / PDF</button>
+  </div>
+</div>
+
+<div class="page-wrap"><div class="page">
+
+  <%
+    let dd = [], dp = [];
+    try { dd = typeof requisicion.dias_descanso  === 'string' ? JSON.parse(requisicion.dias_descanso)  : (requisicion.dias_descanso  || []); } catch(e){}
+    try { dp = typeof requisicion.dias_protocolo === 'string' ? JSON.parse(requisicion.dias_protocolo) : (requisicion.dias_protocolo || []); } catch(e){}
+    const DIAS  = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+    const ABBR  = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM'];
+  %>
+
+  <!-- ── CABECERA (fuera de la tabla) ── -->
+  <div class="doc-head">
+    <div class="doc-logo">
+      <img src="/img/logo.png" alt="Quality Bolca" onerror="this.style.display='none'">
+      <div class="doc-logo-text">QUALITY BOLCA</div>
+    </div>
+    <div class="doc-title">Requisición de personal operativo</div>
+    <div class="doc-meta">
+      Código: QB-FR-A-04-16<br>
+      Rev.: 00<br>
+      Fecha de emisión: 08-05-2024<br>
+      Fecha de revisión: N/A
+    </div>
+  </div>
+
+  <!-- ── TABLA ── -->
+  <table class="doc">
+    <colgroup>
+      <col style="width:22%"><!-- col1: labels -->
+      <col style="width:11%"><!-- col2 -->
+      <col style="width:11%"><!-- col3 -->
+      <col style="width:11%"><!-- col4 -->
+      <col style="width:9%"> <!-- col5 -->
+      <col style="width:9%"> <!-- col6 -->
+      <col style="width:13.5%"><!-- col7 -->
+      <col style="width:13.5%"><!-- col8 -->
+    </colgroup>
+
+    <!-- REGION / FOLIO -->
+    <tr>
+      <td class="g">REGION (LUGAR DEL SERVICIO)</td>
+      <td colspan="3"><%= requisicion.nombre_region || '—' %></td>
+      <td class="g c" colspan="2">FOLIO (ACH)</td>
+      <td class="c big" colspan="2">QB<%= requisicion.id %></td>
+    </tr>
+
+    <!-- PLANTA / CANTIDAD -->
+    <tr>
+      <td class="g" style="font-size:6.5pt;">PLANTA (LUGAR DONDE SE REALIZARÁN LAS ACTIVIDADES)</td>
+      <td colspan="3"><%= requisicion.nombre_planta || '—' %></td>
+      <td class="g c" colspan="2">CANTIDAD DE PERSONAL</td>
+      <td class="c big" colspan="2"><%= requisicion.cantidad_personal %> PERSONAS</td>
+    </tr>
+
+    <!-- CARACTERISTICAS / LOCALES / CDR / ANTIDOPING (headers) -->
+    <tr>
+      <td class="g vt" rowspan="2" style="font-size:6.5pt;">
+        CARACTERISTICAS (PIEZAS PEQUEÑAS O PESADAS, ACTIVIDADES)
+      </td>
+      <td colspan="3" rowspan="2" class="vt"><%= requisicion.caracteristicas %></td>
+      <td class="g c">LOCALES</td>
+      <td class="g c" style="font-size:6.5pt;">CDR (CAMBIOS DE RESIDENCIA)</td>
+      <td class="g c" colspan="2" style="font-size:6.5pt;">ANTIDOPING SI/NO (GASTO RO1)</td>
+    </tr>
+    <!-- LOCALES / CDR / ANTIDOPING (valores) -->
+    <tr>
+      <td class="c"><%= requisicion.locales || 'NO' %></td>
+      <td class="c"><%= requisicion.cdr || 'NO' %></td>
+      <td class="c" colspan="2"><%= requisicion.antidoping || 'NO' %></td>
+    </tr>
+
+    <!-- SUB-HEADERS SEXO / EDAD -->
+    <tr>
+      <td class="g" style="font-size:0; border-right:none;"></td>
+      <td class="g c">MASCULINO</td>
+      <td class="g c">FEMENINO</td>
+      <td class="g c">INDISTINTO</td>
+      <td class="g c">SI</td>
+      <td class="g c">NO</td>
+      <td class="g c" style="font-size:6.5pt;">FECHA SOLICITUD (MÁXIMO 1 PM)</td>
+      <td class="g c" style="font-size:6.5pt;">FECHA COMPROMISO (ANALISTA DE ACH)</td>
+    </tr>
+
+    <!-- SEXO -->
+    <tr>
+      <td class="g">SEXO</td>
+      <td class="ck"><%= requisicion.sexo === 'Masculino'  ? 'X' : '' %></td>
+      <td class="ck"><%= requisicion.sexo === 'Femenino'   ? 'X' : '' %></td>
+      <td class="ck"><%= requisicion.sexo === 'Indistinto' ? 'X' : '' %></td>
+      <td></td><td></td>
+      <td class="c"><%= requisicion.fecha_requisicion || '—' %></td>
+      <td></td>
+    </tr>
+
+    <!-- EDAD -->
+    <tr>
+      <td class="g">EDAD</td>
+      <td colspan="3" class="c"><%= requisicion.edad_min %> A <%= requisicion.edad_max %></td>
+      <td></td><td></td><td></td>
+      <td class="c"><%= requisicion.fecha_compromiso || '—' %></td>
+    </tr>
+
+    <!-- ROLAR TURNO (headers) -->
+    <tr>
+      <td class="g">ROLAR TURNO</td>
+      <td class="g c">SI</td>
+      <td class="g c">NO</td>
+      <td class="g" colspan="2">TURNO (ESPECIFIQUE)</td>
+      <td class="g" colspan="3">EPP ESPECIAL</td>
+    </tr>
+    <!-- ROLAR TURNO (valores) -->
+    <tr>
+      <td></td>
+      <td class="ck"><%= requisicion.rolar_turno === 'Sí' ? 'X' : '' %></td>
+      <td class="ck"><%= requisicion.rolar_turno === 'No' ? 'X' : '' %></td>
+      <td colspan="2"><%= requisicion.rolar_especificacion || '' %></td>
+      <td colspan="3"><%= requisicion.epp_especial %></td>
+    </tr>
+
+    <!-- DIAS DE DESCANSO (headers) -->
+    <tr>
+      <td class="g">DIAS DE DESCANSO</td>
+      <% ABBR.forEach(a => { %><td class="g c"><%= a %></td><% }); %>
+    </tr>
+    <!-- DIAS DE DESCANSO (valores) -->
+    <tr>
+      <td></td>
+      <% DIAS.forEach(d => { %><td class="ck"><%= dd.includes(d) ? 'X' : '' %></td><% }); %>
+    </tr>
+
+    <!-- PROTOCOLO DE INGRESO -->
+    <tr>
+      <td class="g vt" rowspan="3" style="font-size:6.5pt;">
+        PROTOCOLO DE INGRESO (SI/NO)<br>
+        <span style="font-weight:400; text-transform:none;"><%= requisicion.protocolo_ingreso %></span>
+      </td>
+      <td colspan="7" style="font-size:7pt; font-weight:600;">
+        DIA DE PROTOCOLO (EN CASO DE NO SER MENCIONADO SE DEBERA PAGAR EL TIEMPO QUE EL PERSONAL ESTE EN ESPERA)
+      </td>
+    </tr>
+    <tr>
+      <% ABBR.forEach(a => { %><td class="g c"><%= a %></td><% }); %>
+    </tr>
+    <tr>
+      <% DIAS.forEach(d => { %><td class="ck"><%= dp.includes(d) ? 'X' : '' %></td><% }); %>
+    </tr>
+
+  </table>
+
+</div></div>
+
+<style>
+  @media print {
+    .print-bar { display: none; }
+    body { background: #fff; }
+    .page-wrap { padding: 0; }
+    .page { width: 100%; padding: 6mm 8mm; box-shadow: none; }
+  }
+</style>
+</body>
+</html>

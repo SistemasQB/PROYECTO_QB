@@ -67,6 +67,14 @@ const RequisicionPersonal = dbNew.define('ach_requisiciones_personal', {
         allowNull: false,
         comment: 'Array JSON serializado: ["Lunes","Martes"]'
     },
+    // locales, cdr, antidoping — descomentar después de correr:
+    // ALTER TABLE ach_requisiciones_personal
+    //   ADD COLUMN locales    VARCHAR(3) NULL DEFAULT NULL AFTER dias_protocolo,
+    //   ADD COLUMN cdr        VARCHAR(3) NULL DEFAULT NULL AFTER locales,
+    //   ADD COLUMN antidoping VARCHAR(3) NULL DEFAULT NULL AFTER cdr;
+    // locales:   { type: DataTypes.STRING(3), allowNull: true, defaultValue: null },
+    // cdr:       { type: DataTypes.STRING(3), allowNull: true, defaultValue: null },
+    // antidoping:{ type: DataTypes.STRING(3), allowNull: true, defaultValue: null },
     fecha_requisicion: {
         type: DataTypes.DATEONLY,
         allowNull: false

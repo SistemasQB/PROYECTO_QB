@@ -135,6 +135,30 @@
               </div>
             </div>
 
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:18px;">
+              <div class="field">
+                <label class="field-label">Locales</label>
+                <select class="input" id="locales" name="locales">
+                  <option value="NO" selected>NO</option>
+                  <option value="SI">SI</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">CDR (Cambio de residencia)</label>
+                <select class="input" id="cdr" name="cdr">
+                  <option value="NO" selected>NO</option>
+                  <option value="SI">SI</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">Antidoping</label>
+                <select class="input" id="antidoping" name="antidoping">
+                  <option value="NO" selected>NO</option>
+                  <option value="SI">SI</option>
+                </select>
+              </div>
+            </div>
+
             <hr class="divider">
 
             <div class="field" id="f-edadRango" style="max-width:260px;">
@@ -475,6 +499,9 @@
       dias_descanso:        [...document.querySelectorAll('input[name="diasDescanso"]:checked')].map(i => i.value),
       protocolo_ingreso:    document.getElementById('protocoloIngreso').value,
       dias_protocolo:       [...document.querySelectorAll('input[name="diaProtocolo"]:checked')].map(i => i.value),
+      locales:              document.getElementById('locales').value,
+      cdr:                  document.getElementById('cdr').value,
+      antidoping:           document.getElementById('antidoping').value,
     };
 
     const btn  = document.getElementById('btnEnviarBottom');
