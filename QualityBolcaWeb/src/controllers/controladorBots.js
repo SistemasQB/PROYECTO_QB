@@ -1054,6 +1054,19 @@ controlador.detallePublicado = async (req, res) => {
         console.error('[detallePublicado] Error:', error);
         manejadorErrores(res, error);
     }
-};
+}; 
+
+// ────────────────────────────────────────────────────────────────────────────────
+// SECCION INSPECTORES (PRUEBAS)
+// ────────────────────────────────────────────────────────────────────────────────
+
+controlador.reportesInspector = async (req, res) => {
+    try {
+        // res.locals.usuarioInfo ya está disponible por el middleware usuarioLocals
+        res.render('bots/inspectorReportes.ejs', { csrfToken: req.csrfToken() })
+    } catch (error) {
+        manejadorErrores(res, error);
+    }
+}
 
 export default controlador

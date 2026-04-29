@@ -43,8 +43,15 @@
 
   /* ── INFO DE USUARIO ── */
   function setUserInfo() {
-    var nombre  = 'Vendedor QB';
-    var inicial = nombre[0].toUpperCase();
+    var meta = function(name) {
+      var el = document.querySelector('meta[name="' + name + '"]');
+      return el ? el.getAttribute('content') : '';
+    };
+    var nombre       = meta('usuario-nombre')       || 'Usuario';
+    var nombreCorto  = meta('usuario-nombre-corto') || nombre.split(' ')[0];
+    var inicial      = meta('usuario-inicial')      || nombre[0].toUpperCase();
+    var correo       = meta('usuario-correo')       || '';
+
     var ids = ['userAvatarSidebar', 'userAvatarTop'];
     ids.forEach(function (id) {
       var el = document.getElementById(id);
@@ -52,8 +59,10 @@
     });
     var ns = document.getElementById('userNameSidebar');
     var nt = document.getElementById('userNameTop');
+    var es = document.getElementById('userEmailSidebar');
     if (ns) ns.textContent = nombre;
-    if (nt) nt.textContent = nombre.split(' ')[0];
+    if (nt) nt.textContent = nombreCorto;
+    if (es) es.textContent = correo;
   }
 
   /* ================================================================

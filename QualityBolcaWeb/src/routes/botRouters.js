@@ -24,4 +24,7 @@ router.get('/supervisor/detalle/:id', protegetRuta, controladorBots.detalleRepor
 router.get('/supervisor/historial', protegetRuta, controladorBots.historialPublicados);
 router.get('/supervisor/publicado/:id', protegetRuta, controladorBots.detallePublicado);
 
+// Modulo inspector/capturador de datos
+router.get('/reportes', protegetRuta, controladorBots.reportesInspector);
+
 export default router;

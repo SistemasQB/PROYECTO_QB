@@ -89,16 +89,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ── USER CHIP ── */
 function initUserChip() {
-  const nombre  = 'Vendedor QB';
-  const inicial = nombre.charAt(0).toUpperCase();
+  const meta = (name) => {
+    const el = document.querySelector(`meta[name="${name}"]`);
+    return el ? el.getAttribute('content') : '';
+  };
+  const nombre      = meta('usuario-nombre')       || 'Usuario';
+  const nombreCorto = meta('usuario-nombre-corto') || nombre.split(' ')[0];
+  const inicial     = meta('usuario-inicial')      || nombre.charAt(0).toUpperCase();
+  const correo      = meta('usuario-correo')       || '';
+
   ['userAvatarSidebar','userAvatarTop'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = inicial;
   });
   const ns = document.getElementById('userNameSidebar');
   const nt = document.getElementById('userNameTop');
+  const es = document.getElementById('userEmailSidebar');
   if (ns) ns.textContent = nombre;
-  if (nt) nt.textContent = nombre;
+  if (nt) nt.textContent = nombreCorto;
+  if (es) es.textContent = correo;
 }
 
 /* ── POBLAR SELECT CLIENTE ── */
@@ -330,6 +339,8 @@ function abrirModalActividad(segId) {
   document.getElementById('act_fecha').value       = local;
   document.getElementById('act_descripcion').value = '';
   document.getElementById('act_resultado').value   = '';
+  document.getElementById('act_crearEvento').checked = true;
+  document.getElementById('act_crearEventoLabel').textContent = 'Agregar al calendario';
   document.getElementById('modalActividad').classList.add('open');
 }
 
@@ -341,17 +352,20 @@ function cerrarModalAct() {
 async function guardarActividad() {
   if (!actTargetId) return;
 
+  const crearEvento = document.getElementById('act_crearEvento').checked;
   const datos = {
-    tipo:        document.getElementById('act_tipo').value,
-    fecha:       document.getElementById('act_fecha').value,
-    descripcion: document.getElementById('act_descripcion').value.trim(),
-    resultado:   document.getElementById('act_resultado').value.trim(),
+    tipo:         document.getElementById('act_tipo').value,
+    fecha:        document.getElementById('act_fecha').value,
+    descripcion:  document.getElementById('act_descripcion').value.trim(),
+    resultado:    document.getElementById('act_resultado').value.trim(),
+    crearEvento,
   };
 
   const j = await apiPost(`/ventas/api/seguimientos/${actTargetId}/actividades`, datos);
   if (j.ok) {
     cerrarModalAct();
-    showToast('Actividad registrada', 'success');
+    const msg = j.eventoCreado ? 'Actividad y evento en calendario registrados' : 'Actividad registrada';
+    showToast(msg, 'success');
     await recargarSeguimientos();
   } else {
     showToast(j.msg ?? 'Error al registrar actividad', 'error');

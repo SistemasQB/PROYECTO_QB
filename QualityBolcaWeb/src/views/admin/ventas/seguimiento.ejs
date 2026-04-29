@@ -3,10 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Ventas — Seguimiento de Clientes</title>
+  <title>Ventas — Seguimiento de Clientes</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/styles/ventas/seguimiento.css">
+  <% if (usuarioInfo) { %>
+  <meta name="usuario-nombre" content="<%= usuarioInfo.nombrelargo %>">
+  <meta name="usuario-nombre-corto" content="<%= usuarioInfo.nombreCorto %>">
+  <meta name="usuario-puesto" content="<%= usuarioInfo.puesto %>">
+  <meta name="usuario-correo" content="<%= usuarioInfo.correo %>">
+  <meta name="usuario-inicial" content="<%= usuarioInfo.inicial %>">
+  <% } %>
 </head>
 <body>
 
@@ -20,7 +27,7 @@
         <i class="fa-solid fa-chart-line"></i>
       </div>
       <div class="brand-text">
-        <span class="brand-name">CRM Ventas</span>
+        <span class="brand-name">Ventas</span>
         <span class="brand-role">Quality Bolca</span>
       </div>
     </div>
@@ -260,6 +267,16 @@
             <div class="form-group col-span-2">
               <label class="form-label">Resultado</label>
               <textarea class="form-textarea" id="act_resultado" rows="2" placeholder="¿Cuál fue el resultado?"></textarea>
+            </div>
+            <div class="form-group col-span-2">
+              <div class="switch-row">
+                <label class="switch">
+                  <input type="checkbox" id="act_crearEvento" checked>
+                  <span class="switch-track"></span>
+                  <span class="switch-thumb"></span>
+                </label>
+                <span class="switch-label" id="act_crearEventoLabel">Agregar al calendario</span>
+              </div>
             </div>
           </div>
         </form>

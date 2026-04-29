@@ -17,6 +17,9 @@ const Cliente = dbVentas.define('Cliente', {
     contactoCompras: { type: DataTypes.STRING(255), allowNull: true },
     telefonoCompras: { type: DataTypes.STRING(50),  allowNull: true },
     correoCompras:   { type: DataTypes.STRING(255), allowNull: true },
+    contactoCuentasPorPagar: { type: DataTypes.STRING(255), allowNull: true },
+    telefonoCuentasPorPagar: { type: DataTypes.STRING(50),  allowNull: true },
+    correoCuentasPorPagar:   { type: DataTypes.STRING(255), allowNull: true },
     moneda:          { type: DataTypes.STRING(10),  defaultValue: 'MXN' },
 }, {
     tableName: 'Cliente',

@@ -387,6 +387,42 @@ html, body {
   border-radius: 0;
 }
 
+/* Modificador: tabla con scroll vertical acotado (P-08 Lotes Inspeccionados) */
+.sv-table-wrapper--scrollable {
+  max-height: 420px;
+  overflow-y: auto;
+  /* overflow-x ya viene del base; se refuerza aquí por claridad */
+  overflow-x: auto;
+  /* Scrollbar vertical coherente con la paleta */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) var(--color-surface-alt);
+}
+
+.sv-table-wrapper--scrollable::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.sv-table-wrapper--scrollable::-webkit-scrollbar-track {
+  background: var(--color-surface-alt);
+}
+
+.sv-table-wrapper--scrollable::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 3px;
+}
+
+.sv-table-wrapper--scrollable::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Thead sticky dentro del wrapper scrollable */
+.sv-table-wrapper--scrollable .sv-table thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 .sv-table {
   /* min-width garantiza que las columnas no colapsen en viewports estrechos */
   min-width: 680px;

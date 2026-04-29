@@ -1,0 +1,486 @@
+/* ============================================================
+   Quality Bolca – Inspector: Lista de Reportes Asignados
+   Mobile-first · Paleta: #0764BD · #16243D
+   Consistente con estilos_botPrueba.css
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ----------------------------------------------------------
+   VARIABLES – tema oscuro (por defecto)
+   ---------------------------------------------------------- */
+:root {
+  --primary:        #0764BD;
+  --primary-h:      #055aa8;
+  --primary-glow:   rgba(7, 100, 189, 0.28);
+
+  --bg:             #0f1928;
+  --surface:        #1c2e47;
+  --surface-2:      #243a5a;
+  --border:         rgba(255, 255, 255, 0.09);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+
+  --text:           #ffffff;
+  --text-2:         rgba(255, 255, 255, 0.60);
+  --text-3:         rgba(255, 255, 255, 0.38);
+
+  --shadow:         0 4px 24px rgba(0, 0, 0, 0.42);
+  --shadow-hover:   0 8px 32px rgba(0, 0, 0, 0.55);
+  --radius:         16px;
+  --radius-sm:      10px;
+  --header-h:       64px;
+
+  /* Badges de estado */
+  --badge-pendiente-bg:    rgba(245, 158, 11, 0.18);
+  --badge-pendiente-color: #f59e0b;
+  --badge-pendiente-border:rgba(245, 158, 11, 0.35);
+
+  --badge-firmado-bg:    rgba(34, 197, 94, 0.18);
+  --badge-firmado-color: #22c55e;
+  --badge-firmado-border:rgba(34, 197, 94, 0.35);
+
+  --badge-publicado-bg:    rgba(129, 140, 248, 0.18);
+  --badge-publicado-color: #818cf8;
+  --badge-publicado-border:rgba(129, 140, 248, 0.35);
+}
+
+/* ----------------------------------------------------------
+   BASE
+   ---------------------------------------------------------- */
+html, body {
+  min-height: 100%;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ----------------------------------------------------------
+   HEADER
+   ---------------------------------------------------------- */
+.ir-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  padding-top: env(safe-area-inset-top, 0px);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.ir-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ir-header__logo {
+  height: 36px;
+  width: auto;
+  border-radius: 6px;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
+}
+
+.ir-header__app {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Solo mostrar el nombre de la app en pantallas >= 480px */
+@media (max-width: 479px) {
+  .ir-header__app { display: none; }
+}
+
+.ir-header__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.ir-header__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.ir-header__username {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+@media (max-width: 360px) {
+  .ir-header__username { display: none; }
+}
+
+/* ----------------------------------------------------------
+   MAIN
+   ---------------------------------------------------------- */
+.ir-main {
+  padding: 28px 16px calc(48px + env(safe-area-inset-bottom, 20px));
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 600px) {
+  .ir-main { padding: 36px 24px 60px; }
+}
+
+/* ----------------------------------------------------------
+   ENCABEZADO DE PAGINA
+   ---------------------------------------------------------- */
+.ir-page-header {
+  margin-bottom: 24px;
+}
+
+.ir-page-title {
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.ir-page-sub {
+  margin-top: 6px;
+  font-size: clamp(13px, 3vw, 15px);
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+/* ----------------------------------------------------------
+   FILTROS RAPIDOS
+   ---------------------------------------------------------- */
+.ir-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.ir-filters::-webkit-scrollbar { display: none; }
+
+.ir-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ir-filter-btn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.ir-filter-btn--active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ir-filter-btn--active:hover {
+  background: var(--primary-h);
+  border-color: var(--primary-h);
+  color: #fff;
+}
+
+.ir-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ir-filter-btn--active .ir-filter-count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ----------------------------------------------------------
+   LISTA DE CARDS
+   ---------------------------------------------------------- */
+.ir-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ----------------------------------------------------------
+   CARD DE REPORTE
+   ---------------------------------------------------------- */
+.ir-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  box-shadow: var(--shadow);
+  outline: none;
+}
+
+.ir-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-strong);
+}
+
+.ir-card:active {
+  transform: scale(0.985);
+  box-shadow: var(--shadow);
+}
+
+/* Focus visible para teclado / accesibilidad */
+.ir-card:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* ------ Header de la card ------ */
+.ir-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ir-card__id {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+
+/* ------ Cuerpo de la card ------ */
+.ir-card__body {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ir-card__row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ir-card__label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+  flex-shrink: 0;
+  min-width: 130px;
+}
+
+@media (max-width: 400px) {
+  .ir-card__label { min-width: 0; width: 100%; }
+}
+
+.ir-card__value {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.ir-card__value--part {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Numero de parte — estilo monoespaciado */
+.ir-part-number {
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 2px 7px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+/* ------ Footer de la card ------ */
+.ir-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.ir-card__cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.ir-card__arrow {
+  color: var(--text-3);
+  flex-shrink: 0;
+  transition: transform 0.15s, color 0.15s;
+}
+
+.ir-card:hover .ir-card__arrow {
+  transform: translateX(3px);
+  color: var(--primary);
+}
+
+/* ------ Acento de borde izquierdo segun estado ------ */
+.ir-card[data-estado="pendiente"] {
+  border-left: 4px solid var(--badge-pendiente-color);
+}
+
+.ir-card[data-estado="firmado"] {
+  border-left: 4px solid var(--badge-firmado-color);
+}
+
+.ir-card[data-estado="publicado"] {
+  border-left: 4px solid var(--badge-publicado-color);
+}
+
+/* ----------------------------------------------------------
+   BADGES DE ESTADO
+   ---------------------------------------------------------- */
+.ir-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.ir-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ir-badge--pendiente {
+  background: var(--badge-pendiente-bg);
+  color: var(--badge-pendiente-color);
+  border-color: var(--badge-pendiente-border);
+}
+
+.ir-badge--pendiente::before {
+  background: var(--badge-pendiente-color);
+}
+
+.ir-badge--firmado {
+  background: var(--badge-firmado-bg);
+  color: var(--badge-firmado-color);
+  border-color: var(--badge-firmado-border);
+}
+
+.ir-badge--firmado::before {
+  background: var(--badge-firmado-color);
+}
+
+.ir-badge--publicado {
+  background: var(--badge-publicado-bg);
+  color: var(--badge-publicado-color);
+  border-color: var(--badge-publicado-border);
+}
+
+.ir-badge--publicado::before {
+  background: var(--badge-publicado-color);
+}
+
+/* ----------------------------------------------------------
+   ESTADO VACIO
+   ---------------------------------------------------------- */
+.ir-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 60px 24px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.ir-empty svg {
+  opacity: 0.45;
+}
+
+.ir-empty__msg {
+  font-size: 15px;
+  color: var(--text-3);
+  line-height: 1.55;
+}
+
+/* ----------------------------------------------------------
+   UTILIDADES
+   ---------------------------------------------------------- */
+.hidden { display: none !important; }

@@ -35,7 +35,6 @@
         alt="Quality Bolca"
         onerror="this.style.display='none'"
       />
-      <span class="sv-header__app">Quality Bolca</span>
     </div>
     <div class="sv-header__actions">
       <span class="sv-header__username"><%= supervisor ? supervisor.nombre : 'N/A' %></span>
@@ -174,7 +173,7 @@
         Lotes Inspeccionados
         <span class="sv-readonly-badge">solo lectura</span>
       </h2>
-      <div class="sv-table-wrapper">
+      <div class="sv-table-wrapper sv-table-wrapper--scrollable">
         <table class="sv-table sv-table--readonly" aria-label="Lotes inspeccionados — solo lectura">
           <thead>
             <tr>

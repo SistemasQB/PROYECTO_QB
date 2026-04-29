@@ -1,7 +1,9 @@
 import manejadorErrores from "../middleware/manejadorErrores.js";
 import { Op, fn, col } from 'sequelize';
+import dbVentas from '../config/dbVentas.js';
 import { v4 as uuidv4 } from 'uuid';
 import Cliente              from '../models/ventas/modeloCliente.js';
+import modelonom10001       from '../models/generales/nom10001.js';
 import ProspectoVentas      from '../models/ventas/modeloProspectoVentas.js';
 import ProspectoVentasSemana from '../models/ventas/modeloProspectoVentasSemana.js';
 import SeguimientoCliente   from '../models/ventas/modeloSeguimientoCliente.js';
@@ -16,6 +18,35 @@ EventoCalendario.belongsTo(Cliente, { foreignKey: 'clienteId', as: 'cliente' });
 
 const genId = () => uuidv4().replace(/-/g, '').substring(0, 30);
 
+function mapearTipoCalendario(tipo) {
+    const mapa = {
+        llamada:     'llamada',
+        'reunión':   'reunión',
+        visita:      'visita',
+        correo:      'otro',
+        conferencia: 'reunión',
+        otro:        'otro',
+    };
+    return mapa[tipo] ?? 'otro';
+}
+
+const DURACION_MINUTOS = {
+    llamada:     30,
+    correo:      30,
+    'reunión':   60,
+    conferencia: 60,
+    otro:        60,
+    visita:      120,
+};
+
+function sumarMinutos(horaHHMM, minutos) {
+    const [hh, mm] = horaHHMM.split(':').map(Number);
+    const total = hh * 60 + mm + minutos;
+    const h = Math.floor(total / 60) % 24;
+    const m = total % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
 const ventasController = {};
 
 /* ── VISTAS ── */
@@ -24,6 +55,23 @@ ventasController.clientes     = (req, res) => res.render('admin/ventas/clientes.
 ventasController.agendaVentas = (req, res) => res.render('admin/ventas/agendaVentas.ejs', { token: req.csrfToken() });
 ventasController.seguimiento  = (req, res) => res.render('admin/ventas/seguimiento.ejs',  { token: req.csrfToken() });
 ventasController.calendario   = (req, res) => res.render('admin/ventas/calendario.ejs',   { token: req.csrfToken() });
+
+/* ─────────────────────────────────────────
+   COTIZADORES
+───────────────────────────────────────── */
+ventasController.getCotizadores = async (req, res) => {
+    try {
+        const data = await modelonom10001.findAll({
+            where: { idpuesto: [72, 19, 126], estadoempleado: 'A' },
+            attributes: ['codigoempleado', 'nombrelargo'],
+            order: [['nombrelargo', 'ASC']],
+        });
+        return res.json({ ok: true, token: req.csrfToken(), data });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ ok: false, token: req.csrfToken(), msg: 'Error al obtener cotizadores' });
+    }
+};
 
 /* ─────────────────────────────────────────
    CLIENTES
@@ -40,9 +88,10 @@ ventasController.getClientes = async (req, res) => {
 
 ventasController.createCliente = async (req, res) => {
     try {
-        const { rfc, denominacion, razonSocial, estado, giro, moneda,
+        const { cotizadorId, rfc, denominacion, razonSocial, estado, giro, moneda,
                 contactoCalidad, telefonoCalidad, correoCalidad,
-                contactoCompras, telefonoCompras, correoCompras } = req.body;
+                contactoCompras, telefonoCompras, correoCompras,
+                contactoCuentasPorPagar, telefonoCuentasPorPagar, correoCuentasPorPagar } = req.body;
 
         if (!denominacion || !razonSocial) {
             return res.status(400).json({ ok: false, token: req.csrfToken(), msg: 'Denominación y razón social son requeridas' });
@@ -50,9 +99,10 @@ ventasController.createCliente = async (req, res) => {
         const count = await Cliente.count();
         const folio = `CLI-${String(count + 1).padStart(3, '0')}`;
         const nuevo = await Cliente.create({
-            id: genId(), folio, rfc, denominacion, razonSocial, estado, giro,
+            id: genId(), folio, cotizadorId: cotizadorId || null, rfc, denominacion, razonSocial, estado, giro,
             moneda: moneda || 'MXN', contactoCalidad, telefonoCalidad, correoCalidad,
             contactoCompras, telefonoCompras, correoCompras,
+            contactoCuentasPorPagar, telefonoCuentasPorPagar, correoCuentasPorPagar,
         });
         return res.json({ ok: true, token: req.csrfToken(), data: nuevo, msg: 'Cliente creado correctamente' });
     } catch (e) {
@@ -64,17 +114,19 @@ ventasController.createCliente = async (req, res) => {
 ventasController.updateCliente = async (req, res) => {
     try {
         const { id } = req.params;
-        const { rfc, denominacion, razonSocial, estado, giro, moneda,
+        const { cotizadorId, rfc, denominacion, razonSocial, estado, giro, moneda,
                 contactoCalidad, telefonoCalidad, correoCalidad,
-                contactoCompras, telefonoCompras, correoCompras } = req.body;
+                contactoCompras, telefonoCompras, correoCompras,
+                contactoCuentasPorPagar, telefonoCuentasPorPagar, correoCuentasPorPagar } = req.body;
 
         if (!denominacion || !razonSocial) {
             return res.status(400).json({ ok: false, token: req.csrfToken(), msg: 'Denominación y razón social son requeridas' });
         }
         const [updated] = await Cliente.update(
-            { rfc, denominacion, razonSocial, estado, giro, moneda: moneda || 'MXN',
+            { cotizadorId: cotizadorId || null, rfc, denominacion, razonSocial, estado, giro, moneda: moneda || 'MXN',
               contactoCalidad, telefonoCalidad, correoCalidad,
-              contactoCompras, telefonoCompras, correoCompras },
+              contactoCompras, telefonoCompras, correoCompras,
+              contactoCuentasPorPagar, telefonoCuentasPorPagar, correoCuentasPorPagar },
             { where: { id } }
         );
         if (!updated) return res.status(404).json({ ok: false, token: req.csrfToken(), msg: 'Cliente no encontrado' });
@@ -250,12 +302,58 @@ ventasController.deleteSeguimiento = async (req, res) => {
 ventasController.createActividad = async (req, res) => {
     try {
         const { segId } = req.params;
-        const { tipo, fecha, descripcion, resultado } = req.body;
-        const act = await ActividadSeguimiento.create({
-            id: genId(), seguimientoId: segId, tipo, fecha, descripcion, resultado,
+        const { tipo, fecha, descripcion, resultado, crearEvento } = req.body;
+
+        if (!tipo || !fecha || fecha.length < 16) {
+            return res.status(400).json({ ok: false, token: req.csrfToken(), msg: 'Los campos tipo y fecha son requeridos con formato correcto' });
+        }
+
+        const fechaSolo      = fecha.substring(0, 10);
+        const horaInicio     = fecha.substring(11, 16);
+        const horaFin        = sumarMinutos(horaInicio, DURACION_MINUTOS[tipo] ?? 60);
+        const debeCrearEvento = crearEvento !== false && crearEvento !== 'false';
+
+        let act;
+        let eventoCreado = false;
+
+        await dbVentas.transaction(async (t) => {
+            act = await ActividadSeguimiento.create({
+                id: genId(), seguimientoId: segId, tipo, fecha, descripcion, resultado,
+            }, { transaction: t });
+
+            await SeguimientoCliente.update(
+                { ultimoContacto: fecha },
+                { where: { id: segId }, transaction: t }
+            );
+
+            if (debeCrearEvento) {
+                const seg = await SeguimientoCliente.findByPk(segId, { transaction: t });
+                const clienteId = seg?.clienteId || null;
+                let nombreCliente = null;
+
+                if (clienteId) {
+                    const cli = await Cliente.findByPk(clienteId, { transaction: t });
+                    nombreCliente = cli?.denominacion || cli?.razonSocial || null;
+                }
+
+                const tipoCapitalizado = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+                const titulo = nombreCliente ? `${tipoCapitalizado} con ${nombreCliente}` : tipoCapitalizado;
+
+                await EventoCalendario.create({
+                    id: genId(), clienteId,
+                    titulo, tipo: mapearTipoCalendario(tipo),
+                    fecha: fechaSolo, horaInicio, horaFin,
+                    ubicacion: null, notas: descripcion || null, estado: 'programada',
+                }, { transaction: t });
+
+                eventoCreado = true;
+            }
         });
-        await SeguimientoCliente.update({ ultimoContacto: fecha }, { where: { id: segId } });
-        return res.json({ ok: true, token: req.csrfToken(), data: act, msg: 'Actividad registrada' });
+
+        return res.json({
+            ok: true, token: req.csrfToken(), data: act, eventoCreado,
+            msg: eventoCreado ? 'Actividad y evento registrados' : 'Actividad registrada',
+        });
     } catch (e) {
         console.error(e);
         return res.status(500).json({ ok: false, token: req.csrfToken(), msg: 'Error al registrar actividad' });
@@ -278,7 +376,15 @@ ventasController.deleteActividad = async (req, res) => {
 ───────────────────────────────────────── */
 ventasController.getEventos = async (req, res) => {
     try {
-        const data = await EventoCalendario.findAll({ order: [['fecha', 'ASC'], ['horaInicio', 'ASC']] });
+        const rows = await EventoCalendario.findAll({ order: [['fecha', 'ASC'], ['horaInicio', 'ASC']] });
+        const data = rows.map(ev => {
+            const obj = ev.toJSON();
+            if (obj.fecha) {
+                const d = obj.fecha instanceof Date ? obj.fecha : new Date(obj.fecha);
+                obj.fecha = d.toISOString().slice(0, 10);
+            }
+            return obj;
+        });
         return res.json({ ok: true, token: req.csrfToken(), data });
     } catch (e) {
         console.error(e);

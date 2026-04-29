@@ -155,10 +155,27 @@ function updateTotal() {
 document.addEventListener('DOMContentLoaded', () =>{
     renderTable();
     agregarEventos();
+
+    // Sincronizar todos los contenteditable con sus campos ocultos
+    ['situacionActual', 'expectativa', 'comentarios', 'asunto', 'itemDesc'].forEach(id => {
+        const div = document.getElementById(id);
+        const hidden = document.getElementById(id + '-hidden');
+        if (!div || !hidden) return;
+        div.addEventListener('input', () => {
+            hidden.value = div.innerText.trim();
+            clearError(id);
+        });
+        // Evitar saltos de línea en campos de una sola línea
+        if (div.classList.contains('spell-field--line')) {
+            div.addEventListener('keydown', e => {
+                if (e.key === 'Enter') e.preventDefault();
+            });
+        }
+    });
 } );
 
 document.getElementById('btnAgregar').addEventListener('click', () => {
-  const desc = document.getElementById('itemDesc').value.trim();
+  const desc = (document.getElementById('itemDesc-hidden')?.value || document.getElementById('itemDesc').innerText || '').trim();
   const unidad = parseFloat(document.getElementById('itemUnidad').value);
   const precio = parseFloat(document.getElementById('itemPrecio').value);
 
@@ -176,7 +193,10 @@ document.getElementById('btnAgregar').addEventListener('click', () => {
   if (!valid) return;
 
   items.push({ id: nextId++, desc, unidad, precio });
-  document.getElementById('itemDesc').value = '';
+  const itemDescDiv = document.getElementById('itemDesc');
+  if (itemDescDiv) itemDescDiv.innerText = '';
+  const itemDescHidden = document.getElementById('itemDesc-hidden');
+  if (itemDescHidden) itemDescHidden.value = '';
   document.getElementById('itemUnidad').value = '';
   document.getElementById('itemPrecio').value = '';
   renderTable();
@@ -327,11 +347,24 @@ function validateAndSend() {
   requiredFields.forEach(f => clearError(f.id));
   document.getElementById('err-tipoGasto').style.display = 'none';
 
+  // IDs que son contenteditable (no tienen .value, usan .innerText via campo oculto)
+  const spellFields = ['situacionActual', 'expectativa', 'comentarios', 'asunto'];
+
+  // Sync spell fields from contenteditable to hidden inputs before validation
+  spellFields.forEach(id => {
+    const div = document.getElementById(id);
+    const hidden = document.getElementById(id + '-hidden');
+    if (div && hidden) hidden.value = div.innerText.trim();
+  });
+
   // Validate each field y creacion de campos
   requiredFields.forEach(f => {
-    requi[f.id] = document.getElementById(f.id).value
     const el = document.getElementById(f.id);
-    const val = el ? el.value.trim() : '';
+    // Para campos contenteditable leer del hidden, para el resto usar .value directamente
+    const val = spellFields.includes(f.id)
+      ? (document.getElementById(f.id + '-hidden')?.value.trim() || '')
+      : (el ? el.value.trim() : '');
+    requi[f.id] = val;
     if (!val) {
       setError(f.id, `El campo "${f.label}" es obligatorio.`);
       if (!firstErrorEl) firstErrorEl = el;
@@ -349,7 +382,7 @@ function validateAndSend() {
   }
   //se establece el tipo de gasto
   const gasto = [...document.querySelectorAll('.gasto-check')].filter(c => c.checked)
-  requi.rentabilidad = gasto[0].name
+  if (gasto.length > 0) requi.rentabilidad = gasto[0].name
 
   // Validate at least one concept
   if (items.length === 0) {
@@ -364,7 +397,7 @@ function validateAndSend() {
     showToast('Hay campos obligatorios sin completar.', 'error');
     return;
   }
-  requi.comentariosAdicionales = document.getElementById('comentarios').value;
+  requi.comentariosAdicionales = document.getElementById('comentarios-hidden').value;
   const foto = document.getElementById('fileInput').files[0];
   if (foto) requi.imagen = foto;
   cambiandoCampos(requi)
@@ -382,7 +415,7 @@ document.getElementById('btnBorrador').addEventListener('click', () => {
 // Clear errors on input change
 requiredFields.forEach(f => {
   const el = document.getElementById(f.id);
-  if (el) el.addEventListener('input change', () => clearError(f.id));
+  if (el) el.addEventListener('input', () => clearError(f.id));
   if (el) el.addEventListener('change', () => clearError(f.id));
 });
 

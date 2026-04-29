@@ -3,10 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Ventas — Agenda de Ventas</title>
+  <title>Ventas — Agenda de Ventas</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/styles/ventas/agenda.css">
+  <% if (usuarioInfo) { %>
+  <meta name="usuario-nombre" content="<%= usuarioInfo.nombrelargo %>">
+  <meta name="usuario-nombre-corto" content="<%= usuarioInfo.nombreCorto %>">
+  <meta name="usuario-puesto" content="<%= usuarioInfo.puesto %>">
+  <meta name="usuario-correo" content="<%= usuarioInfo.correo %>">
+  <meta name="usuario-inicial" content="<%= usuarioInfo.inicial %>">
+  <% } %>
 </head>
 <body>
 
@@ -20,7 +27,7 @@
         <i class="fa-solid fa-chart-line"></i>
       </div>
       <div class="brand-text">
-        <span class="brand-name">CRM Ventas</span>
+        <span class="brand-name">Ventas</span>
         <span class="brand-role">Quality Bolca</span>
       </div>
     </div>

@@ -175,7 +175,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
    ================================================================ */
 .page-body {
   flex: 1; padding: 28px;
-  max-width: 1280px; width: 100%;
+  max-width: 1400px; width: 100%;
+  margin: 0 auto;
 }
 
 .page-header {
@@ -581,4 +582,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 @media (max-width: 480px) {
   .cal-week-grid { grid-template-columns: 1fr 1fr; }
   .cal-day-headers { font-size: 9px; }
+}
+
+@media (min-width: 1600px) {
+  .page-body { max-width: 1600px; }
 }

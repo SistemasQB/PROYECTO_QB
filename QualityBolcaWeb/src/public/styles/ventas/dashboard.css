@@ -254,8 +254,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .dashboard-body {
   flex: 1;
   padding: 28px;
-  max-width: 1220px;
+  max-width: 1400px;
   width: 100%;
+  margin: 0 auto;
 }
 
 /* PAGE HEADER */
@@ -589,4 +590,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .kpi-grid--4 { grid-template-columns: 1fr; }
   .kpi-grid--3 { grid-template-columns: 1fr; }
   .kpi-value { font-size: 28px; }
+}
+
+@media (min-width: 1600px) {
+  .dashboard-body { max-width: 1600px; }
 }

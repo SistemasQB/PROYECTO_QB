@@ -212,8 +212,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .page-body {
   flex: 1;
   padding: 28px;
-  max-width: 1100px;
+  max-width: 1400px;
   width: 100%;
+  margin: 0 auto;
 }
 
 .page-header {
@@ -689,4 +690,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 @media (max-width: 480px) {
   .filters-row { flex-direction: column; }
   .filter-input, .filter-select { width: 100%; }
+}
+
+@media (min-width: 1600px) {
+  .page-body { max-width: 1600px; }
 }

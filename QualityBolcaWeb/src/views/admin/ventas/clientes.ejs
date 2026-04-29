@@ -3,10 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM Ventas — Clientes</title>
+  <title>Ventas — Clientes</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/styles/ventas/clientes.css">
+  <% if (usuarioInfo) { %>
+  <meta name="usuario-nombre" content="<%= usuarioInfo.nombrelargo %>">
+  <meta name="usuario-nombre-corto" content="<%= usuarioInfo.nombreCorto %>">
+  <meta name="usuario-puesto" content="<%= usuarioInfo.puesto %>">
+  <meta name="usuario-correo" content="<%= usuarioInfo.correo %>">
+  <meta name="usuario-inicial" content="<%= usuarioInfo.inicial %>">
+  <% } %>
 </head>
 <body>
 
@@ -23,7 +30,7 @@
         <i class="fa-solid fa-chart-line"></i>
       </div>
       <div class="brand-text">
-        <span class="brand-name">CRM Ventas</span>
+        <span class="brand-name">Ventas</span>
         <span class="brand-role">Quality Bolca</span>
       </div>
     </div>
@@ -235,7 +242,9 @@
         <div class="form-grid">
           <div class="form-field">
             <label class="form-label" for="fCotizador">Cotizador</label>
-            <input type="text" id="fCotizador" class="form-input" placeholder="Nombre del cotizador">
+            <select id="fCotizador" class="form-input">
+              <option value="">Sin asignar</option>
+            </select>
           </div>
           <div class="form-field">
             <label class="form-label" for="fRfc">RFC / Tax ID</label>
@@ -300,7 +309,7 @@
 
         <!-- Contacto Calidad -->
         <div class="form-section-divider">
-          <i class="fa-solid fa-shield-check"></i>
+          <i class="fa-solid fa-shield"></i>
           <span>Contacto de Calidad</span>
         </div>
         <div class="form-grid">
@@ -335,6 +344,26 @@
           <div class="form-field form-field--full">
             <label class="form-label" for="fCorreoCompras">Correo electrónico</label>
             <input type="email" id="fCorreoCompras" class="form-input" placeholder="compras@empresa.com">
+          </div>
+        </div>
+
+        <!-- contacto CUENTAS POR PAGAR -->
+         <div class="form-section-divider">
+          <i class="fa-solid fa-money-bill"></i>
+          <span>Contacto de Cuentas por Pagar</span>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label" for="fContactoCuentasPagar">Nombre</label>
+            <input type="text" id="fContactoCuentasPagar" class="form-input" placeholder="Nombre del contacto">
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="fTelCuentasPagar">Teléfono</label>
+            <input type="tel" id="fTelCuentasPagar" class="form-input" placeholder="(555) 000-0000">
+          </div>
+          <div class="form-field form-field--full">
+            <label class="form-label" for="fCorreoCuentasPagar">Correo electrónico</label>
+            <input type="email" id="fCorreoCuentasPagar" class="form-input" placeholder="cuentas@empresa.com">
           </div>
         </div>
 
@@ -383,6 +412,10 @@
         <div class="detail-section">
           <p class="detail-section-title">Contacto de Compras</p>
           <div class="detail-rows" id="detailCompras"></div>
+        </div>
+        <div class="detail-section">
+          <p class="detail-section-title">Contacto de Cuentas por Pagar</p>
+          <div class="detail-rows" id="detailCuentasPagar"></div>
         </div>
       </div>
 

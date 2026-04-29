@@ -243,8 +243,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .page-body {
   flex: 1;
   padding: 28px;
-  max-width: 1280px;
+  max-width: 1400px;
   width: 100%;
+  margin: 0 auto;
 }
 
 /* PAGE HEADER */
@@ -865,4 +866,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .filters-row { flex-direction: column; }
   .filter-input, .filter-select { width: 100%; }
   .semanas-grid { grid-template-columns: repeat(7, 1fr); }
+}
+
+@media (min-width: 1600px) {
+  .page-body { max-width: 1600px; }
 }

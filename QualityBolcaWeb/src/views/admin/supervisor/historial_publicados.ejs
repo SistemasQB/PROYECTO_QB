@@ -20,7 +20,6 @@
         alt="Quality Bolca"
         onerror="this.style.display='none'"
       />
-      <span class="sv-header__app">Quality Bolca</span>
     </div>
     <div class="sv-header__user">
       <span class="sv-header__username"><%= supervisor.nombre %></span>
@@ -133,44 +132,23 @@
           <tbody id="historial-tbody">
             <% if (reportes.length === 0) { %>
               <tr>
-                <td colspan="8" style="text-align:center; padding:2rem; color:#6b7280;">
+                <td colspan="9" style="text-align:center; padding:2rem; color:#6b7280;">
                   No hay reportes publicados para mostrar.
                 </td>
               </tr>
             <% } else { %>
               <% reportes.forEach(function(reporte) { %>
                 <% const fechaFormateada = new Date(reporte.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }); %>
-                <tr data-parte="<%= reporte.numero_parte %>">Se restablece en 4 h 24 min
-                
-                14% usado
-                
-                Límites semanales
-                Más información sobre los límites de uso
-                
-                Todos los modelos
-                
-                Se restablece en 23 h 24 min
-                
-                24% usado
-                
-                Última actualización: hace 2 minutos
-                
-                
-                Funciones adicionales
-                Ejecuciones de rutinas diarias incluidas
-                
-                
-                Aún no has ejecutado ninguna rutina
-                
-                0 / 25
-                
-                Missing permissions: members:manage required.
+                <% const fechaFirma = reporte.fecha_firma_item ? new Date(reporte.fecha_firma_item).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—'; %>
+                <tr data-parte="<%= reporte.numero_parte %>">
                   <td><%= fechaFormateada %></td>
                   <td><%= reporte.nombre_inspector %></td>
                   <td><%= reporte.turno %></td>
                   <td><span class="sv-part-number"><%= reporte.numero_parte %></span></td>
                   <td><%= reporte.numero_items || 0 %></td>
-                  <td><%= reporte.nombre_supervisor %></td>
+                  <td><%= reporte.total_piezas || 0 %></td>
+                  <td><%= reporte.firmado_por || '—' %></td>
+                  <td><%= fechaFirma %></td>
                   <td>
                     <a
                       href="/bots/supervisor/publicado/<%= reporte.body_id %>"

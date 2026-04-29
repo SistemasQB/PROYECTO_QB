@@ -191,7 +191,8 @@
 
             <div class="field">
               <label class="field-label">Asunto <span class="req">*</span></label>
-              <input class="input" id="asunto" type="text" placeholder="Ej: Renovación de equipo"/>
+              <div class="input spell-field spell-field--line" id="asunto" contenteditable="true" spellcheck="true" lang="es" role="textbox" aria-multiline="false" data-placeholder="Ej: Renovación de equipo"></div>
+              <input type="hidden" id="asunto-hidden"/>
               <span class="field-error" id="err-asunto"></span>
             </div>
 
@@ -279,7 +280,8 @@
           <div class="concepto-form">
             <div class="field concepto-form-desc">
               <label class="field-label">Descripción Detallada <span class="req">*</span></label>
-              <input class="input" id="itemDesc" type="text" placeholder="Ej: Laptop Dell Latitude 5420 - 16GB RAM"/>
+              <div class="input spell-field spell-field--line" id="itemDesc" contenteditable="true" spellcheck="true" lang="es" role="textbox" aria-multiline="false" data-placeholder="Ej: Laptop Dell Latitude 5420 - 16GB RAM"></div>
+              <input type="hidden" id="itemDesc-hidden"/>
               <span class="field-error" id="err-itemDesc"></span>
             </div>
             <div class="field concepto-form-unidad">
@@ -339,7 +341,8 @@
               <span class="material-symbols-outlined">history</span>
               <h4 class="bottom-card-title">Detallar Situación Actual <span style="color:var(--red)">*</span></h4>
             </div>
-            <textarea class="input" id="situacionActual" placeholder="¿Por qué se requiere esta compra hoy?..."></textarea>
+            <div class="input spell-field" id="situacionActual" contenteditable="true" spellcheck="true" lang="es" data-placeholder="¿Por qué se requiere esta compra hoy?..."></div>
+            <textarea id="situacionActual-hidden" name="situacionActual" style="display:none"></textarea>
             <span class="field-error" id="err-situacionActual"></span>
           </div>
 
@@ -348,7 +351,8 @@
               <span class="material-symbols-outlined">trending_up</span>
               <h4 class="bottom-card-title">Detallar Expectativa <span style="color:var(--red)">*</span></h4>
             </div>
-            <textarea class="input" id="expectativa" placeholder="¿Cuál es el beneficio esperado?..."></textarea>
+            <div class="input spell-field" id="expectativa" contenteditable="true" spellcheck="true" lang="es" data-placeholder="¿Cuál es el beneficio esperado?..."></div>
+            <textarea id="expectativa-hidden" name="expectativa" style="display:none"></textarea>
             <span class="field-error" id="err-expectativa"></span>
           </div>
 
@@ -357,7 +361,8 @@
               <span class="material-symbols-outlined">chat_bubble</span>
               <h4 class="bottom-card-title">Comentarios Adicionales</h4>
             </div>
-            <textarea class="input" id="comentarios" placeholder="Información relevante para aprobación..."></textarea>
+            <div class="input spell-field" id="comentarios" contenteditable="true" spellcheck="true" lang="es" data-placeholder="Información relevante para aprobación..."></div>
+            <textarea id="comentarios-hidden" name="comentarios" style="display:none"></textarea>
           </div>
 
           <div class="bottom-card" style="display:flex;flex-direction:column">

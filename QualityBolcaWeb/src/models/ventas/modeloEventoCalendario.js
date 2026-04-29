@@ -7,7 +7,7 @@ const EventoCalendario = dbVentas.define('EventoCalendario', {
     clienteId:  { type: DataTypes.STRING(30),  allowNull: true },
     titulo:     { type: DataTypes.STRING(255), allowNull: false },
     tipo: {
-        type: DataTypes.ENUM('visita','reunion','llamada','otro'),
+        type: DataTypes.ENUM('visita','reunión','llamada','otro'),
         allowNull: false,
     },
     fecha:      { type: DataTypes.DATEONLY,    allowNull: false },

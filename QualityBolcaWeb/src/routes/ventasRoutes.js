@@ -5,7 +5,7 @@ import ventasController from '../controllers/ventasController.js';
 const ventasRouter = express.Router();
 
 /* ── Vistas ── */
-ventasRouter.get('/crm/inicio',      protegerRuta, ventasController.dashboard);
+ventasRouter.get('/crm/inicio', protegerRuta, ventasController.dashboard);
 ventasRouter.get('/crm/clientes',    protegerRuta, ventasController.clientes);
 ventasRouter.get('/crm/agendaVentas',protegerRuta, ventasController.agendaVentas);
 ventasRouter.get('/crm/seguimiento', protegerRuta, ventasController.seguimiento);
@@ -15,7 +15,8 @@ ventasRouter.get('/crm/calendario',  protegerRuta, ventasController.calendario);
 ventasRouter.get('/api/dashboard', protegerRuta, ventasController.getDashboard);
 
 /* ── API Clientes ── */
-ventasRouter.get   ('/api/clientes',     protegerRuta, ventasController.getClientes);
+ventasRouter.get('/api/cotizadores',     protegerRuta, ventasController.getCotizadores);
+ventasRouter.get   ('/api/clientes',protegerRuta, ventasController.getClientes);
 ventasRouter.post  ('/api/clientes',     protegerRuta, ventasController.createCliente);
 ventasRouter.put   ('/api/clientes/:id', protegerRuta, ventasController.updateCliente);
 ventasRouter.delete('/api/clientes/:id', protegerRuta, ventasController.deleteCliente);

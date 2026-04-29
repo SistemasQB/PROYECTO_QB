@@ -236,8 +236,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .page-body {
   flex: 1;
   padding: 28px;
-  max-width: 1320px;
+  max-width: 1400px;
   width: 100%;
+  margin: 0 auto;
 }
 
 /* PAGE HEADER */
@@ -1094,4 +1095,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .modal { border-radius: var(--radius-lg); }
   .clientes-table th:nth-child(4),
   .clientes-table td:nth-child(4) { display: none; }
+}
+
+@media (min-width: 1600px) {
+  .page-body { max-width: 1600px; }
 }

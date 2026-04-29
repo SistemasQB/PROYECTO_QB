@@ -899,3 +899,51 @@
       background: white;
       outline: none;
     }
+
+    /* =============================================
+       SPELL-CHECK CONTENTEDITABLE FIELDS
+       ============================================= */
+    .spell-field {
+      min-height: 90px;
+      height: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-y: auto;
+      cursor: text;
+      line-height: 1.6;
+      resize: vertical;
+    }
+
+    .spell-field:empty::before {
+      content: attr(data-placeholder);
+      color: var(--slate-400, #94a3b8);
+      pointer-events: none;
+    }
+
+    .spell-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(19, 127, 236, 0.12);
+      background: var(--white);
+    }
+
+    .spell-field.input--error {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    /* Campos de una sola línea (asunto, descripción detallada) */
+    .spell-field--line {
+      min-height: unset;
+      height: auto;
+      white-space: nowrap;
+      overflow: hidden;
+      line-height: 1.5;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+
+    /* Subrayado ondulado rojo nativo del navegador — más visible */
+    ::spelling-error {
+      text-decoration: underline wavy #ef4444;
+    }

@@ -29,6 +29,8 @@
     detalleId:  null,
   };
 
+  var cotizadores = [];
+
   /* ── Helpers API ── */
   function apiPost(url, data) {
     return fetch(url, {
@@ -65,6 +67,26 @@
     });
   }
 
+  /* ── Cargar cotizadores ── */
+  async function cargarCotizadores() {
+    try {
+      var res = await fetch('/ventas/api/cotizadores', { credentials: 'include' }).then(function(r){ return r.json(); });
+      if (res && res.ok) {
+        cotizadores = res.data || [];
+        if (res.token) window._tok = res.token;
+      }
+    } catch(e) { console.error('Error cargando cotizadores:', e); }
+    var sel = document.getElementById('fCotizador');
+    if (!sel) return;
+    while (sel.options.length > 1) sel.remove(1);
+    cotizadores.forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c.codigoempleado;
+      opt.textContent = c.nombrelargo;
+      sel.appendChild(opt);
+    });
+  }
+
   /* ── Cargar datos ── */
   async function cargarClientes() {
     try {
@@ -83,14 +105,33 @@
 
   /* ── Init ── */
   function init() {
+    setUserInfo();
     bindEvents();
+    cargarCotizadores();
     cargarClientes();
   }
 
-  /* ── Info usuario (nombre de sesión no disponible, placeholder) ── */
+  /* ── Info usuario ── */
   function setUserInfo() {
-    var total = document.getElementById('totalClientes');
-    if (total) total.textContent = state.todos.length;
+    var meta = function(name) {
+      var el = document.querySelector('meta[name="' + name + '"]');
+      return el ? el.getAttribute('content') : '';
+    };
+    var nombre      = meta('usuario-nombre')       || 'Usuario';
+    var nombreCorto = meta('usuario-nombre-corto') || nombre.split(' ')[0];
+    var inicial     = meta('usuario-inicial')      || nombre.charAt(0).toUpperCase();
+    var correo      = meta('usuario-correo')       || '';
+
+    ['userAvatarSidebar','userAvatarTop'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = inicial;
+    });
+    var ns = document.getElementById('userNameSidebar');
+    var nt = document.getElementById('userNameTop');
+    var es = document.getElementById('userEmailSidebar');
+    if (ns) ns.textContent = nombre;
+    if (nt) nt.textContent = nombreCorto;
+    if (es) es.textContent = correo;
   }
 
   /* ── Filtros + orden ── */
@@ -273,7 +314,8 @@
   function limpiarFormModal() {
     ['fCotizador','fRfc','fDenominacion','fRazonSocial',
      'fContactoCalidad','fTelCalidad','fCorreoCalidad',
-     'fContactoCompras','fTelCompras','fCorreoCompras'].forEach(function (id) {
+     'fContactoCompras','fTelCompras','fCorreoCompras',
+     'fContactoCuentasPagar','fTelCuentasPagar','fCorreoCuentasPagar'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -295,9 +337,12 @@
       fContactoCalidad: c.contactoCalidad,
       fTelCalidad:      c.telefonoCalidad,
       fCorreoCalidad:   c.correoCalidad,
-      fContactoCompras: c.contactoCompras,
-      fTelCompras:      c.telefonoCompras,
-      fCorreoCompras:   c.correoCompras,
+      fContactoCompras:      c.contactoCompras,
+      fTelCompras:           c.telefonoCompras,
+      fCorreoCompras:        c.correoCompras,
+      fContactoCuentasPagar: c.contactoCuentasPorPagar,
+      fTelCuentasPagar:      c.telefonoCuentasPorPagar,
+      fCorreoCuentasPagar:   c.correoCuentasPorPagar,
     };
     Object.keys(mapa).forEach(function (id) {
       var el = document.getElementById(id);
@@ -309,6 +354,8 @@
     if (selEstado) selEstado.value = c.estado || '';
     if (selGiro)   selGiro.value   = c.giro   || '';
     if (selMoneda) selMoneda.value = c.moneda  || 'MXN';
+    var selCot = document.getElementById('fCotizador');
+    if (selCot) selCot.value = c.cotizadorId || '';
   }
 
   function mostrarModal() {
@@ -347,6 +394,7 @@
     if (!ok) { mostrarToast('Denominación y razón social son requeridas', 'error'); return; }
 
     var datos = {
+      cotizadorId:     (document.getElementById('fCotizador')       || {}).value || null,
       rfc:             (document.getElementById('fRfc')             || {}).value || '',
       denominacion:    denominacion.trim(),
       razonSocial:     razonSocial.trim(),
@@ -356,9 +404,12 @@
       contactoCalidad: (document.getElementById('fContactoCalidad') || {}).value || '',
       telefonoCalidad: (document.getElementById('fTelCalidad')      || {}).value || '',
       correoCalidad:   (document.getElementById('fCorreoCalidad')   || {}).value || '',
-      contactoCompras: (document.getElementById('fContactoCompras') || {}).value || '',
-      telefonoCompras: (document.getElementById('fTelCompras')      || {}).value || '',
-      correoCompras:   (document.getElementById('fCorreoCompras')   || {}).value || '',
+      contactoCompras:         (document.getElementById('fContactoCompras')      || {}).value || '',
+      telefonoCompras:         (document.getElementById('fTelCompras')           || {}).value || '',
+      correoCompras:           (document.getElementById('fCorreoCompras')        || {}).value || '',
+      contactoCuentasPorPagar: (document.getElementById('fContactoCuentasPagar') || {}).value || '',
+      telefonoCuentasPorPagar: (document.getElementById('fTelCuentasPagar')      || {}).value || '',
+      correoCuentasPorPagar:   (document.getElementById('fCorreoCuentasPagar')   || {}).value || '',
     };
 
     try {
@@ -418,11 +469,19 @@
 
     var infoEl = document.getElementById('detailInfoGeneral');
     if (infoEl) {
+      var nomCotizador = '—';
+      if (cliente.cotizadorId) {
+        var cot = cotizadores.find(function(c){ return c.codigoempleado === cliente.cotizadorId; });
+        if (cot) nomCotizador = cot.nombrelargo;
+      }
       infoEl.innerHTML = [
-        detailRow('Folio',  cliente.folio,  'mono'),
-        detailRow('RFC',    cliente.rfc,    'mono'),
-        detailRow('Moneda', cliente.moneda),
-        detailRow('Alta',   fmtFecha(cliente.fechaAlta)),
+        detailRow('Folio',     cliente.folio,  'mono'),
+        detailRow('RFC',       cliente.rfc,    'mono'),
+        detailRow('Estado',    cliente.estado),
+        detailRow('Giro',      cliente.giro),
+        detailRow('Moneda',    cliente.moneda),
+        detailRow('Alta',      fmtFecha(cliente.fechaAlta)),
+        detailRow('Cotizador', nomCotizador),
       ].join('');
     }
 
@@ -441,6 +500,15 @@
         detailRow('Nombre',  cliente.contactoCompras),
         detailRow('Teléfono',cliente.telefonoCompras),
         detailRow('Correo',  cliente.correoCompras),
+      ].join('');
+    }
+
+    var pagarCuentasEl = document.getElementById('detailCuentasPagar');
+    if (pagarCuentasEl) {
+      pagarCuentasEl.innerHTML = [
+        detailRow('Nombre', cliente.contactoCuentasPorPagar),
+        detailRow('Teléfono', cliente.telefonoCuentasPorPagar),
+        detailRow('Correo', cliente.correoCuentasPorPagar),
       ].join('');
     }
 
@@ -477,7 +545,8 @@
     var cols = ['Folio','Fecha Alta','RFC','Denominación','Razón Social',
                 'Estado','Giro','Moneda',
                 'Contacto Calidad','Tel Calidad','Correo Calidad',
-                'Contacto Compras','Tel Compras','Correo Compras'];
+                'Contacto Compras','Tel Compras','Correo Compras',
+                'Contacto Cuentas por Pagar','Tel Cuentas por Pagar','Correo Cuentas por Pagar'];
 
     var filas = state.filtrados.map(function (c) {
       return [
@@ -485,6 +554,7 @@
         c.estado, c.giro, c.moneda,
         c.contactoCalidad, c.telefonoCalidad, c.correoCalidad,
         c.contactoCompras, c.telefonoCompras, c.correoCompras,
+        c.contactoCuentasPorPagar, c.telefonoCuentasPorPagar, c.correoCuentasPorPagar,
       ].map(function (v) {
         var s = (v || '').toString().replace(/"/g, '""');
         return '"' + s + '"';

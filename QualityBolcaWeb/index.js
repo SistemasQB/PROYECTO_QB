@@ -11,6 +11,7 @@ import directivas from "./src/config/directivas.js";
 import dbs from "./src/config/barril_dbs.js";
 import cors from "cors";
 import routers from "./src/routes/barrilRouters.js";
+import usuarioLocals from "./src/middleware/usuarioLocals.js";
 import dotenv from "dotenv";
 // import miCron from "./src/public/clases/clase_cron.js";
 
@@ -99,6 +100,9 @@ app.use(session({
 }));
 
 app.use(express.static('./src/public'));
+
+// Exponer datos del usuario logueado en res.locals para todas las vistas EJS
+app.use(usuarioLocals);
 
 //Habilirar  EJS
 app.set('views', path.join('\src', 'views'));

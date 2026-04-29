@@ -91,16 +91,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ── USER CHIP ── */
 function initUserChip() {
-  const nombre  = 'Vendedor QB';
-  const inicial = nombre.charAt(0).toUpperCase();
+  const meta = (name) => {
+    const el = document.querySelector(`meta[name="${name}"]`);
+    return el ? el.getAttribute('content') : '';
+  };
+  const nombre      = meta('usuario-nombre')       || 'Usuario';
+  const nombreCorto = meta('usuario-nombre-corto') || nombre.split(' ')[0];
+  const inicial     = meta('usuario-inicial')      || nombre.charAt(0).toUpperCase();
+  const correo      = meta('usuario-correo')       || '';
+
   ['userAvatarSidebar','userAvatarTop'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = inicial;
   });
   const ns = document.getElementById('userNameSidebar');
   const nt = document.getElementById('userNameTop');
+  const es = document.getElementById('userEmailSidebar');
   if (ns) ns.textContent = nombre;
-  if (nt) nt.textContent = nombre;
+  if (nt) nt.textContent = nombreCorto;
+  if (es) es.textContent = correo;
 }
 
 /* ── POBLAR SELECT CLIENTE EN MODAL ── */
@@ -270,8 +279,15 @@ function renderSemana() {
 
 /* ── HELPER ── */
 function getEventsForDay(d) {
-  const k = d.toISOString().slice(0, 10);
-  return eventos.filter(ev => ev.fecha === k).sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
+  const k = d.toDateString();
+  // ev.fecha puede llegar como '2026-04-27' (string DATEONLY) o como
+  // '2026-04-27T00:00:00.000Z' (Date serializado por mysql2 >=3).
+  // Tomamos solo los primeros 10 chars para normalizar ambos casos
+  // antes de construir la fecha local con T00:00:00.
+  return eventos.filter(ev => {
+    const fechaStr = String(ev.fecha).substring(0, 10);
+    return new Date(fechaStr + 'T00:00:00').toDateString() === k;
+  }).sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
 }
 
 /* ================================================================

@@ -21,6 +21,17 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2>Menú Principal</h2>
+            <% if (usuarioInfo) { %>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px;background:rgba(255,255,255,0.08);border-radius:8px;">
+                <div style="width:36px;height:36px;border-radius:50%;background:#2196F3;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;">
+                    <%= usuarioInfo.inicial %>
+                </div>
+                <div style="overflow:hidden;min-width:0;">
+                    <div style="font-weight:600;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= usuarioInfo.nombreCorto %></div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= usuarioInfo.puesto %></div>
+                </div>
+            </div>
+            <% } %>
         </div>
         
         <ul class="menu-list">
