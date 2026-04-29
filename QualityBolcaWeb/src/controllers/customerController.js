@@ -4,7 +4,7 @@ import { check, validationResult } from "express-validator";
 import { generarJWT, generarId } from "../helpers/tokens.js";
 import { emailRegistro, emailOlvidePassword, emailContacto } from "../helpers/emails.js";
 import Usuario from "../models/generales/modelo_usuarios.js";
-
+import sequelizeClase from "../public/clases/sequelize_clase.js";
 // const upload = multer({ dest: 'images/' })
 const controller = {};
 
@@ -162,29 +162,35 @@ controller.formularioOlvidePassword = (req, res) => {
 }
 
 controller.resetPassword = async (req, res) => {
-    //Buscar el usuario
-    const { codigoempleado } = req.body
-    let clase = new sequelizeClase({ modelo: barrrilmodelosgenerales.modelonom10001 });
-    // res.status(400).send({ msg: req.body, ok: false });
-    const usuario = await clase.CorreoElectronico( { codigoempleado: codigoempleado })
-    if (!usuario) {
-        res.status(400).send({ msg: 'Usuario no encontrado', ok: false });
-        return
+    try {
+        const { codigoempleado } = req.body
+        let clase = new sequelizeClase({ modelo: barrilmodelosgenerales.usuarios});
+        let usuario = await clase.obtener1Registro( { codigoempleado , raw:true})
+        if (!usuario) {
+            return res.status(400).send({ msg: 'No se encontro el usuario en la DB', ok: false });
+        }
+        usuario.token = generarId();
+        const token = usuario.token
+        console.log('el primer usuario es ', usuario)
+        const actualizacion = await clase.actualizarDatos({ id: usuario.id, datos: { token: usuario.token }})
+        if (!actualizacion){
+            return res.status(400).send({ msg: 'Error al actualizar la informacion', ok: false });
+        }
+        clase = new sequelizeClase({modelo: barrilmodelosgenerales.modelonom10001})
+        usuario = await clase.obtener1Registro({ criterio: { codigoempleado }, raw: true })
+        //Enviar un email
+        console.log(usuario)
+        emailOlvidePassword({
+            email: usuario.correoelectronico,
+            nombre: usuario.nombrelargo,
+            token: token
+        })
+        
+        return res.status(200).send({ msg: 'Informacion enviada con exito', ok: true });
+    } catch (error) {
+        console.error(`sucedio un error en la clase sequelize,error: ${error}`)
+        return res.status(400).send({ msg: 'Error al procesar la peticion', ok: false });
     }
-    clase = new sequelizeClase({modelo})
-    const usuario2 = await informaciongch.findOne({ where: { codigoempleado: codigoempleado } })
-    //Generar un token y enviar email
-    usuario.token = generarId();
-    await usuario.save();
-    //Enviar un email
-    emailOlvidePassword({
-        email: usuario2.CorreoElectronico,
-        nombre: usuario2.nombrelargo,
-        token: usuario.token
-    })
-    //Mostrar mensaje de confirmacion
-    res.status(200).send({ msg: 'Informacion enviada con exito', ok: true });
-    return
 }
 controller.comprobarToken = async (req, res) => {
     const { token } = req.params;
