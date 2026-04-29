@@ -51,9 +51,10 @@ class sequelizeClase{
         }
     }
 
-    async obtenerDatosPorCriterio({criterio, ordenamiento = null, atributos = null, limites = null}){
+    async obtenerDatosPorCriterio({criterio, ordenamiento = null, atributos = null, limites = null, raw = false}){
         const opciones = {
-            where: criterio
+            where: criterio,
+            raw
         }
         if (ordenamiento){
             opciones.order = ordenamiento
@@ -70,9 +71,10 @@ class sequelizeClase{
         if (!respuesta) return []
         return respuesta
     }
-    async obtener1Registro({criterio, atributos = null}){
+    async obtener1Registro({criterio, atributos = null, raw = false}){
     const opciones = {
-            where: criterio
+            where: criterio,
+            raw
         }
     if(atributos){
         opciones.attributes = atributos
